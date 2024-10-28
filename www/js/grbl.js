@@ -735,7 +735,7 @@ function StartProbeProcess() {
   // are always G21 units, i.e. mm in the usual case, and distance is
   // always incremental.  This avoids problems with probing when in G20
   // inches mode and undoing a preexisting G91 incremental mode
-  var cmd = 'G38.6 Z-'
+  var cmd = 'G38.2 Z-'
   if (
     !onprobemaxtravelChange() ||
     !onprobefeedrateChange() ||
