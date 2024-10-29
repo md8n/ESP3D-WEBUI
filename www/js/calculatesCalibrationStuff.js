@@ -508,6 +508,9 @@ function findMaxFitness(measurements) {
     initialGuess
   }, true);
 
+  //Project the measurements into the XY plane
+  measurements = projectMeasurements(measurements);
+
   let currentGuess = JSON.parse(JSON.stringify(initialGuess));
   let stagnantCounter = 0;
   let totalCounter = 0;
