@@ -508,8 +508,8 @@ function findMaxFitness(measurements) {
     initialGuess
   }, true);
 
-  //Project the measurements into the XY plane
-  measurements = projectMeasurements(measurements);
+  //Project the measurements into the XY plane...this is now done on the firmware side
+  //measurements = projectMeasurements(measurements);
 
   let currentGuess = JSON.parse(JSON.stringify(initialGuess));
   let stagnantCounter = 0;
