@@ -1,3 +1,4 @@
+import M from "constants";
 
 var tlZ = 100
 var trZ = 56
@@ -538,9 +539,9 @@ function findMaxFitness(measurements) {
             totalCounter
           });
 
-          if(totalCounter % 100 == 0){
-                document.getElementById('messages').textContent += "Fitness: " + (1/bestGuess.fitness).toFixed(7) + " in " + totalCounter + "\n";
-                document.getElementById('messages').scrollTop = document.getElementById('messages').scrollHeight;
+          if (totalCounter % 100 == 0) {
+            document.getElementById('messages').textContent += "Fitness: " + (1/bestGuess.fitness).toFixed(7) + " in " + totalCounter + "\n";
+            document.getElementById('messages').scrollTop = document.getElementById('messages').scrollHeight;
           }
 
           // Schedule the next iteration
@@ -555,26 +556,26 @@ function findMaxFitness(measurements) {
 
           messagesBox.textContent += '\nCalibration complete \nCalibration values:';
           messagesBox.textContent += '\nFitness: ' + 1/bestGuess.fitness.toFixed(7);
-          messagesBox.textContent += '\nMaslow_tlX: ' + bestGuess.tl.x.toFixed(1);
-          messagesBox.textContent += '\nMaslow_tlY: ' + bestGuess.tl.y.toFixed(1);
-          messagesBox.textContent += '\nMaslow_trX: ' + bestGuess.tr.x.toFixed(1);
-          messagesBox.textContent += '\nMaslow_trY: ' + bestGuess.tr.y.toFixed(1);
-          messagesBox.textContent += '\nMaslow_blX: ' + bestGuess.bl.x.toFixed(1);
-          messagesBox.textContent += '\nMaslow_blY: ' + bestGuess.bl.y.toFixed(1);
-          messagesBox.textContent += '\nMaslow_brX: ' + bestGuess.br.x.toFixed(1);
-          messagesBox.textContent += '\nMaslow_brY: ' + bestGuess.br.y.toFixed(1);
+          messagesBox.textContent += '\n_tlX: ' + bestGuess.tl.x.toFixed(1);
+          messagesBox.textContent += `\n${M}_tlY: ${bestGuess.tl.y.toFixed(1)}`;
+          messagesBox.textContent += `\n${M}_trX: ${bestGuess.tr.x.toFixed(1)}`;
+          messagesBox.textContent += `\n${M}_trY: ${bestGuess.tr.y.toFixed(1)}`;
+          messagesBox.textContent += `\n${M}_blX: ${bestGuess.bl.x.toFixed(1)}`;
+          messagesBox.textContent += `\n${M}_blY: ${bestGuess.bl.y.toFixed(1)}`;
+          messagesBox.textContent += `\n${M}_brX: ${bestGuess.br.x.toFixed(1)}`;
+          messagesBox.textContent += `\n${M}_brY: ${bestGuess.br.y.toFixed(1)}`;
           messagesBox.scrollTop
           messagesBox.scrollTop = messagesBox.scrollHeight;
 
           if(1/bestGuess.fitness > acceptableCalibrationThreshold){
-              sendCommand('$/Maslow_tlX=' + bestGuess.tl.x.toFixed(1));
-              sendCommand('$/Maslow_tlY=' + bestGuess.tl.y.toFixed(1));
-              sendCommand('$/Maslow_trX=' + bestGuess.tr.x.toFixed(1));
-              sendCommand('$/Maslow_trY=' + bestGuess.tr.y.toFixed(1));
-              sendCommand('$/Maslow_blX=' + bestGuess.bl.x.toFixed(1));
-              sendCommand('$/Maslow_blY=' + bestGuess.bl.y.toFixed(1));
-              sendCommand('$/Maslow_brX=' + bestGuess.br.x.toFixed(1));
-              sendCommand('$/Maslow_brY=' + bestGuess.br.y.toFixed(1));
+              sendCommand(`$/${M}_tlX=: ${bestGuess.tl.x.toFixed(1)}`);
+              sendCommand(`$/${M}_tlY=: ${bestGuess.tl.y.toFixed(1)}`);
+              sendCommand(`$/${M}_trX=: ${bestGuess.tr.x.toFixed(1)}`);
+              sendCommand(`$/${M}_trY=: ${bestGuess.tr.y.toFixed(1)}`);
+              sendCommand(`$/${M}_blX=: ${bestGuess.bl.x.toFixed(1)}`);
+              sendCommand(`$/${M}_blY=: ${bestGuess.bl.y.toFixed(1)}`);
+              sendCommand(`$/${M}_brX=: ${bestGuess.br.x.toFixed(1)}`);
+              sendCommand(`$/${M}_brY=: ${bestGuess.br.y.toFixed(1)}`);
               sendCalibrationEvent({
                 good: true,
                 final: true,

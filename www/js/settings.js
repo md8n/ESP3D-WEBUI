@@ -1,3 +1,5 @@
+import M from "constants";
+
 var scl = [] // setting_configList
 var setting_error_msg = ''
 var setting_lasti = -1
@@ -6,7 +8,7 @@ var current_setting_filter = 'nvs'
 var setup_is_done = false
 var do_not_build_settings = false
 const CONFIG_TOOLTIPS = {
-  Maslow_vertical: "If the maslow is oriented horizontally, set this to false",
+  Maslow_vertical: `If the ${M} is oriented horizontally, set this to false`,
   Maslow_calibration_offset_X: "mm offset from the edge of the frame, X",
   Maslow_calibration_offset_Y: "mm offset from the edge of the frame, Y",
   Maslow_calibration_size_X: "Number of X points to use in calibration",
@@ -23,8 +25,8 @@ const CONFIG_TOOLTIPS = {
   Maslow_blX: "Bottom left anchor x (normally 0)",
   Maslow_blY: "Bottom left anchor y (normally 0)",
   Maslow_blZ: "Bottom left z (normally 75)",
-  Maslow_Retract_Current_Threshold: "Sets how hard should Maslow pull on the belts to retract before considering them to be all the way in",
-  Maslow_Calibration_Current_Threshold: "Sets how hard should Maslow pull on the belts during the calibration process.",
+  Maslow_Retract_Current_Threshold: `Sets how hard should ${M} pull on the belts to retract before considering them to be all the way in`,
+  Maslow_Calibration_Current_Threshold: `Sets how hard should ${M} pull on the belts during the calibration process.`,
   Maslow_calibration_extend_top_y: "starting Y for top belts on extend all (-1000 to 1000) default 0",
   Maslow_calibration_extend_bottom_y: "starting Y for bottom belts on extend all (-1000 to 1000) default ",
 }

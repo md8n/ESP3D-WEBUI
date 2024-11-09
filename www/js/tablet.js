@@ -1,3 +1,5 @@
+import M from "constants";
+
 var gCodeLoaded = false
 var gCodeDisplayable = false
 
@@ -233,19 +235,17 @@ function long_jog(target) {
 }
 
 checkHomed = function () {
-  
-  if(!maslowStatus.homed){
-    alert("Maslow does not know belt lengths. Please retract and extend before continuing.")
+  if (!maslowStatus.homed) {
+    const err_msg = `${M} does not know belt lengths. Please retract and extend before continuing.`;
+    alert(err_msg);
     
-    // Write to the console too in case the system alerts are not visible
-    let msgWindow = document.getElementById('messages')
-    let text = msgWindow.textContent
-    text = text + '\n' + "Maslow does not know belt lengths. Please retract and extend before continuing."
-    msgWindow.textContent = text
-    msgWindow.scrollTop = msgWindow.scrollHeight
-
+    // Write to the console too, in case the system alerts are not visible
+    const msgWindow = document.getElementById('messages')
+    msgWindow.textContent = `${msgWindow.textContent}\n${err_msg}`;
+    msgWindow.scrollTop = msgWindow.scrollHeight;
   }
-  return maslowStatus.homed
+
+  return maslowStatus.homed;
 }
 
 sendMove = function (cmd) {
@@ -355,7 +355,6 @@ sendMove = function (cmd) {
 }
 
 moveHome = function () {
-
   if(!checkHomed()){
     return;
   }
@@ -431,83 +430,11 @@ function tabletShowMessage(msg, collecting) {
     return
   }
 
-  //These are used for populating the configuraiton popup
-
-  if (msg.startsWith('$/maslow_calibration_grid_size=')) {
-    document.getElementById('gridSize').value = msg.substring(31, msg.length)
-    loadedValues['gridSize'] = msg.substring(33, msg.length)
-    return;
-  }
-  if (msg.startsWith('$/maslow_calibration_grid_width_mm_X=')) {
-    document.getElementById('gridWidth').value = msg.substring(37, msg.length)
-    loadedValues['gridWidth'] = msg.substring(37, msg.length)
-    return;
-  }
-  if (msg.startsWith('$/maslow_calibration_grid_height_mm_Y=')) {
-    document.getElementById('gridHeight').value = msg.substring(38, msg.length)
-    loadedValues['gridHeight'] = msg.substring(38, msg.length)
-    return;
+  //These are used for populating the configuration popup
+  if (msg.startsWith('$/Maslow_') || msg.startsWith('$/maslow_')) {
+    return maslowMsgHandling(msg.substring(9));
   }
 
-  if (msg.startsWith('$/Maslow_Retract_Current_Threshold=')) {
-    document.getElementById('retractionForce').value = msg.substring(35, msg.length)
-    loadedValues['retractionForce'] = msg.substring(35, msg.length)
-    return;
-  }
-  if (msg == '$/Maslow_vertical=false') {
-    document.getElementById('machineOrientation').value = 'horizontal'
-    loadedValues['machineOrientation'] = 'horizontal'
-    return;
-  }
-  if (msg == '$/Maslow_vertical=true') {
-    document.getElementById('machineOrientation').value = 'vertical'
-    loadedValues['machineOrientation'] = 'vertical'
-    return;
-  }
-  if (msg.startsWith('$/Maslow_trX=')) {
-    document.getElementById('machineWidth').value = msg.substring(13, msg.length)
-    loadedValues['machineWidth'] = msg.substring(13, msg.length)
-    initialGuess.tr.x = parseFloat(msg.substring(13, msg.length))
-    return;
-  }
-  if (msg.startsWith('$/Maslow_trY=')) {
-    document.getElementById('machineHeight').value = msg.substring(13, msg.length)
-    loadedValues['machineHeight'] = msg.substring(13, msg.length)
-    initialGuess.tr.y = parseFloat(msg.substring(13, msg.length))
-    return;
-  }
-  if (msg.startsWith('$/Maslow_tlX=')) {
-    initialGuess.tl.x = parseFloat(msg.substring(13, msg.length))
-    return;
-  }
-  if (msg.startsWith('$/Maslow_tlY=')) {
-    initialGuess.tl.y = parseFloat(msg.substring(13, msg.length))
-    return;
-  }
-  if (msg.startsWith('$/Maslow_brX=')) {
-    initialGuess.br.x = parseFloat(msg.substring(13, msg.length))
-    return;
-  }
-  if (msg.startsWith('$/Maslow_tlZ=')) {
-    tlZ = parseFloat(msg.substring(13, msg.length))
-    return;
-  }
-  if (msg.startsWith('$/Maslow_trZ=')) {
-    trZ = parseFloat(msg.substring(13, msg.length))
-    return;
-  }
-  if (msg.startsWith('$/Maslow_blZ=')) {
-    blZ = parseFloat(msg.substring(13, msg.length))
-    return;
-  }
-  if (msg.startsWith('$/Maslow_brZ=')) {
-    brZ = parseFloat(msg.substring(13, msg.length))
-    return;
-  }
-  if (msg.startsWith('$/Maslow_Acceptable_Calibration_Threshold')) {
-    acceptableCalibrationThreshold = parseFloat(msg.substring(42, msg.length))
-    return;
-  }
   if (msg.startsWith('error:')) {
     const msgExtra = {
       "8": " - Command requires idle state. Unlock machine?",
@@ -522,19 +449,76 @@ function tabletShowMessage(msg, collecting) {
   if(msg.startsWith('[MSG:INFO: Calibration complete')){
     alert('Calibration complete. You do not need to do calibration ever again unless your frame changes size. You might want to store a backup of your maslow.yaml file in case you need to restore it later.');
   }
-    
 
-  let msgWindow = document.getElementById('messages')
-  let text = msgWindow.textContent
-  text += '\n' + msg
-  msgWindow.textContent = text
+  const msgWindow = document.getElementById('messages')
+  msgWindow.textContent = `${msgWindow.textContent}\n${msg}`;
   msgWindow.scrollTop = msgWindow.scrollHeight
 
   if (msg.startsWith('error:')) {
     msg = '<span style="color:red;">' + msg + '</span>'
   }
+}
 
+/** Handle Maslow specific configuration messages
+ * These would have all started with `$/Maslow_` which is expected to have been stripped away before calling this function
+ */
+const maslowMsgHandling = (msg) => {
+  const keyValue = msg.split("=");
+  const errMsgSuffix = `This is probably a programming error\nKey-Value pair supplied was:${msg}`;
+  if (keyValue.length != 2) {
+    tabletShowMessage(`error: Could not use supplied key-value pair. ${errMsgSuffix}`);
+    return;
+  }
+  const key = keyValue[0] || "";
+  const value = (keyValue[1] || "").trim();
+  if (!key) {
+    tabletShowMessage(`error: No key supplied for value. ${errMsgSuffix}`);
+    return;
+  }
+  if (!value) {
+    tabletShowMessage(`error: No value supplied for key. ${errMsgSuffix}`);
+    return;
+  }
 
+  const stdAction = (id, value) => {
+    document.getElementById(id).value = value;
+    loadedValues[id] = value;
+  }
+  const fullDimensionAction = (id, value, initGuessMember) => {
+    stdAction(id, value);
+    stdDimensionAction(value, initGuessMember);
+  }
+  const stdDimensionAction = (value, initGuessMember) => {
+    initGuessMember = parseFloat(value);
+  }
+  const nullAction = () => {};
+
+  const msgExtra = {
+    "calibration_grid_size": (value) => stdAction("gridSize", value),
+    "calibration_grid_width_mm_X": (value) => stdAction("gridWidth", value),
+    "calibration_grid_height_mm_Y": (value) => stdAction("gridHeight", value),
+    "Retract_Current_Threshold": (value) => stdAction("retractionForce", value),
+    "vertical": (value) => stdAction("machineOrientation", value === "false" ? "horizontal" : "vertical"),
+    "trX": (value) => fullDimensionAction("machineWidth", value, initialGuess.tr.x),
+    "trY": (value) => fullDimensionAction("machineHeight", value, initialGuess.tr.y),
+    "trZ": (value) => stdDimensionAction(value, initialGuess.tr.z),
+    "tlX": (value) => stdDimensionAction(value, initialGuess.tl.x),
+    "tlY": (value) => stdDimensionAction(value, initialGuess.tl.y),
+    "tlZ": (value) => stdDimensionAction(value, initialGuess.tl.z),
+    "brX": (value) => stdDimensionAction(value, initialGuess.br.x),
+    "brY": (value) => nullAction(),
+    "brZ": (value) => stdDimensionAction(value, initialGuess.br.z),
+    "blX": (value) => nullAction(),
+    "blY": (value) => nullAction(),
+    "blZ": (value) => stdDimensionAction(value, initialGuess.bl.z),
+    "Acceptable_Calibration_Threshold": (value) => stdDimensionAction(value, acceptableCalibrationThreshold),
+  }
+  const action = msgExtra[key] || "";
+  if (!action) {
+    tabletShowMessage(`error: Could not find key for value in reference table. ${errMsgSuffix}`);
+    return;
+  }
+  action(value);
 }
 
 function tabletShowResponse(response) {}
