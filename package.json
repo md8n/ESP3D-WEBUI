@@ -8,6 +8,7 @@
     "start": "npm run build:en && npm run serve"
   },
   "devDependencies": {
+    "@types/bun": "^1.1.13",
     "del": "6.0.0",
     "deprecated": "latest",
     "fs": "latest",

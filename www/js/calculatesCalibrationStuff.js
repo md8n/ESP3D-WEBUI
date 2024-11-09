@@ -1,4 +1,5 @@
-import M from "constants";
+import M from "./constants";
+import { sendCommand } from "./maslow";
 
 var tlZ = 100
 var trZ = 56

@@ -1,3 +1,5 @@
+import { sendCommand } from "./maslow";
+
 var interval_status = -1
 var probe_progress_status = 0
 var grbl_error_msg = ''
