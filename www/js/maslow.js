@@ -6,7 +6,11 @@ let maslowStatus = { homed: false, extended: false };
 /** This keeps track of when we saw the last heartbeat from the machine */
 let lastHeartBeatTime = new Date().getTime();
 
-export const MaslowErrMsgKeyValueCantUse = "error: Could not use supplied key-value pair.";
+const err = "error: ";
+export const MaslowErrMsgKeyValueCantUse = `${err}Could not use supplied key-value pair.`;
+export const MaslowErrMsgNoKey = `${err}No key supplied for value.`;
+export const MaslowErrMsgNoValue = `${err}No value supplied for key.`;
+export const MaslowErrMsgNoMatchingKey = `${err}Could not find key for value in reference table.`;
 export const MaslowErrMsgKeyValueSuffix = "This is probably a programming error\nKey-Value pair supplied was:";
 
 /** Perform maslow specific-ish info message handling */
@@ -57,23 +61,21 @@ export const maslowMsgHandling = (msg) => {
     const key = keyValue[0] || "";
     const value = (keyValue[1] || "").trim();
     if (!key) {
-        return maslowErrorMsgHandling(`error: No key supplied for value. ${errMsgSuffix}`);
+        return maslowErrorMsgHandling(`${MaslowErrMsgNoKey} ${errMsgSuffix}`);
     }
     if (!value) {
-        return maslowErrorMsgHandling(`error: No value supplied for key. ${errMsgSuffix}`);
+        return maslowErrorMsgHandling(`${MaslowErrMsgNoValue} ${errMsgSuffix}`);
     }
 
     const stdAction = (id, value) => {
         document.getElementById(id).value = value;
         loadedValues[id] = value;
     }
-    const fullDimensionAction = (id, value, initGuessMember) => {
+    const fullDimensionAction = (id, value) => {
         stdAction(id, value);
-        stdDimensionAction(value, initGuessMember);
+        return stdDimensionAction(value);
     }
-    const stdDimensionAction = (value, initGuessMember) => {
-        initGuessMember = parseFloat(value);
-    }
+    const stdDimensionAction = (value) => parseFloat(value);
     const nullAction = () => { };
 
     const msgExtra = {
@@ -82,19 +84,19 @@ export const maslowMsgHandling = (msg) => {
         "calibration_grid_height_mm_Y": (value) => stdAction("gridHeight", value),
         "Retract_Current_Threshold": (value) => stdAction("retractionForce", value),
         "vertical": (value) => stdAction("machineOrientation", value === "false" ? "horizontal" : "vertical"),
-        "trX": (value) => fullDimensionAction("machineWidth", value, initialGuess.tr.x),
-        "trY": (value) => fullDimensionAction("machineHeight", value, initialGuess.tr.y),
-        "trZ": (value) => stdDimensionAction(value, initialGuess.tr.z),
-        "tlX": (value) => stdDimensionAction(value, initialGuess.tl.x),
-        "tlY": (value) => stdDimensionAction(value, initialGuess.tl.y),
-        "tlZ": (value) => stdDimensionAction(value, initialGuess.tl.z),
-        "brX": (value) => stdDimensionAction(value, initialGuess.br.x),
+        "trX": (value) => {initialGuess.tr.x = fullDimensionAction("machineWidth", value)},
+        "trY": (value) => {initialGuess.tr.y = fullDimensionAction("machineHeight", value)},
+        "trZ": (value) => {initialGuess.tr.z = stdDimensionAction(value)},
+        "tlX": (value) => {initialGuess.tl.x = stdDimensionAction(value)},
+        "tlY": (value) => {initialGuess.tl.y = stdDimensionAction(value)},
+        "tlZ": (value) => {initialGuess.tl.z = stdDimensionAction(value)},
+        "brX": (value) => {initialGuess.br.x = stdDimensionAction(value)},
         "brY": (value) => nullAction(),
-        "brZ": (value) => stdDimensionAction(value, initialGuess.br.z),
+        "brZ": (value) => {initialGuess.br.z = stdDimensionAction(value)},
         "blX": (value) => nullAction(),
         "blY": (value) => nullAction(),
-        "blZ": (value) => stdDimensionAction(value, initialGuess.bl.z),
-        "Acceptable_Calibration_Threshold": (value) => stdDimensionAction(value, acceptableCalibrationThreshold),
+        "blZ": (value) => {initialGuess.bl.z = stdDimensionAction(value)},
+        "Acceptable_Calibration_Threshold": (value) => {acceptableCalibrationThreshold = stdDimensionAction(value)},
     }
     const action = msgExtra[key] || "";
     if (!action) {
