@@ -28,7 +28,7 @@ function checkpassword() {
 function ChangePasswordfailed(error_code, response_text) {
     var response = JSON.parse(response_text);
     if (typeof(response.status) !== 'undefined') id('password_content').innerHTML = translate_text_item(response.status);
-    console.error(`Error ${error_code} :${response}`);
+    conErr(error_code, response_text || "");
     displayNone('password_loader');
     displayBlock('change_password_content');
 }

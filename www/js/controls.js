@@ -72,7 +72,7 @@ function processMacroGetSuccess(response) {
 }
 
 function processMacroGetFailed(error_code, response) {
-    console.error(`Error ${error_code} :${response}`);
+    conErr(error_code, response);
     Macro_build_list("");
 }
 

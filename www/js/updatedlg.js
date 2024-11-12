@@ -89,7 +89,7 @@ function updatesuccess(response) {
     var interval;
     var x = id("prgfw");
     x.max = 10;
-    interval = setInterval(function() {
+    interval = setInterval(function () {
         i = i + 1;
         var x = id("prgfw");
         x.value = i;
@@ -110,16 +110,15 @@ function updatefailed(error_code, response) {
     displayNone('uploadfw-button');
     //id('updatemsg').innerHTML = "";
     id('fw-select').value = "";
-    const errMsg = `Error ${error_code} : ${response}`;
-    if (esp_error_code !=0){
-        alertdlg (translate_text_item("Error") + " (" + esp_error_code + ")", esp_error_message);
+    if (esp_error_code != 0) {
+        alertdlg(translate_text_item("Error"), stdErrMsg(`(${esp_error_code})`, esp_error_message));
         id('updatemsg').innerHTML = translate_text_item("Upload failed : ") + esp_error_message;
         esp_error_code = 0;
     } else {
-       alertdlg (translate_text_item("Error"), errMsg);
-       id('updatemsg').innerHTML = `${translate_text_item("Upload failed")} ${error_code} : ${response}`;
+        alertdlg(translate_text_item("Error"), stdErrMsg(error_code, response));
+        id('updatemsg').innerHTML = stdErrMsg(error_code, response, translate_text_item("Upload failed"));
     }
-    console.error(errMsg);
+    conErr(error_code, response);
     update_ongoing = false;
     SendGetHttp("/updatefw");
 }

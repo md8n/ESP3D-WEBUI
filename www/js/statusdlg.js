@@ -68,8 +68,8 @@ function statusfailed(error_code, response) {
     displayBlock('refreshstatusbtn');
     displayNone('status_loader');
     displayBlock('status_msg');
-    const errMsg = `Error ${error_code} : ${response}`;
-    console.error(errMsg);
+    const errMsg = stdErrMsg(error_code, response);
+    conErr(errMsg);
     id('status_msg').innerHTML = errMsg;
 }
 

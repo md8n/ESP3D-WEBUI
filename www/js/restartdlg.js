@@ -31,7 +31,7 @@ function restart_esp_success(response) {
 
 function restart_esp_failed(error_code, response) {
     displayNone('prgrestart');
-    id('restartmsg').innerHTML = `${translate_text_item("Upload failed")} :  ${error_code} : ${response}`;
-    console.error(`Error ${error_code} :${response}`);
+    id('restartmsg').innerHTML = stdErrMsg(error_code, response, translate_text_item("Upload failed"));
+    conErr(error_code, response);
     closeModal('Cancel')
 }

@@ -135,7 +135,7 @@ function processPreferencesGetSuccess(response) {
 }
 
 function processPreferencesGetFailed(error_code, response) {
-    console.error(`Error ${error_code} :${response}`);
+    conErr(error_code, response);
     Preferences_build_list(defaultpreferenceslist);
 }
 
