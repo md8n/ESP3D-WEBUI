@@ -391,10 +391,10 @@ function inline_help(label) {
 }
 
 function setESPconfigfailed(error_code, response) {
-    alertdlg(translate_text_item("Set failed"), "Error " + error_code + " :" + response);
-    console.log("Error " + error_code + " :" + response);
-    var prefix = "";
-    if (config_lastindex_is_override) prefix = "_override";
+    const errMsg = stdErrMsg(error_code, response);
+    alertdlg(translate_text_item("Set failed"), errMsg);
+    conErr(errMsg);
+    const prefix = (config_lastindex_is_override) ? "_override" : "";
     id('btn_config_' + prefix + config_lastindex).className = "btn btn-danger";
     id('icon_config_' + prefix + config_lastindex).className = "form-control-feedback has-error ico_feedback";
     id('icon_config_' + prefix + config_lastindex).innerHTML = get_icon_svg("remove");
@@ -414,9 +414,9 @@ function getESPconfigSuccess(response) {
 }
 
 function getESPconfigfailed(error_code, response) {
-    console.log("Error " + error_code + " :" + response);
+    conErr(error_code, response);
     displayNone('config_loader');
     displayBlock('config_status');
-    id('config_status').innerHTML = translate_text_item("Failed:") + error_code + " " + response;
+    id('config_status').innerHTML = stdErrMsg(error_code, response, translate_text_item("Failed"));
     displayBlock('config_refresh_btn');
 }

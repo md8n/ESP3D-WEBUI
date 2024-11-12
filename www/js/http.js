@@ -21,14 +21,14 @@ function http_resultfn(response_text) {
     process_cmd();
 }
 
-function http_errorfn(errorcode, response_text) {
+function http_errorfn(error_code, response_text) {
     var fn = http_cmd_list[0].errorfn;
     if ((http_cmd_list.length > 0) && (typeof http_cmd_list[0].errorfn != 'undefined') && http_cmd_list[0].errorfn != null) {
-        if (errorcode == 401) {
+        if (error_code == 401) {
             logindlg();
             console.log("Authentication issue pls log");
         }
-        http_cmd_list[0].errorfn(errorcode, response_text);
+        http_cmd_list[0].errorfn(error_code, response_text);
     } //else console.log ("No errorfn");
     http_cmd_list.shift();
     processing_cmd = false;

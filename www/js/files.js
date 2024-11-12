@@ -78,19 +78,19 @@ function formatFileSize(size) {
         return size;
     }
     if (nSize > 1000000000000) {
-        nFix = nSize/1000000000000;
+        nFix = nSize / 1000000000000;
         return nFix.toFixed(2) + " TB";
     }
     if (nSize > 1000000000) {
-        nFix = nSize/1000000000;
+        nFix = nSize / 1000000000;
         return nFix.toFixed(2) + " GB";
     }
     if (nSize > 1000000) {
-        nFix = nSize/1000000;
+        nFix = nSize / 1000000;
         return nFix.toFixed(2) + " MB";
     }
     if (nSize > 1000) {
-        nFix = nSize/1000;
+        nFix = nSize / 1000;
         return nFix.toFixed(2) + " KB";
     }
     return nSize + " B";
@@ -126,9 +126,9 @@ function files_build_file_line(index) {
         if (is_clickable) {
             content += "style='cursor:pointer;' onclick='files_click_file(" + index + ")' ";
         }
-        var size= formatFileSize(entry.size);
-        if (entry.isdir)size="";
-        content += ">" +  size + "</div>";
+        var size = formatFileSize(entry.size);
+        if (entry.isdir) size = "";
+        content += ">" + size + "</div>";
         content += "<div class='" + timecol + "'";
         if (is_clickable) {
             content += "style='cursor:pointer;' onclick='files_click_file(" + index + ")' ";
@@ -333,13 +333,13 @@ function files_showdeletebutton(index) {
     return true;
 }
 
-function cleanpath(path){
+function cleanpath(path) {
     var p = path;
     p.trim();
-    if (p[0]!='/')p="/"+p;
-    if (p!="/"){
-        if (p.endsWith("/")){
-            p = p .substr(0, p.length - 1);
+    if (p[0] != '/') p = "/" + p;
+    if (p != "/") {
+        if (p.endsWith("/")) {
+            p = p.substr(0, p.length - 1);
         }
     }
     return p;
@@ -349,15 +349,15 @@ function files_refreshFiles(path, usecache) {
     //console.log("refresh requested " + path);
     var cmdpath = path;
     files_currentPath = path;
-    if (current_source != last_source){
+    if (current_source != last_source) {
         files_currentPath = "/";
-        path="/";
+        path = "/";
         last_source = current_source;
     }
-    if ((current_source==tft_sd) || (current_source==tft_usb)){
-     displayNone('print_upload_btn');
+    if ((current_source == tft_sd) || (current_source == tft_usb)) {
+        displayNone('print_upload_btn');
     } else {
-     displayBlock('print_upload_btn');
+        displayBlock('print_upload_btn');
     }
     if (typeof usecache === 'undefined') usecache = false;
     id('files_currentPath').innerHTML = files_currentPath;
@@ -463,23 +463,27 @@ function files_list_success(response_text) {
     files_build_display_filelist();
 }
 
+/** Shows an alert dialog for the ESP error, and then clears the ESP error_code */
+const alertEspError = () => {
+    alertdlg(translate_text_item("Error"), stdErrMsg(`(${esp_error_code})`, esp_error_message));
+    esp_error_code = 0;
+}
+
 function files_list_failed(error_code, response) {
     displayBlock('files_navigation_buttons');
-    if (esp_error_code !=0){
-         alertdlg (translate_text_item("Error") + " (" + esp_error_code + ")", esp_error_message);
-         esp_error_code = 0;
+    if (esp_error_code != 0) {
+        alertEspError();
     } else {
-        alertdlg (translate_text_item("Error"), translate_text_item("No connection"));
+        alertdlg(translate_text_item("Error"), translate_text_item("No connection"));
     }
     files_build_display_filelist(false);
 }
 
 function files_directSD_upload_failed(error_code, response) {
-    if (esp_error_code !=0){
-         alertdlg (translate_text_item("Error") + " (" + esp_error_code + ")", esp_error_message);
-         esp_error_code = 0;
+    if (esp_error_code != 0) {
+        alertEspError();
     } else {
-        alertdlg (translate_text_item("Error"), translate_text_item("Upload failed"));
+        alertdlg(translate_text_item("Error"), translate_text_item("Upload failed"));
     }
     displayNone('files_uploading_msg');
     displayBlock('files_navigation_buttons');
