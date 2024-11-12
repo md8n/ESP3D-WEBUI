@@ -132,10 +132,10 @@ function SendCustomCommandSuccess(response) {
 }
 
 function SendCustomCommandFailed(error_code, response) {
-    if (error_code == 0) {
-        Monitor_output_Update(translate_text_item("Connection error") + "\n");
-    } else {
-         Monitor_output_Update(translate_text_item("Error : ") + error_code + " :" + decode_entitie(response) + "\n");
-    }
-    console.log("cmd Error " + error_code + " :" + decode_entitie(response));
+    const errMsg = (error_code == 0)
+        ? translate_text_item("Connection error")
+        : stdErrMsg(error_code, decode_entitie(response), translate_text_item("Error"));
+    Monitor_output_Update(errMsg + "\n");
+
+    conErr(error_code, decode_entitie(response), "cmd Error");
 }

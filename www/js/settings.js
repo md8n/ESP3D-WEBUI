@@ -567,12 +567,13 @@ function setESPsettingsSuccess(response) {
 }
 
 function setESPsettingsfailed(error_code, response) {
-  alertdlg(translate_text_item('Set failed'), 'Error ' + error_code + ' :' + response)
-  console.log('Error ' + error_code + ' :' + response)
-  setBtn(setting_lasti, setting_lastj, 'btn-danger')
-  id('icon_setting_' + setting_lasti + '_' + setting_lastj).className = 'form-control-feedback has-error ico_feedback'
-  id('icon_setting_' + setting_lasti + '_' + setting_lastj).innerHTML = get_icon_svg('remove')
-  setStatus(setting_lasti, setting_lastj, 'has-feedback has-error')
+  const errMsg = stdErrMsg(error_code, response);
+  alertdlg(translate_text_item('Set failed'), errMsg);
+  conErr(errMsg);
+  setBtn(setting_lasti, setting_lastj, 'btn-danger');
+  id('icon_setting_' + setting_lasti + '_' + setting_lastj).className = 'form-control-feedback has-error ico_feedback';
+  id('icon_setting_' + setting_lasti + '_' + setting_lastj).innerHTML = get_icon_svg('remove');
+  setStatus(setting_lasti, setting_lastj, 'has-feedback has-error');
 }
 
 function getESPsettingsSuccess(response) {
@@ -588,11 +589,11 @@ function getESPsettingsSuccess(response) {
 }
 
 function getESPsettingsfailed(error_code, response) {
-  console.log('Error ' + error_code + ' :' + response)
-  displayNone('settings_loader')
-  displayBlock('settings_status')
-  id('settings_status').innerHTML = translate_text_item('Failed:') + error_code + ' ' + response
-  displayBlock('settings_refresh_btn')
+  conErr(error_code, response);
+  displayNone('settings_loader');
+  displayBlock('settings_status');
+  id('settings_status').innerHTML = stdErrMsg(error_code, response, translate_text_item('Failed'));
+  displayBlock('settings_refresh_btn');
 }
 
 function restart_esp() {

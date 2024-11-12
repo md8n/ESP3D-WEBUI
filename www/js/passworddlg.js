@@ -25,10 +25,10 @@ function checkpassword() {
 }
 
 
-function ChangePasswordfailed(errorcode, response_text) {
+function ChangePasswordfailed(error_code, response_text) {
     var response = JSON.parse(response_text);
     if (typeof(response.status) !== 'undefined') id('password_content').innerHTML = translate_text_item(response.status);
-    console.log("Error " + errorcode + " : " + response_text);
+    conErr(error_code, response_text || "");
     displayNone('password_loader');
     displayBlock('change_password_content');
 }

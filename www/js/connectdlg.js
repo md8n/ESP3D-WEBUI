@@ -112,11 +112,11 @@ function connectsuccess(response) {
     }
 }
 
-function connectfailed(errorcode, response) {
+function connectfailed(error_code, response) {
     displayBlock('connectbtn');
     displayBlock('failed_connect_msg');
     displayNone('connecting_msg');
-    console.log("Fw identification error " + errorcode + " : " + response);
+    conErr(error_code, response, "Fw identification error");
 }
 
 function retryconnect() {

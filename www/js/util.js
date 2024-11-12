@@ -65,4 +65,17 @@ function getChecked(name) {
   return id(name).checked
 }
 
-const sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay))
+const sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay));
+
+/** Build a 'standard' format error message */
+const stdErrMsg = (error_code, response = "", error_prefix = "Error") => `${error_prefix} ${error_code} : ${response}`;
+/** Use `console.error` to report an error
+ * If the response message is falsey, and the error_prefix is the default, we assume that we've been supplied with a stdErrMsg
+ * Otherwise, we build a stdErrMsg with what was supplied
+ */
+const conErr = (error_code, response, error_prefix = "Error") => {
+  const errMsg = (!response && error_prefix === "Error")
+      ? error_code
+      : stdErrMsg(error_code, response || "", error_prefix);
+  console.error(errMsg);
+}

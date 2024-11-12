@@ -303,7 +303,7 @@ function macroUploadsuccess(response) {
     closeModal('ok');
 }
 
-function macroUploadfailed(errorcode, response) {
+function macroUploadfailed(error_code, response) {
     alertdlg(translate_text_item("Error"), translate_text_item("Save macro list failed!"));
     displayNone('macrodlg_upload_msg');
 }

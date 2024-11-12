@@ -89,7 +89,7 @@ function updatesuccess(response) {
     var interval;
     var x = id("prgfw");
     x.max = 10;
-    interval = setInterval(function() {
+    interval = setInterval(function () {
         i = i + 1;
         var x = id("prgfw");
         x.value = i;
@@ -103,22 +103,22 @@ function updatesuccess(response) {
     //console.log(response);
 }
 
-function updatefailed(errorcode, response) {
+function updatefailed(error_code, response) {
     displayBlock('fw-select_form');
     displayNone('prgfw');
     id("fw_file_name").innerHTML = translate_text_item("No file chosen");
     displayNone('uploadfw-button');
     //id('updatemsg').innerHTML = "";
     id('fw-select').value = "";
-    if (esp_error_code !=0){
-        alertdlg (translate_text_item("Error") + " (" + esp_error_code + ")", esp_error_message);
+    if (esp_error_code != 0) {
+        alertdlg(translate_text_item("Error"), stdErrMsg(`(${esp_error_code})`, esp_error_message));
         id('updatemsg').innerHTML = translate_text_item("Upload failed : ") + esp_error_message;
         esp_error_code = 0;
     } else {
-       alertdlg (translate_text_item("Error"), "Error " + errorcode + " : " + response);
-       id('updatemsg').innerHTML = translate_text_item("Upload failed : ") + errorcode + " :" + response;
+        alertdlg(translate_text_item("Error"), stdErrMsg(error_code, response));
+        id('updatemsg').innerHTML = stdErrMsg(error_code, response, translate_text_item("Upload failed"));
     }
-    console.log("Error " + errorcode + " : " + response);
+    conErr(error_code, response);
     update_ongoing = false;
     SendGetHttp("/updatefw");
 }

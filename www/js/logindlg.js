@@ -39,11 +39,10 @@ function login_password_OnKeyUp(event) {
 }
 
 
-function loginfailed(errorcode, response_text) {
+function loginfailed(error_code, response_text) {
     var response = JSON.parse(response_text);
-    if (typeof(response.status) !== 'undefined') id('login_title').innerHTML = translate_text_item(response.status);
-    else id('login_title').innerHTML = translate_text_item("Identification invalid!");
-    console.log("Error " + errorcode + " : " + response_text);
+    id('login_title').innerHTML = translate_text_item(response.status || "Identification invalid!");
+    conErr(error_code, response_text);
     displayBlock('login_content');
     displayNone('login_loader');
     id('current_ID').innerHTML = translate_text_item("guest");
@@ -96,13 +95,13 @@ function DisconnectionSuccess(response_text) {
     displayNone("password_menu");
 }
 
-function DisconnectionFailed(errorcode, response) {
+function DisconnectionFailed(error_code, response) {
     id('current_ID').innerHTML = translate_text_item("guest");
     id('current_auth_level').innerHTML = "";
     displayNone('logout_menu');
     displayNone('logout_menu_divider');
     displayNone("password_menu");
-    console.log("Error " + errorcode + " : " + response);
+    conErr(error_code, response);
 }
 
 function DisconnectLogin(answer) {
