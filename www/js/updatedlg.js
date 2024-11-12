@@ -103,22 +103,23 @@ function updatesuccess(response) {
     //console.log(response);
 }
 
-function updatefailed(errorcode, response) {
+function updatefailed(error_code, response) {
     displayBlock('fw-select_form');
     displayNone('prgfw');
     id("fw_file_name").innerHTML = translate_text_item("No file chosen");
     displayNone('uploadfw-button');
     //id('updatemsg').innerHTML = "";
     id('fw-select').value = "";
+    const errMsg = `Error ${error_code} : ${response}`;
     if (esp_error_code !=0){
         alertdlg (translate_text_item("Error") + " (" + esp_error_code + ")", esp_error_message);
         id('updatemsg').innerHTML = translate_text_item("Upload failed : ") + esp_error_message;
         esp_error_code = 0;
     } else {
-       alertdlg (translate_text_item("Error"), "Error " + errorcode + " : " + response);
-       id('updatemsg').innerHTML = translate_text_item("Upload failed : ") + errorcode + " :" + response;
+       alertdlg (translate_text_item("Error"), errMsg);
+       id('updatemsg').innerHTML = `${translate_text_item("Upload failed")} ${error_code} : ${response}`;
     }
-    console.log("Error " + errorcode + " : " + response);
+    console.error(errMsg);
     update_ongoing = false;
     SendGetHttp("/updatefw");
 }

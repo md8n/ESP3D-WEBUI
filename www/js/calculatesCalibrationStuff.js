@@ -1,5 +1,6 @@
-import M from "./constants";
-import { sendCommand } from "./maslow";
+// When we can change to proper ESM - uncomment this
+// import M from "constants";
+// import { sendCommand } from "./maslow";
 
 var tlZ = 100
 var trZ = 56

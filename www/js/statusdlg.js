@@ -64,12 +64,13 @@ function statussuccess(response) {
     //console.log(response);
 }
 
-function statusfailed(errorcode, response) {
+function statusfailed(error_code, response) {
     displayBlock('refreshstatusbtn');
     displayNone('status_loader');
     displayBlock('status_msg');
-    console.log("Error " + errorcode + " : " + response);
-    id('status_msg').innerHTML = "Error " + errorcode + " : " + response;
+    const errMsg = `Error ${error_code} : ${response}`;
+    console.error(errMsg);
+    id('status_msg').innerHTML = errMsg;
 }
 
 function refreshstatus() {

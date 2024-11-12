@@ -1,4 +1,5 @@
-import { checkHomed, maslowErrorMsgHandling, maslowInfoMsgHandling, maslowMsgHandling, sendCommand } from "maslow";
+// When we can change to proper ESM - uncomment this
+// import { checkHomed, maslowErrorMsgHandling, maslowInfoMsgHandling, maslowMsgHandling, sendCommand } from "maslow";
 
 var gCodeLoaded = false
 var gCodeDisplayable = false
@@ -395,18 +396,9 @@ function tabletShowMessage(msg, collecting) {
     errMsg = maslowMsgHandling(msg.substring(9));
   }
 
-  errMsg = maslowErrorMsgHandling(msg);
-
   const msgWindow = document.getElementById('messages')
-  let msgWindowText = `${msgWindow.textContent}\n${msg}`;
-  if (errMsg) {
-    // We had an error, so show the error message also
-    msgWindowText += `<span style="color:red;">${errMsg}</span>`
-  }
-
-  msgWindow.textContent = msgWindowText;
-  msgWindow.scrollTop = msgWindow.scrollHeight
-
+  msgWindow.textContent = `${msgWindow.textContent}\n${maslowErrorMsgHandling(msg) || msg}`;
+  msgWindow.scrollTop = msgWindow.scrollHeight;
 }
 
 function tabletShowResponse(response) { }

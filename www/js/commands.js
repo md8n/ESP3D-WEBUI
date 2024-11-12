@@ -137,5 +137,5 @@ function SendCustomCommandFailed(error_code, response) {
     } else {
          Monitor_output_Update(translate_text_item("Error : ") + error_code + " :" + decode_entitie(response) + "\n");
     }
-    console.log("cmd Error " + error_code + " :" + decode_entitie(response));
+    console.error(`cmd Error ${error_code} :${decode_entitie(response)}`);
 }

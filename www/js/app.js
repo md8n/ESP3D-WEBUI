@@ -176,7 +176,7 @@ function startSocket() {
         if (tval[0] == 'ERROR') {
           esp_error_message = tval[2]
           esp_error_code = tval[1]
-          console.log('ERROR: ' + tval[2] + ' code:' + tval[1])
+          console.error(`ERROR: ${tval[2]} code:${tval[1]}`);
           CancelCurrentUpload()
         }
         if (tval[0] == 'MSG') {

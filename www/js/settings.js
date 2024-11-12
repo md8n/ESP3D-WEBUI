@@ -1,4 +1,5 @@
-import M from "constants";
+// When we can change to proper ESM - uncomment this
+// import M from "constants";
 
 var scl = [] // setting_configList
 var setting_error_msg = ''
@@ -52,32 +53,21 @@ function defval(i) {
   return scl[i].defaultvalue
 }
 
+/** Build a 'setting' id, any prefix (pf) if supplied should include an '_' at the end of its value */
+const sId = (i, j, pf = "") => `${pf}setting_${i}_${j}`;
+const fCall = (fn, i, j) => `${fn}(${i},${j})`;
+/** Build a select option, includes ugly workaround for OSX Chrome and Safari.
+ * Also note that the `translate` attribute is set to yes to instruct the browser to use its own translation
+ * Therefore do NOT supply a span with translation details to this function e.g. from a call to `translate_text_item`
+*/
+const bOpt = (value, isSelected, label) => `<option value='${value}' ${isSelected? "selected " : ""}translate="yes">${label}${browser_is('MacOSX') ? "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" : ""}</option>\n`;
+
 function build_select_flag_for_setting_list(i, j) {
-  var html = ''
-  var flag = (html +=
-    "<select class='form-control' id='setting_" +
-    i +
-    '_' +
-    j +
-    "' onchange='setting_checkchange(" +
-    i +
-    ',' +
-    j +
-    ")' >")
-  html += "<option value='1'"
-  var tmp = scl[i].defaultvalue
-  tmp |= getFlag(i, j)
-  if (tmp == defval(i)) html += ' selected '
-  html += '>'
-  html += translate_text_item('Disable', true)
-  html += '</option>\n'
-  html += "<option value='0'"
-  var tmp = defval(i)
-  tmp &= ~getFlag(i, j)
-  if (tmp == defval(i)) html += ' selected '
-  html += '>'
-  html += translate_text_item('Enable', true)
-  html += '</option>\n'
+  var html = `<select class='form-control' id='${sId(i, j)}' onchange='${fCall("setting_checkchange", i, j)}'>\n`;
+  var tmp = scl[i].defaultvalue | getFlag(i, j);
+  html += bOpt("1", tmp == defval(i), 'Disable');
+  tmp = defval(i) & ~getFlag(i, j);
+  html += bOpt("0", tmp == defval(i), 'Enable');
   html += '</select>\n'
   //console.log("default:" + defval(i));
   //console.log(html);
@@ -85,24 +75,9 @@ function build_select_flag_for_setting_list(i, j) {
 }
 
 function build_select_for_setting_list(i, j) {
-  var html =
-    "<select class='form-control input-min wauto' id='setting_" +
-    i +
-    '_' +
-    j +
-    "' onchange='setting_checkchange(" +
-    i +
-    ',' +
-    j +
-    ")' >"
+  var html = `<select class='form-control input-min wauto' id='${sId(i, j)}' onchange='${fCall("setting_checkchange", i, j)}'>\n`;
   for (var oi = 0; oi < scl[i].Options.length; oi++) {
-    html += "<option value='" + scl[i].Options[oi].id + "'"
-    if (scl[i].Options[oi].id == defval(i)) html += ' selected '
-    html += '>'
-    html += translate_text_item(scl[i].Options[oi].display, true)
-    //Ugly workaround for OSX Chrome and Safari
-    if (browser_is('MacOSX')) html += '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'
-    html += '</option>\n'
+    html += bOpt(scl[i].Options[oi].id, scl[i].Options[oi].id == defval(i), scl[i].Options[oi].display);
   }
   html += '</select>\n'
   //console.log("default:" + defval(i));
@@ -132,6 +107,7 @@ function build_control_from_index(i, extra_set_function) {
   if (i < scl.length) {
     nbsub = scl[i].type == 'F' ? scl[i].Options.length : 1
     for (var j = 0; j < nbsub; j++) {
+      let params = `${i},${j}`;
       if (j > 0) {
         content += "<tr><td style='height:10px;'></td></tr>"
       }
@@ -141,7 +117,7 @@ function build_control_from_index(i, extra_set_function) {
         content += '</td><td>&nbsp;</td><td>'
       }
 
-      content += "<div id='status_setting_" + i + '_' + j + "' class='form-group has-feedback' style='margin: auto;'>"
+      content += `<div id='${sId(i, j, "status_")}' class='form-group has-feedback' style='margin: auto;'>`
       content += "<div class='item-flex-row'>"
       content += '<table><tr><td>'
       content += "<div class='input-group'>"
@@ -166,39 +142,19 @@ function build_control_from_index(i, extra_set_function) {
         content += build_select_for_setting_list(i, j)
       } else {
         //text
-        input_type = defval(i).startsWith('******') ? 'password' : 'text'
+        input_type = defval(i).startsWith('******') ? 'password' : 'text';
+        let action = `setting_checkchange(${params})`;
         content +=
-          "<form><input id='setting_" +
-          i +
-          '_' +
-          j +
-          "' type='" +
-          input_type +
-          "' class='form-control input-min'  value='" +
-          defval(i) +
-          "' onkeyup='setting_checkchange(" +
-          i +
-          ',' +
-          j +
-          ")' ></form>"
+          `<form><input id='${sId(i, j)}' type='${input_type}' class='form-control input-min'  value='${defval(i)}' onkeyup='${action}'></form>`;
       }
-      content += "<span id='icon_setting_" + i + '_' + j + "'class='form-control-feedback ico_feedback'></span>"
+      content += `<span id='${sId(i, j, "icon_")}' class='form-control-feedback ico_feedback'></span>`;
       content += "<span class='input-group-addon hide_it' ></span>"
       content += '</div>'
       content += '</td></tr></table>'
       content += "<div class='input-group'>"
       content += "<input class='hide_it'></input>"
       content += "<div class='input-group-btn'>"
-      content +=
-        "<button  id='btn_setting_" +
-        i +
-        '_' +
-        j +
-        "' class='btn btn-default' onclick='settingsetvalue(" +
-        i +
-        ',' +
-        j +
-        ');'
+      content += `<button id='${sId(i, j, "btn_")}' class='btn btn-default' onclick='settingsetvalue(${params});' `;
       if (typeof extra_set_function != 'undefined') {
         content += extra_set_function + '(' + i + ');'
       }
@@ -237,16 +193,19 @@ function build_control_from_pos(pos, extra) {
  * 
  * If the configuration is invalid, e.g. because the ESP32 performed a panic reset,
  * Then the error code 153 will be returned via the socket.
- * @see tablet.js tabletShowMessage()
+ * @see maslow.js maslowErrorMsgHandling()
  */
 function saveMaslowYaml() {
   SendGetHttp('/command?plain=' + encodeURIComponent("$CO"));
 }
 
 function build_HTML_setting_list(filter) {
-  //this to prevent concurent process to update after we clean content
+  //this to prevent concurrent process to update after we clean content
   if (do_not_build_settings) return
-  var content = '<tr><td colspan="2">Click "Set" after changing a value to set it</td></tr>'
+
+  const buildTR = (tds) => `<tr>${tds}</tr>`;
+
+  var content = buildTR('<td colspan="2">Click "Set" after changing a value to set it</td>');
   if (filter === 'tree') {
     content += `<tr>
     <td>Click "Save" after changing all values to save the <br/>whole configuration to maslow.yaml and restart</td>
@@ -258,22 +217,23 @@ function build_HTML_setting_list(filter) {
   for (var i = 0; i < scl.length; i++) {
     fname = scl[i].F.trim().toLowerCase()
     if (fname == 'network' || fname == filter || filter == 'all') {
-      content += '<tr>'
+      let tr = '<tr>';
       const tooltip = CONFIG_TOOLTIPS[scl[i].label.substring(1)]
-      content += "<td style='vertical-align:middle'>"
-      content += translate_text_item(scl[i].label, true)
+      tr += "<td style='vertical-align:middle'>"
+      tr += translate_text_item(scl[i].label, true)
       if (tooltip) {
-        content += `<div class='tooltip' style="padding-left: 20px; margin-top: 10px;">
+        tr += `<div class='tooltip' style="padding-left: 20px; margin-top: 10px;">
         <svg width="16" height="16" fill="#3276c3" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 416.979 416.979" xml:space="preserve" stroke="#3276c3"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <g> <path d="M356.004,61.156c-81.37-81.47-213.377-81.551-294.848-0.182c-81.47,81.371-81.552,213.379-0.181,294.85 c81.369,81.47,213.378,81.551,294.849,0.181C437.293,274.636,437.375,142.626,356.004,61.156z M237.6,340.786 c0,3.217-2.607,5.822-5.822,5.822h-46.576c-3.215,0-5.822-2.605-5.822-5.822V167.885c0-3.217,2.607-5.822,5.822-5.822h46.576 c3.215,0,5.822,2.604,5.822,5.822V340.786z M208.49,137.901c-18.618,0-33.766-15.146-33.766-33.765 c0-18.617,15.147-33.766,33.766-33.766c18.619,0,33.766,15.148,33.766,33.766C242.256,122.755,227.107,137.901,208.49,137.901z"></path> </g> </g></svg>
         <span class="tooltip-text">${tooltip}</span>
         </div>
         `
       }
-      content += '</td>'
-      content += "<td style='vertical-align:middle'>"
-      content += '<table><tr><td>' + build_control_from_index(i) + '</td></tr></table>'
-      content += '</td>'
-      content += '</tr>\n'
+      tr += '</td>\n';
+      tr += "<td style='vertical-align:middle'>";
+      tr += `<table><tr><td>${build_control_from_index(i)}</td></tr></table>`;
+      tr += '</td>\n';
+      tr += '</tr>\n';
+      content += tr;
     }
   }
   id('settings_list_data').innerHTML = content
@@ -438,13 +398,7 @@ function is_setting_entry(sline) {
   return true
 }
 
-function getFlag(i, j) {
-  var flag = 0
-  if (scl[i].type != 'F') return -1
-  if (scl[i].Options.length <= j) return -1
-  flag = parseInt(scl[i].Options[j].id)
-  return flag
-}
+const getFlag = (i, j) => (scl[i].type !== 'F' || scl[i].Options.length <= j) ? -1 : parseInt(scl[i].Options[j].id);
 
 function getFlag_description(i, j) {
   if (scl[i].type != 'F') return -1
@@ -453,19 +407,19 @@ function getFlag_description(i, j) {
 }
 
 function setting(i, j) {
-  return id('setting_' + i + '_' + j)
+  return id(sId(i, j));
 }
 function setBtn(i, j, value) {
-  id('btn_setting_' + i + '_' + j).className = 'btn ' + value
+  id(sId(i, j, 'btn_')).className = `btn ${value}`;
 }
 function setStatus(i, j, value) {
-  id('status_setting_' + i + '_' + j).className = 'form-group ' + value
+  id(sId(i, j, 'status_')).className = `form-group ${value}`;
 }
 function setIcon(i, j, value) {
-  id('icon_setting_' + i + '_' + j).className = 'form-control-feedback ' + value
+  id(sId(i, j, 'icon_')).className = `form-control-feedback ${value}`;
 }
 function setIconHTML(i, j, value) {
-  id('icon_setting_' + i + '_' + j).innerHTML = value
+  id(sId(i, j, 'icon_')).innerHTML = value;
 }
 
 function setting_revert_to_default(i, j) {
@@ -569,8 +523,9 @@ function setESPsettingsSuccess(response) {
 }
 
 function setESPsettingsfailed(error_code, response) {
-  alertdlg(translate_text_item('Set failed'), 'Error ' + error_code + ' :' + response)
-  console.log('Error ' + error_code + ' :' + response)
+  const errMsg = `Error ${error_code} : ${response}`;
+  alertdlg(translate_text_item('Set failed'), errMsg);
+  console.error(errMsg);
   setBtn(setting_lasti, setting_lastj, 'btn-danger')
   id('icon_setting_' + setting_lasti + '_' + setting_lastj).className = 'form-control-feedback has-error ico_feedback'
   id('icon_setting_' + setting_lasti + '_' + setting_lastj).innerHTML = get_icon_svg('remove')
@@ -590,7 +545,7 @@ function getESPsettingsSuccess(response) {
 }
 
 function getESPsettingsfailed(error_code, response) {
-  console.log('Error ' + error_code + ' :' + response)
+  console.error(`Error ${error_code} :${response}`);
   displayNone('settings_loader')
   displayBlock('settings_status')
   id('settings_status').innerHTML = translate_text_item('Failed:') + error_code + ' ' + response

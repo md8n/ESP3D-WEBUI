@@ -391,8 +391,9 @@ function inline_help(label) {
 }
 
 function setESPconfigfailed(error_code, response) {
-    alertdlg(translate_text_item("Set failed"), "Error " + error_code + " :" + response);
-    console.log("Error " + error_code + " :" + response);
+    const errMsg = `Error ${error_code} : ${response}`;
+    alertdlg(translate_text_item("Set failed"), errMsg);
+    console.error(errMsg);
     var prefix = "";
     if (config_lastindex_is_override) prefix = "_override";
     id('btn_config_' + prefix + config_lastindex).className = "btn btn-danger";
@@ -414,7 +415,7 @@ function getESPconfigSuccess(response) {
 }
 
 function getESPconfigfailed(error_code, response) {
-    console.log("Error " + error_code + " :" + response);
+    console.error(`Error ${error_code} :${response}`);
     displayNone('config_loader');
     displayBlock('config_status');
     id('config_status').innerHTML = translate_text_item("Failed:") + error_code + " " + response;

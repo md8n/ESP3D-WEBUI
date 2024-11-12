@@ -134,8 +134,8 @@ function processPreferencesGetSuccess(response) {
     else Preferences_build_list(defaultpreferenceslist);
 }
 
-function processPreferencesGetFailed(errorcode, response) {
-    console.log("Error " + errorcode + " : " + response);
+function processPreferencesGetFailed(error_code, response) {
+    console.error(`Error ${error_code} :${response}`);
     Preferences_build_list(defaultpreferenceslist);
 }
 
@@ -684,7 +684,7 @@ function preferencesUploadsuccess(response) {
     closeModal('ok');
 }
 
-function preferencesUploadfailed(errorcode, response) {
+function preferencesUploadfailed(error_code, response) {
     alertdlg(translate_text_item("Error"), translate_text_item("Save preferences failed!"));
 }
 

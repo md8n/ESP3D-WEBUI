@@ -1,4 +1,5 @@
-import M from "constants";
+// When we can change to proper ESM - uncomment this
+// import M from "constants";
 
 /** Maslow Status */
 let maslowStatus = { homed: false, extended: false };
@@ -7,14 +8,15 @@ let maslowStatus = { homed: false, extended: false };
 let lastHeartBeatTime = new Date().getTime();
 
 const err = "error: ";
-export const MaslowErrMsgKeyValueCantUse = `${err}Could not use supplied key-value pair.`;
-export const MaslowErrMsgNoKey = `${err}No key supplied for value.`;
-export const MaslowErrMsgNoValue = `${err}No value supplied for key.`;
-export const MaslowErrMsgNoMatchingKey = `${err}Could not find key for value in reference table.`;
-export const MaslowErrMsgKeyValueSuffix = "This is probably a programming error\nKey-Value pair supplied was:";
+// When we can change to proper ESM - prefix these const strings and functions with 'export' (minus the quotes of course)
+const MaslowErrMsgKeyValueCantUse = `${err}Could not use supplied key-value pair.`;
+const MaslowErrMsgNoKey = `${err}No key supplied for value.`;
+const MaslowErrMsgNoValue = `${err}No value supplied for key.`;
+const MaslowErrMsgNoMatchingKey = `${err}Could not find key for value in reference table.`;
+const MaslowErrMsgKeyValueSuffix = "This is probably a programming error\nKey-Value pair supplied was:";
 
 /** Perform maslow specific-ish info message handling */
-export const maslowInfoMsgHandling = (msg) => {
+const maslowInfoMsgHandling = (msg) => {
     if (msg.startsWith('MINFO: ')) {
         maslowStatus = JSON.parse(msg.substring(7));
         return true;
@@ -35,24 +37,26 @@ export const maslowInfoMsgHandling = (msg) => {
 }
 
 /** Perform maslow specific-ish error message handling */
-export const maslowErrorMsgHandling = (msg) => {
-    if (msg.startsWith('error:')) {
-        const msgExtra = {
-            "8": " - Command requires idle state. Unlock machine?",
-            "152": " - Configuration is invalid. Maslow.yaml file may be corrupt. Turning off and back on again can often fix this issue.",
-            "153": " - Configuration is invalid. ESP32 probably did a panic reset. Config changes cannot be saved. Try restarting",
-        };
-
-        msg += msgExtra[msg.split(":")[1]] || "";
+const maslowErrorMsgHandling = (msg) => {
+    if (!msg.startsWith("error:")) {
+        // Nothing to see here - move along
+        return "";
     }
 
-    return msg;
+    // And extra information for certain error codes
+    const msgExtra = {
+        "8": " - Command requires idle state. Unlock machine?",
+        "152": " - Configuration is invalid. Maslow.yaml file may be corrupt. Turning off and back on again can often fix this issue.",
+        "153": " - Configuration is invalid. ESP32 probably did a panic reset. Config changes cannot be saved. Try restarting",
+    };
+
+    return `${msg}${msgExtra[msg.split(":")[1]] || ""}`;
 }
 
 /** Handle Maslow specific configuration messages
  * These would have all started with `$/Maslow_` which is expected to have been stripped away before calling this function
  */
-export const maslowMsgHandling = (msg) => {
+const maslowMsgHandling = (msg) => {
     const keyValue = msg.split("=");
     const errMsgSuffix = `${MaslowErrMsgKeyValueSuffix}${msg}`;
     if (keyValue.length != 2) {
@@ -108,7 +112,7 @@ export const maslowMsgHandling = (msg) => {
     return "";
 }
 
-export const checkHomed = () => {
+const checkHomed = () => {
     if (!maslowStatus.homed) {
         const err_msg = `${M} does not know belt lengths. Please retract and extend before continuing.`;
         alert(err_msg);
@@ -125,7 +129,7 @@ export const checkHomed = () => {
 /** Short hand convenience call to SendPrinterCommand with some preset values.
  * Uses the global function get_position, which is also a SendPrinterCommand with presets
  */
-export const sendCommand = (cmd) => {
+const sendCommand = (cmd) => {
     SendPrinterCommand(cmd, true, get_Position);
 }
 

@@ -85,7 +85,7 @@ function getscanWifiSuccess(response) {
 }
 
 function getscanWififailed(error_code, response) {
-    console.log("Error " + error_code + " :" + response);
+    console.error(`Error ${error_code} :${response}`);
     displayNone('AP_scan_loader');
     displayBlock('AP_scan_status');
     id('AP_scan_status').innerHTML = translate_text_item("Failed:") + error_code + " " + response;
