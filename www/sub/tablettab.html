@@ -130,8 +130,8 @@
                   <span class="arrow">&#8600;</span>
                 </div>
                 <div class="buttons-row-col-el">
-                  <button class="calibration-modal-button" onclick="onCalibrationButtonsClick('$CAL','Calibrate'); hideModal('configuration-popup')">Calibrate</button>
-                  <button class="calibration-modal-button" onclick="onCalibrationButtonsClick('$TKSLK','Apply Tension'); hideModal('configuration-popup')">Apply Tension</button>
+                  <button class="calibration-modal-button" onclick="onCalibrationButtonsClick('$CAL','Calibrate'); setTimeout(function() { hideModal('calibration-popup'); }, 1000);">Calibrate</button>
+                  <button class="calibration-modal-button" onclick="onCalibrationButtonsClick('$TKSLK','Apply Tension'); setTimeout(function() { hideModal('calibration-popup'); }, 1000);">Apply Tension</button>
                 </div>
               </div>
               <div class="buttons-row">
