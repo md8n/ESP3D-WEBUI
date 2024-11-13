@@ -50,7 +50,8 @@
     <!-- <div id="main_ui" class="container-fluid hide_it"> -->
       <div id="main_ui" class="hide_it"></div>
       <!-- topnavbar -->
-      <file-include w3-include-html="'sub/navbar.html'"></file-include>
+      <!-- <file-include w3-include-html="'sub/navbar.html'"></file-include> -->
+      <iframe src="sub/navbar.html" onload="this.before(...(this.contentWindow.document.body||this.contentWindow.document).children)"></iframe>
       <!-- /topnavbar -->
       <!-- content -->
       <div id="mainuitabscontent">

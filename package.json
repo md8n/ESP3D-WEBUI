@@ -1,15 +1,21 @@
 {
   "name": "ESP3D-WebUI",
   "description": "Web UI for ESP3D",
+  "module": "index.ts",
+  "type": "module",
+  "repository": "https://github.com/luc-github/ESP3D-WEBUI",
+  "author": "Luc LEBOSSE",
+  "license": "(ISC OR GPL-3.0)",
   "scripts": {
     "build": "gulp package",
     "build:en": "gulp package -en",
+    "build:bun": "bun build www/index.html --outdir dist",
     "serve": "python fluidnc-web-sim.py maslow.local",
-    "start": "npm run build:en && npm run serve"
+    "start": "bun run index.ts"
   },
   "devDependencies": {
     "@happy-dom/global-registrator": "^15.11.0",
-    "@types/bun": "^1.1.13",
+    "@types/bun": "latest",
     "del": "6.0.0",
     "deprecated": "latest",
     "fs": "latest",
@@ -33,10 +39,10 @@
     "merge-stream": "latest",
     "uglify-js": "^3.14.2"
   },
-  "repository": "https://github.com/luc-github/ESP3D-WEBUI",
-  "author": "Luc LEBOSSE",
-  "license": "(ISC OR GPL-3.0)",
   "dependencies": {
     "global": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
   }
 }
