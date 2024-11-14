@@ -1,3 +1,6 @@
+// When we can change to proper ESM - uncomment this
+// import M from "constants";
+
 var scl = [] // setting_configList
 var setting_error_msg = ''
 var setting_lasti = -1
@@ -6,7 +9,7 @@ var current_setting_filter = 'nvs'
 var setup_is_done = false
 var do_not_build_settings = false
 const CONFIG_TOOLTIPS = {
-  Maslow_vertical: "If the maslow is oriented horizontally, set this to false",
+  Maslow_vertical: `If the ${M} is oriented horizontally, set this to false`,
   Maslow_calibration_offset_X: "mm offset from the edge of the frame, X",
   Maslow_calibration_offset_Y: "mm offset from the edge of the frame, Y",
   Maslow_calibration_size_X: "Number of X points to use in calibration",
@@ -23,8 +26,8 @@ const CONFIG_TOOLTIPS = {
   Maslow_blX: "Bottom left anchor x (normally 0)",
   Maslow_blY: "Bottom left anchor y (normally 0)",
   Maslow_blZ: "Bottom left z (normally 75)",
-  Maslow_Retract_Current_Threshold: "Sets how hard should Maslow pull on the belts to retract before considering them to be all the way in",
-  Maslow_Calibration_Current_Threshold: "Sets how hard should Maslow pull on the belts during the calibration process.",
+  Maslow_Retract_Current_Threshold: `Sets how hard should ${M} pull on the belts to retract before considering them to be all the way in`,
+  Maslow_Calibration_Current_Threshold: `Sets how hard should ${M} pull on the belts during the calibration process.`,
   Maslow_calibration_extend_top_y: "starting Y for top belts on extend all (-1000 to 1000) default 0",
   Maslow_calibration_extend_bottom_y: "starting Y for bottom belts on extend all (-1000 to 1000) default ",
 }
@@ -50,32 +53,21 @@ function defval(i) {
   return scl[i].defaultvalue
 }
 
+/** Build a 'setting' id, any prefix (pf) if supplied should include an '_' at the end of its value */
+const sId = (i, j, pf = "") => `${pf}setting_${i}_${j}`;
+const fCall = (fn, i, j) => `${fn}(${i},${j})`;
+/** Build a select option, includes ugly workaround for OSX Chrome and Safari.
+ * Also note that the `translate` attribute is set to yes to instruct the browser to use its own translation
+ * Therefore do NOT supply a span with translation details to this function e.g. from a call to `translate_text_item`
+*/
+const bOpt = (value, isSelected, label) => `<option value='${value}' ${isSelected ? "selected " : ""}translate="yes">${label}${browser_is('MacOSX') ? "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" : ""}</option>\n`;
+
 function build_select_flag_for_setting_list(i, j) {
-  var html = ''
-  var flag = (html +=
-    "<select class='form-control' id='setting_" +
-    i +
-    '_' +
-    j +
-    "' onchange='setting_checkchange(" +
-    i +
-    ',' +
-    j +
-    ")' >")
-  html += "<option value='1'"
-  var tmp = scl[i].defaultvalue
-  tmp |= getFlag(i, j)
-  if (tmp == defval(i)) html += ' selected '
-  html += '>'
-  html += translate_text_item('Disable', true)
-  html += '</option>\n'
-  html += "<option value='0'"
-  var tmp = defval(i)
-  tmp &= ~getFlag(i, j)
-  if (tmp == defval(i)) html += ' selected '
-  html += '>'
-  html += translate_text_item('Enable', true)
-  html += '</option>\n'
+  var html = `<select class='form-control' id='${sId(i, j)}' onchange='${fCall("setting_checkchange", i, j)}'>\n`;
+  var tmp = scl[i].defaultvalue | getFlag(i, j);
+  html += bOpt("1", tmp == defval(i), 'Disable');
+  tmp = defval(i) & ~getFlag(i, j);
+  html += bOpt("0", tmp == defval(i), 'Enable');
   html += '</select>\n'
   //console.log("default:" + defval(i));
   //console.log(html);
@@ -83,24 +75,9 @@ function build_select_flag_for_setting_list(i, j) {
 }
 
 function build_select_for_setting_list(i, j) {
-  var html =
-    "<select class='form-control input-min wauto' id='setting_" +
-    i +
-    '_' +
-    j +
-    "' onchange='setting_checkchange(" +
-    i +
-    ',' +
-    j +
-    ")' >"
+  var html = `<select class='form-control input-min wauto' id='${sId(i, j)}' onchange='${fCall("setting_checkchange", i, j)}'>\n`;
   for (var oi = 0; oi < scl[i].Options.length; oi++) {
-    html += "<option value='" + scl[i].Options[oi].id + "'"
-    if (scl[i].Options[oi].id == defval(i)) html += ' selected '
-    html += '>'
-    html += translate_text_item(scl[i].Options[oi].display, true)
-    //Ugly workaround for OSX Chrome and Safari
-    if (browser_is('MacOSX')) html += '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'
-    html += '</option>\n'
+    html += bOpt(scl[i].Options[oi].id, scl[i].Options[oi].id == defval(i), scl[i].Options[oi].display);
   }
   html += '</select>\n'
   //console.log("default:" + defval(i));
@@ -130,6 +107,7 @@ function build_control_from_index(i, extra_set_function) {
   if (i < scl.length) {
     nbsub = scl[i].type == 'F' ? scl[i].Options.length : 1
     for (var j = 0; j < nbsub; j++) {
+      let params = `${i},${j}`;
       if (j > 0) {
         content += "<tr><td style='height:10px;'></td></tr>"
       }
@@ -139,7 +117,7 @@ function build_control_from_index(i, extra_set_function) {
         content += '</td><td>&nbsp;</td><td>'
       }
 
-      content += "<div id='status_setting_" + i + '_' + j + "' class='form-group has-feedback' style='margin: auto;'>"
+      content += `<div id='${sId(i, j, "status_")}' class='form-group has-feedback' style='margin: auto;'>`
       content += "<div class='item-flex-row'>"
       content += '<table><tr><td>'
       content += "<div class='input-group'>"
@@ -164,39 +142,19 @@ function build_control_from_index(i, extra_set_function) {
         content += build_select_for_setting_list(i, j)
       } else {
         //text
-        input_type = defval(i).startsWith('******') ? 'password' : 'text'
+        input_type = defval(i).startsWith('******') ? 'password' : 'text';
+        let action = `setting_checkchange(${params})`;
         content +=
-          "<form><input id='setting_" +
-          i +
-          '_' +
-          j +
-          "' type='" +
-          input_type +
-          "' class='form-control input-min'  value='" +
-          defval(i) +
-          "' onkeyup='setting_checkchange(" +
-          i +
-          ',' +
-          j +
-          ")' ></form>"
+          `<form><input id='${sId(i, j)}' type='${input_type}' class='form-control input-min'  value='${defval(i)}' onkeyup='${action}'></form>`;
       }
-      content += "<span id='icon_setting_" + i + '_' + j + "'class='form-control-feedback ico_feedback'></span>"
+      content += `<span id='${sId(i, j, "icon_")}' class='form-control-feedback ico_feedback'></span>`;
       content += "<span class='input-group-addon hide_it' ></span>"
       content += '</div>'
       content += '</td></tr></table>'
       content += "<div class='input-group'>"
       content += "<input class='hide_it'></input>"
       content += "<div class='input-group-btn'>"
-      content +=
-        "<button  id='btn_setting_" +
-        i +
-        '_' +
-        j +
-        "' class='btn btn-default' onclick='settingsetvalue(" +
-        i +
-        ',' +
-        j +
-        ');'
+      content += `<button id='${sId(i, j, "btn_")}' class='btn btn-default' onclick='settingsetvalue(${params});' `;
       if (typeof extra_set_function != 'undefined') {
         content += extra_set_function + '(' + i + ');'
       }
@@ -235,59 +193,61 @@ function build_control_from_pos(pos, extra) {
  * 
  * If the configuration is invalid, e.g. because the ESP32 performed a panic reset,
  * Then the error code 153 will be returned via the socket.
- * @see tablet.js tabletShowMessage()
+ * @see maslow.js maslowErrorMsgHandling()
  */
 function saveMaslowYaml() {
   SendGetHttp('/command?plain=' + encodeURIComponent("$CO"));
 }
 
 function build_HTML_setting_list(filter) {
-  //this to prevent concurent process to update after we clean content
-  if (do_not_build_settings) return
-  var content = '<tr><td colspan="2">Click "Set" after changing a value to set it</td></tr>'
+  //this to prevent concurrent process to update after we clean content
+  if (do_not_build_settings) {
+    return;
+  }
+
+  const buildTR = (tds) => `<tr>${tds}</tr>`;
+
+  var content = buildTR('<td colspan="2">Click "Set" after changing a value to set it</td>');
   if (filter === 'tree') {
     content += `<tr>
     <td>Click "Save" after changing all values to save the <br/>whole configuration to maslow.yaml and restart</td>
-    <td><button type="button" class="btn btn-success" onclick="saveMaslowYaml();">Save</button></td></tr>`
+    <td><button type="button" class="btn btn-success" onclick="saveMaslowYaml();">Save</button></td>
+    </tr>`;
   }
-  current_setting_filter = filter
-  id(current_setting_filter + '_setting_filter').checked = true
+  current_setting_filter = filter;
+  id(current_setting_filter + '_setting_filter').checked = true;
 
   for (var i = 0; i < scl.length; i++) {
-    fname = scl[i].F.trim().toLowerCase()
+    fname = scl[i].F.trim().toLowerCase();
     if (fname == 'network' || fname == filter || filter == 'all') {
-      content += '<tr>'
-      const tooltip = CONFIG_TOOLTIPS[scl[i].label.substring(1)]
-      content += "<td style='vertical-align:middle'>"
-      content += translate_text_item(scl[i].label, true)
+      let tr = `<tr><td style='vertical-align:middle'>${translate_text_item(scl[i].label, true)}`;
+      const tooltip = CONFIG_TOOLTIPS[scl[i].label.substring(1)];
       if (tooltip) {
-        content += `<div class='tooltip' style="padding-left: 20px; margin-top: 10px;">
+        tr += `<div class='tooltip' style="padding-left: 20px; margin-top: 10px;">
         <svg width="16" height="16" fill="#3276c3" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 416.979 416.979" xml:space="preserve" stroke="#3276c3"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <g> <path d="M356.004,61.156c-81.37-81.47-213.377-81.551-294.848-0.182c-81.47,81.371-81.552,213.379-0.181,294.85 c81.369,81.47,213.378,81.551,294.849,0.181C437.293,274.636,437.375,142.626,356.004,61.156z M237.6,340.786 c0,3.217-2.607,5.822-5.822,5.822h-46.576c-3.215,0-5.822-2.605-5.822-5.822V167.885c0-3.217,2.607-5.822,5.822-5.822h46.576 c3.215,0,5.822,2.604,5.822,5.822V340.786z M208.49,137.901c-18.618,0-33.766-15.146-33.766-33.765 c0-18.617,15.147-33.766,33.766-33.766c18.619,0,33.766,15.148,33.766,33.766C242.256,122.755,227.107,137.901,208.49,137.901z"></path> </g> </g></svg>
         <span class="tooltip-text">${tooltip}</span>
-        </div>
-        `
+        </div>`;
       }
-      content += '</td>'
-      content += "<td style='vertical-align:middle'>"
-      content += '<table><tr><td>' + build_control_from_index(i) + '</td></tr></table>'
-      content += '</td>'
-      content += '</tr>\n'
+      tr += '</td>\n';
+      tr += `<td style='vertical-align:middle'><table><tr><td>${build_control_from_index(i)}</td></tr></table></td>\n`;
+      tr += '</tr>\n';
+      content += tr;
     }
   }
-  id('settings_list_data').innerHTML = content
+  id('settings_list_data').innerHTML = content;
   if (filter === 'tree') {
-    document.querySelector('#setting_32_0').value = result
+    document.querySelector('#setting_32_0').value = result;
   }
   // set calibration values if exists
   if (Object.keys(calibrationResults).length) {
-    document.querySelector('#setting_153_0').value = calibrationResults.br.x
-    document.querySelector('#setting_154_0').value = calibrationResults.br.y
-    document.querySelector('#setting_155_0').value = calibrationResults.tl.x
-    document.querySelector('#setting_156_0').value = calibrationResults.tl.y
-    document.querySelector('#setting_157_0').value = calibrationResults.tr.x
-    document.querySelector('#setting_158_0').value = calibrationResults.tr.y
-    document.querySelector('#setting_159_0').value = calibrationResults.bl.x
-    document.querySelector('#setting_160_0').value = calibrationResults.bl.y
+    document.querySelector('#setting_153_0').value = calibrationResults.br.x;
+    document.querySelector('#setting_154_0').value = calibrationResults.br.y;
+    document.querySelector('#setting_155_0').value = calibrationResults.tl.x;
+    document.querySelector('#setting_156_0').value = calibrationResults.tl.y;
+    document.querySelector('#setting_157_0').value = calibrationResults.tr.x;
+    document.querySelector('#setting_158_0').value = calibrationResults.tr.y;
+    document.querySelector('#setting_159_0').value = calibrationResults.bl.x;
+    document.querySelector('#setting_160_0').value = calibrationResults.bl.y;
   }
   // set calibration values if exists END
 }
@@ -436,49 +396,44 @@ function is_setting_entry(sline) {
   return true
 }
 
-function getFlag(i, j) {
-  var flag = 0
-  if (scl[i].type != 'F') return -1
-  if (scl[i].Options.length <= j) return -1
-  flag = parseInt(scl[i].Options[j].id)
-  return flag
-}
+const getFlag = (i, j) => (scl[i].type !== 'F' || scl[i].Options.length <= j) ? -1 : parseInt(scl[i].Options[j].id);
 
 function getFlag_description(i, j) {
-  if (scl[i].type != 'F') return -1
-  if (scl[i].Options.length <= j) return -1
-  return scl[i].Options[j].display
+  if (scl[i].type != 'F' || scl[i].Options.length <= j) {
+    return -1;
+  }
+  return scl[i].Options[j].display;
 }
 
 function setting(i, j) {
-  return id('setting_' + i + '_' + j)
+  return id(sId(i, j));
 }
 function setBtn(i, j, value) {
-  id('btn_setting_' + i + '_' + j).className = 'btn ' + value
+  id(sId(i, j, 'btn_')).className = `btn ${value}`;
 }
 function setStatus(i, j, value) {
-  id('status_setting_' + i + '_' + j).className = 'form-group ' + value
+  id(sId(i, j, 'status_')).className = `form-group ${value}`;
 }
 function setIcon(i, j, value) {
-  id('icon_setting_' + i + '_' + j).className = 'form-control-feedback ' + value
+  id(sId(i, j, 'icon_')).className = `form-control-feedback ${value}`;
 }
 function setIconHTML(i, j, value) {
-  id('icon_setting_' + i + '_' + j).innerHTML = value
+  id(sId(i, j, 'icon_')).innerHTML = value;
 }
 
 function setting_revert_to_default(i, j) {
-  if (typeof j == 'undefined') j = 0
+  if (typeof j == 'undefined') {
+    j = 0;
+  }
   if (scl[i].type == 'F') {
-    var flag = getFlag(i, j)
-    var enabled = 0
-    var tmp = parseInt(defval(i))
-    tmp |= flag
-    if (tmp == parseInt(defval(i))) setting(i, j).value = '1'
-    else setting(i, j).value = '0'
-  } else setting(i, j).value = defval(i)
-  setBtn(i, j, 'btn-default')
-  setStatus(i, j, 'form-group has-feedback')
-  setIconHTML(i, j, '')
+    const tst = parseInt(defval(i));
+    setting(i, j).value = (tst == (tst | getFlag(i, j))) ? '1' : '0';
+  } else {
+    setting(i, j).value = defval(i);
+  }
+  setBtn(i, j, 'btn-default');
+  setStatus(i, j, 'form-group has-feedback');
+  setIconHTML(i, j, '');
 }
 
 function settingsetvalue(i, j) {

@@ -8,6 +8,8 @@
     "start": "npm run build:en && npm run serve"
   },
   "devDependencies": {
+    "@happy-dom/global-registrator": "^15.11.0",
+    "@types/bun": "^1.1.13",
     "del": "6.0.0",
     "deprecated": "latest",
     "fs": "latest",

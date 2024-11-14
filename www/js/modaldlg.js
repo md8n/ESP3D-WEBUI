@@ -4,7 +4,7 @@ var listmodal = [];
 
 function setactiveModal(html_template, closefunc) {
     if (typeof id(html_template) === 'undefined') {
-        console.log("Error: no " + html_template);
+        console.error(`Error: no ${html_template}`);
         return null;
     }
     var modal = new Object;

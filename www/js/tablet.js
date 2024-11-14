@@ -1,10 +1,11 @@
+// When we can change to proper ESM - uncomment this
+// import { checkHomed, maslowErrorMsgHandling, maslowInfoMsgHandling, maslowMsgHandling, sendCommand } from "maslow";
+
 var gCodeLoaded = false
 var gCodeDisplayable = false
 
 var snd = null
 var sndok = true
-
-var lastHeartBeatTime = new Date().getTime();
 
 var versionNumber = 0.85
 
@@ -40,22 +41,14 @@ function tabletClick() {
   // beep(3, 400, 10)
 }
 
-sendCommand = function (cmd) {
-  SendPrinterCommand(cmd, true, get_Position)
-}
-
 moveTo = function (location) {
   // Always force G90 mode because synchronization of modal reports is unreliable
-  var feedrate = 1000
-  var cmd
-  // For controllers that permit it, specifying mode and move in one block is safer
-  cmd = 'G90 G0 ' + location
-  sendCommand(cmd)
+  sendCommand(`G90 G0 ${location}`);
 }
 
 MDIcmd = function (value) {
-  tabletClick()
-  sendCommand(value)
+  tabletClick();
+  sendCommand(value);
 }
 
 MDI = function (field) {
@@ -85,7 +78,7 @@ exitFullscreen = function () {
   }
 }
 
-toggleFullscreen = function () {}
+toggleFullscreen = function () { }
 
 inputFocused = function () {
   isInputFocused = true
@@ -103,7 +96,7 @@ const xyHomeLabelInstr = "Press+Hold Tap_x2";
 const xyHomeLabelRedefined = "XY Home Redefined";
 
 const getXYHomeBtnText = () => document.getElementById(xyHomeBtnId).textContent || "";
-const setXYHomeBtnText = (xyText = xyHomeLabelDefault) =>  document.getElementById(xyHomeBtnId).textContent = xyText;
+const setXYHomeBtnText = (xyText = xyHomeLabelDefault) => document.getElementById(xyHomeBtnId).textContent = xyText;
 
 const clearXYHomeTimer = () => {
   if (xyHomeTimerId) {
@@ -165,9 +158,9 @@ zeroAxis = function (axis) {
 
 toggleUnits = function () {
   tabletClick()
-  sendCommand(modal.units == 'G21' ? 'G20' : 'G21')
+  sendCommand(modal.units === 'G21' ? 'G20' : 'G21');
   // The button label will be fixed by the response to $G
-  sendCommand('$G')
+  sendCommand('$G');
 }
 
 btnSetDistance = function () {
@@ -185,14 +178,12 @@ jogTo = function (axisAndDistance) {
   // Always force G90 mode because synchronization of modal reports is unreliable
   var feedrate = JogFeedrate(axisAndDistance)
   if (modal.units == 'G20') {
-    feedrate /= 25.4
-    feedrate = feedrate.toFixed(2)
+    feedrate /= 25.4;
+    feedrate = feedrate.toFixed(2);
   }
 
-  var cmd
-  cmd = '$J=G91F' + feedrate + axisAndDistance + '\n'
   // tabletShowMessage("JogTo " + cmd);
-  sendCommand(cmd)
+  sendCommand(`$J=G91F${feedrate}${axisAndDistance}\n`);
 }
 
 goAxisByValue = function (axis, coordinate) {
@@ -201,16 +192,13 @@ goAxisByValue = function (axis, coordinate) {
 }
 
 setAxisByValue = function (axis, coordinate) {
-  tabletClick()
-  var cmd = 'G10 L20 P0 ' + axis + coordinate
-  sendCommand(cmd)
+  tabletClick();
+  sendCommand(`G10 L20 P0 ${axis}${coordinate}`);
 }
 
 setAxis = function (axis, field) {
-  tabletClick()
-  coordinate = id(field).value
-  var cmd = 'G10 L20 P1 ' + axis + coordinate
-  sendCommand(cmd)
+  tabletClick();
+  sendCommand(`G10 L20 P1 ${axis}${id(field).value}`);
 }
 var timeout_id = 0,
   hold_time = 1000
@@ -227,25 +215,8 @@ function long_jog(target) {
     feedrate /= 25.4
     feedrate = feedrate.toFixed(2)
   }
-  cmd = '$J=G91F' + feedrate + axisAndDirection + distance + '\n'
   // tabletShowMessage("Long Jog " + cmd);
-  sendCommand(cmd)
-}
-
-checkHomed = function () {
-  
-  if(!maslowStatus.homed){
-    alert("Maslow does not know belt lengths. Please retract and extend before continuing.")
-    
-    // Write to the console too in case the system alerts are not visible
-    let msgWindow = document.getElementById('messages')
-    let text = msgWindow.textContent
-    text = text + '\n' + "Maslow does not know belt lengths. Please retract and extend before continuing."
-    msgWindow.textContent = text
-    msgWindow.scrollTop = msgWindow.scrollHeight
-
-  }
-  return maslowStatus.homed
+  sendCommand(`$J=G91F${feedrate}${axisAndDirection}${distance}\n`)
 }
 
 sendMove = function (cmd) {
@@ -277,7 +248,7 @@ sendMove = function (cmd) {
   var distance = Number(id('disM').innerText) || 0
 
   if (cmd.includes('Z')) {
-      distance = Number(id('disZ').innerText) || 0;
+    distance = Number(id('disZ').innerText) || 0;
   }
 
   var fn = {
@@ -300,42 +271,42 @@ sendMove = function (cmd) {
       move({ Z: 0 })
     },
     'X-Y+': function () {
-      if(checkHomed()){
+      if (checkHomed()) {
         jog({ X: -distance, Y: distance })
       }
     },
     'X+Y+': function () {
-      if(checkHomed()){
+      if (checkHomed()) {
         jog({ X: distance, Y: distance })
       }
     },
     'X-Y-': function () {
-      if(checkHomed()){
+      if (checkHomed()) {
         jog({ X: -distance, Y: -distance })
       }
     },
     'X+Y-': function () {
-      if(checkHomed()){
+      if (checkHomed()) {
         jog({ X: distance, Y: -distance })
       }
     },
     'X-': function () {
-      if(checkHomed()){
+      if (checkHomed()) {
         jog({ X: -distance })
       }
     },
     'X+': function () {
-      if(checkHomed()){
+      if (checkHomed()) {
         jog({ X: distance })
       }
     },
     'Y-': function () {
-      if(checkHomed()){
+      if (checkHomed()) {
         jog({ Y: -distance })
       }
     },
     'Y+': function () {
-      if(checkHomed()){
+      if (checkHomed()) {
         jog({ Y: distance })
       }
     },
@@ -355,8 +326,7 @@ sendMove = function (cmd) {
 }
 
 moveHome = function () {
-
-  if(!checkHomed()){
+  if (!checkHomed()) {
     return;
   }
 
@@ -373,7 +343,7 @@ moveHome = function () {
     jogTo(s)
   }
 
-  jog({ X: -1*x, Y: -1*y })
+  jog({ X: -1 * x, Y: -1 * y })
 }
 
 
@@ -399,9 +369,6 @@ function saveSerialMessages() {
   document.body.removeChild(link);
 }
 
-// from MINFO command
-var maslowStatus = { homed: false, extended: false};
-
 var loadedValues = {};
 function tabletShowMessage(msg, collecting) {
   if (
@@ -415,129 +382,26 @@ function tabletShowMessage(msg, collecting) {
     return
   }
 
-  //This keeps track of when we saw the last heartbeat from the machine
-  if (msg.startsWith('MINFO: ')) {
-    maslowStatus = JSON.parse(msg.substring(7));
+  if (maslowInfoMsgHandling(msg)) {
     return;
   }
 
-  //This keeps track of when we saw the last heartbeat from the machine
-  if(msg.startsWith('[MSG:INFO: Heartbeat')){
-    lastHeartBeatTime = new Date().getTime();
-    return
-  }
-
-  if(msg.startsWith('[GC')){
-    return
-  }
-
-  //These are used for populating the configuraiton popup
-
-  if (msg.startsWith('$/maslow_calibration_grid_size=')) {
-    document.getElementById('gridSize').value = msg.substring(31, msg.length)
-    loadedValues['gridSize'] = msg.substring(33, msg.length)
-    return;
-  }
-  if (msg.startsWith('$/maslow_calibration_grid_width_mm_X=')) {
-    document.getElementById('gridWidth').value = msg.substring(37, msg.length)
-    loadedValues['gridWidth'] = msg.substring(37, msg.length)
-    return;
-  }
-  if (msg.startsWith('$/maslow_calibration_grid_height_mm_Y=')) {
-    document.getElementById('gridHeight').value = msg.substring(38, msg.length)
-    loadedValues['gridHeight'] = msg.substring(38, msg.length)
+  if (msg.startsWith('[GC')) {
     return;
   }
 
-  if (msg.startsWith('$/Maslow_Retract_Current_Threshold=')) {
-    document.getElementById('retractionForce').value = msg.substring(35, msg.length)
-    loadedValues['retractionForce'] = msg.substring(35, msg.length)
-    return;
-  }
-  if (msg == '$/Maslow_vertical=false') {
-    document.getElementById('machineOrientation').value = 'horizontal'
-    loadedValues['machineOrientation'] = 'horizontal'
-    return;
-  }
-  if (msg == '$/Maslow_vertical=true') {
-    document.getElementById('machineOrientation').value = 'vertical'
-    loadedValues['machineOrientation'] = 'vertical'
-    return;
-  }
-  if (msg.startsWith('$/Maslow_trX=')) {
-    document.getElementById('machineWidth').value = msg.substring(13, msg.length)
-    loadedValues['machineWidth'] = msg.substring(13, msg.length)
-    initialGuess.tr.x = parseFloat(msg.substring(13, msg.length))
-    return;
-  }
-  if (msg.startsWith('$/Maslow_trY=')) {
-    document.getElementById('machineHeight').value = msg.substring(13, msg.length)
-    loadedValues['machineHeight'] = msg.substring(13, msg.length)
-    initialGuess.tr.y = parseFloat(msg.substring(13, msg.length))
-    return;
-  }
-  if (msg.startsWith('$/Maslow_tlX=')) {
-    initialGuess.tl.x = parseFloat(msg.substring(13, msg.length))
-    return;
-  }
-  if (msg.startsWith('$/Maslow_tlY=')) {
-    initialGuess.tl.y = parseFloat(msg.substring(13, msg.length))
-    return;
-  }
-  if (msg.startsWith('$/Maslow_brX=')) {
-    initialGuess.br.x = parseFloat(msg.substring(13, msg.length))
-    return;
-  }
-  if (msg.startsWith('$/Maslow_tlZ=')) {
-    tlZ = parseFloat(msg.substring(13, msg.length))
-    return;
-  }
-  if (msg.startsWith('$/Maslow_trZ=')) {
-    trZ = parseFloat(msg.substring(13, msg.length))
-    return;
-  }
-  if (msg.startsWith('$/Maslow_blZ=')) {
-    blZ = parseFloat(msg.substring(13, msg.length))
-    return;
-  }
-  if (msg.startsWith('$/Maslow_brZ=')) {
-    brZ = parseFloat(msg.substring(13, msg.length))
-    return;
-  }
-  if (msg.startsWith('$/Maslow_Acceptable_Calibration_Threshold')) {
-    acceptableCalibrationThreshold = parseFloat(msg.substring(42, msg.length))
-    return;
-  }
-  if (msg.startsWith('error:')) {
-    const msgExtra = {
-      "8": " - Command requires idle state. Unlock machine?",
-      "152": " - Configuration is invalid. Maslow.yaml file may be corrupt. Turning off and back on again can often fix this issue.",
-      "153": " - Configuration is invalid. ESP32 probably did a panic reset. Config changes cannot be saved. Try restarting",
-    };
-
-    msg += msgExtra[msg.split(":")[1]] || "";
+  let errMsg = "";
+  //These are used for populating the configuration popup
+  if (msg.startsWith('$/Maslow_') || msg.startsWith('$/maslow_')) {
+    errMsg = maslowMsgHandling(msg.substring(9));
   }
 
-  //Catch the calibration complete message and alert the user
-  if(msg.startsWith('[MSG:INFO: Calibration complete')){
-    alert('Calibration complete. You do not need to do calibration ever again unless your frame changes size. You might want to store a backup of your maslow.yaml file in case you need to restore it later.');
-  }
-    
-
-  let msgWindow = document.getElementById('messages')
-  let text = msgWindow.textContent
-  text += '\n' + msg
-  msgWindow.textContent = text
-  msgWindow.scrollTop = msgWindow.scrollHeight
-
-  if (msg.startsWith('error:')) {
-    msg = '<span style="color:red;">' + msg + '</span>'
-  }
-
-
+  const msgWindow = document.getElementById('messages')
+  msgWindow.textContent = `${msgWindow.textContent}\n${maslowErrorMsgHandling(msg) || msg}`;
+  msgWindow.scrollTop = msgWindow.scrollHeight;
 }
 
-function tabletShowResponse(response) {}
+function tabletShowResponse(response) { }
 
 function clearAlarm() {
   if (id('systemStatus').innerText == 'Alarm') {
@@ -671,15 +535,15 @@ function stopAndRecover() {
 var oldCannotClick = null
 
 function scaleUnits(target) {
-    //Scale the units to move when jogging down or up by 25 to keep them reasonable
-    let disMElement = id(target);
-    let currentValue = Number(disMElement.innerText);
+  //Scale the units to move when jogging down or up by 25 to keep them reasonable
+  let disMElement = id(target);
+  let currentValue = Number(disMElement.innerText);
 
-    if (!isNaN(currentValue)) {
-        disMElement.innerText = modal.units == 'G20' ? currentValue / 25 : currentValue * 25;
-    } else {
-        console.error('Invalid number in disM element');
-    }
+  if (!isNaN(currentValue)) {
+    disMElement.innerText = modal.units == 'G20' ? currentValue / 25 : currentValue * 25;
+  } else {
+    console.error('Invalid number in disM element');
+  }
 }
 
 
@@ -992,7 +856,7 @@ function scrollToLine(lineNumber) {
 }
 
 function runGCode() {
-  gCodeFilename && sendCommand('$sd/run=' + gCodeFilename)
+  gCodeFilename && sendCommand(`$sd/run=${gCodeFilename}`)
   setTimeout(() => {
     SendRealtimeCmd(0x7e)
   }, 1500)
@@ -1246,19 +1110,19 @@ numpad.attach({ target: 'disZ', axis: 'Z' })
 //numpad.attach({target: "wpos-z", axis: "Z"});
 //numpad.attach({target: "wpos-a", axis: "A"});
 
-function saveJogDists(){
+function saveJogDists() {
   localStorage.setItem("disM", id('disM').innerText);
   localStorage.setItem("disZ", id('disZ').innerText);
 }
 
-function loadJogDists(){
+function loadJogDists() {
 
   let disM = localStorage.getItem("disM");
-  if(disM != null){
+  if (disM != null) {
     id('disM').innerText = disM;
   }
   let disZ = localStorage.getItem("disZ");
-  if(disZ != null){
+  if (disZ != null) {
     id('disZ').innerText = disZ;
   }
 }
@@ -1371,85 +1235,13 @@ function hideModal(modalId) {
   }
 }
 
-//Used to populate the config popup when it loads
-function loadConfigValues(){
-  SendPrinterCommand('$/Maslow_vertical')
-  SendPrinterCommand('$/maslow_calibration_grid_width_mm_X')
-  SendPrinterCommand('$/maslow_calibration_grid_height_mm_Y')
-  SendPrinterCommand('$/maslow_calibration_grid_size');
-  SendPrinterCommand('$/Maslow_Retract_Current_Threshold');
-  SendPrinterCommand('$/Maslow_trX');
-  SendPrinterCommand('$/Maslow_trY');
-  SendPrinterCommand('$/Maslow_Acceptable_Calibration_Threshold');
-}
 
-//Load all of the corner values
-function loadCornerValues(){
-  SendPrinterCommand('$/Maslow_tlX')
-  SendPrinterCommand('$/Maslow_tlY')
-  SendPrinterCommand('$/Maslow_trX')
-  SendPrinterCommand('$/Maslow_trY')
-  SendPrinterCommand('$/Maslow_brX')
-}
-
-//Save the configuration values
-function saveConfigValues(){
-  let gridWidth = document.getElementById('gridWidth').value
-  let gridHeight = document.getElementById('gridHeight').value
-  let gridSize = document.getElementById('gridSize').value
-  let retractionForce = document.getElementById('retractionForce').value
-  let machineOrientation = document.getElementById('machineOrientation').value
-  let machineWidth = document.getElementById('machineWidth').value
-  let machineHeight = document.getElementById('machineHeight').value
-
-  var gridSpacingWidth = gridWidth / (gridSize - 1)
-  var gridSpacingHeight = gridHeight / (gridSize - 1)
-
-  //If the grid spacing is going to be more than 200 don't save the values
-  if(gridSpacingWidth > 260 || gridSpacingHeight > 260){
-    alert('Grid spacing is too large. Please reduce the grid size or increase the number of points.')
-    return
-  }
-
-  if(gridWidth != loadedValues['gridWidth']){
-    sendCommand('$/maslow_calibration_grid_width_mm_X=' + gridWidth)
-  }
-  if(gridHeight != loadedValues['gridHeight']){
-    sendCommand('$/maslow_calibration_grid_height_mm_Y=' + gridHeight)
-  }
-  if(gridSize != loadedValues['gridSize']){
-    sendCommand('$/maslow_calibration_grid_size=' + gridSize)
-  }
-  if(retractionForce != loadedValues['retractionForce']){
-    sendCommand('$/Maslow_Retract_Current_Threshold=' + retractionForce)
-  }
-  if(machineOrientation != loadedValues['machineOrientation']){
-    if(machineOrientation == 'horizontal'){
-      sendCommand('$/Maslow_vertical=false')
-    } else {
-      sendCommand('$/Maslow_vertical=true')
-    }
-  }
-  if(machineWidth != loadedValues['machineWidth'] || machineHeight != loadedValues['machineHeight']){
-    sendCommand('$/Maslow_tlX=0')
-    sendCommand('$/Maslow_tlY=' + machineHeight)
-    sendCommand('$/Maslow_trX=' + machineWidth)
-    sendCommand('$/Maslow_trY=' + machineHeight)
-    sendCommand('$/Maslow_brX=' + machineWidth)
-  }
-
-  refreshSettings(current_setting_filter);
-  saveMaslowYaml();
-  loadCornerValues();
-
-  hideModal('configuration-popup');
-}
 
 const onCalibrationButtonsClick = async (command, msg) => {
   sendCommand(command)
 
   //Prints out the index.html version number when test is pressed
-  if(command == '$TEST'){
+  if (command == '$TEST') {
     let msgWindow = document.getElementById('messages')
     let text = msgWindow.textContent
     text = text + '\n' + "Index.html Version: " + versionNumber
@@ -1458,7 +1250,7 @@ const onCalibrationButtonsClick = async (command, msg) => {
   }
 
   if (command != '$MINFO') {
-    setTimeout(() => {sendCommand('$MINFO');}, 1000)
+    setTimeout(() => { sendCommand('$MINFO'); }, 1000)
   }
 }
 
