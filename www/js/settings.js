@@ -60,7 +60,7 @@ const fCall = (fn, i, j) => `${fn}(${i},${j})`;
  * Also note that the `translate` attribute is set to yes to instruct the browser to use its own translation
  * Therefore do NOT supply a span with translation details to this function e.g. from a call to `translate_text_item`
 */
-const bOpt = (value, isSelected, label) => `<option value='${value}' ${isSelected? "selected " : ""}translate="yes">${label}${browser_is('MacOSX') ? "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" : ""}</option>\n`;
+const bOpt = (value, isSelected, label) => `<option value='${value}' ${isSelected ? "selected " : ""}translate="yes">${label}${browser_is('MacOSX') ? "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" : ""}</option>\n`;
 
 function build_select_flag_for_setting_list(i, j) {
   var html = `<select class='form-control' id='${sId(i, j)}' onchange='${fCall("setting_checkchange", i, j)}'>\n`;
@@ -201,7 +201,9 @@ function saveMaslowYaml() {
 
 function build_HTML_setting_list(filter) {
   //this to prevent concurrent process to update after we clean content
-  if (do_not_build_settings) return
+  if (do_not_build_settings) {
+    return;
+  }
 
   const buildTR = (tds) => `<tr>${tds}</tr>`;
 
@@ -209,47 +211,43 @@ function build_HTML_setting_list(filter) {
   if (filter === 'tree') {
     content += `<tr>
     <td>Click "Save" after changing all values to save the <br/>whole configuration to maslow.yaml and restart</td>
-    <td><button type="button" class="btn btn-success" onclick="saveMaslowYaml();">Save</button></td></tr>`
+    <td><button type="button" class="btn btn-success" onclick="saveMaslowYaml();">Save</button></td>
+    </tr>`;
   }
-  current_setting_filter = filter
-  id(current_setting_filter + '_setting_filter').checked = true
+  current_setting_filter = filter;
+  id(current_setting_filter + '_setting_filter').checked = true;
 
   for (var i = 0; i < scl.length; i++) {
-    fname = scl[i].F.trim().toLowerCase()
+    fname = scl[i].F.trim().toLowerCase();
     if (fname == 'network' || fname == filter || filter == 'all') {
-      let tr = '<tr>';
-      const tooltip = CONFIG_TOOLTIPS[scl[i].label.substring(1)]
-      tr += "<td style='vertical-align:middle'>"
-      tr += translate_text_item(scl[i].label, true)
+      let tr = `<tr><td style='vertical-align:middle'>${translate_text_item(scl[i].label, true)}`;
+      const tooltip = CONFIG_TOOLTIPS[scl[i].label.substring(1)];
       if (tooltip) {
         tr += `<div class='tooltip' style="padding-left: 20px; margin-top: 10px;">
         <svg width="16" height="16" fill="#3276c3" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 416.979 416.979" xml:space="preserve" stroke="#3276c3"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <g> <path d="M356.004,61.156c-81.37-81.47-213.377-81.551-294.848-0.182c-81.47,81.371-81.552,213.379-0.181,294.85 c81.369,81.47,213.378,81.551,294.849,0.181C437.293,274.636,437.375,142.626,356.004,61.156z M237.6,340.786 c0,3.217-2.607,5.822-5.822,5.822h-46.576c-3.215,0-5.822-2.605-5.822-5.822V167.885c0-3.217,2.607-5.822,5.822-5.822h46.576 c3.215,0,5.822,2.604,5.822,5.822V340.786z M208.49,137.901c-18.618,0-33.766-15.146-33.766-33.765 c0-18.617,15.147-33.766,33.766-33.766c18.619,0,33.766,15.148,33.766,33.766C242.256,122.755,227.107,137.901,208.49,137.901z"></path> </g> </g></svg>
         <span class="tooltip-text">${tooltip}</span>
-        </div>
-        `
+        </div>`;
       }
       tr += '</td>\n';
-      tr += "<td style='vertical-align:middle'>";
-      tr += `<table><tr><td>${build_control_from_index(i)}</td></tr></table>`;
-      tr += '</td>\n';
+      tr += `<td style='vertical-align:middle'><table><tr><td>${build_control_from_index(i)}</td></tr></table></td>\n`;
       tr += '</tr>\n';
       content += tr;
     }
   }
-  id('settings_list_data').innerHTML = content
+  id('settings_list_data').innerHTML = content;
   if (filter === 'tree') {
-    document.querySelector('#setting_32_0').value = result
+    document.querySelector('#setting_32_0').value = result;
   }
   // set calibration values if exists
   if (Object.keys(calibrationResults).length) {
-    document.querySelector('#setting_153_0').value = calibrationResults.br.x
-    document.querySelector('#setting_154_0').value = calibrationResults.br.y
-    document.querySelector('#setting_155_0').value = calibrationResults.tl.x
-    document.querySelector('#setting_156_0').value = calibrationResults.tl.y
-    document.querySelector('#setting_157_0').value = calibrationResults.tr.x
-    document.querySelector('#setting_158_0').value = calibrationResults.tr.y
-    document.querySelector('#setting_159_0').value = calibrationResults.bl.x
-    document.querySelector('#setting_160_0').value = calibrationResults.bl.y
+    document.querySelector('#setting_153_0').value = calibrationResults.br.x;
+    document.querySelector('#setting_154_0').value = calibrationResults.br.y;
+    document.querySelector('#setting_155_0').value = calibrationResults.tl.x;
+    document.querySelector('#setting_156_0').value = calibrationResults.tl.y;
+    document.querySelector('#setting_157_0').value = calibrationResults.tr.x;
+    document.querySelector('#setting_158_0').value = calibrationResults.tr.y;
+    document.querySelector('#setting_159_0').value = calibrationResults.bl.x;
+    document.querySelector('#setting_160_0').value = calibrationResults.bl.y;
   }
   // set calibration values if exists END
 }
@@ -401,9 +399,10 @@ function is_setting_entry(sline) {
 const getFlag = (i, j) => (scl[i].type !== 'F' || scl[i].Options.length <= j) ? -1 : parseInt(scl[i].Options[j].id);
 
 function getFlag_description(i, j) {
-  if (scl[i].type != 'F') return -1
-  if (scl[i].Options.length <= j) return -1
-  return scl[i].Options[j].display
+  if (scl[i].type != 'F' || scl[i].Options.length <= j) {
+    return -1;
+  }
+  return scl[i].Options[j].display;
 }
 
 function setting(i, j) {
@@ -423,18 +422,18 @@ function setIconHTML(i, j, value) {
 }
 
 function setting_revert_to_default(i, j) {
-  if (typeof j == 'undefined') j = 0
+  if (typeof j == 'undefined') {
+    j = 0;
+  }
   if (scl[i].type == 'F') {
-    var flag = getFlag(i, j)
-    var enabled = 0
-    var tmp = parseInt(defval(i))
-    tmp |= flag
-    if (tmp == parseInt(defval(i))) setting(i, j).value = '1'
-    else setting(i, j).value = '0'
-  } else setting(i, j).value = defval(i)
-  setBtn(i, j, 'btn-default')
-  setStatus(i, j, 'form-group has-feedback')
-  setIconHTML(i, j, '')
+    const tst = parseInt(defval(i));
+    setting(i, j).value = (tst == (tst | getFlag(i, j))) ? '1' : '0';
+  } else {
+    setting(i, j).value = defval(i);
+  }
+  setBtn(i, j, 'btn-default');
+  setStatus(i, j, 'form-group has-feedback');
+  setIconHTML(i, j, '');
 }
 
 function settingsetvalue(i, j) {
