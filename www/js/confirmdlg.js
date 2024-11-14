@@ -1,3 +1,5 @@
+import { setactiveModal, showModal } from "./modaldlg";
+
 //confirm dialog
 function confirmdlg(titledlg, textdlg, closefunc) {
     var modal = setactiveModal('confirmdlg.html', closefunc);

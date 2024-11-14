@@ -1,6 +1,6 @@
 //removeIf(en_lang_disabled)
 //english
-var englishtrans = {
+export const englishtrans = {
 "en":"English",
 "STA":"Client Station",
 "AP":"Access Point",

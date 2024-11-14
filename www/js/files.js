@@ -1,3 +1,11 @@
+import { alertdlg } from "./alertdlg";
+import { Monitor_output_Update } from "./commands";
+import { esp_error_code, esp_error_message } from "./constants";
+import { SendGetHttp } from "./http";
+import { SendPrinterCommand } from "./printercmd";
+import { translate_text_item } from "./translate";
+import { displayBlock, displayNone, id } from "./util";
+
 var files_currentPath = "/";
 var files_filter_sd_list = false;
 var files_file_list = [];
@@ -259,9 +267,6 @@ function files_is_clickable(index) {
 function files_enter_dir(name) {
     files_refreshFiles(files_currentPath + name + "/", true);
 }
-function process_files_Createdir(answer) {
-    if (answer.length > 0) files_create_dir(answer.trim());
-}
 
 var old_file_name;
 function files_rename(index) {
@@ -405,14 +410,75 @@ function files_is_filename(file_name) {
     return answer;
 }
 
-function files_list_success(response_text) {
+let gCodeFile = '';
+export const gCodeFilename = (newName) => {
+    if (typeof newName !== "undefined") {
+        gCodeFile = newName;
+    }
+    return gCodeFile;
+}
+
+function addOption(selector, name, value, isDisabled, isSelected) {
+    var opt = document.createElement('option')
+    opt.appendChild(document.createTextNode(name))
+    opt.disabled = isDisabled
+    opt.selected = isSelected
+    opt.value = value
+    selector.appendChild(opt)
+}
+
+const populateTabletFileSelector = (files, path) => {
+    const selector = id('filelist');
+    if (!selector) {
+        return;
+    }
+
+    selector.length = 0;
+    selector.selectedIndex = 0;
+    let selectedFile = gCodeFilename().split('/').slice(-1)[0];
+
+    if (!files.length) {
+        addOption(selector, 'No files found', -3, true, selectedFile == '');
+        return;
+    }
+    var inRoot = path === '/';
+    var legend = 'Load GCode File from /SD' + path;
+    addOption(selector, legend, -2, true, true); // A different one might be selected later
+
+    if (!inRoot) {
+        addOption(selector, '..', -1, false, false);
+    }
+    var gCodeFileFound = false;
+    files.forEach(function (file, index) {
+        if (file.isprintable) {
+            var found = file.name == selectedFile;
+            if (found) {
+                gCodeFileFound = true;
+            }
+            addOption(selector, file.name, index, false, found);
+        }
+    })
+    if (!gCodeFileFound) {
+        gCodeFilename("");
+        gCodeDisplayable = false;
+        showGCode('');
+    }
+
+    files.forEach(function (file, index) {
+        if (file.isdir) {
+            addOption(selector, file.name + '/', index, false, false);
+        }
+    })
+}
+
+export const files_list_success = (response_text) => {
     displayBlock('files_navigation_buttons');
     var error = false;
     var response;
     try {
         response = JSON.parse(response_text);
     } catch (e) {
-        console.error("Parsing error:", e);
+        console.error(`Parsing error: ${e}\n${response_text}`);
         error = true;
     }
     if (error || typeof response.status == 'undefined') {
@@ -512,11 +578,15 @@ function files_build_display_filelist(displaylist) {
     displayNone('files_uploading_msg');
     displayNone('files_list_loader');
     displayNone('files_nav_loader');
+
+    const fileListElem = id('files_fileList');
     if (!displaylist) {
         displayNone('files_status_sd_status');
         displayNone('files_space_sd_status');
-        id('files_fileList').innerHTML = "";
-        displayNone('files_fileList');
+        if (fileListElem) {
+            fileListElem.innerHTML = "";
+            displayNone('files_fileList');
+        }
         return;
     }
     var content = "";
@@ -531,8 +601,11 @@ function files_build_display_filelist(displaylist) {
     for (index = 0; index < files_file_list.length; index++) {
         if (files_file_list[index].isdir) content += files_build_file_line(index);
     }
-    displayBlock('files_fileList');
-    id('files_fileList').innerHTML = content;
+    if (fileListElem) {
+        fileListElem.innerHTML = content;
+        displayBlock('files_fileList');
+    }
+
     if ((files_status_list.length == 0) && (files_error_status != "")) {
         files_status_list.push({
             status: files_error_status,

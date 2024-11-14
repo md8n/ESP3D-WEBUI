@@ -1,3 +1,8 @@
+import { alertdlg } from "./alertdlg";
+import { SendGetHttp } from "./http";
+import { translate_text_item } from "./translate";
+import { conErr, displayBlock, displayNone } from "./util";
+
 var config_configList = [];
 var config_override_List = [];
 var config_lastindex = -1

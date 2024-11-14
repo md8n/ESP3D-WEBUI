@@ -1,6 +1,6 @@
-function id(name) {
-  return document.getElementById(name)
-}
+/** Get the element identified with the supplied name */
+export const id = (name) => document.getElementById(name);
+
 // The return value from class(name) can be use with forEach()
 function classes(name) {
   return Array.from(document.getElementsByClassName(name))
@@ -23,15 +23,22 @@ function setText(name, val) {
 function getText(name) {
   return id(name).innerText
 }
-function setDisplay(name, val) {
-  id(name).style.display = val
+
+/** Set the display style of the element identified by name to the supplied value */
+const setDisplay = (name, val) => {
+  const elem = id(name);
+  if (!elem) {
+    return;
+  }
+  id(name).style.display = val;
 }
-function displayNone(name) {
-  setDisplay(name, 'none')
-}
-function displayBlock(name) {
-  setDisplay(name, 'block')
-}
+
+/** Set the display style of the element identified by name to 'none' */
+export const displayNone = (name) => setDisplay(name, 'none');
+
+/** Set the display style of the element identified by name to 'none' */
+export const displayBlock = (name) => setDisplay(name, 'block');
+
 function displayFlex(name) {
   setDisplay(name, 'flex')
 }
@@ -73,7 +80,7 @@ const stdErrMsg = (error_code, response = "", error_prefix = "Error") => `${erro
  * If the response message is falsey, and the error_prefix is the default, we assume that we've been supplied with a stdErrMsg
  * Otherwise, we build a stdErrMsg with what was supplied
  */
-const conErr = (error_code, response, error_prefix = "Error") => {
+export const conErr = (error_code, response, error_prefix = "Error") => {
   const errMsg = (!response && error_prefix === "Error")
       ? error_code
       : stdErrMsg(error_code, response || "", error_prefix);

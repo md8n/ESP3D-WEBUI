@@ -1,7 +1,7 @@
 //zh_CN
 //removeIf(zh_cn_lang_disabled)
 //use https://www.mobilefish.com/services/unicode_converter/unicode_converter.php
-var zh_CN_trans = {
+export const zh_CN_trans = {
 "zh_cn":"&#31616;&#20307;&#20013;&#25991;",
 "ESP3D for":"ESP3D for",
 "Value of auto-check must be between 0s and 99s !!":"&#33258;&#21160;&#26816;&#26597;&#30340;&#20540;&#24517;&#39035;&#22312;0s&#21040;99s&#20043;&#38388;!!",

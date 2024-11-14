@@ -1,7 +1,7 @@
 //removeIf(hu_lang_disabled)
 //hungarian
 //Hungary by kondorzs
-var hungariantrans = {
+export const hungariantrans = {
 "hu":"Magyar",
 "ESP3D for":"ESP3D hez",
 "Value of auto-check must be between 0s and 99s !!":"Az automatikus ellenőrzés értékének 0 és 99 s között kell lennie!",

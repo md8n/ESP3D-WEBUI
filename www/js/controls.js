@@ -1,3 +1,9 @@
+import { alertdlg } from "./alertdlg";
+import { SendGetHttp } from "./http";
+import { SendPrinterCommand } from "./printercmd";
+import { translate_text_item } from "./translate";
+import { conErr, displayBlock, displayNone } from "./util";
+
 var interval_position = -1;
 var control_macrolist = [];
 
@@ -109,9 +115,7 @@ function onPosIntervalChange() {
     }
 }
 
-function get_Position() {
-    SendPrinterCommand("?", false, null, null, 114, 1);
-}
+export const get_Position = () => SendPrinterCommand("?", false, null, null, 114, 1);
 
 function Control_get_position_value(label, result_data) {
     var result = "";

@@ -1,6 +1,6 @@
 //removeIf(tr_lang_disabled)
 //Turkish
-var turkishtrans = {
+export const turkishtrans = {
 "tr":"T&uuml;rk&ccedil;e",
 "ESP3D for":"ESP3D i&ccedil;in",
 "Value of auto-check must be between 0s and 99s !!":"Otomatik kontrol de&gbreve;eri 0s ile 99s aras&inodot;nda olmal&inodot;d&inodot;r !!",

@@ -1,6 +1,6 @@
 //removeIf(fl_lang_disabled)
 //english for FluidNC
-var fltrans = {
+export const fltrans = {
     "ESP3D Filesystem":"FluidNC Local Filesystem",
     "ESP3D Settings":"FluidNC Settings",
     "ESP3D Status":"FluidNC Status",

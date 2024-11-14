@@ -1,5 +1,8 @@
-// When we can change to proper ESM - uncomment this
-// import M from "constants";
+import { alertdlg } from "./alertdlg";
+import { M } from "./constants";
+import { SendGetHttp } from "./http";
+import { translate_text_item } from "./translate";
+import { conErr, displayBlock, displayNone } from "./util";
 
 var scl = [] // setting_configList
 var setting_error_msg = ''

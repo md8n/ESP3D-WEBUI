@@ -1,3 +1,5 @@
+import { setactiveModal, showModal } from "./modaldlg";
+
 //input dialog
 function inputdlg(titledlg, textdlg, closefunc, preset) {
     var modal = setactiveModal('inputdlg.html', closefunc);

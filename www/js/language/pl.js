@@ -1,6 +1,6 @@
 //removeIf(pl_lang_disabled)
 //Polish
-var polishtrans = {
+export const polishtrans = {
 "pl":"Polski",
 "ESP3D for":"ESP3D dla",
 "Value of auto-check must be between 0s and 99s !!":"Warto&sacute;&cacute; automatycznego spawdzania musi by&cacute; z zakresu 0-99s !",

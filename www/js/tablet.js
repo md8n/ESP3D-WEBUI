@@ -1,20 +1,25 @@
-// When we can change to proper ESM - uncomment this
-// import { checkHomed, maslowErrorMsgHandling, maslowInfoMsgHandling, maslowMsgHandling, sendCommand } from "maslow";
+import { files_list_success, gCodeFilename } from "./files";
+import { SendRealtimeCmd } from "./grbl";
+import { SendGetHttp } from "./http";
+import { checkHomed, loadConfigValues, loadCornerValues, maslowErrorMsgHandling, maslowInfoMsgHandling, maslowMsgHandling, sendCommand } from "./maslow";
+import { numpad } from "./numpad";
+import { SendPrinterCommand } from "./printercmd";
+import { id } from "./util";
 
-var gCodeLoaded = false
-var gCodeDisplayable = false
+var gCodeLoaded = false;
+var gCodeDisplayable = false;
 
-var snd = null
-var sndok = true
+var snd = null;
+var sndok = true;
 
-var versionNumber = 0.85
+var versionNumber = 0.85;
 
 //Print the version number to the console
-let msgWindow = document.getElementById('messages')
-let text = msgWindow.textContent
-text = text + '\n' + "Index.html Version: " + versionNumber
-msgWindow.textContent = text
-msgWindow.scrollTop = msgWindow.scrollHeight
+let msgWindow = document.getElementById('messages');
+if (msgWindow) {
+  msgWindow.textContent += `\nIndex.html Version: ${versionNumber}`;
+  msgWindow.scrollTop = msgWindow.scrollHeight;
+}
 
 function beep(vol, freq, duration) {
   if (snd == null) {
@@ -41,21 +46,21 @@ function tabletClick() {
   // beep(3, 400, 10)
 }
 
-moveTo = function (location) {
+const moveTo = (location) => {
   // Always force G90 mode because synchronization of modal reports is unreliable
   sendCommand(`G90 G0 ${location}`);
 }
 
-MDIcmd = function (value) {
+const MDIcmd = (value) => {
   tabletClick();
   sendCommand(value);
 }
 
-MDI = function (field) {
-  MDIcmd(id(field).value)
-}
+// const MDI = (field) => {
+//   MDIcmd(id(field).value)
+// }
 
-enterFullscreen = function () {
+const enterFullscreen = () => {
   try {
     document.documentElement.requestFullscreen()
   } catch (exception) {
@@ -66,7 +71,7 @@ enterFullscreen = function () {
     }
   }
 }
-exitFullscreen = function () {
+const exitFullscreen = () => {
   try {
     document.exitFullscreen()
   } catch (exception) {
@@ -78,13 +83,13 @@ exitFullscreen = function () {
   }
 }
 
-toggleFullscreen = function () { }
+const toggleFullscreen = () => { }
 
-inputFocused = function () {
+const inputFocused = () => {
   isInputFocused = true
 }
 
-inputBlurred = function () {
+const inputBlurred = () => {
   isInputFocused = false
 }
 
@@ -145,7 +150,7 @@ const setHomeClickUp = () => {
   }
 }
 
-zeroAxis = function (axis) {
+const zeroAxis = (axis) => {
   tabletClick()
   setAxisByValue(axis, 0)
 
@@ -156,25 +161,25 @@ zeroAxis = function (axis) {
   msgWindow.scrollTop = msgWindow.scrollHeight
 }
 
-toggleUnits = function () {
+const toggleUnits = () => {
   tabletClick()
   sendCommand(modal.units === 'G21' ? 'G20' : 'G21');
   // The button label will be fixed by the response to $G
   sendCommand('$G');
 }
 
-btnSetDistance = function () {
+const btnSetDistance = () => {
   tabletClick()
   var distance = event.target.innerText
   id('jog-distance').value = distance
 }
 
-setDistance = function (distance) {
+const setDistance = (distance) => {
   tabletClick()
   id('jog-distance').value = distance
 }
 
-jogTo = function (axisAndDistance) {
+const jogTo = (axisAndDistance) => {
   // Always force G90 mode because synchronization of modal reports is unreliable
   var feedrate = JogFeedrate(axisAndDistance)
   if (modal.units == 'G20') {
@@ -186,17 +191,17 @@ jogTo = function (axisAndDistance) {
   sendCommand(`$J=G91F${feedrate}${axisAndDistance}\n`);
 }
 
-goAxisByValue = function (axis, coordinate) {
+const goAxisByValue = (axis, coordinate) => {
   tabletClick()
   moveTo(axis + coordinate)
 }
 
-setAxisByValue = function (axis, coordinate) {
+const setAxisByValue = (axis, coordinate) => {
   tabletClick();
   sendCommand(`G10 L20 P0 ${axis}${coordinate}`);
 }
 
-setAxis = function (axis, field) {
+const setAxis = (axis, field) => {
   tabletClick();
   sendCommand(`G10 L20 P1 ${axis}${id(field).value}`);
 }
@@ -219,9 +224,9 @@ function long_jog(target) {
   sendCommand(`$J=G91F${feedrate}${axisAndDirection}${distance}\n`)
 }
 
-sendMove = function (cmd) {
+const sendMove = (cmd) => {
   tabletClick()
-  var jog = function (params) {
+  const jog = (params) => {
     params = params || {}
     var s = ''
     for (key in params) {
@@ -236,7 +241,7 @@ sendMove = function (cmd) {
     msgWindow.scrollTop = msgWindow.scrollHeight
 
   }
-  var move = function (params) {
+  const move = (params) => {
     params = params || {}
     var s = ''
     for (key in params) {
@@ -325,7 +330,7 @@ sendMove = function (cmd) {
   fn && fn()
 }
 
-moveHome = function () {
+const moveHome = () => {
   if (!checkHomed()) {
     return;
   }
@@ -334,7 +339,7 @@ moveHome = function () {
   var x = parseFloat(id('mpos-x').innerText)
   var y = parseFloat(id('mpos-y').innerText)
 
-  var jog = function (params) {
+  const jog = (params) => {
     params = params || {}
     var s = ''
     for (key in params) {
@@ -716,68 +721,15 @@ function tabletGrblState(grbl, response) {
   })
 }
 
-function addOption(selector, name, value, isDisabled, isSelected) {
-  var opt = document.createElement('option')
-  opt.appendChild(document.createTextNode(name))
-  opt.disabled = isDisabled
-  opt.selected = isSelected
-  opt.value = value
-  selector.appendChild(opt)
-}
-
-var gCodeFilename = ''
-
-function populateTabletFileSelector(files, path) {
-  var selector = id('filelist')
-
-  var selectedFile = gCodeFilename.split('/').slice(-1)[0]
-
-  selector.length = 0
-  selector.selectedIndex = 0
-
-  if (!files.length) {
-    addOption(selector, 'No files found', -3, true, selectedFile == '')
-    return
-  }
-  var inRoot = path === '/'
-  var legend = 'Load GCode File from /SD' + path
-  addOption(selector, legend, -2, true, true) // A different one might be selected later
-
-  if (!inRoot) {
-    addOption(selector, '..', -1, false, false)
-  }
-  var gCodeFileFound = false
-  files.forEach(function (file, index) {
-    if (file.isprintable) {
-      var found = file.name == selectedFile
-      if (found) {
-        gCodeFileFound = true
-      }
-      addOption(selector, file.name, index, false, found)
-    }
-  })
-  if (!gCodeFileFound) {
-    gCodeFilename = ''
-    gCodeDisplayable = false
-    showGCode('')
-  }
-
-  files.forEach(function (file, index) {
-    if (file.isdir) {
-      addOption(selector, file.name + '/', index, false, false)
-    }
-  })
-}
-
-var filename = 'TEST.NC'
-var watchPath = ''
+var filename = 'TEST.NC';
+var watchPath = '';
 
 function tabletGetFileList(path) {
-  gCodeFilename = ''
-  SendGetHttp('/upload?path=' + encodeURI(path), files_list_success)
+  gCodeFilename('');
+  SendGetHttp('/upload?path=' + encodeURI(path), files_list_success);
 }
 
-function tabletInit() {
+export const tabletInit = () => {
   // put in a timeout to allow things to settle. when they were here at startup ui froze from time to time.
   setTimeout(() => {
     // get grbl status
@@ -856,7 +808,7 @@ function scrollToLine(lineNumber) {
 }
 
 function runGCode() {
-  gCodeFilename && sendCommand(`$sd/run=${gCodeFilename}`)
+  gCodeFilename() && sendCommand(`$sd/run=${gCodeFilename()}`);
   setTimeout(() => {
     SendRealtimeCmd(0x7e)
   }, 1500)
@@ -870,44 +822,44 @@ function tabletSelectGCodeFile(filename) {
   option.selected = true
 }
 function tabletLoadGCodeFile(path, size) {
-  gCodeFilename = path
+  gCodeFilename(path);
   if ((isNaN(size) && size.endsWith('GB')) || size > 10000000) {
-    showGCode('GCode file too large to display (> 1MB)')
-    gCodeDisplayable = false
-    displayer.clear()
+    showGCode('GCode file too large to display (> 1MB)');
+    gCodeDisplayable = false;
+    displayer.clear();
   } else {
-    gCodeDisplayable = true
-    fetch(encodeURIComponent('SD' + gCodeFilename))
+    gCodeDisplayable = true;
+    fetch(encodeURIComponent('SD' + gCodeFilename()))
       .then((response) => response.text())
-      .then((gcode) => showGCode(gcode))
+      .then((gcode) => showGCode(gcode));
   }
 }
 
 function selectFile() {
-  tabletClick()
-  var filelist = id('filelist')
-  var index = Number(filelist.options[filelist.selectedIndex].value)
+  tabletClick();
+  var filelist = id('filelist');
+  var index = Number(filelist.options[filelist.selectedIndex].value);
   if (index === -3) {
     // No files
-    return
+    return;
   }
   if (index === -2) {
     // Blank entry selected
-    return
+    return;
   }
   if (index === -1) {
     // Go up
-    gCodeFilename = ''
-    files_go_levelup()
-    return
+    gCodeFilename('');
+    files_go_levelup();
+    return;
   }
-  var file = files_file_list[index]
-  var filename = file.name
+  var file = files_file_list[index];
+  var filename = file.name;
   if (file.isdir) {
-    gCodeFilename = ''
-    files_enter_dir(filename)
+    gCodeFilename('');
+    files_enter_dir(filename);
   } else {
-    tabletLoadGCodeFile(files_currentPath + filename, file.size)
+    tabletLoadGCodeFile(files_currentPath + filename, file.size);
   }
 }
 function toggleDropdown() {
@@ -945,7 +897,7 @@ function requestModes() {
   sendCommand('$G')
 }
 
-cycleDistance = function (up) {
+const cycleDistance = (up) => {
   //var sel = id('jog-distance');
   //var newIndex = sel.selectedIndex + (up ? 1 : -1);
   //if (newIndex >= 0 && newIndex < sel.length) {
@@ -953,7 +905,7 @@ cycleDistance = function (up) {
   //    sel.selectedIndex = newIndex;
   //}
 }
-clickon = function (name) {
+const clickon = (name) => {
   //    $('[data-route="workspace"] .btn').removeClass('active');
   var button = id(name)
   button.classList.add('active')
@@ -1172,12 +1124,6 @@ function updateGcodeViewerAngle() {
   displayer.cycleCameraAngle(gcode, modal, arrayToXYZ(WPOS))
 }
 
-function fullscreenIfMobile() {
-  if (/Mobi|Android/i.test(navigator.userAgent)) {
-    toggleFullscreen()
-  }
-}
-
 function showCalibrationPopup() {
   document.getElementById('calibration-popup').style.display = 'block'
 }
@@ -1185,7 +1131,7 @@ function showCalibrationPopup() {
 function homeZ() {
   console.log('Homing Z latest')
 
-  var move = function (params) {
+  const move = (params) => {
     params = params || {}
     var s = ''
     for (key in params) {
@@ -1214,8 +1160,6 @@ document.addEventListener('click', function (event) {
     document.getElementById('calibration-popup').style.display = 'none'
   }
 })
-
-id('tablettablink').addEventListener('DOMActivate', fullscreenIfMobile, false)
 
 /* Calibration modal */
 

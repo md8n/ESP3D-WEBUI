@@ -1,6 +1,6 @@
 //removeIf(de_lang_disabled)
 //german
-var germantrans = {
+export const germantrans = {
 "de":"Deutsch",
 "ESP3D for":"ESP3D f&uuml;r",
 "Value of auto-check must be between 0s and 99s !!":"Der Wert des Auto-Checks muss zwischen 0s und 99s liegen!!",

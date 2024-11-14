@@ -1,4 +1,12 @@
+import { alertdlg } from "./alertdlg";
+import { SendGetHttp } from "./http";
+import { language } from "./languages";
+import { setactiveModal, showModal } from "./modaldlg";
+import { translate_text_item } from "./translate";
+import { conErr, displayBlock, displayNone } from "./util";
+
 //Preferences dialog
+
 var preferenceslist = [];
 var language_save = language;
 var default_preferenceslist = [];

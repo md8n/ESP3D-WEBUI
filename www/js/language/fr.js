@@ -1,5 +1,5 @@
 //french
-var frenchtrans = {
+export const frenchtrans = {
 "fr":"Fran&ccedil;ais",
 "ESP3D for":"ESP3D pour",
 "Value of auto-check must be between 0s and 99s !!":"La valeur de contr&ocirc;le doit &ecirc;tre entre 0s et 99s !!",

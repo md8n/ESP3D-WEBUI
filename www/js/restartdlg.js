@@ -1,3 +1,8 @@
+import { setactiveModal, showModal } from "./modaldlg";
+import { SendPrinterCommand } from "./printercmd";
+import { translate_text_item } from "./translate";
+import { conErr, displayBlock, displayNone } from "./util";
+
 //restart dialog
 function restartdlg() {
     console.log("show restart");

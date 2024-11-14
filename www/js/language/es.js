@@ -1,6 +1,6 @@
 //removeIf(es_lang_disabled)
 //Spanish
-var spanishtrans = {
+export const spanishtrans = {
 "es":"Espa&ntilde;ol",
 "ESP3D for":"ESP3D para",
 "Value of auto-check must be between 0s and 99s !!":"&iexcl;El valor del auto-control tiene que estar entre 0s y 99s !",

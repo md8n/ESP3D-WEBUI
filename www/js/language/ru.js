@@ -1,6 +1,6 @@
 //removeIf(ru_lang_disabled)
 //Russian
-var russiantrans = {
+export const russiantrans = {
 "ru": "Русский",
 "ESP3D for": "ESP3D для",
 "Value of auto-check must be between 0s and 99s !!": "Значение автоматической проверки должно быть от 0 до 99 секунд !!",

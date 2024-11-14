@@ -1,3 +1,5 @@
+import { displayBlock } from "./util";
+
 var can_revert_wizard = false;
 
 function openstep(evt, stepname) {

@@ -1,21 +1,23 @@
+import { id } from "./util";
+
 // Create the modal
 var listmodal = [];
 
 
-function setactiveModal(html_template, closefunc) {
-    if (typeof id(html_template) === 'undefined') {
-        console.error(`Error: no ${html_template}`);
+export const setactiveModal = (html_template, closefunc) => {
+    const mdlTemplate = id(html_template);
+    if (!mdlTemplate) {
+        console.error(`Error: no template named '${html_template}'`);
         return null;
     }
     var modal = new Object;
-    modal.element = id(html_template);
+    modal.element = mdlTemplate;
     modal.id = listmodal.length;
     modal.name = html_template;
-    if (typeof closefunc !== 'undefined') modal.closefn = closefunc;
-    else modal.closefn = myfnclose;
-    listmodal.push(modal)
+    modal.closefn = (typeof closefunc !== 'undefined') ? closefunc : myfnclose;
+    listmodal.push(modal);
     //console.log("Creation of modal  " +  modal.name + " with ID " +modal.id);
-    return listmodal[listmodal.length - 1];;
+    return listmodal[listmodal.length - 1];
 }
 
 function getactiveModal() {
@@ -25,8 +27,8 @@ function getactiveModal() {
 }
 
 // open the modal 
-function showModal() {
-    var currentmodal = getactiveModal();
+export const showModal = () => {
+    let currentmodal = getactiveModal();
     currentmodal.element.style.display = "block";
     //console.log("Show modal " +  currentmodal.name + " with ID " + currentmodal.id  );
 }
@@ -39,7 +41,6 @@ function closeModal(response) {
         var closefn = currentmodal.closefn;
         //console.log("Deletetion of modal " +  currentmodal.name + " with ID "  + currentmodal.id);
         listmodal.pop();
-        delete currentmodal;
         currentmodal = getactiveModal();
         //if (currentmodal != null)console.log("New active modal is  " +  currentmodal.name + " with ID "  + currentmodal.id);
         //else console.log("No active modal");

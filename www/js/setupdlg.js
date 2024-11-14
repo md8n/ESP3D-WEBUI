@@ -1,3 +1,8 @@
+import { language } from "./languages";
+import { setactiveModal, showModal } from "./modaldlg";
+import { translate_text_item } from "./translate";
+import { displayBlock, displayNone } from "./util";
+
 //setup dialog
 
 var active_wizard_page = 0;

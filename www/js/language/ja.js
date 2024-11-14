@@ -1,7 +1,7 @@
 //ja
 //removeIf(ja_lang_disabled)
 //use https://www.mobilefish.com/services/unicode_converter/unicode_converter.php
-var japanesetrans = {
+export const japanesetrans = {
 "ja":"&#26085;&#26412;&#35486;",
 "ESP3D for":"ESP3D for",
 "Value of auto-check must be between 0s and 99s !!":"&#12458;&#12540;&#12488;&#12481;&#12455;&#12483;&#12463;&#12398;&#20516;&#12399;0&#65374;99&#31186;&#12398;&#38291;&#12391;&#12354;&#12427;&#24517;&#35201;&#12364;&#12354;&#12426;&#12414;&#12377;&#65281;",

@@ -11,7 +11,7 @@
     "build:en": "gulp package -en",
     "build:bun": "bun build www/index.html --outdir dist",
     "serve": "python fluidnc-web-sim.py maslow.local",
-    "start": "bun run index.ts"
+    "start": "bun run --hot serve.ts"
   },
   "devDependencies": {
     "@happy-dom/global-registrator": "^15.11.0",

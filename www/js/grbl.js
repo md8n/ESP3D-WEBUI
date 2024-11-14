@@ -1,5 +1,8 @@
-// When we can change to proper ESM - uncomment this
-// import { sendCommand } from "./maslow";
+import { alertdlg } from "./alertdlg";
+import { sendCommand } from "./maslow";
+import { SendPrinterCommand } from "./printercmd";
+import { translate_text_item } from "./translate";
+
 
 var interval_status = -1
 var probe_progress_status = 0
@@ -479,9 +482,9 @@ function show_grbl_probe_status(probed) {
   grbl_set_probe_detected(probed)
 }
 
-function SendRealtimeCmd(code) {
-  var cmd = String.fromCharCode(code)
-  SendPrinterCommand(cmd, false, null, null, code, 1)
+export const SendRealtimeCmd = (code) => {
+  const cmd = String.fromCharCode(code);
+  SendPrinterCommand(cmd, false, null, null, code, 1);
 }
 
 function pauseGCode() {

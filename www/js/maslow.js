@@ -1,5 +1,6 @@
-// When we can change to proper ESM - uncomment this
-// import M from "constants";
+import { M } from "./constants";
+import { get_Position } from "./controls";
+import { SendPrinterCommand } from "./printercmd";
 
 /** Maslow Status */
 let maslowStatus = { homed: false, extended: false };
@@ -8,15 +9,14 @@ let maslowStatus = { homed: false, extended: false };
 let lastHeartBeatTime = new Date().getTime();
 
 const err = "error: ";
-// When we can change to proper ESM - prefix these const strings and functions with 'export' (minus the quotes of course)
-const MaslowErrMsgKeyValueCantUse = `${err}Could not use supplied key-value pair.`;
-const MaslowErrMsgNoKey = `${err}No key supplied for value.`;
-const MaslowErrMsgNoValue = `${err}No value supplied for key.`;
-const MaslowErrMsgNoMatchingKey = `${err}Could not find key for value in reference table.`;
-const MaslowErrMsgKeyValueSuffix = "This is probably a programming error\nKey-Value pair supplied was:";
+export const MaslowErrMsgKeyValueCantUse = `${err}Could not use supplied key-value pair.`;
+export const MaslowErrMsgNoKey = `${err}No key supplied for value.`;
+export const MaslowErrMsgNoValue = `${err}No value supplied for key.`;
+export const MaslowErrMsgNoMatchingKey = `${err}Could not find key for value in reference table.`;
+export const MaslowErrMsgKeyValueSuffix = "This is probably a programming error\nKey-Value pair supplied was:";
 
 /** Perform maslow specific-ish info message handling */
-const maslowInfoMsgHandling = (msg) => {
+export const maslowInfoMsgHandling = (msg) => {
     if (msg.startsWith('MINFO: ')) {
         maslowStatus = JSON.parse(msg.substring(7));
         return true;
@@ -37,7 +37,7 @@ const maslowInfoMsgHandling = (msg) => {
 }
 
 /** Perform maslow specific-ish error message handling */
-const maslowErrorMsgHandling = (msg) => {
+export const maslowErrorMsgHandling = (msg) => {
     if (!msg.startsWith("error:")) {
         // Nothing to see here - move along
         return "";
@@ -56,7 +56,7 @@ const maslowErrorMsgHandling = (msg) => {
 /** Handle Maslow specific configuration messages
  * These would have all started with `$/Maslow_` which is expected to have been stripped away before calling this function
  */
-const maslowMsgHandling = (msg) => {
+export const maslowMsgHandling = (msg) => {
     const keyValue = msg.split("=");
     const errMsgSuffix = `${MaslowErrMsgKeyValueSuffix}${msg}`;
     if (keyValue.length != 2) {
@@ -88,19 +88,19 @@ const maslowMsgHandling = (msg) => {
         "calibration_grid_height_mm_Y": (value) => stdAction("gridHeight", value),
         "Retract_Current_Threshold": (value) => stdAction("retractionForce", value),
         "vertical": (value) => stdAction("machineOrientation", value === "false" ? "horizontal" : "vertical"),
-        "trX": (value) => {initialGuess.tr.x = fullDimensionAction("machineWidth", value)},
-        "trY": (value) => {initialGuess.tr.y = fullDimensionAction("machineHeight", value)},
-        "trZ": (value) => {initialGuess.tr.z = stdDimensionAction(value)},
-        "tlX": (value) => {initialGuess.tl.x = stdDimensionAction(value)},
-        "tlY": (value) => {initialGuess.tl.y = stdDimensionAction(value)},
-        "tlZ": (value) => {initialGuess.tl.z = stdDimensionAction(value)},
-        "brX": (value) => {initialGuess.br.x = stdDimensionAction(value)},
+        "trX": (value) => { initialGuess.tr.x = fullDimensionAction("machineWidth", value) },
+        "trY": (value) => { initialGuess.tr.y = fullDimensionAction("machineHeight", value) },
+        "trZ": (value) => { initialGuess.tr.z = stdDimensionAction(value) },
+        "tlX": (value) => { initialGuess.tl.x = stdDimensionAction(value) },
+        "tlY": (value) => { initialGuess.tl.y = stdDimensionAction(value) },
+        "tlZ": (value) => { initialGuess.tl.z = stdDimensionAction(value) },
+        "brX": (value) => { initialGuess.br.x = stdDimensionAction(value) },
         "brY": (value) => nullAction(),
-        "brZ": (value) => {initialGuess.br.z = stdDimensionAction(value)},
+        "brZ": (value) => { initialGuess.br.z = stdDimensionAction(value) },
         "blX": (value) => nullAction(),
         "blY": (value) => nullAction(),
-        "blZ": (value) => {initialGuess.bl.z = stdDimensionAction(value)},
-        "Acceptable_Calibration_Threshold": (value) => {acceptableCalibrationThreshold = stdDimensionAction(value)},
+        "blZ": (value) => { initialGuess.bl.z = stdDimensionAction(value) },
+        "Acceptable_Calibration_Threshold": (value) => { acceptableCalibrationThreshold = stdDimensionAction(value) },
     }
     const action = msgExtra[key] || "";
     if (!action) {
@@ -112,7 +112,7 @@ const maslowMsgHandling = (msg) => {
     return "";
 }
 
-const checkHomed = () => {
+export const checkHomed = () => {
     if (!maslowStatus.homed) {
         const err_msg = `${M} does not know belt lengths. Please retract and extend before continuing.`;
         alert(err_msg);
@@ -129,15 +129,12 @@ const checkHomed = () => {
 /** Short hand convenience call to SendPrinterCommand with some preset values.
  * Uses the global function get_position, which is also a SendPrinterCommand with presets
  */
-const sendCommand = (cmd) => {
+export const sendCommand = (cmd) => {
     SendPrinterCommand(cmd, true, get_Position);
 }
 
-// The following functions are all defined as global functions, and are used by tablettab.html and other places
-// They rely on the global function SendPrinterCommand defined in printercmd.js
-
 /** Used to populate the config popup when it loads */
-function loadConfigValues() {
+export const loadConfigValues = () => {
     SendPrinterCommand(`$/${M}_vertical`);
     SendPrinterCommand(`$/${M}_calibration_grid_width_mm_X`);
     SendPrinterCommand(`$/${M}_calibration_grid_height_mm_Y`);
@@ -149,13 +146,16 @@ function loadConfigValues() {
 }
 
 /** Load all of the corner values */
-function loadCornerValues() {
+export const loadCornerValues = () => {
     SendPrinterCommand(`$/${M}_tlX`);
     SendPrinterCommand(`$/${M}_tlY`);
     SendPrinterCommand(`$/${M}_trX`);
     SendPrinterCommand(`$/${M}_trY`);
     SendPrinterCommand(`$/${M}_brX`);
 }
+
+// The following functions are all defined as global functions, and are used by tablettab.html and other places
+// They rely on the global function SendPrinterCommand defined in printercmd.js
 
 /** Save the Maslow configuration values */
 function saveConfigValues() {

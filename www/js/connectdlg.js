@@ -1,11 +1,19 @@
-//Connect dialog
-function connectdlg(getFw) {
+import { SendGetHttp } from "./http";
+import { setactiveModal, showModal } from "./modaldlg";
+import { conErr, displayBlock, displayNone } from "./util";
+
+/** Connect Dialog */
+export const connectdlg = (getFw) => {
     var modal = setactiveModal('connectdlg.html');
-    var get_FW = true;
-    if (modal == null) return;
+    if (modal == null) {
+        return;
+    }
     showModal();
-    if (typeof getFw != 'undefined') get_FW = getFw;
-    if (get_FW) retryconnect();
+
+    let get_FW = (typeof getFw != 'undefined') ? getFw : true;
+    if (get_FW) {
+        retryconnect();
+    }
 }
 
 function getFWdata(response) {

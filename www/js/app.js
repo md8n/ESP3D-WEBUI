@@ -1,3 +1,10 @@
+import { Monitor_output_Update } from "./commands";
+import { connectdlg } from "./connectdlg";
+import { esp_error_code, esp_error_message } from "./constants";
+import { displayBlock, displayNone } from "./util";
+import { tabletInit } from "./tablet";
+import { translate_text_item } from "./translate";
+
 var ESP3D_authentication = false
 var convertDHT2Fahrenheit = false
 var ws_source
@@ -31,8 +38,6 @@ var SETTINGS_FALLBACK_MODE = 3
 var interval_ping = -1
 var last_ping = 0
 var enable_ping = true
-var esp_error_message = ''
-var esp_error_code = 0
 
 function Init_events(e) {
   page_id = e.data

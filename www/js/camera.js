@@ -1,3 +1,5 @@
+import { displayBlock, displayNone } from "./util";
+
 function cameraformataddress() {
     var saddress = id('camera_webaddress').value;
     var saddressl = saddress.trim().toLowerCase();

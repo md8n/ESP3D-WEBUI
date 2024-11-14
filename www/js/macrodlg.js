@@ -1,3 +1,8 @@
+import { alertdlg } from "./alertdlg";
+import { setactiveModal, showModal } from "./modaldlg";
+import { translate_text_item } from "./translate";
+import { displayBlock, displayNone } from "./util";
+
 //Macro dialog
 var macrodlg_macrolist = [];
 

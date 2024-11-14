@@ -1,3 +1,5 @@
+import { translate_text_item } from "./translate";
+
 var http_communication_locked = false;
 var http_cmd_list = [];
 var processing_cmd = false;
@@ -80,7 +82,7 @@ function AddCmd(cmd_fn, id) {
     process_cmd();
 }
 
-function SendGetHttp(url, result_fn, error_fn, id, max_id) {
+export const SendGetHttp = (url, result_fn, error_fn, id, max_id) => {
     if ((http_cmd_list.length > max_cmd) && (max_cmd != -1)) {
         error_fn(999, translate_text_item("Server not responding"));
         return;

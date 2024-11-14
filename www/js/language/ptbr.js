@@ -1,6 +1,6 @@
 //removeIf(ptbr_lang_disabled)
 //Brazilian Portuguese
-var ptbrtrans = {
+export const ptbrtrans = {
 "pt-br":"Portugu&ecirc;s",
 "ESP3D for":"ESP3D para",
 "Value of auto-check must be between 0s and 99s !!":"O valor do auto-check deve estar entre 0s e 99s !!",

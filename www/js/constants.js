@@ -1,4 +1,6 @@
-// Selected constants that turn up in several files and/or between this project and FluidNC
+// Selected constants (and variables) that turn up in several files and/or between this project and FluidNC
 
-// When we can change to proper ESM - prefix this with 'export' (minus the quotes of course)
-const M = "Maslow";
+export const M = "Maslow";
+
+export let esp_error_message = '';
+export let esp_error_code = 0;

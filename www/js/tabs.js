@@ -1,3 +1,5 @@
+import { displayBlock } from "./util";
+
 function opentab(evt, tabname, tabcontentid, tablinkid) {
     var i, tabcontent, tablinks;
     tabcontent = classes("tabcontent");

@@ -1,3 +1,8 @@
+import { SendGetHttp } from "./http";
+import { setactiveModal, showModal } from "./modaldlg";
+import { translate_text_item } from "./translate";
+import { conErr, displayBlock, displayNone } from "./util";
+
 //changepassword dialog
 function changepassworddlg() {
     var modal = setactiveModal('passworddlg.html');

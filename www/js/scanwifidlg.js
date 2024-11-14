@@ -1,3 +1,8 @@
+import { SendGetHttp } from "./http";
+import { setactiveModal, showModal } from "./modaldlg";
+import { translate_text_item } from "./translate";
+import { conErr, displayBlock, displayNone } from "./util";
+
 var ssid_item_scanwifi = -1;
 var ssid_subitem_scanwifi = -1;
 //scanwifi dialog

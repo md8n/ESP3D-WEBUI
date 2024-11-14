@@ -1,3 +1,7 @@
+import { SendGetHttp } from "./http";
+import { translate_text_item } from "./translate";
+import { conErr, id } from "./util";
+
 var CustomCommand_history = [];
 var CustomCommand_history_index = -1;
 var Monitor_output = [];
@@ -23,7 +27,7 @@ function Monitor_output_Clear() {
     Monitor_output_Update();
 }
 
-function Monitor_output_Update(message) {
+export const Monitor_output_Update = (message) => {
     if (message) {
         if (typeof message === 'string' || message instanceof String) {
             Monitor_output = Monitor_output.concat(message);
@@ -39,7 +43,7 @@ function Monitor_output_Update(message) {
     }
 
     var output = "";
-    var isverbosefilter = id("monitor_enable_verbose_mode").checked;
+    var isverbosefilter = id("monitor_enable_verbose_mode")?.checked || false;
     for (var out of Monitor_output) {
         var outlc = out.trim();
 
@@ -78,12 +82,15 @@ function Monitor_output_Update(message) {
         }
         output += out;
     }
-    var old_output = id("cmd_content").innerHTML;
-    id("cmd_content").innerHTML = output;
-    // Do not autoscroll if the contents have not changed.
-    // This prevents scrolling on filtered-out status reports.
-    if (output != old_output) {
-        Monitor_check_autoscroll();
+    const cmdContElem = id("cmd_content");
+    if (cmdContElem) {
+        const old_output = cmdContElem.innerHTML;
+        cmdContElem.innerHTML = output;
+        // Do not autoscroll if the contents have not changed.
+        // This prevents scrolling on filtered-out status reports.
+        if (output != old_output) {
+            Monitor_check_autoscroll();
+        }
     }
 }
 
