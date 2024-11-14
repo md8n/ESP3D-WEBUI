@@ -279,38 +279,50 @@ function computeFurthestFromCenterOfMass(lines, lastGuess) {
   lines.forEach((line) => {
     const tweaks = generateTweaks(line);
 
-    tlX = tlX + tweaks.tlX;
-    tlY = tlY + tweaks.tly;
-    trX = trX + tweaks.trX;
-    trY = trY + tweaks.trY;
-    brX = brX + tweaks.brX;
+    tlX += tweaks.tlX;
+    tlY += tweaks.tly;
+    trX += tweaks.trX;
+    trY += tweaks.trY;
+    brX += tweaks.brX;
   })
 
-  tlX = tlX / lines.length;
-  tlY = tlY / lines.length;
-  trX = trX / lines.length;
-  trY = trY / lines.length;
-  brX = brX / lines.length;
+  tlX /= lines.length;
+  tlY /= lines.length;
+  trX /= lines.length;
+  trY /= lines.length;
+  brX /= lines.length;
 
-  const maxError = Math.max(Math.abs(tlX), Math.abs(tlY), Math.abs(trX), Math.abs(trY), Math.abs(brX));
+  const tlXAbs = Math.abs(tlX);
+  const tlyAbs = Math.abs(tlY);
+  const trXAbs = Math.abs(trX);
+  const tryAbs = Math.abs(trY);
+  const brXAbs = Math.abs(brX);
+  const maxError = Math.max(tlXAbs, tlyAbs, trXAbs, tryAbs, brXAbs);
 
   var scalor = -1;
-  if (maxError == Math.abs(tlX)) {
-    //console.log("Move tlX by: " + tlX/divisor);
-    lastGuess.tl.x = lastGuess.tl.x + tlX * scalor;
-  }
-  if (maxError == Math.abs(tlY)) {
-    //console.log("Move tlY by: " + tlY/divisor);
-    lastGuess.tl.y = lastGuess.tl.y + tlY * scalor;
-  } else if (maxError == Math.abs(trX)) {
-    //console.log("Move trX by: " + trX/divisor);
-    lastGuess.tr.x = lastGuess.tr.x + trX * scalor;
-  } else if (maxError == Math.abs(trY)) {
-    //console.log("Move trY by: " + trY/divisor);
-    lastGuess.tr.y = lastGuess.tr.y + trY * scalor;
-  } else if (maxError == Math.abs(brX)) {
-    //console.log("Move brX by: " + brX/divisor);
-    lastGuess.br.x = lastGuess.br.x + brX * scalor;
+  switch (maxError) {
+    case tlXAbs:
+      //console.log("Move tlX by: " + tlX/divisor);
+      lastGuess.tl.x = lastGuess.tl.x + tlX * scalor;
+      break;
+    case tlyAbs:
+      //console.log("Move tlY by: " + tlY/divisor);
+      lastGuess.tl.y = lastGuess.tl.y + tlY * scalor;
+      break;
+    case trXAbs:
+      //console.log("Move trX by: " + trX/divisor);
+      lastGuess.tr.x = lastGuess.tr.x + trX * scalor;
+      break;
+    case tryAbs:
+      //console.log("Move trY by: " + trY/divisor);
+      lastGuess.tr.y = lastGuess.tr.y + trY * scalor;
+      break;
+    case brXAbs:
+      //console.log("Move brX by: " + brX/divisor);
+      lastGuess.br.x = lastGuess.br.x + brX * scalor;
+      break;
+    default:
+    // Do nothing
   }
 
   return lastGuess;
