@@ -1,5 +1,6 @@
-import { language } from "./languages";
-import { setactiveModal, showModal } from "./modaldlg";
+import { get_icon_svg } from "./icons";
+import { build_language_list, language } from "./languages";
+import { closeModal, setactiveModal, showModal } from "./modaldlg";
 import { translate_text_item } from "./translate";
 import { displayBlock, displayNone } from "./util";
 
@@ -52,7 +53,7 @@ function endDiv() {
 
 function setupdlg() {
     setup_is_done = false;
-    language_save = language;
+    language_save = language();
     displayNone('main_ui');
     id('settings_list_data').innerHTML = "";
     active_wizard_page = 0;
@@ -93,9 +94,9 @@ function continue_setup_wizard() {
     switch (active_wizard_page) {
         case 1:
             enablestep1();
-            preferenceslist[0].language = language;
+            preferenceslist[0].language = language();
             SavePreferences(true);
-            language_save = language;
+            language_save = language();
             break;
         case 2:
             enablestep2();

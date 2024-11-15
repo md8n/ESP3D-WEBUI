@@ -37,7 +37,7 @@ var list_icon = {
     'M335 635l494 494q29 29 50 20.5t21 -49.5v-1000q0 -41 -21 -49.5t-50 20.5l-494 494q-14 14 -14 35t14 35z',
 }
 
-function get_icon_svg(name, w, h, color) {
+const get_icon_svg = (name, w, h, color) => {
   var content = ''
   if (typeof w == 'undefined') w = '1.3em'
   if (typeof h == 'undefined') h = '1.2em'
@@ -50,15 +50,11 @@ function get_icon_svg(name, w, h, color) {
     has_error = true
   }
   if (has_error) return ''
-  var icon =
-    "<svg width='" +
-    w +
-    "' height='" +
-    h +
-    "' viewBox='0 0 1300 1200'><g transform='translate(30,1200) scale(1, -1)'><path  fill='" +
-    color +
-    "' d='"
-  icon += content
-  icon += "'></path></g></svg>"
+  let icon =`<svg width='${w}' height='${h}' viewBox='0 0 1300 1200'>`
+  icon += "<g transform='translate(30,1200) scale(1, -1)'>";
+  icon += `<path  fill='${color}' d='${content}'></path>`
+  icon += "</g></svg>";
   return icon
 }
+
+export { get_icon_svg };

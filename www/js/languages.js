@@ -1,8 +1,12 @@
-export const defLanguage = 'en';
+const defLanguage = 'en';
+let selLanguage = defLanguage;
 /** The currently selected language code */
-export let language = defLanguage;
+const language = (value) => {
+    selLanguage = (typeof value !== "undefined") ? value : selLanguage || defLanguage;
+    return selLanguage;
+}
 
-export const language_list = [
+const language_list = [
 //removeIf(de_lang_disabled)
     ['de', 'Deutsch', 'germantrans'],
 //endRemoveIf(de_lang_disabled)
@@ -44,7 +48,7 @@ export const language_list = [
 //endRemoveIf(zh_cn_lang_disabled)
 ];
 
-export const build_language_list = (id_item) => {
+const build_language_list = (id_item) => {
     let content = [`<select class='form-control'  id='${id_item}' onchange='translate_text(this.value)'>`];
     for (let lang_i = 0; lang_i < language_list.length; lang_i++) {
         const isSelected = (language_list[lang_i][0] == language) ? "selected" : "";
@@ -53,3 +57,5 @@ export const build_language_list = (id_item) => {
     content.push("</select>");
     return content.join("\n");
 }
+
+export { build_language_list, language, language_list };

@@ -2,6 +2,7 @@ import { alertdlg } from "./alertdlg";
 import { Monitor_output_Update } from "./commands";
 import { esp_error_code, esp_error_message } from "./constants";
 import { SendGetHttp } from "./http";
+import { get_icon_svg } from "./icons";
 import { SendPrinterCommand } from "./printercmd";
 import { translate_text_item } from "./translate";
 import { displayBlock, displayNone, id } from "./util";

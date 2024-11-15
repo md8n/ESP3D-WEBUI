@@ -1,4 +1,4 @@
-import { setactiveModal, showModal } from "./modaldlg";
+import { closeModal, setactiveModal, showModal } from "./modaldlg";
 
 //alert dialog
 export const alertdlg = (titledlg, textdlg, closefunc) => {
@@ -6,6 +6,9 @@ export const alertdlg = (titledlg, textdlg, closefunc) => {
     if (modal == null) {
         return;
     }
+
+    const btnElem = id("closeAlertDlg");
+    btnElem.addEventListener("click", (event) => closeModal('Ok'));
 
     var title = modal.element.getElementsByClassName("modal-title")[0];
     var body = modal.element.getElementsByClassName("modal-text")[0];

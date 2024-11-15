@@ -1,5 +1,5 @@
 /** Get the element identified with the supplied name */
-export const id = (name) => document.getElementById(name);
+const id = (name) => document.getElementById(name);
 
 // The return value from class(name) can be use with forEach()
 function classes(name) {
@@ -34,10 +34,15 @@ const setDisplay = (name, val) => {
 }
 
 /** Set the display style of the element identified by name to 'none' */
-export const displayNone = (name) => setDisplay(name, 'none');
+const displayNone = (name) => setDisplay(name, 'none');
 
 /** Set the display style of the element identified by name to 'none' */
-export const displayBlock = (name) => setDisplay(name, 'block');
+const displayBlock = (name) => setDisplay(name, 'block');
+
+const disable_items = (item, state) => {
+  const liste = item.getElementsByTagName('*');
+  for (let i = 0; i < liste.length; i++) liste[i].disabled = state;
+}
 
 function displayFlex(name) {
   setDisplay(name, 'flex')
@@ -80,9 +85,11 @@ const stdErrMsg = (error_code, response = "", error_prefix = "Error") => `${erro
  * If the response message is falsey, and the error_prefix is the default, we assume that we've been supplied with a stdErrMsg
  * Otherwise, we build a stdErrMsg with what was supplied
  */
-export const conErr = (error_code, response, error_prefix = "Error") => {
+const conErr = (error_code, response, error_prefix = "Error") => {
   const errMsg = (!response && error_prefix === "Error")
       ? error_code
       : stdErrMsg(error_code, response || "", error_prefix);
   console.error(errMsg);
 }
+
+export { conErr, disable_items, displayBlock, displayNone, id };

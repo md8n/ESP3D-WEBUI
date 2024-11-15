@@ -8,7 +8,7 @@ var page_id = ""
 
 var max_cmd = 20;
 
-function clear_cmd_list() {
+const clear_cmd_list = () => {
     http_cmd_list = [];
     processing_cmd = false;
 }
@@ -82,7 +82,7 @@ function AddCmd(cmd_fn, id) {
     process_cmd();
 }
 
-export const SendGetHttp = (url, result_fn, error_fn, id, max_id) => {
+const SendGetHttp = (url, result_fn, error_fn, id, max_id) => {
     if ((http_cmd_list.length > max_cmd) && (max_cmd != -1)) {
         error_fn(999, translate_text_item("Server not responding"));
         return;
@@ -224,12 +224,6 @@ function SendFileHttp(url, postdata, progress_fn, result_fn, error_fn) {
     process_cmd();
 }
 
-function CancelCurrentUpload() {
-    xmlhttpupload.abort();
-    //http_communication_locked = false;
-    console.log("Cancel Upload");
-}
-
 function ProcessFileHttp(url, postdata, progressfn, resultfn, errorfn) {
     if (http_communication_locked) {
         errorfn(503, translate_text_item("Communication locked!"));
@@ -253,3 +247,5 @@ function ProcessFileHttp(url, postdata, progressfn, resultfn, errorfn) {
     if (typeof progressfn != 'undefined' && progressfn != null) xmlhttpupload.upload.addEventListener("progress", progressfn, false);
     xmlhttpupload.send(postdata);
 }
+
+export { clear_cmd_list, SendGetHttp };

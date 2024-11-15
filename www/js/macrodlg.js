@@ -1,5 +1,6 @@
 import { alertdlg } from "./alertdlg";
-import { setactiveModal, showModal } from "./modaldlg";
+import { get_icon_svg } from "./icons";
+import { closeModal, setactiveModal, showModal } from "./modaldlg";
 import { translate_text_item } from "./translate";
 import { displayBlock, displayNone } from "./util";
 

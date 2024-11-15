@@ -1,3 +1,4 @@
+import { decode_entitie } from "./translate";
 import { displayBlock, displayNone } from "./util";
 
 function cameraformataddress() {

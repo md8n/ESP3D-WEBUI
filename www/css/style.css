@@ -10,22 +10,35 @@ label {
     margin-right: 0.5rem;
     margin-left: 0.2rem;
 }
+
+.center {
+    text-align: center;
+}
+
+button.center {
+    display: block;
+    margin: auto;
+}
+
 .filesize {
-  text-align: right;
+    text-align: right;
 }
 
 .report input[type="radio"] {
-  margin-left: 1rem;
+    margin-left: 1rem;
 }
+
 .form_control {
     height: 34px !important;
 }
-.fixedbutton{
+
+.fixedbutton {
     width: 8em !important;
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
 }
+
 .input-min {
     min-width: 8em;
 }
@@ -376,7 +389,7 @@ w25 {
 }
 
 
-@media (min-width: 800px) and (max-width: 1350px){
+@media (min-width: 800px) and (max-width: 1350px) {
     .fixedbutton {
         width: 6em !important;
     }

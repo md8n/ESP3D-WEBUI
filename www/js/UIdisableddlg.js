@@ -2,7 +2,7 @@ import { setactiveModal, showModal } from "./modaldlg";
 import { translate_text_item } from "./translate";
 
 //UIdisabled dialog
-function UIdisableddlg(lostcon) {
+export const UIdisableddlg = (lostcon) => {
     var modal = setactiveModal('UIdisableddlg.html');
     if (modal == null) return;
     if (lostcon) {

@@ -1,4 +1,4 @@
-import { setactiveModal, showModal } from "./modaldlg";
+import { closeModal, setactiveModal, showModal } from "./modaldlg";
 
 //input dialog
 function inputdlg(titledlg, textdlg, closefunc, preset) {

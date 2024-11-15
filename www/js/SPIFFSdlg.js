@@ -1,7 +1,8 @@
 import { alertdlg } from "./alertdlg";
 import { esp_error_code, esp_error_message } from "./constants";
 import { SendGetHttp } from "./http";
-import { setactiveModal, showModal } from "./modaldlg";
+import { get_icon_svg } from "./icons";
+import { closeModal, setactiveModal, showModal } from "./modaldlg";
 import { translate_text_item } from "./translate";
 import { conErr, displayBlock, displayNone } from "./util";
 

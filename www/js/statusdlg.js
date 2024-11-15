@@ -1,5 +1,6 @@
 import { SendGetHttp } from "./http";
-import { setactiveModal, showModal } from "./modaldlg";
+import { get_icon_svg } from "./icons";
+import { getactiveModal, setactiveModal, showModal } from "./modaldlg";
 import { translate_text_item } from "./translate";
 import { conErr, displayBlock, displayNone } from "./util";
 

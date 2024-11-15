@@ -45,6 +45,15 @@ import { zh_CN_trans } from "./language/zh_CN";
 var translated_list = [];
 //endRemoveIf(production)
 
+
+const decode_entitie = (str_text) => {
+    var tmpelement = document.createElement('div')
+    tmpelement.innerHTML = str_text
+    str_text = tmpelement.textContent
+    tmpelement.textContent = ''
+    return str_text
+}
+
 function translate_text(lang) {
     var currenttrans = {};
     var translated_content = "";
@@ -97,13 +106,13 @@ function translate_text(lang) {
 };
 
 /** Translate the supplied item_text, putting it into a `<span>` tag if required */
-export const translate_text_item = (item_text, withtag) => {
+const translate_text_item = (item_text, withtag) => {
     var currenttrans = {};
     var translated_content;
     const with_tag = (typeof withtag != "undefined") ? !!withtag : false;
 
     for (var lang_i = 0; lang_i < language_list.length; lang_i++) {
-        if (language_list[lang_i][0] == language) {
+        if (language_list[lang_i][0] == language()) {
             currenttrans = eval(language_list[lang_i][2]);
         }
     }
@@ -117,3 +126,5 @@ export const translate_text_item = (item_text, withtag) => {
 
     return translated_content;
 }
+
+export { decode_entitie, translate_text_item };

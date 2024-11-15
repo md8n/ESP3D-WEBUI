@@ -1,13 +1,19 @@
+import { grblaxis } from "./grbl";
 import { SendGetHttp } from "./http";
-import { setactiveModal, showModal } from "./modaldlg";
-import { conErr, displayBlock, displayNone } from "./util";
+import { closeModal, setactiveModal, showModal } from "./modaldlg";
+import { async_webcommunication, EventListenerSetup, startSocket } from "./socket";
+import { conErr, displayBlock, displayNone, id } from "./util";
 
 /** Connect Dialog */
-export const connectdlg = (getFw) => {
+const connectdlg = (getFw) => {
     var modal = setactiveModal('connectdlg.html');
     if (modal == null) {
         return;
     }
+
+    const btnElem = id("connectbtn");
+    btnElem.addEventListener("click", (event) => retryconnect());
+
     showModal();
 
     let get_FW = (typeof getFw != 'undefined') ? getFw : true;
@@ -16,7 +22,7 @@ export const connectdlg = (getFw) => {
     }
 }
 
-function getFWdata(response) {
+const getFWdata = (response) => {
     var tlist = response.split("#");
     //FW version:0.9.200 # FW target:smoothieware # FW HW:Direct SD # primary sd:/ext/ # secondary sd:/sd/ # authentication: yes
     if (tlist.length < 3) {
@@ -66,15 +72,15 @@ function getFWdata(response) {
     //async communications
     if (tlist.length > 6) {
         sublist = tlist[6].split(":");
-        if ((sublist[0].trim() == "webcommunication") && (sublist[1].trim() == "Async")) async_webcommunication = true;
+        if ((sublist[0].trim() == "webcommunication") && (sublist[1].trim() == "Async")) async_webcommunication(true);
         else {
-            async_webcommunication = false;
+            async_webcommunication(false);
             websocket_port = sublist[2].trim();
-            if (sublist.length>3) {
+            if (sublist.length > 3) {
                 websocket_ip = sublist[3].trim();
             } else {
                 console.log("No IP for websocket, use default");
-                 websocket_ip =  document.location.hostname;
+                websocket_ip = document.location.hostname;
             }
         }
     }
@@ -82,28 +88,28 @@ function getFWdata(response) {
         sublist = tlist[7].split(":");
         if (sublist[0].trim() == "hostname") esp_hostname = sublist[1].trim();
     }
-    
+
     if (tlist.length > 8) {
         sublist = tlist[8].split(":");
         if (sublist[0].trim() == "axis") {
-            grblaxis = parseInt(sublist[1].trim());
+            grblaxis(parseInt(sublist[1].trim()));
         }
     }
-    
-    if (async_webcommunication) {
-        if (!!window.EventSource) {
-            event_source = new EventSource('/events');
-            event_source.addEventListener('InitID', Init_events, false);
-            event_source.addEventListener('ActiveID', ActiveID_events, false);
-            event_source.addEventListener('DHT', DHT_events, false);
-        }
-    }
+
+    EventListenerSetup();
     startSocket();
 
     return true;
 }
 
-function connectsuccess(response) {
+const connectfailed = (error_code, response) => {
+    displayBlock('connectbtn');
+    displayBlock('failed_connect_msg');
+    displayNone('connecting_msg');
+    conErr(error_code, response, "Fw identification error");
+}
+
+const connectsuccess = (response) => {
     if (getFWdata(response)) {
         console.log("Fw identification:" + response);
         if (ESP3D_authentication) {
@@ -120,17 +126,12 @@ function connectsuccess(response) {
     }
 }
 
-function connectfailed(error_code, response) {
-    displayBlock('connectbtn');
-    displayBlock('failed_connect_msg');
-    displayNone('connecting_msg');
-    conErr(error_code, response, "Fw identification error");
-}
-
-function retryconnect() {
+const retryconnect = () => {
     displayNone('connectbtn');
     displayNone('failed_connect_msg');
     displayBlock('connecting_msg');
     var url = "/command?plain=" + encodeURIComponent("[ESP800]");;
     SendGetHttp(url, connectsuccess, connectfailed)
 }
+
+export { connectdlg };

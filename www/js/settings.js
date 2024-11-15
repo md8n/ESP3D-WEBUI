@@ -1,6 +1,7 @@
 import { alertdlg } from "./alertdlg";
 import { M } from "./constants";
 import { SendGetHttp } from "./http";
+import { get_icon_svg } from "./icons";
 import { translate_text_item } from "./translate";
 import { conErr, displayBlock, displayNone } from "./util";
 

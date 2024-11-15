@@ -1,6 +1,6 @@
 import { Monitor_output_Update } from "./commands";
 import { SendGetHttp } from "./http";
-import { translate_text_item } from "./translate";
+import { decode_entitie, translate_text_item } from "./translate";
 import { conErr } from "./util";
 
 var grbl_processfn = null;

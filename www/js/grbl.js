@@ -1,4 +1,5 @@
 import { alertdlg } from "./alertdlg";
+import { get_icon_svg } from "./icons";
 import { sendCommand } from "./maslow";
 import { SendPrinterCommand } from "./printercmd";
 import { translate_text_item } from "./translate";
@@ -11,7 +12,6 @@ var WCO = undefined
 var OVR = { feed: undefined, rapid: undefined, spindle: undefined }
 var MPOS = [0, 0, 0]
 var WPOS = [0, 0, 0]
-var grblaxis = 3
 var grblzerocmd = 'X0 Y0 Z0'
 var feedrate = [0, 0, 0, 0, 0, 0]
 var last_axis_letter = 'Z'
@@ -21,6 +21,15 @@ var axisNames = ['x', 'y', 'z', 'a', 'b', 'c']
 var modal = { modes: '', plane: 'G17', units: 'G21', wcs: 'G54', distance: 'G90' }
 
 let calibrationResults = {}
+
+let grblAxisCount = 3;
+const grblaxis = (value) => {
+  const axisCount = parseInt(value || "");
+  if (!isNaN(axisCount)) {
+    grblAxisCount = axisCount;
+  }
+  return grblAxisCount;
+}
 
 function setClickability(element, visible) {
   setDisplay(element, visible ? 'table-row' : 'none')
@@ -36,7 +45,7 @@ function setAutocheck(flag) {
 
 function build_axis_selection() {
   var html = "<select class='form-control wauto' id='control_select_axis' onchange='control_changeaxis()' >"
-  for (var i = 3; i <= grblaxis; i++) {
+  for (var i = 3; i <= grblaxis(); i++) {
     var letter
     if (i == 3) letter = 'Z'
     else if (i == 4) letter = 'A'
@@ -50,7 +59,7 @@ function build_axis_selection() {
   }
 
   html += '</select>\n'
-  if (grblaxis > 3) {
+  if (grblaxis() > 3) {
     setHTML('axis_selection', html)
     setHTML('axis_label', translate_text_item('Axis') + ':')
     setClickability('axis_selection', true)
@@ -239,7 +248,7 @@ function disableAutoReport() {
   setChecked('report_auto', false)
 }
 
-function reportNone() {
+const reportNone = () => {
   switch (reportType) {
     case 'polled':
       disablePolling()
@@ -627,7 +636,7 @@ async function handleCalibrationData(measurements) {
   }
 }
 
-function grblHandleMessage(msg) {
+const grblHandleMessage = (msg) => {
   tabletShowMessage(msg, collecting)
 
   // We handle these two before collecting data because they can be
@@ -786,3 +795,5 @@ function setSpindleSpeed(speed) {
     )
   }
 }
+
+export { grblaxis, grblHandleMessage, reportNone };

@@ -1,5 +1,7 @@
 import { alertdlg } from "./alertdlg";
+import { grblaxis } from "./grbl";
 import { SendGetHttp } from "./http";
+import { get_icon_svg } from "./icons";
 import { SendPrinterCommand } from "./printercmd";
 import { translate_text_item } from "./translate";
 import { conErr, displayBlock, displayNone } from "./util";
@@ -48,7 +50,7 @@ function Macro_build_list(response_text) {
     }
     for (var i = 0; i < 9; i++) {
         var entry;
-        if ((response.length != 0) && (typeof(response[i].name) !== 'undefined' && typeof(response[i].glyph) !== 'undefined' && typeof(response[i].filename) !== 'undefined' && typeof(response[i].target) !== 'undefined' && typeof(response[i].class) !== 'undefined' && typeof(response[i].index) !== 'undefined')) {
+        if ((response.length != 0) && (typeof (response[i].name) !== 'undefined' && typeof (response[i].glyph) !== 'undefined' && typeof (response[i].filename) !== 'undefined' && typeof (response[i].target) !== 'undefined' && typeof (response[i].class) !== 'undefined' && typeof (response[i].index) !== 'undefined')) {
             entry = {
                 name: response[i].name,
                 glyph: response[i].glyph,
@@ -82,13 +84,13 @@ function processMacroGetFailed(error_code, response) {
     Macro_build_list("");
 }
 
-function on_autocheck_position(use_value) {
-    if (typeof(use_value) !== 'undefined') id('autocheck_position').checked = use_value;
+const on_autocheck_position = (use_value) => {
+    if (typeof (use_value) !== 'undefined') id('autocheck_position').checked = use_value;
     if (id('autocheck_position').checked) {
         var interval = parseInt(id('posInterval_check').value);
         if (!isNaN(interval) && interval > 0 && interval < 100) {
             if (interval_position != -1) clearInterval(interval_position);
-            interval_position = setInterval(function() {
+            interval_position = setInterval(function () {
                 get_Position()
             }, interval * 1000);
         } else {
@@ -115,7 +117,7 @@ function onPosIntervalChange() {
     }
 }
 
-export const get_Position = () => SendPrinterCommand("?", false, null, null, 114, 1);
+const get_Position = () => SendPrinterCommand("?", false, null, null, 114, 1);
 
 function Control_get_position_value(label, result_data) {
     var result = "";
@@ -152,7 +154,7 @@ function SendHomecommand(cmd) {
             break;
 
         case 'G28 Z0':
-            if (grblaxis > 3) {
+            if (grblaxis() > 3) {
                 cmd = '$H' + id('control_select_axis').value;
             } else cmd = '$HZ';
             break;
@@ -194,13 +196,13 @@ function SendJogcommand(cmd, feedrate) {
         feedratevalue = parseInt(id('control_z_velocity').value);
         if (feedratevalue < 1 || isNaN(feedratevalue) || (feedratevalue === null)) {
             var letter = "Z";
-            if (grblaxis > 3) letter = "Axis";
-            alertdlg(translate_text_item("Out of range"), translate_text_item( letter +" Feedrate value must be at least 1 mm/min!"));
+            if (grblaxis() > 3) letter = "Axis";
+            alertdlg(translate_text_item("Out of range"), translate_text_item(letter + " Feedrate value must be at least 1 mm/min!"));
             id('control_z_velocity').value = preferenceslist[0].z_feedrate;
             return;
         }
     }
-    if(grblaxis > 3){
+    if (grblaxis() > 3) {
         var letter = id('control_select_axis').value;
         cmd = cmd.replace("Z", letter);
     }
@@ -289,3 +291,5 @@ function macro_command(target, filename) {
     //console.log(cmd);
     SendPrinterCommand(cmd);
 }
+
+export { get_Position, on_autocheck_position };

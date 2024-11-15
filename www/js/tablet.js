@@ -729,7 +729,7 @@ function tabletGetFileList(path) {
   SendGetHttp('/upload?path=' + encodeURI(path), files_list_success);
 }
 
-export const tabletInit = () => {
+const tabletInit = () => {
   // put in a timeout to allow things to settle. when they were here at startup ui froze from time to time.
   setTimeout(() => {
     // get grbl status
@@ -1179,8 +1179,6 @@ function hideModal(modalId) {
   }
 }
 
-
-
 const onCalibrationButtonsClick = async (command, msg) => {
   sendCommand(command)
 
@@ -1198,4 +1196,5 @@ const onCalibrationButtonsClick = async (command, msg) => {
   }
 }
 
+export { tabletInit };
 /* Calibration modal END */

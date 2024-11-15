@@ -1,5 +1,6 @@
 import { SendGetHttp } from "./http";
-import { translate_text_item } from "./translate";
+import { process_socket_response } from "./socket";
+import { decode_entitie, translate_text_item } from "./translate";
 import { conErr, id } from "./util";
 
 var CustomCommand_history = [];
