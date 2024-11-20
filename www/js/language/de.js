@@ -46,7 +46,7 @@ export const germantrans = {
 "Controls":"Steuerung",
 "Credits":"Credits",
 "Dashboard":"Dashboard",
-"Data mofified":"Daten ge&auml;ndert",
+"Data modified":"Daten ge&auml;ndert",
 "Do you want to save?":"M&ouml;chten Sie speichern?",
 "Enable second extruder controls":"Zweiten Extruder aktivieren",
 "Error":"Fehler",

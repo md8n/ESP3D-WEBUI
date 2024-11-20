@@ -1,15 +1,22 @@
 import { alertdlg } from "./alertdlg";
+import { confirmdlg } from "./confirmdlg";
 import { M } from "./constants";
-import { SendGetHttp } from "./http";
+import { calibrationResults } from "./grbl";
+import { http_communication_locked, SendGetHttp } from "./http";
 import { get_icon_svg } from "./icons";
 import { translate_text_item } from "./translate";
-import { conErr, displayBlock, displayNone } from "./util";
+import { conErr, displayBlock, displayNone, id, setChecked } from "./util";
 
 var scl = [] // setting_configList
 var setting_error_msg = ''
 var setting_lasti = -1
 var setting_lastj = -1
-var current_setting_filter = 'nvs'
+
+let currentSettingFilter = 'nvs';
+const current_setting_filter = (value) => {
+  currentSettingFilter = (typeof value === "string") ? value : currentSettingFilter || "nvs";
+  return currentSettingFilter;
+}
 var setup_is_done = false
 var do_not_build_settings = false
 const CONFIG_TOOLTIPS = {
@@ -37,7 +44,7 @@ const CONFIG_TOOLTIPS = {
 }
 
 function refreshSettings(hide_setting_list) {
-  if (http_communication_locked) {
+  if (http_communication_locked()) {
     id('config_status').innerHTML = translate_text_item('Communication locked by another process, retry later.')
     return
   }
@@ -203,7 +210,7 @@ function saveMaslowYaml() {
   SendGetHttp('/command?plain=' + encodeURIComponent("$CO"));
 }
 
-function build_HTML_setting_list(filter) {
+const build_HTML_setting_list = (filter) => {
   //this to prevent concurrent process to update after we clean content
   if (do_not_build_settings) {
     return;
@@ -218,8 +225,8 @@ function build_HTML_setting_list(filter) {
     <td><button type="button" class="btn btn-success" onclick="saveMaslowYaml();">Save</button></td>
     </tr>`;
   }
-  current_setting_filter = filter;
-  id(current_setting_filter + '_setting_filter').checked = true;
+  current_setting_filter(filter);
+  setChecked(`${current_setting_filter()}_setting_filter`, true);
 
   for (var i = 0; i < scl.length; i++) {
     fname = scl[i].F.trim().toLowerCase();
@@ -316,7 +323,7 @@ function process_settings_answer(response_text) {
           vi = create_setting_entry(response.EEPROM[i], vi)
         }
         if (vi > 0) {
-          if (setup_is_done) build_HTML_setting_list(current_setting_filter)
+          if (setup_is_done) build_HTML_setting_list(current_setting_filter())
           update_UI_setting()
         } else result = false
       } else result = false
@@ -588,3 +595,5 @@ function define_esp_role(index) {
 function define_esp_role_from_pos(pos) {
   define_esp_role(get_index_from_eeprom_pos(pos))
 }
+
+export { build_HTML_setting_list, current_setting_filter };

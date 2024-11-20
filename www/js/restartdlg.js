@@ -1,3 +1,4 @@
+import { http_communication_locked } from "./http";
 import { closeModal, setactiveModal, showModal } from "./modaldlg";
 import { SendPrinterCommand } from "./printercmd";
 import { translate_text_item } from "./translate";
@@ -18,7 +19,7 @@ function restart_esp_success(response) {
     var i = 0;
     var interval;
     var x = id("prgrestart");
-    http_communication_locked = true;
+    http_communication_locked(true);
     x.max = 10;
     interval = setInterval(function() {
         last_ping = Date.now();

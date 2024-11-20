@@ -16,14 +16,14 @@
                     <span>
                         <input type="radio" id="report_auto" name="status_report" value="auto" onchange="onReportType(this)" />
                         <label for="report_auto" translate>Auto</label>
-                        <input class="w4" type="number" min="50" max="30000" id="autoReportInterval" value=50 onchange="onAutoReportIntervalChange()" />
-                        <label for="autoReportInterval" translate>ms</label>
+                        <input class="w4" type="number" min="50" max="30000" id="autoreport_interval" value=50 onchange="onAutoReportIntervalChange()" />
+                        <label for="autoreport_interval" translate>ms</label>
                     </span>
                     <span>
                         <input type="radio" id="report_poll" name="status_report" value="poll" onchange="onReportType(this)" />
                         <label for="report_poll" translate>Poll</label>
-                        <input class="w4" type="number" min="0.1" max="99" id="statusInterval_check" value=3 onchange="onstatusIntervalChange()" />
-                        <label for="statusInterval_check" translate>sec</label>
+                        <input class="w4" type="number" min="0.1" max="99" id="interval_status" value=3 onchange="onstatusIntervalChange()" />
+                        <label for="interval_status" translate>sec</label>
                     </span>
                 </div>
             </div>
@@ -110,13 +110,13 @@
             </table>
             <br>
             <div class="tab" id="grbluitablinks">
-                <button class="tablinks" onclick="opentab(event, 'grblcontroltab', 'grbluitabscontent', 'grbluitablinks')" id="grblcontroltablink">
+                <button class="tablinks" id="grblcontroltablink">
                     <span translate>Override</span>
                 </button>
-                <button class="tablinks" onclick="opentab(event, 'grblspindletab', 'grbluitabscontent', 'grbluitablinks')" id="grblspindletablink">
+                <button class="tablinks" id="grblspindletablink">
                     <span translate>Spindle</span>
                 </button>
-                <button class="tablinks hide_it" onclick="opentab(event, 'grblprobetab', 'grbluitabscontent', 'grbluitablinks')" id="grblprobetablink">
+                <button class="tablinks hide_it" id="grblprobetablink">
                     <span translate>Probe</span>
                 </button>
             </div>

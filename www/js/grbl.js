@@ -3,6 +3,7 @@ import { get_icon_svg } from "./icons";
 import { sendCommand } from "./maslow";
 import { SendPrinterCommand } from "./printercmd";
 import { translate_text_item } from "./translate";
+import { getValue, id, setChecked } from "./util";
 
 
 var interval_status = -1
@@ -20,7 +21,7 @@ var axisNames = ['x', 'y', 'z', 'a', 'b', 'c']
 
 var modal = { modes: '', plane: 'G17', units: 'G21', wcs: 'G54', distance: 'G90' }
 
-let calibrationResults = {}
+let calibrationResults = {};
 
 let grblAxisCount = 3;
 const grblaxis = (value) => {
@@ -73,32 +74,32 @@ function control_changeaxis() {
   setHTML('homeZlabel', ' ' + letter + ' ')
   switch (last_axis_letter) {
     case 'Z':
-      axis_feedrate[2] = getValue('control_z_velocity')
+      axis_feedrate[2] = getValue('z_feedrate')
       break
     case 'A':
-      axis_feedrate[3] = getValue('control_a_velocity')
+      axis_feedrate[3] = getValue('a_feedrate')
       break
     case 'B':
-      axis_feedrate[4] = getValue('control_b_velocity')
+      axis_feedrate[4] = getValue('b_feedrate')
       break
     case 'C':
-      axis_feedrate[5] = getValue('control_c_velocity')
+      axis_feedrate[5] = getValue('c_feedrate')
       break
   }
 
   last_axis_letter = letter
   switch (last_axis_letter) {
     case 'Z':
-      setValue('control_z_velocity', axis_feedrate[2])
+      setValue('z_feedrate', axis_feedrate[2])
       break
     case 'A':
-      setValue('control_a_velocity', axis_feedrate[3])
+      setValue('a_feedrate', axis_feedrate[3])
       break
     case 'B':
-      setValue('control_b_velocity', axis_feedrate[4])
+      setValue('b_feedrate', axis_feedrate[4])
       break
     case 'C':
-      setValue('control_c_velocity', axis_feedrate[5])
+      setValue('c_feedrate', axis_feedrate[5])
       break
   }
 }
@@ -172,7 +173,7 @@ var reportType = 'none'
 
 function disablePolling() {
   setAutocheck(false)
-  // setValue('statusInterval_check', 0);
+  // setValue('interval_status', 0);
   if (interval_status != -1) {
     clearInterval(interval_status)
     interval_status = -1
@@ -183,7 +184,7 @@ function disablePolling() {
 }
 
 function enablePolling() {
-  var interval = parseFloat(getValue('statusInterval_check'))
+  var interval = parseFloat(getValue('interval_status'))
   if (!isNaN(interval) && interval == 0) {
     if (interval_status != -1) {
       clearInterval(interval_status)
@@ -203,7 +204,7 @@ function enablePolling() {
     setChecked('report_poll', true)
     return
   }
-  setValue('statusInterval_check', 0)
+  setValue('interval_status', 0)
   alertdlg(
     translate_text_item('Out of range'),
     translate_text_item('Value of auto-check must be between 0s and 99s !!')
@@ -217,7 +218,7 @@ function tryAutoReport() {
     disablePolling()
   }
   reportType == 'auto'
-  var interval = id('autoReportInterval').value
+  var interval = getValue('autoreport_interval')
   if (interval == 0) {
     enablePolling()
     return
@@ -796,4 +797,4 @@ function setSpindleSpeed(speed) {
   }
 }
 
-export { grblaxis, grblHandleMessage, reportNone };
+export { calibrationResults, grblaxis, grblHandleMessage, onAutoReportIntervalChange, reportNone };

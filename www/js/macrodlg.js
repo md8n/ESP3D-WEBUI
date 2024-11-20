@@ -1,15 +1,26 @@
 import { alertdlg } from "./alertdlg";
+import { confirmdlg } from "./confirmdlg";
+import { clear_drop_menu } from "./dropmenu";
+import { http_communication_locked } from "./http";
 import { get_icon_svg } from "./icons";
 import { closeModal, setactiveModal, showModal } from "./modaldlg";
 import { translate_text_item } from "./translate";
-import { displayBlock, displayNone } from "./util";
+import { displayBlock, displayNone, id } from "./util";
 
 //Macro dialog
 var macrodlg_macrolist = [];
 
 function showmacrodlg(closefn) {
     var modal = setactiveModal('macrodlg.html', closefn);
-    if (modal == null) return;
+    if (modal == null) {
+        return;
+    }
+
+    id("macrodlg.html").addEventListener("click", (event) => clear_drop_menu(event));
+    id("MacroDialogClose").addEventListener("click", (event) => closeMacroDialog());
+    id("MacroDialogCancel").addEventListener("click", (event) => closeMacroDialog());
+    id("MacroDialogSave").addEventListener("click", (event) => SaveNewMacroList());
+
     build_dlg_macrolist_ui();
     displayNone('macrodlg_upload_msg');
     showModal();
@@ -219,16 +230,20 @@ function macro_select_glyph(event, glyph, index) {
     build_dlg_macrolist_line(index)
 }
 
-function closeMacroDialog() {
-    var modified = false;
-    for (var i = 0; i < 9; i++) {
-        if ((macrodlg_macrolist[i].filename !== control_macrolist[i].filename) || (macrodlg_macrolist[i].name !== control_macrolist[i].name) || (macrodlg_macrolist[i].glyph !== control_macrolist[i].glyph) || (macrodlg_macrolist[i].class !== control_macrolist[i].class) || (macrodlg_macrolist[i].target !== control_macrolist[i].target)) {
-            modified = true;
+const closeMacroDialog = () => {
+    let modified = false;
+    const fieldsTest = ["filename", "name", "glyph", "class", "target"];
+    for (let i = 0; i < 9; i++) {
+        if (fieldsTest.some((fieldName) => macrodlg_macrolist[i][fieldName] !== control_macrolist[i][fieldName])) {
+            modified =true;
+            break;
         }
     }
     if (modified) {
-        confirmdlg(translate_text_item("Data mofified"), translate_text_item("Do you want to save?"), process_macroCloseDialog)
-    } else closeModal('cancel');
+        confirmdlg(translate_text_item("Data modified"), translate_text_item("Do you want to save?"), process_macroCloseDialog);
+    } else {
+        closeModal('cancel');
+    }
 }
 
 function process_macroCloseDialog(answer) {
@@ -242,7 +257,7 @@ function process_macroCloseDialog(answer) {
 }
 
 function SaveNewMacroList() {
-    if (http_communication_locked) {
+    if (http_communication_locked()) {
         alertdlg(translate_text_item("Busy..."), translate_text_item("Communications are currently locked, please wait and retry."));
         return;
     }

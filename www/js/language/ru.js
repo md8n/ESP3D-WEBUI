@@ -46,7 +46,7 @@ export const russiantrans = {
 "Controls": "Управление",
 "Credits": "Благодарности",
 "Dashboard": "Панель управления",
-"Data mofified": "Данные изменены",
+"Data modified": "Данные изменены",
 "Do you want to save?": "Сохранить?",
 "Enable second extruder controls": "Включить управление вторым экструдером",
 "Error": "Ошибка",

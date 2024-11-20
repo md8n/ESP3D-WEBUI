@@ -1,4 +1,4 @@
-import { displayBlock } from "./util";
+import { classes, displayBlock } from "./util";
 
 var can_revert_wizard = false;
 

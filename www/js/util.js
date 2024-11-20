@@ -1,16 +1,19 @@
 /** Get the element identified with the supplied name */
 const id = (name) => document.getElementById(name);
 
-// The return value from class(name) can be use with forEach()
-function classes(name) {
-  return Array.from(document.getElementsByClassName(name))
+// Returns an array of elements with the supplied class name, which can be use with forEach()
+const classes = (name) => Array.from(document.getElementsByClassName(name));
+
+/** Set an element's `value` value (if the element exists) */
+const setValue = (name, val) => {
+  const elem = id(name);
+  if (elem) {
+    elem.value = val;
+  }
 }
-function setValue(name, val) {
-  id(name).value = val
-}
-function getValue(name, val) {
-  return id(name).value
-}
+/** Return an element's `value` value. If the element does not exist or does not have a `value` value `undefined` is returned */
+const getValue = (name) => id(name)?.value;
+
 function setTextContent(name, val) {
   id(name).textContent = val
 }
@@ -70,12 +73,15 @@ function click(name) {
 function files(name) {
   return id(name).files
 }
-function setChecked(name, val) {
-  id(name).checked = val
+/** Set an elements `checked` value (if the element exists) */
+const setChecked = (name, val) => {
+  const elem = id(name);
+  if (elem) {
+    elem.checked = val;
+  }
 }
-function getChecked(name) {
-  return id(name).checked
-}
+/** Return an element's `checked` value. If the element does not exist or does not have a `checked` value `false` is returned */
+const getChecked = (name) => id(name)?.checked || false;
 
 const sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay));
 
@@ -92,4 +98,4 @@ const conErr = (error_code, response, error_prefix = "Error") => {
   console.error(errMsg);
 }
 
-export { conErr, disable_items, displayBlock, displayNone, id };
+export { classes, conErr, disable_items, displayBlock, displayFlex, displayNone, getChecked, setChecked, getValue, setValue, id };

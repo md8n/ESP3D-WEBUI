@@ -1,20 +1,21 @@
-function clear_drop_menu(event) {
-    var item = get_parent_by_class(event.target, "dropdownselect");
-    var ignore_id = "-1";
-    if (item !== null && typeof item.id !== 'undefined') {
-        ignore_id = item.id;
-    }
-    var list = classes("dropmenu-content");
-    for (var index = 0; index < list.length; index++) {
-        var item2 = get_parent_by_class(list[index], "dropdownselect");
-        if (item2 !== null && typeof item2.id !== 'undefined' && item2.id != ignore_id && list[index].classList.contains('show')) {
+import { classes } from "./util";
+
+const clear_drop_menu = (event) => {
+    const item = get_parent_by_class(event.target, "dropdownselect");
+    let ignore_id = item?.id || "-1";
+    const list = classes("dropmenu-content");
+    for (let index = 0; index < list.length; index++) {
+        const item2 = get_parent_by_class(list[index], "dropdownselect");
+        if (item2?.id !== ignore_id && list[index].classList.contains('show')) {
             list[index].classList.remove('show');
         }
     }
 }
 
 function get_parent_by_class(item, classname) {
-    if (item === null || typeof item === 'undefined') return null;
+    if (item === null || typeof item === 'undefined') {
+        return null;
+    }
     if (item.classList.contains(classname)) {
         return item;
     }
@@ -34,3 +35,5 @@ function showhide_drop_menu(event) {
     var menu = item.getElementsByClassName("dropmenu-content")[0];
     if (typeof menu !== 'undefined') menu.classList.toggle("show");
 }
+
+export { clear_drop_menu };

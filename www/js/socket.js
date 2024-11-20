@@ -1,7 +1,7 @@
 import { Monitor_output_Update } from "./commands";
 import { on_autocheck_position } from "./controls";
 import { grblHandleMessage, reportNone } from "./grbl";
-import { clear_cmd_list } from "./http";
+import { clear_cmd_list, http_communication_locked } from "./http";
 import { enable_ping } from "./preferencesdlg";
 import { decode_entitie, translate_text_item } from "./translate";
 import { UIdisableddlg } from "./UIdisableddlg";
@@ -20,7 +20,7 @@ const async_webcommunication = (value) => {
 
 const CancelCurrentUpload = () => {
     xmlhttpupload.abort();
-    //http_communication_locked = false;
+    //http_communication_locked(false);
     console.log("Cancel Upload");
 }
 
@@ -35,7 +35,7 @@ const Disable_interface = (lostconnection) => {
     var lostcon = false
     if (typeof lostconnection != 'undefined') lostcon = lostconnection
     //block all communication
-    http_communication_locked = true
+    http_communication_locked(true)
     log_off = true
     if (interval_ping != -1) clearInterval(interval_ping)
     //clear all waiting commands
@@ -186,9 +186,7 @@ const startSocket = () => {
                     CancelCurrentUpload()
                 }
                 if (tval[0] == 'MSG') {
-                    var error_message = tval[2]
-                    var error_code = tval[1]
-                    console.log('MSG: ' + tval[2] + ' code:' + tval[1])
+                    console.info(`MSG: ${tval[2]} code:${ tval[1]}`);
                 }
             }
         }

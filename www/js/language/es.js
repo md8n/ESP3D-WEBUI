@@ -46,7 +46,7 @@ export const spanishtrans = {
 "Controls":"Controles",
 "Credits":"Cr&eacute;ditos",
 "Dashboard":"Tablero",
-"Data mofified":"Cambio de datos",
+"Data modified":"Cambio de datos",
 "Do you want to save?":"	&iquest;Desea guardar ?",
 "Enable second extruder controls":"Activar segundo extrusor",
 "Error":"Error",

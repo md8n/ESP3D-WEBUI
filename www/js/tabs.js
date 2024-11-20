@@ -1,6 +1,6 @@
-import { displayBlock } from "./util";
+import { classes, displayBlock } from "./util";
 
-function opentab(evt, tabname, tabcontentid, tablinkid) {
+export const opentab = (evt, tabname, tabcontentid, tablinkid) => {
     var i, tabcontent, tablinks;
     tabcontent = classes("tabcontent");
     const activateEvent = new Event("activate");

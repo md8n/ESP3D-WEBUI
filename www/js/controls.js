@@ -2,9 +2,10 @@ import { alertdlg } from "./alertdlg";
 import { grblaxis } from "./grbl";
 import { SendGetHttp } from "./http";
 import { get_icon_svg } from "./icons";
+import { getPrefValue } from "./preferencesdlg";
 import { SendPrinterCommand } from "./printercmd";
 import { translate_text_item } from "./translate";
-import { conErr, displayBlock, displayNone } from "./util";
+import { conErr, displayBlock, displayNone, getChecked, id, setChecked } from "./util";
 
 var interval_position = -1;
 var control_macrolist = [];
@@ -85,17 +86,19 @@ function processMacroGetFailed(error_code, response) {
 }
 
 const on_autocheck_position = (use_value) => {
-    if (typeof (use_value) !== 'undefined') id('autocheck_position').checked = use_value;
-    if (id('autocheck_position').checked) {
-        var interval = parseInt(id('posInterval_check').value);
+    if (typeof (use_value) !== 'undefined') {
+        setChecked('autocheck_position', !!use_value);
+    }
+    if (getChecked('autocheck_position')) {
+        var interval = parseInt(id('interval_positions').value);
         if (!isNaN(interval) && interval > 0 && interval < 100) {
             if (interval_position != -1) clearInterval(interval_position);
             interval_position = setInterval(function () {
                 get_Position()
             }, interval * 1000);
         } else {
-            id('autocheck_position').checked = false;
-            id('posInterval_check').value = 0;
+            setChecked('autocheck_position', false);
+            id('interval_positions').value = 0;
             if (interval_position != -1) clearInterval(interval_position);
             interval_position = -1;
         }
@@ -106,12 +109,12 @@ const on_autocheck_position = (use_value) => {
 }
 
 function onPosIntervalChange() {
-    var interval = parseInt(id('posInterval_check').value);
+    var interval = parseInt(id('interval_positions').value);
     if (!isNaN(interval) && interval > 0 && interval < 100) {
         on_autocheck_position();
     } else {
-        id('autocheck_position').checked = false;
-        id('posInterval_check').value = 0;
+        setChecked('autocheck_position', false);
+        id('interval_positions').value = 0;
         if (interval != 0) alertdlg(translate_text_item("Out of range"), translate_text_item("Value of auto-check must be between 0s and 99s !!"));
         on_autocheck_position();
     }
@@ -141,7 +144,9 @@ function control_motorsOff() {
 }
 
 function SendHomecommand(cmd) {
-    if (id('lock_UI').checked) return;
+    if (getChecked('lock_UI')) {
+        return;
+    }
     switch (cmd) {
         case 'G28':
             cmd = '$H';
@@ -172,7 +177,7 @@ function SendZerocommand(cmd) {
 }
 
 function JogFeedrate(axis) {
-    var controlName = axis.startsWith("Z") ? "control_z_velocity" : "control_xy_velocity";
+    var controlName = axis.startsWith("Z") ? "z_feedrate" : "xy_feedrate";
     var feedrateValue = parseInt(id(controlName).value);
     if (feedrateValue < 1 || isNaN(feedrateValue) || (feedrateValue === null)) {
         alertdlg(translate_text_item("Out of range"), translate_text_item("Feedrate value must be at least 1 mm/min!"));
@@ -182,23 +187,25 @@ function JogFeedrate(axis) {
 }
 
 function SendJogcommand(cmd, feedrate) {
-    if (id('lock_UI').checked) return;
+    if (getChecked('lock_UI')) {
+        return;
+    }
     var feedratevalue = "";
     var command = "";
     if (feedrate == "XYfeedrate") {
-        feedratevalue = parseInt(id('control_xy_velocity').value);
+        feedratevalue = parseInt(id('xy_feedrate').value);
         if (feedratevalue < 1 || isNaN(feedratevalue) || (feedratevalue === null)) {
             alertdlg(translate_text_item("Out of range"), translate_text_item("XY Feedrate value must be at least 1 mm/min!"));
-            id('control_xy_velocity').value = preferenceslist[0].xy_feedrate;
+            id('xy_feedrate').value = getPrefValue("enable_control_panel.xy_feedrate");
             return;
         }
     } else {
-        feedratevalue = parseInt(id('control_z_velocity').value);
+        feedratevalue = parseInt(id('z_feedrate').value);
         if (feedratevalue < 1 || isNaN(feedratevalue) || (feedratevalue === null)) {
             var letter = "Z";
             if (grblaxis() > 3) letter = "Axis";
             alertdlg(translate_text_item("Out of range"), translate_text_item(letter + " Feedrate value must be at least 1 mm/min!"));
-            id('control_z_velocity').value = preferenceslist[0].z_feedrate;
+            id('z_feedrate').value = getPrefValue("enable_control_panel.z_feedrate");
             return;
         }
     }
@@ -212,14 +219,14 @@ function SendJogcommand(cmd, feedrate) {
 }
 
 function onXYvelocityChange() {
-    var feedratevalue = parseInt(id('control_xy_velocity').value);
+    var feedratevalue = parseInt(id('xy_feedrate').value);
     if (feedratevalue < 1 || feedratevalue > 9999 || isNaN(feedratevalue) || (feedratevalue === null)) {
         //we could display error but we do not
     }
 }
 
 function onZvelocityChange() {
-    var feedratevalue = parseInt(id('control_z_velocity').value);
+    var feedratevalue = parseInt(id('z_feedrate').value);
     if (feedratevalue < 1 || feedratevalue > 999 || isNaN(feedratevalue) || (feedratevalue === null)) {
         //we could display error but we do not
     }

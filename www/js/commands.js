@@ -1,7 +1,7 @@
 import { SendGetHttp } from "./http";
 import { process_socket_response } from "./socket";
 import { decode_entitie, translate_text_item } from "./translate";
-import { conErr, id } from "./util";
+import { conErr, getChecked, id } from "./util";
 
 var CustomCommand_history = [];
 var CustomCommand_history_index = -1;
@@ -16,7 +16,7 @@ function Monitor_output_autoscrollcmd() {
 }
 
 function Monitor_check_autoscroll() {
-    if (id('monitor_enable_autoscroll').checked == true) Monitor_output_autoscrollcmd();
+    if (getChecked('monitor_enable_autoscroll')) Monitor_output_autoscrollcmd();
 }
 
 function Monitor_check_verbose_mode() {
@@ -44,7 +44,7 @@ export const Monitor_output_Update = (message) => {
     }
 
     var output = "";
-    var isverbosefilter = id("monitor_enable_verbose_mode")?.checked || false;
+    var isverbosefilter = getChecked("monitor_enable_verbose_mode");
     for (var out of Monitor_output) {
         var outlc = out.trim();
 

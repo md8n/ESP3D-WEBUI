@@ -1,5 +1,6 @@
 import { M } from "./constants";
 import { sendCommand } from "./maslow";
+import { current_setting_filter } from "./settings";
 
 var tlZ = 100
 var trZ = 56
@@ -593,7 +594,7 @@ function findMaxFitness(measurements) {
           final: true,
           bestGuess: bestGuess
         }, true);
-        refreshSettings(current_setting_filter);
+        refreshSettings(current_setting_filter());
         saveMaslowYaml();
 
         messagesBox.textContent += '\nA command to save these values has been successfully sent for you. Please check for any error messages.';

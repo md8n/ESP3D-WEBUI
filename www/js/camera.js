@@ -1,3 +1,4 @@
+import { getPrefValue } from "./preferencesdlg";
 import { decode_entitie } from "./translate";
 import { displayBlock, displayNone } from "./util";
 
@@ -38,7 +39,7 @@ function camera_OnKeyUp(event) {
 
 function camera_saveaddress() {
     cameraformataddress();
-    preferenceslist[0].camera_address = HTMLEncode(id('camera_webaddress').value);
+    getPrefValue("enable_camera.camera_address") = HTMLEncode(id('camera_webaddress').value);
     SavePreferences(true);
 }
 
@@ -51,7 +52,7 @@ function camera_detachcam() {
 }
 
 function camera_GetAddress() {
-    if (typeof(preferenceslist[0].camera_address) !== 'undefined') {
-        id('camera_webaddress').value = decode_entitie(preferenceslist[0].camera_address);
+    if (typeof(getPrefValue("enable_camera.camera_address")) !== 'undefined') {
+        id('camera_webaddress').value = decode_entitie(getPrefValue("enable_camera.camera_address"));
     } else id('camera_webaddress').value = "";
 }

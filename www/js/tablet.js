@@ -4,7 +4,7 @@ import { SendGetHttp } from "./http";
 import { checkHomed, loadConfigValues, loadCornerValues, maslowErrorMsgHandling, maslowInfoMsgHandling, maslowMsgHandling, sendCommand } from "./maslow";
 import { numpad } from "./numpad";
 import { SendPrinterCommand } from "./printercmd";
-import { id } from "./util";
+import { getValue, id, setValue } from "./util";
 
 var gCodeLoaded = false;
 var gCodeDisplayable = false;
@@ -171,12 +171,12 @@ const toggleUnits = () => {
 const btnSetDistance = () => {
   tabletClick()
   var distance = event.target.innerText
-  id('jog-distance').value = distance
+  setValue('jog-distance', distance)
 }
 
 const setDistance = (distance) => {
   tabletClick()
-  id('jog-distance').value = distance
+  setValue('jog-distance', distance)
 }
 
 const jogTo = (axisAndDistance) => {
@@ -365,7 +365,7 @@ const moveHome = () => {
 // }
 function saveSerialMessages() {
   // save off the serial messages
-  const msgs = document.getElementById('messages').value;
+  const msgs = getValue('messages');
   const link = document.createElement('a');
   link.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURI(msgs));
   link.setAttribute('download', "Maslow-serial.log");
@@ -756,10 +756,10 @@ function arrayToXYZ(a) {
 function showGCode(gcode) {
   gCodeLoaded = gcode != ''
   if (!gCodeLoaded) {
-    id('gcode').value = '(No GCode loaded)'
+    setValue('gcode', '(No GCode loaded)')
     displayer.clear()
   } else {
-    id('gcode').value = gcode
+    setValue('gcode', gcode)
     var initialPosition = {
       x: WPOS[0],
       y: WPOS[1],

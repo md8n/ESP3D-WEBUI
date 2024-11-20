@@ -1,10 +1,13 @@
 import { connectdlg } from "./connectdlg";
 import { esp_error_code, esp_error_message } from "./constants";
 import { grblaxis } from "./grbl";
+import { grblpanel } from "./grblpanel";
 import { closeModal } from "./modaldlg";
 import { navbar } from "./navbar";
+import { initpreferences } from "./preferencesdlg";
+import { build_HTML_setting_list, current_setting_filter } from "./settings";
 import { tabletInit } from "./tablet";
-import { displayBlock, displayNone } from "./util";
+import { displayBlock, displayFlex, displayNone } from "./util";
 
 var ESP3D_authentication = false
 
@@ -113,7 +116,10 @@ function update_UI_firmware_target() {
   displayNone('motor_off_control')
   id('tab_title_configuration').innerHTML = '<span translate>GRBL configuration</span>'
   id('tab_printer_configuration').innerHTML = '<span translate>GRBL</span>'
-  id('files_input_file').accept = ' .g, .gco, .gcode, .txt, .ncc, .G, .GCO, .GCODE, .TXT, .NC'
+  const fif = id('files_input_file');
+  if (fif) {
+    fif.accept = ' .g, .gco, .gcode, .txt, .ncc, .G, .GCO, .GCODE, .TXT, .NC'
+  }
   displayInitial('zero_xyz_btn')
   displayInitial('zero_x_btn')
   displayInitial('zero_y_btn')
@@ -122,13 +128,13 @@ function update_UI_firmware_target() {
     id('control_z_position_label').innerHTML = 'Zw'
   } else {
     hideAxiscontrols()
-    displayNone('preferences_control_z_velocity_group')
+    displayNone('z_feedrate_group')
   }
   if (grblaxis() > 3) {
     id('zero_xyz_btn_txt').innerHTML += 'A'
     grblzerocmd += ' A0'
     build_axis_selection()
-    displayBlock('preferences_control_a_velocity_group')
+    displayBlock('a_feedrate_group')
     id('positions_labels2').style.display = 'inline-grid'
     displayBlock('control_a_position_display')
   }
@@ -136,16 +142,17 @@ function update_UI_firmware_target() {
     displayBlock('control_b_position_display')
     id('zero_xyz_btn_txt').innerHTML += 'B'
     grblzerocmd += ' B0'
-    displayBlock('preferences_control_b_velocity_group')
+    displayBlock('b_feedrate_group')
   }
   if (grblaxis() > 5) {
     displayBlock('control_c_position_display')
     id('zero_xyz_btn_txt').innerHTML += 'C'
-    displayBlock('preferences_control_c_velocity_group')
+    displayBlock('c_feedrate_group')
   } else {
     displayNone('control_c_position_display')
   }
   displayFlex('grblPanel')
+  grblpanel();
   // id('FW_github').href = 'https://github.com/bdring/FluidNC';
   displayBlock('settings_filters')
   id('control_x_position_label').innerHTML = 'Xw'
@@ -244,7 +251,7 @@ function initUI_4() {
     setup_is_done = true
     do_not_build_settings = false
     AddCmd(display_boot_progress)
-    build_HTML_setting_list(current_setting_filter)
+    build_HTML_setting_list((current_setting_filter()))
     AddCmd(closeModal)
     AddCmd(show_main_UI)
   }

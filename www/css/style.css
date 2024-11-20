@@ -15,6 +15,23 @@ label {
     text-align: center;
 }
 
+dl {
+    display: grid;
+    grid-template-columns: max-content auto;
+}
+
+dt {
+    grid-column-start: 1;
+}
+
+dd {
+    grid-column-start: 2;
+}
+
+dt::after {
+    content: ": ";
+}
+
 button.center {
     display: block;
     margin: auto;

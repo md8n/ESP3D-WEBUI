@@ -1,6 +1,8 @@
 import { get_icon_svg } from "./icons";
-import { build_language_list, language } from "./languages";
+import { add_language_list_event_handler, build_language_list, language } from "./languages";
 import { closeModal, setactiveModal, showModal } from "./modaldlg";
+import { getPrefValue } from "./preferencesdlg";
+import { build_HTML_setting_list, current_setting_filter } from "./settings";
 import { translate_text_item } from "./translate";
 import { displayBlock, displayNone } from "./util";
 
@@ -72,6 +74,7 @@ function setupdlg() {
 
     var content = table( td(get_icon_svg("flag") + "&nbsp;") + td(build_language_list("language_selection")));
     id("setup_langage_list").innerHTML = content;
+    add_language_list_event_handler("language_selection");
 
     var modal = setactiveModal('setupdlg.html', setupdone);
     if (modal == null) return;
@@ -83,7 +86,7 @@ function setupdlg() {
 function setupdone(response) {
     setup_is_done = true;
     do_not_build_settings = false;
-    build_HTML_setting_list(current_setting_filter);
+    build_HTML_setting_list(current_setting_filter());
     translate_text(language_save);
     displayUndoNone('main_ui');
     closeModal("setup done");
@@ -94,7 +97,7 @@ function continue_setup_wizard() {
     switch (active_wizard_page) {
         case 1:
             enablestep1();
-            preferenceslist[0].language = language();
+            getPrefValue("language") = language();
             SavePreferences(true);
             language_save = language();
             break;

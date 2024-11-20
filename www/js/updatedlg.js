@@ -1,9 +1,10 @@
 import { alertdlg } from "./alertdlg";
+import { confirmdlg } from "./confirmdlg";
 import { esp_error_code, esp_error_message } from "./constants";
-import { SendGetHttp } from "./http";
+import { http_communication_locked, SendGetHttp } from "./http";
 import { closeModal, setactiveModal, showModal } from "./modaldlg";
 import { translate_text_item } from "./translate";
-import { conErr, displayBlock, displayNone } from "./util";
+import { conErr, displayBlock, displayNone, setValue } from "./util";
 
 var update_ongoing = false;
 var current_update_filename = "";
@@ -15,7 +16,7 @@ function updatedlg() {
     displayNone('prgfw');
     displayNone('uploadfw-button');
     id('updatemsg').innerHTML = "";
-    id('fw-select').value = "";
+    setValue('fw-select', "");
     id('fw_update_dlg_title').innerHTML = translate_text_item("ESP3D Update").replace("ESP3D", "FluidNC");
     showModal();
 }
@@ -49,7 +50,7 @@ function checkupdatefile() {
 function UpdateProgressDisplay(oEvent) {
     if (oEvent.lengthComputable) {
         var percentComplete = (oEvent.loaded / oEvent.total) * 100;
-        id('prgfw').value = percentComplete;
+        setValue('prgfw', percentComplete);
         id('updatemsg').innerHTML = translate_text_item("Uploading ") + current_update_filename + " " + percentComplete.toFixed(0) + "%";
     } else {
         // Impossible because size is unknown
@@ -64,7 +65,7 @@ function UploadUpdatefile() {
 
 function StartUploadUpdatefile(response) {
     if (response != "yes") return;
-    if (http_communication_locked) {
+    if (http_communication_locked()) {
         alertdlg(translate_text_item("Busy..."), translate_text_item("Communications are currently locked, please wait and retry."));
         return;
     }

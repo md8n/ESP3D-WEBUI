@@ -1,6 +1,7 @@
 import { M } from "./constants";
 import { get_Position } from "./controls";
 import { SendPrinterCommand } from "./printercmd";
+import { current_setting_filter } from "./settings";
 
 /** Maslow Status */
 let maslowStatus = { homed: false, extended: false };
@@ -199,7 +200,7 @@ function saveConfigValues() {
         sendCommand(`$/${M}_brX=${machineWidth}`);
     }
 
-    refreshSettings(current_setting_filter);
+    refreshSettings(current_setting_filter());
     saveMaslowYaml();
     loadCornerValues();
 

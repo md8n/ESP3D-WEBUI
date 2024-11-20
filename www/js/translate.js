@@ -54,10 +54,11 @@ const decode_entitie = (str_text) => {
     return str_text
 }
 
-function translate_text(lang) {
+/** Set up text translation to the selected language */
+const translate_text = (lang) => {
     var currenttrans = {};
     var translated_content = "";
-    language = lang;
+    language(lang);
     for (var lang_i = 0; lang_i < language_list.length; lang_i++) {
         if (language_list[lang_i][0] == lang) {
             currenttrans = eval(language_list[lang_i][2]);
@@ -127,4 +128,4 @@ const translate_text_item = (item_text, withtag) => {
     return translated_content;
 }
 
-export { decode_entitie, translate_text_item };
+export { decode_entitie, translate_text, translate_text_item };

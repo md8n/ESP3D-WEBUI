@@ -1,7 +1,8 @@
 import { alertdlg } from "./alertdlg";
 import { Monitor_output_Update } from "./commands";
+import { confirmdlg } from "./confirmdlg";
 import { esp_error_code, esp_error_message } from "./constants";
-import { SendGetHttp } from "./http";
+import { http_communication_locked, SendGetHttp } from "./http";
 import { get_icon_svg } from "./icons";
 import { SendPrinterCommand } from "./printercmd";
 import { translate_text_item } from "./translate";
@@ -52,7 +53,10 @@ function build_accept(file_filters_list) {
         accept_txt = "*, *.*";
         tfiles_filters = "";
     }
-    id('files_input_file').accept = accept_txt;
+    const fif = id('files_input_file');
+    if (fif) {
+        fif.accept = accept_txt;
+    }
     console.log(accept_txt);
 }
 
@@ -412,7 +416,7 @@ function files_is_filename(file_name) {
 }
 
 let gCodeFile = '';
-export const gCodeFilename = (newName) => {
+const gCodeFilename = (newName) => {
     if (typeof newName !== "undefined") {
         gCodeFile = newName;
     }
@@ -472,7 +476,7 @@ const populateTabletFileSelector = (files, path) => {
     })
 }
 
-export const files_list_success = (response_text) => {
+const files_list_success = (response_text) => {
     displayBlock('files_navigation_buttons');
     var error = false;
     var response;
@@ -675,7 +679,7 @@ function process_check_sd_presence(answer) {
 }
 
 function files_start_upload() {
-    if (http_communication_locked) {
+    if (http_communication_locked()) {
         alertdlg(translate_text_item("Busy..."), translate_text_item("Communications are currently locked, please wait and retry."));
         console.log("communication locked");
         return;
@@ -721,3 +725,5 @@ function FilesUploadProgressDisplay(oEvent) {
         // Impossible because size is unknown
     }
 }
+
+export { build_file_filter_list, files_list_success, gCodeFilename };

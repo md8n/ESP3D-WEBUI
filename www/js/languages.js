@@ -1,3 +1,5 @@
+import { id } from "./util";
+
 const defLanguage = 'en';
 let selLanguage = defLanguage;
 /** The currently selected language code */
@@ -49,7 +51,7 @@ const language_list = [
 ];
 
 const build_language_list = (id_item) => {
-    let content = [`<select class='form-control'  id='${id_item}' onchange='translate_text(this.value)'>`];
+    let content = [`<select class='form-control' id='${id_item}'>`];
     for (let lang_i = 0; lang_i < language_list.length; lang_i++) {
         const isSelected = (language_list[lang_i][0] == language) ? "selected" : "";
         content.push(`<option value='${language_list[lang_i][0]}' ${isSelected}>${language_list[lang_i][1]}</option>`);
@@ -58,4 +60,10 @@ const build_language_list = (id_item) => {
     return content.join("\n");
 }
 
-export { build_language_list, language, language_list };
+/** Adds the event handler to the select.
+ * IMPORTANT only call this after the language_list has been added to the DOM */
+const add_language_list_event_handler = (id_item) => {
+    id(id_item).addEventListener("onchange", (event) => translate_text(this.value));
+}
+
+export { add_language_list_event_handler, build_language_list, language, language_list };

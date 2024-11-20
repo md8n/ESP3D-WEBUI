@@ -2,7 +2,7 @@ import { SendGetHttp } from "./http";
 import { get_icon_svg } from "./icons";
 import { closeModal, setactiveModal, showModal } from "./modaldlg";
 import { translate_text_item } from "./translate";
-import { conErr, displayBlock, displayNone } from "./util";
+import { conErr, displayBlock, displayNone, getValue, setValue } from "./util";
 
 var ssid_item_scanwifi = -1;
 var ssid_subitem_scanwifi = -1;
@@ -72,8 +72,8 @@ function process_scanWifi_answer(response_text) {
 }
 
 function select_ap_ssid(ssid_name) {
-    var val = id("setting_" + ssid_item_scanwifi + "_" + ssid_subitem_scanwifi).value;
-    id("setting_" + ssid_item_scanwifi + "_" + ssid_subitem_scanwifi).value = ssid_name;
+    var val = getValue("setting_" + ssid_item_scanwifi + "_" + ssid_subitem_scanwifi);
+    setValue("setting_" + ssid_item_scanwifi + "_" + ssid_subitem_scanwifi, ssid_name);
     id("setting_" + ssid_item_scanwifi + "_" + ssid_subitem_scanwifi).focus();
     if (val != ssid_name)setsettingchanged(ssid_item_scanwifi, ssid_subitem_scanwifi);
     closeModal("Ok");

@@ -1,5 +1,7 @@
 // Display the XY-plane projection of a GCode toolpath on a 2D canvas
 
+import { getValue } from "./util";
+
 var root = window;
 
 var canvas = id("small-toolpath");
@@ -959,7 +961,7 @@ ToolpathDisplayer.prototype.cycleCameraAngle = function(gcode, modal, position) 
 
 canvas.addEventListener("mouseup", updateGcodeViewerAngle); 
 var refreshGcode = function() {
-    const gcode = id('gcode').value;
+    const gcode = getValue('gcode');
     displayer.showToolpath(gcode, WPOS, MPOS, cameraAngle);
 }
 

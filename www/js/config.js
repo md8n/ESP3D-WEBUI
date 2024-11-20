@@ -1,8 +1,8 @@
 import { alertdlg } from "./alertdlg";
-import { SendGetHttp } from "./http";
+import { http_communication_locked, SendGetHttp } from "./http";
 import { get_icon_svg } from "./icons";
 import { translate_text_item } from "./translate";
-import { conErr, displayBlock, displayNone } from "./util";
+import { conErr, displayBlock, displayNone, setChecked } from "./util";
 
 var config_configList = [];
 var config_override_List = [];
@@ -15,7 +15,7 @@ var config_file_name = "/sd/config";
 
 
 function refreshconfig(is_override) {
-    if (http_communication_locked) {
+    if (http_communication_locked()) {
         id('config_status').innerHTML = translate_text_item("Communication locked by another process, retry later.");
         return;
     }
@@ -35,11 +35,11 @@ function config_display_override(display_it) {
     if (display_it) {
         displayBlock('config_overrdisplayBlocke_list_content');
         displayNone('config_main_content');
-        id('config_override_file').checked = true;
+        setChecked('config_override_file', true);
     } else {
         id('config_overrdisplayNonee_list_content');
         displayBlock('config_main_content');
-        id('config_main_file').checked = true;
+        setChecked('config_main_file', true);
     }
 }
 

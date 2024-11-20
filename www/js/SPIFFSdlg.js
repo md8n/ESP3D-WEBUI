@@ -1,10 +1,11 @@
 import { alertdlg } from "./alertdlg";
+import { confirmdlg } from "./confirmdlg";
 import { esp_error_code, esp_error_message } from "./constants";
-import { SendGetHttp } from "./http";
+import { http_communication_locked, SendGetHttp } from "./http";
 import { get_icon_svg } from "./icons";
 import { closeModal, setactiveModal, showModal } from "./modaldlg";
 import { translate_text_item } from "./translate";
-import { conErr, displayBlock, displayNone } from "./util";
+import { conErr, displayBlock, displayNone, setValue } from "./util";
 
 //SPIFFS dialog
 var SPIFFS_currentpath = "/";
@@ -15,7 +16,7 @@ function SPIFFSdlg(root) {
     var modal = setactiveModal('SPIFFSdlg.html');
     if (modal == null) return;
     if (typeof root !== 'undefined') SPIFFS_currentpath = root;
-    id("SPIFFS-select").value = "";
+    setValue("SPIFFS-select", "");
     id("SPIFFS_file_name").innerHTML = translate_text_item("No file chosen");
     displayNone("SPIFFS_uploadbtn");
     displayNone("SPIFFS_prg");
@@ -200,7 +201,7 @@ function SPIFFSdispatchfilestatus(jsonresponse) {
 }
 
 function refreshSPIFFS() {
-    id('SPIFFS-select').value = "";
+    setValue('SPIFFS-select', "");
     id('uploadSPIFFSmsg').innerHTML = "";
     id("SPIFFS_file_name").innerHTML = translate_text_item("No file chosen");
     displayNone('SPIFFS_uploadbtn');
@@ -235,7 +236,7 @@ function checkSPIFFSfiles() {
 function SPIFFSUploadProgressDisplay(oEvent) {
     if (oEvent.lengthComputable) {
         var percentComplete = (oEvent.loaded / oEvent.total) * 100;
-        id('SPIFFS_prg').value = percentComplete;
+        setValue('SPIFFS_prg', percentComplete);
         id('uploadSPIFFSmsg').innerHTML = translate_text_item("Uploading ") + SPIFFS_currentfile + " " + percentComplete.toFixed(0) + "%";
     } else {
         // Impossible because size is unknown
@@ -243,7 +244,7 @@ function SPIFFSUploadProgressDisplay(oEvent) {
 }
 
 function SPIFFS_UploadFile() {
-    if (http_communication_locked) {
+    if (http_communication_locked()) {
         alertdlg(translate_text_item("Busy..."), translate_text_item("Communications are currently locked, please wait and retry."));
         return;
     }
@@ -270,7 +271,7 @@ function SPIFFS_UploadFile() {
 }
 
 function SPIFFSUploadsuccess(response) {
-    id('SPIFFS-select').value = "";
+    setValue('SPIFFS-select', "");
     id("SPIFFS_file_name").innerHTML = translate_text_item("No file chosen");
     displayBlock('SPIFFS-select_form');
     displayNone('SPIFFS_prg');
