@@ -35,10 +35,11 @@ var language_save = language();
 const panelIdNames = ["show_control_panel", "show_grbl_panel", "show_grbl_probe_tab", "show_files_panel", "show_commands_panel"];
 
 let preferences = {
-    "language": {
+    "language_list": {
         "defValue": "en",
         "valueType": "select",
         "fieldId": "language_preferences",
+        "label": "language",
     },
 
     "enable_lock_UI": { "defValue": false, "valueType": "bool", "label": "Enable lock interface" },
@@ -47,7 +48,7 @@ let preferences = {
 
     "enable_camera": {
         "defValue": false,
-        "valueType": "bool",
+        "valueType": "panel",
         "panel": "camera_preferences",
         "fieldId": "show_camera_panel",
         "label": "Show camera panel",
@@ -64,7 +65,7 @@ let preferences = {
     },
     "enable_control_panel": {
         "defValue": true,
-        "valueType": "bool",
+        "valueType": "panel",
         "panel": "control_preferences",
         "fieldId": "show_control_panel",
         "label": "Show control panel",
@@ -123,7 +124,7 @@ let preferences = {
 
     "enable_grbl_panel": {
         "defValue": false,
-        "valueType": "bool",
+        "valueType": "panel",
         "panel": "grbl_preferences",
         "fieldId": "show_grbl_panel",
         "label": "Show GRBL panel",
@@ -148,7 +149,7 @@ let preferences = {
             },
             "enable_grbl_probe_panel": {
                 "defValue": false,
-                "valueType": "bool",
+                "valueType": "panel",
                 "panel": "grblprobetablink",
                 "fieldId": "show_grbl_probe_tab",
                 "label": "Show probe panel",
@@ -196,7 +197,7 @@ let preferences = {
 
     "enable_files_panel": {
         "defValue": true,
-        "valueType": "bool",
+        "valueType": "panel",
         "panel": "files_preferences",
         "fieldId": "show_files_panel",
         "label": "Show files panel",
@@ -214,7 +215,7 @@ let preferences = {
 
     "enable_commands_panel": {
         "defValue": true,
-        "valueType": "bool",
+        "valueType": "panel",
         "panel": "cmd_preferences",
         "fieldId": "show_commands_panel",
         "label": "Show commands panel",
@@ -245,6 +246,7 @@ const buildTable = (contents, classVal) => buildElem("table", contents, classVal
 
 const buildDivPanel = (contents) => buildDiv(`<div class="panel-heading">${contents}</div>`, "panel panel-default");
 
+const buildTdIcon = (icon) => `<td>${get_icon_svg(icon)}&nbsp;</td>`;
 const buildTdLabel = (key, value) => `<td><span>${translate_text_item(value.label || key, true)}:&nbsp;</span></td>`;
 const buildTdInp = (inpFld, key, value) => `<td><div class="input-group has-control">${inpFld}${buildSpnErrFld(key, value)}</div></td>`;
 const buildSpnErrFld = (key, value) => `<span id="${buildFieldId(key, value)}_icon" class="form-control-feedback ico_feedback"></span>`;
@@ -253,27 +255,44 @@ const buildFieldIdAttr = (key, value) => `id="${buildFieldId(key, value)}"`;
 const buildMinMaxAttr = (value) => `${typeof value.min !== "undefined" ? ' min="' + value.min + '"' : ''}${typeof value.max !== "undefined" ? ' max="' + value.max + '"' : ''}`;
 const buildPlaceholderAttr = (value) => value.placeholder ? `placeholder="${value.placeholder}" translateph` : "";
 
+/** Return the `fieldId`, if defined, otherwise return the `key` */
 const buildFieldId = (key, value) => value.fieldId || key;
 
+/** Build the dialog from the preferences metadata */
 const buildDialog = (parentElem, definitions, isFirstLevel = false) => {
     for (const [key, value] of Object.entries(definitions)) {
+        const fId = buildFieldId(key, value);
+        // Check if the dialog has already been built
+        if (id(fId)) {
+            return;
+        }
         switch (value.valueType) {
-            case "bool":
-                // Generate a checkbox
-                const inpCheckBox = `<input type="checkbox" ${buildFieldIdAttr(key, value)}/>`;
-                const lblCheckBox = `<label>${inpCheckBox}${translate_text_item(value.label || key, true)}</label>`;
-                const panelCheckBox = isFirstLevel ? buildDivPanel(`<div class="checkbox">${lblCheckBox}</div>`) : buildDiv(lblCheckBox, "checkbox")
-                parentElem.append(panelCheckBox);
+            case "panel":
+                // Generate a checkbox to control a panel
+                const inpPCheckBox = `<input type="checkbox" ${buildFieldIdAttr(key, value)}/>`;
+                const lblPCheckBox = `<label>${inpPCheckBox}${translate_text_item(value.label || key, true)}</label>`;
+                const panelPCheckBox = isFirstLevel ? buildDivPanel(`<div class="checkbox">${lblPCheckBox}</div>`) : buildDiv(lblPCheckBox, "checkbox")
+                parentElem.append(panelPCheckBox);
 
+                // Preferences is tested for, but we do expect it always to be present
                 if ("preferences" in value) {
                     const pBody = buildDiv("", "panel-body");
                     if ("panel" in value) {
                         pBody.setAttribute("id", value.panel);
                     }
-                    panelCheckBox.append(pBody);
-                    id(value.fieldId || key).addEventListener("click", (event) => togglePanel(value.fieldId || key, value.panel))
+                    panelPCheckBox.append(pBody);
+                    id(fId).addEventListener("click", (event) => togglePanel(fId, value.panel))
                     buildDialog(pBody, value.preferences);
                 }
+                break;
+            case "bool":
+                // Generate a checkbox for a boolean value
+                const inpBCheckBox = `<input type="checkbox" ${buildFieldIdAttr(key, value)}/>`;
+                const lblBCheckBox = `<label>${inpBCheckBox}${translate_text_item(value.label || key, true)}</label>`;
+                const panelBCheckBox = buildDiv(lblBCheckBox, "checkbox")
+                parentElem.append(panelBCheckBox);
+                parentElem.append(document.createElement("br"));
+
                 break;
             case "int":
             case "float":
@@ -294,7 +313,7 @@ const buildDialog = (parentElem, definitions, isFirstLevel = false) => {
                 }
                 parentElem.append(inpNTable);
                 parentElem.append(document.createElement("br"));
-                id(value.fieldId || key).addEventListener("onchange", (event) => Checkvalues(value.fieldId || key));
+                id(value.fieldId || key).addEventListener("onchange", (event) => Checkvalues(fId));
                 break;
             case "text":
                 // Generate a mini table with input field
@@ -304,7 +323,37 @@ const buildDialog = (parentElem, definitions, isFirstLevel = false) => {
                 const inpTTable = buildTable(`<tr>${buildTdLabel(key, value)}${inpTTd}</tr>`);
                 parentElem.append(inpTTable);
                 parentElem.append(document.createElement("br"));
-                id(value.fieldId || key).addEventListener("onchange", (event) => Checkvalues(value.fieldId || key));
+                id(value.fieldId || key).addEventListener("onchange", (event) => Checkvalues(fId));
+                break;
+            case "select":
+                // Generate a mini table with select field
+                const inpSTable = buildTable( `<tr>${buildTdIcon("flag")}<td>${build_language_list(fId)}</td></tr>`);
+                inpSTable.setAttribute("id", fId);
+                parentElem.append(inpSTable);
+                parentElem.append(document.createElement("br"));
+                add_language_list_event_handler(fId);
+                break;
+            default:
+                console.log(`${key}: ${JSON.stringify(value)}`);
+                break;
+        }
+    }
+}
+
+/** Set the values into the dialog. First from the defValue, and then whatever is in the preferences file */
+const setDialog = (parentElem, definitions, isFirstLevel = false) => {
+    for (const [key, value] of Object.entries(definitions)) {
+        const fId = buildFieldId(key, value);
+        switch (value.valueType) {
+            case "panel":
+                case "bool":
+                // Set the `checked` attribute of a checkbox to the default value
+                // - note that this does not change, the actual value is in the checkbox `value`
+                id(fId).checked = ("defValue" in value)
+                    ? (typeof value.defValue === "string" && value.defValue.toLowerCase() === "false") ? false : value.defValue
+                    : false;
+                id(fId).value = ("defValue" in value) ? value.defValue : "";
+                id(fId).click();
                 break;
             default:
                 console.log(`${key}: ${JSON.stringify(value)}`);
@@ -317,6 +366,7 @@ const buildDialog = (parentElem, definitions, isFirstLevel = false) => {
 const initpreferences = () => {
     const prefBody = id("preferences_body");
     buildDialog(prefBody, preferences, true);
+    setDialog(prefBody, preferences, true);
 
     // displayNone('DHT_pref_panel');
     // displayBlock('grbl_pref_panel');
@@ -542,7 +592,10 @@ function getpreferenceslist() {
 }
 
 const togglePanel = (checkboxId, panelId) => {
-    if (getChecked(checkboxId)) {
+    const currentValue = getChecked(checkboxId) !== "false";
+    // toggle the currentValue, and do all the rest
+    setChecked(checkboxId, !currentValue);
+    if (currentValue) {
         displayBlock(panelId);
     } else {
         displayNone(panelId);
@@ -552,27 +605,27 @@ const togglePanel = (checkboxId, panelId) => {
 function prefs_toggledisplay(id_source) {
     switch (id_source) {
         case 'show_files_panel':
-            if (getChecked(id_source)) displayBlock("files_preferences");
+            if (getChecked(id_source) !== "false") displayBlock("files_preferences");
             else displayNone("files_preferences");
             break;
         case 'show_grbl_panel':
-            if (getChecked(id_source)) displayBlock("grbl_preferences");
+            if (getChecked(id_source) !== "false") displayBlock("grbl_preferences");
             else displayNone("grbl_preferences");
             break;
         case 'show_camera_panel':
-            if (getChecked(id_source)) displayBlock("camera_preferences");
+            if (getChecked(id_source) !== "false") displayBlock("camera_preferences");
             else displayNone("camera_preferences");
             break;
         case 'show_control_panel':
-            if (getChecked(id_source)) displayBlock("control_preferences");
+            if (getChecked(id_source) !== "false") displayBlock("control_preferences");
             else displayNone("control_preferences");
             break;
         case 'show_commands_panel':
-            if (getChecked(id_source)) displayBlock("cmd_preferences");
+            if (getChecked(id_source) !== "false") displayBlock("cmd_preferences");
             else displayNone("cmd_preferences");
             break;
         case 'show_grbl_probe_tab':
-            if (getChecked(id_source)) displayBlock("grbl_probe_preferences");
+            if (getChecked(id_source) !== "false") displayBlock("grbl_probe_preferences");
             else displayNone("grbl_probe_preferences");
             break;
     }
@@ -817,14 +870,6 @@ const setStringElem = (idName, memName) => {
 }
 
 function build_dlg_preferences_list() {
-    //use preferenceslist to set dlg status
-    var content = "<table><tr><td>";
-    content += get_icon_svg("flag") + "&nbsp;</td><td>";
-    content += build_language_list("language_preferences");
-    content += "</td></tr></table>";
-    id("preferences_langage_list").innerHTML = content;
-    add_language_list_event_handler("language_preferences");
-
     //camera address
     const camAddress = !!getPrefValue("enable_camera.auto_load_camera") ? decode_entitie(getPrefValue("enable_camera.camera_address")) : "";
     setValue('camera_address', !camAddress);
@@ -911,33 +956,33 @@ function closePreferencesDialog() {
         modified = true;
     } else {
         //camera
-        if (getChecked('show_camera_panel') != (getPrefValue("enable_camera") === 'true')) modified = true;
+        if (getChecked('show_camera_panel') != getPrefValue("enable_camera")) modified = true;
         //Autoload
-        if (getChecked('autoload_camera_panel') != (getPrefValue("enable_camera.auto_load_camera") === 'true')) modified = true;
+        if (getChecked('autoload_camera_panel') != getPrefValue("enable_camera.auto_load_camera")) modified = true;
         //camera address
-        if (getValue('camera_address') != decode_entitie(getPrefValue("enable_camera.camera_address"))) modified = true;
+        if (getChecked('camera_address') != decode_entitie(getPrefValue("enable_camera.camera_address"))) modified = true;
         //DHT
-        if (getChecked('enable_DHT') != (getPrefValue("enable_DHT") === 'true')) modified = true;
+        if (getChecked('enable_DHT') != getPrefValue("enable_DHT")) modified = true;
         //Lock UI
-        if (getChecked('enable_lock_UI') != (getPrefValue("enable_lock_UI") === 'true')) modified = true;
+        if (getChecked('enable_lock_UI') != getPrefValue("enable_lock_UI")) modified = true;
         //Monitor connection
-        if (getChecked('enable_ping') != (getPrefValue("enable_ping") === 'true')) modified = true;
+        if (getChecked('enable_ping') != getPrefValue("enable_ping")) modified = true;
         //probe
-        if (getChecked('enable_probe_controls') != (getPrefValue("enable_probe") === 'true')) modified = true;
+        if (getChecked('enable_probe_controls') != getPrefValue("enable_probe")) modified = true;
         //control panel
-        if (getChecked('show_control_panel') != (getPrefValue("enable_control_panel") === 'true')) modified = true;
+        if (getChecked('show_control_panel') != getPrefValue("enable_control_panel")) modified = true;
         //grbl panel
-        if (getChecked('show_grbl_panel') != (getPrefValue("enable_grbl_panel") === 'true')) modified = true;
+        if (getChecked('show_grbl_panel') != getPrefValue("enable_grbl_panel")) modified = true;
         //grbl probe panel
-        if (getChecked('show_grbl_probe_tab') != (getPrefValue("enable_grbl_panel.enable_grbl_probe_panel") === 'true')) modified = true;
+        if (getChecked('show_grbl_probe_tab') != getPrefValue("enable_grbl_panel.enable_grbl_probe_panel")) modified = true;
         //files panel
-        if (getChecked('show_files_panel') != (getPrefValue("enable_files_panel") === 'true')) modified = true;
+        if (getChecked('show_files_panel') != getPrefValue("enable_files_panel")) modified = true;
         //TFT SD
-        if (getChecked('has_TFT_SD') != (getPrefValue("enable_files_panel.has_TFT_SD") === 'true')) modified = true;
+        if (getChecked('has_TFT_SD') != getPrefValue("enable_files_panel.has_TFT_SD")) modified = true;
         //TFT USB
-        if (getChecked('has_TFT_USB') != (getPrefValue("enable_files_panel.has_TFT_USB") === 'true')) modified = true;
+        if (getChecked('has_TFT_USB') != getPrefValue("enable_files_panel.has_TFT_USB")) modified = true;
         //commands
-        if (getChecked('show_commands_panel') != (getPrefValue("enable_commands_panel") === 'true')) modified = true;
+        if (getChecked('show_commands_panel') != getPrefValue("enable_commands_panel")) modified = true;
         //interval positions
         if (getValue('autoreport_interval') != parseInt(getPrefValue("enable_grbl_panel.autoreport_interval"))) modified = true;
         if (getValue('interval_positions') != parseInt(getPrefValue("enable_control_panel.interval_positions"))) modified = true;
@@ -963,9 +1008,9 @@ function closePreferencesDialog() {
         }
     }
     //autoscroll
-    if (getChecked('enable_autoscroll') != (getPrefValue("enable_commands_panel.enable_autoscroll") === 'true')) modified = true;
+    if (getChecked('enable_autoscroll') != getPrefValue("enable_commands_panel.enable_autoscroll")) modified = true;
     //Verbose Mode
-    if (getChecked('enable_verbose_mode') != (getPrefValue("enable_commands_panel.enable_verbose_mode") === 'true')) modified = true;
+    if (getChecked('enable_verbose_mode') != getPrefValue("enable_commands_panel.enable_verbose_mode")) modified = true;
     //file filters
     if (getValue('f_filters') != getPrefValue("enable_files_panel.f_filters")) modified = true;
     //probemaxtravel

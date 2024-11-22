@@ -16,7 +16,7 @@ function Monitor_output_autoscrollcmd() {
 }
 
 function Monitor_check_autoscroll() {
-    if (getChecked('monitor_enable_autoscroll')) Monitor_output_autoscrollcmd();
+    if (getChecked('monitor_enable_autoscroll') !== "false") Monitor_output_autoscrollcmd();
 }
 
 function Monitor_check_verbose_mode() {
@@ -44,7 +44,7 @@ export const Monitor_output_Update = (message) => {
     }
 
     var output = "";
-    var isverbosefilter = getChecked("monitor_enable_verbose_mode");
+    var isverbosefilter = getChecked("monitor_enable_verbose_mode") !== "false";
     for (var out of Monitor_output) {
         var outlc = out.trim();
 

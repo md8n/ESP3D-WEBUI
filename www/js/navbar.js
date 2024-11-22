@@ -27,7 +27,7 @@ const enableItem = (itemName) => {
 const ontoggleLock = (forcevalue) => {
     if (typeof forcevalue != 'undefined') setChecked('lock_UI', forcevalue);
     const jogUIElem = id('JogUI');
-    if (getChecked('lock_UI')) {
+    if (getChecked('lock_UI') !== "false") {
         id('lock_UI_btn_txt').innerHTML = translate_text_item('Unlock interface');
         disable_items(id('maintab'), true);
         disable_items(id('configtab'), true);

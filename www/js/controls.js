@@ -89,8 +89,9 @@ const on_autocheck_position = (use_value) => {
     if (typeof (use_value) !== 'undefined') {
         setChecked('autocheck_position', !!use_value);
     }
-    if (getChecked('autocheck_position')) {
-        var interval = parseInt(id('interval_positions').value);
+    if (getChecked('autocheck_position') !== "false") {
+        const intPosElem = id('interval_positions');
+        var interval = parseInt(intPosElem?.value || undefined);
         if (!isNaN(interval) && interval > 0 && interval < 100) {
             if (interval_position != -1) clearInterval(interval_position);
             interval_position = setInterval(function () {
@@ -98,7 +99,9 @@ const on_autocheck_position = (use_value) => {
             }, interval * 1000);
         } else {
             setChecked('autocheck_position', false);
-            id('interval_positions').value = 0;
+            if (intPosElem) {
+                intPosElem.value = 0;
+            }
             if (interval_position != -1) clearInterval(interval_position);
             interval_position = -1;
         }
@@ -144,7 +147,7 @@ function control_motorsOff() {
 }
 
 function SendHomecommand(cmd) {
-    if (getChecked('lock_UI')) {
+    if (getChecked('lock_UI') !== "false") {
         return;
     }
     switch (cmd) {
@@ -187,7 +190,7 @@ function JogFeedrate(axis) {
 }
 
 function SendJogcommand(cmd, feedrate) {
-    if (getChecked('lock_UI')) {
+    if (getChecked('lock_UI') !== "false") {
         return;
     }
     var feedratevalue = "";

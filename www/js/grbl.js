@@ -3,7 +3,7 @@ import { get_icon_svg } from "./icons";
 import { sendCommand } from "./maslow";
 import { SendPrinterCommand } from "./printercmd";
 import { translate_text_item } from "./translate";
-import { getValue, id, setChecked } from "./util";
+import { getChecked, getValue, id, setChecked } from "./util";
 
 
 var interval_status = -1
@@ -38,7 +38,7 @@ function setClickability(element, visible) {
 
 var autocheck = 'report_auto'
 function getAutocheck() {
-  return getChecked(autocheck)
+  return getChecked(autocheck) !== "false";
 }
 function setAutocheck(flag) {
   setChecked(autocheck, flag)

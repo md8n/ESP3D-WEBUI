@@ -73,15 +73,20 @@ function click(name) {
 function files(name) {
   return id(name).files
 }
-/** Set an elements `checked` value (if the element exists) */
+/** Set a checkbox element's `value` (if the element exists) */
 const setChecked = (name, val) => {
-  const elem = id(name);
-  if (elem) {
-    elem.checked = val;
+  const checkBox = id(name);
+  if (checkBox) {
+    checkBox.value = String(val);
   }
 }
-/** Return an element's `checked` value. If the element does not exist or does not have a `checked` value `false` is returned */
-const getChecked = (name) => id(name)?.checked || false;
+/** Return a checkbox element's `value`.
+ * Note that this is a string.
+ * If the element does not exist a "false" string is returned */
+const getChecked = (name) => {
+  const checkBox = id(name);
+  return checkBox?.value || "false";
+}
 
 const sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay));
 
