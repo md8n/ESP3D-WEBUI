@@ -265,6 +265,14 @@ const buildFieldIdAttr = (key, value) => `id="${buildFieldId(key, value)}"`;
 const buildMinMaxAttr = (value) => `${typeof value.min !== "undefined" ? ' min="' + value.min + '"' : ''}${typeof value.max !== "undefined" ? ' max="' + value.max + '"' : ''}`;
 const buildPlaceholderAttr = (value) => value.placeholder ? `placeholder="${value.placeholder}" translateph` : "";
 
+/** Appends the element to the parent element and adds a break after it */
+const appendElemToParent = (parentElem, elem) => {
+    parentElem.append(elem);
+    parentElem.append(document.createElement("br"));
+}
+
+const setGroupId = (elem, fId) => elem.setAttribute("id", `${fId}_group`);
+
 /** Return the `fieldId`, if defined, otherwise return the `key` */
 const buildFieldId = (key, value) => value.fieldId || key;
 
@@ -281,7 +289,8 @@ const buildDialog = (parentElem, definitions, isFirstLevel = false) => {
                 // Generate a checkbox to control a panel
                 const inpPCheckBox = `<input type="checkbox" ${buildFieldIdAttr(key, value)}/>`;
                 const lblPCheckBox = `<label>${inpPCheckBox}${translate_text_item(value.label || key, true)}</label>`;
-                const panelPCheckBox = isFirstLevel ? buildDivPanel(`<div class="checkbox">${lblPCheckBox}</div>`) : buildDiv(lblPCheckBox, "checkbox")
+                const panelPCheckBox = isFirstLevel ? buildDivPanel(`<div class="checkbox">${lblPCheckBox}</div>`) : buildDiv(lblPCheckBox, "checkbox");
+                setGroupId(panelPCheckBox, fId);
                 parentElem.append(panelPCheckBox);
 
                 // Preferences is tested for, but we do expect it always to be present
@@ -299,40 +308,38 @@ const buildDialog = (parentElem, definitions, isFirstLevel = false) => {
                 // Generate a checkbox for a boolean value
                 const inpBCheckBox = `<input type="checkbox" ${buildFieldIdAttr(key, value)}/>`;
                 const lblBCheckBox = `<label>${inpBCheckBox}${translate_text_item(value.label || key, true)}</label>`;
-                const panelBCheckBox = buildDiv(lblBCheckBox, "checkbox")
-                parentElem.append(panelBCheckBox);
-                parentElem.append(document.createElement("br"));
-
+                const panelBCheckBox = buildDiv(lblBCheckBox, "checkbox");
+                setGroupId(panelBCheckBox, fId);
+                appendElemToParent(parentElem, panelBCheckBox);
                 break;
             case "int":
             case "float":
                 // Generate a mini table with input field
-                const inpNFld = `<input type="number"${buildFieldIdAttr(key, value)}${buildMinMaxAttr(value)} class="form-control ${value.inpClass || ""}"/>`;
+                const inpNFld = `<input type="number" ${buildFieldIdAttr(key, value)}${buildMinMaxAttr(value)} class="form-control ${value.inpClass || ""}"/>`;
                 const inpNTd = buildTdInp(inpNFld, key, value);
 
                 const unitTd = `<td><div class="input-group"><input class="hide_it" /><span class="input-group-addon form_control" translate>${value.units}</span></div></td>`;
 
                 const inpNTable = buildTable(`<tr>${buildTdLabel(key, value)}${inpNTd}${unitTd}</tr>`);
+                setGroupId(inpNTable, fId);
                 // Check for feedrate that might not be visible
-                const fieldId = buildFieldId(key, value);
-                if (fieldId.endsWith("_feedrate")) {
-                    inpNTable.setAttribute("id", `${fieldId}_group`);
-                    if (["a_feedrate", "b_feedrate", "c_feedrate"].includes(fieldId)) {
+                if (fId.endsWith("_feedrate")) {
+
+                    if (["a_feedrate", "b_feedrate", "c_feedrate"].includes(fId)) {
                         inpNTable.setAttribute("class", "hide_it topmarginspace");
                     }
                 }
-                parentElem.append(inpNTable);
-                parentElem.append(document.createElement("br"));
+                appendElemToParent(parentElem, inpNTable);
                 id(fId).addEventListener("change", (event) => CheckValue(fId, value));
                 break;
             case "text":
                 // Generate a mini table with input field
-                const inpTFld = `<input type="text"${buildFieldIdAttr(key, value)} class="form-control ${value.inpClass || ""}" ${buildPlaceholderAttr(value)}/>`;
+                const inpTFld = `<input type="text" ${buildFieldIdAttr(key, value)} class="form-control ${value.inpClass || ""}" ${buildPlaceholderAttr(value)}/>`;
                 const inpTTd = `<td><div class="input-group has-control">${inpTFld}${buildSpnErrFld(value, key)}</div></td>`;
 
                 const inpTTable = buildTable(`<tr>${buildTdLabel(key, value)}${inpTTd}</tr>`);
-                parentElem.append(inpTTable);
-                parentElem.append(document.createElement("br"));
+                setGroupId(inpTTable, fId);
+                appendElemToParent(parentElem, inpTTable);
                 id(fId).addEventListener("change", (event) => CheckValue(fId, value));
                 break;
             case "select":
@@ -340,8 +347,8 @@ const buildDialog = (parentElem, definitions, isFirstLevel = false) => {
                 const inpSTable = buildTable( `<tr>${buildTdIcon("flag")}<td>${build_language_list(fId)}</td></tr>`);
                 // Use the key for the containing table, instead of the fId, which has been used for the select
                 inpSTable.setAttribute("id", key);
-                parentElem.append(inpSTable);
-                parentElem.append(document.createElement("br"));
+                setGroupId(inpSTable, fId);
+                appendElemToParent(parentElem, inpSTable);
                 add_language_list_event_handler(fId);
                 break;
             default:
@@ -1151,15 +1158,14 @@ const valueMaxTest = (value, valueDef) => {
 }
 
 
-function CheckValue(fId, valueDef) {
-    var value = 0;
+const CheckValue = (fId, valueDef) => {
     const errorList = [];
     const value = id(fId).value;
     // Check for any specific test and use that in preference
     if ("valFunc" in valueDef) {
         const vfTest = valueDef.valFunc(value);
         if (vfTest) {
-            errorList.append(vfTest);
+            errorList.push(vfTest);
         }
     } else {
         switch (valueDef.valueType) {
@@ -1170,19 +1176,19 @@ function CheckValue(fId, valueDef) {
             case "int":
                 const vInt = parseInt(value);
                 if (isNaN(vInt)) {
-                    errorList.append(translate_text_item(`${valueDef.label} must be an integer"`));
+                    errorList.push(translate_text_item(`${valueDef.label} must be an integer"`));
                 } else {
-                    errorList.append(valueMinTest(vInt, valueDef));
-                    errorList.append(valueMaxTest(vInt, valueDef));
+                    errorList.push(valueMinTest(vInt, valueDef));
+                    errorList.push(valueMaxTest(vInt, valueDef));
                 }
                 break;
             case "float":
                 const vFlt = parseFloat(value);
                 if (isNaN(vFlt)) {
-                    errorList.append(translate_text_item(`${valueDef.label} must be an float"`));
+                    errorList.push(translate_text_item(`${valueDef.label} must be an float"`));
                 } else {
-                    errorList.append(valueMinTest(vFlt, valueDef));
-                    errorList.append(valueMaxTest(vFlt, valueDef));
+                    errorList.push(valueMinTest(vFlt, valueDef));
+                    errorList.push(valueMaxTest(vFlt, valueDef));
                 }
                 break;
             case "text":
