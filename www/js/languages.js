@@ -63,7 +63,7 @@ const build_language_list = (id_item) => {
 /** Adds the event handler to the select.
  * IMPORTANT only call this after the language_list has been added to the DOM */
 const add_language_list_event_handler = (id_item) => {
-    id(id_item).addEventListener("onchange", (event) => translate_text(this.value));
+    id(id_item).addEventListener("change", (event) => translate_text(this.value));
 }
 
 export { add_language_list_event_handler, build_language_list, language, language_list };

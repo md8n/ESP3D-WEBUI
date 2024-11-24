@@ -32,8 +32,6 @@ const fetchJson = async (fileName) => {
 var preferenceslist = [];
 var language_save = language();
 
-const panelIdNames = ["show_control_panel", "show_grbl_panel", "show_grbl_probe_tab", "show_files_panel", "show_commands_panel"];
-
 let preferences = {
     "language_list": {
         "defValue": "en",
@@ -83,7 +81,7 @@ let preferences = {
                 "defValue": 2500,
                 "valueType": "int",
                 "units": "mm/min",
-                "label": "XY feedrate",
+                "label": "XY axis feedrate",
                 "inpClass": "w8",
                 "min": 1
             },
@@ -91,7 +89,7 @@ let preferences = {
                 "defValue": 300,
                 "valueType": "int",
                 "units": "mm/min",
-                "label": "Z feedrate",
+                "label": "Z axis feedrate",
                 "inpClass": "w8",
                 "min": 1
             },
@@ -99,7 +97,7 @@ let preferences = {
                 "defValue": 100,
                 "valueType": "int",
                 "units": "mm/min",
-                "label": "A feedrate",
+                "label": "A axis feedrate",
                 "inpClass": "w6",
                 "min": 1
             },
@@ -107,7 +105,7 @@ let preferences = {
                 "defValue": 100,
                 "valueType": "int",
                 "units": "mm/min",
-                "label": "B feedrate",
+                "label": "B axis feedrate",
                 "inpClass": "w6",
                 "min": 1
             },
@@ -115,7 +113,7 @@ let preferences = {
                 "defValue": 100,
                 "valueType": "int",
                 "units": "mm/min",
-                "label": "C feedrate",
+                "label": "C axis feedrate",
                 "inpClass": "w6",
                 "min": 1
             },
@@ -135,8 +133,14 @@ let preferences = {
                 "units": "ms",
                 "label": "AutoReport Interval",
                 "inpClass": "w6",
-                "min": 50,
-                "max": 30000
+                "min": 0,
+                "max": 30000,
+                valFunc: (value) => {
+                    const vInt = parseInt(value);
+                    return !isNaN(vInt) && (vInt == 0 || (vInt >= 50 && vInt <= 30000))
+                        ? ""
+                        : translate_text_item("Value of auto-report must be 0 or between 50ms and 30000ms !!");
+                },
             },
             "interval_status": {
                 "defValue": 3,
@@ -144,7 +148,7 @@ let preferences = {
                 "units": "sec",
                 "label": "Status Refresh Time",
                 "inpClass": "w4",
-                "min": 1,
+                "min": 0,
                 "max": 99
             },
             "enable_grbl_probe_panel": {
@@ -209,6 +213,12 @@ let preferences = {
                 "valueType": "text",
                 "label": "File extensions (use ; to separate)",
                 "inpClass": "w25",
+                valFunc: (value) => {
+                    const extPat = /^[a-z0-9;]*$/i;
+                    return value.match(extPat)
+                        ? ""
+                        : translate_text_item("Only alphanumeric chars separated by ; for extensions filters !!");
+                },
             },
         },
     },
@@ -281,7 +291,7 @@ const buildDialog = (parentElem, definitions, isFirstLevel = false) => {
                         pBody.setAttribute("id", value.panel);
                     }
                     panelPCheckBox.append(pBody);
-                    id(fId).addEventListener("click", (event) => togglePanel(fId, value.panel))
+                    id(fId).addEventListener("click", (event) => togglePanel(fId, value.panel));
                     buildDialog(pBody, value.preferences);
                 }
                 break;
@@ -313,7 +323,7 @@ const buildDialog = (parentElem, definitions, isFirstLevel = false) => {
                 }
                 parentElem.append(inpNTable);
                 parentElem.append(document.createElement("br"));
-                id(value.fieldId || key).addEventListener("onchange", (event) => Checkvalues(fId));
+                id(fId).addEventListener("change", (event) => CheckValue(fId, value));
                 break;
             case "text":
                 // Generate a mini table with input field
@@ -323,12 +333,13 @@ const buildDialog = (parentElem, definitions, isFirstLevel = false) => {
                 const inpTTable = buildTable(`<tr>${buildTdLabel(key, value)}${inpTTd}</tr>`);
                 parentElem.append(inpTTable);
                 parentElem.append(document.createElement("br"));
-                id(value.fieldId || key).addEventListener("onchange", (event) => Checkvalues(fId));
+                id(fId).addEventListener("change", (event) => CheckValue(fId, value));
                 break;
             case "select":
                 // Generate a mini table with select field
                 const inpSTable = buildTable( `<tr>${buildTdIcon("flag")}<td>${build_language_list(fId)}</td></tr>`);
-                inpSTable.setAttribute("id", fId);
+                // Use the key for the containing table, instead of the fId, which has been used for the select
+                inpSTable.setAttribute("id", key);
                 parentElem.append(inpSTable);
                 parentElem.append(document.createElement("br"));
                 add_language_list_event_handler(fId);
@@ -346,7 +357,7 @@ const setDialog = (parentElem, definitions, isFirstLevel = false) => {
         const fId = buildFieldId(key, value);
         switch (value.valueType) {
             case "panel":
-                case "bool":
+            case "bool":
                 // Set the `checked` attribute of a checkbox to the default value
                 // - note that this does not change, the actual value is in the checkbox `value`
                 id(fId).checked = ("defValue" in value)
@@ -354,6 +365,18 @@ const setDialog = (parentElem, definitions, isFirstLevel = false) => {
                     : false;
                 id(fId).value = ("defValue" in value) ? value.defValue : "";
                 id(fId).click();
+
+                if ("panel" in value && "preferences" in value) {
+                    setDialog(id(value.panel), value.preferences);
+                }
+                break;
+            case "int":
+            case "float":
+            case "text":
+            case "select":
+                if ("defValue" in value) {
+                    id(fId).value = value.defValue;
+                }
                 break;
             default:
                 console.log(`${key}: ${JSON.stringify(value)}`);
@@ -379,6 +402,7 @@ const initpreferences = () => {
     // }
 }
 
+/** Get the part of the preferences structure identified by the name supplied */
 const getPrefPath = (prefName) => {
     const prefPath = prefName.trim().replace(".", ".preferences.").replace(".preferences.preferences.", ".preferences.");
     let pref = preferences;
@@ -435,7 +459,7 @@ const handlePing = () => {
 }
 
 translate_text(getPrefValue("language"));
-build_HTML_setting_list((current_setting_filter()));
+build_HTML_setting_list(current_setting_filter());
 if (typeof id('camtab') != "undefined") {
     var camoutput = false;
     if (typeof (getPrefValue("enable_camera")) !== 'undefined') {
@@ -595,39 +619,10 @@ const togglePanel = (checkboxId, panelId) => {
     const currentValue = getChecked(checkboxId) !== "false";
     // toggle the currentValue, and do all the rest
     setChecked(checkboxId, !currentValue);
-    if (currentValue) {
+    if (!currentValue) {
         displayBlock(panelId);
     } else {
         displayNone(panelId);
-    }
-}
-
-function prefs_toggledisplay(id_source) {
-    switch (id_source) {
-        case 'show_files_panel':
-            if (getChecked(id_source) !== "false") displayBlock("files_preferences");
-            else displayNone("files_preferences");
-            break;
-        case 'show_grbl_panel':
-            if (getChecked(id_source) !== "false") displayBlock("grbl_preferences");
-            else displayNone("grbl_preferences");
-            break;
-        case 'show_camera_panel':
-            if (getChecked(id_source) !== "false") displayBlock("camera_preferences");
-            else displayNone("camera_preferences");
-            break;
-        case 'show_control_panel':
-            if (getChecked(id_source) !== "false") displayBlock("control_preferences");
-            else displayNone("control_preferences");
-            break;
-        case 'show_commands_panel':
-            if (getChecked(id_source) !== "false") displayBlock("cmd_preferences");
-            else displayNone("cmd_preferences");
-            break;
-        case 'show_grbl_probe_tab':
-            if (getChecked(id_source) !== "false") displayBlock("grbl_probe_preferences");
-            else displayNone("grbl_probe_preferences");
-            break;
     }
 }
 
@@ -819,7 +814,6 @@ const showpreferencesdlg = () => {
     id("PreferencesDialogClose").addEventListener("click", (event) => closePreferencesDialog());
     id("PreferencesDialogCancel").addEventListener("click", (event) => closePreferencesDialog());
     id("PreferencesDialogSave").addEventListener("click", (event) => SavePreferences());
-    panelIdNames.forEach((panelIdName) => id(panelIdName).addEventListener("click", (event) => prefs_toggledisplay(panelIdName)));
 
     language_save = language();
     build_dlg_preferences_list();
@@ -917,8 +911,6 @@ function build_dlg_preferences_list() {
 
     //file filters
     setStringElem('f_filters', 'f_filters');
-
-    panelIdNames.forEach((panelIdName) => prefs_toggledisplay(panelIdName));
 }
 
 function closePreferencesDialog() {
@@ -1048,22 +1040,22 @@ function SavePreferences(current_preferences) {
     }
     console.log("save prefs");
     if (((typeof (current_preferences) != 'undefined') && !current_preferences) || (typeof (current_preferences) == 'undefined')) {
-        if (!Checkvalues("autoreport_interval") ||
-            !Checkvalues("interval_positions") ||
-            !Checkvalues("interval_status") ||
-            !Checkvalues("xy_feedrate") ||
-            !Checkvalues("f_filters") ||
-            !Checkvalues("probemaxtravel") ||
-            !Checkvalues("probefeedrate") ||
-            !Checkvalues("proberetract") ||
-            !Checkvalues("probetouchplatethickness")
+        if (!CheckValue("autoreport_interval") ||
+            !CheckValue("interval_positions") ||
+            !CheckValue("interval_status") ||
+            !CheckValue("xy_feedrate") ||
+            !CheckValue("f_filters") ||
+            !CheckValue("probemaxtravel") ||
+            !CheckValue("probefeedrate") ||
+            !CheckValue("proberetract") ||
+            !CheckValue("probetouchplatethickness")
         ) return;
         if (grblaxis() > 2) {
-            if (!Checkvalues("z_feedrate")) return;
+            if (!CheckValue("z_feedrate")) return;
         }
-        if ((grblaxis() > 3) && (!Checkvalues("a_feedrate"))) return;
-        if ((grblaxis() > 4) && (!Checkvalues("b_feedrate"))) return;
-        if ((grblaxis() > 5) && (!Checkvalues("c_feedrate"))) return;
+        if ((grblaxis() > 3) && (!CheckValue("a_feedrate"))) return;
+        if ((grblaxis() > 4) && (!CheckValue("b_feedrate"))) return;
+        if ((grblaxis() > 5) && (!CheckValue("c_feedrate"))) return;
 
         preferenceslist = [];
         var saveprefs = "[{\"language\":\"" + language();
@@ -1144,106 +1136,84 @@ function preferencesUploadfailed(error_code, response) {
     alertdlg(translate_text_item("Error"), translate_text_item("Save preferences failed!"));
 }
 
+/** Test the supplied numeric value against any defined `min` test */
+const valueMinTest = (value, valueDef) => {
+    return ("min" in valueDef && value < valueDef.min) 
+        ? translate_text_item(`${valueDef.label} must be greater than or equal to ${valueDef.min}"`)
+        : "";
+}
 
-function Checkvalues(id_2_check) {
-    var status = true;
+/** Test the supplied numeric value against any defined `max` test */
+const valueMaxTest = (value, valueDef) => {
+    return ("max" in valueDef && value > valueDef.max) 
+        ? translate_text_item(`${valueDef.label} must be less than or equal to ${valueDef.max}"`)
+        : "";
+}
+
+
+function CheckValue(fId, valueDef) {
     var value = 0;
-    let error_message = "";
-    switch (id_2_check) {
-        case "autoreport_interval":
-            value = parseInt(getValue(id_2_check));
-            if (!(!isNaN(value) && (value == 0 || (value >= 50 && value <= 30000)))) {
-                error_message = translate_text_item("Value of auto-report must be 0 or between 50ms and 30000ms !!");
-                status = false;
-            }
-            break;
-        case "interval_status":
-            value = parseInt(getValue(id_2_check));
-            if (!(!isNaN(value) && value >= 0 && value <= 100)) {
-                error_message = translate_text_item("Value of auto-check must be between 0s and 99s !!");
-                status = false;
-            }
-            break;
-        case "interval_positions":
-            value = parseInt(getValue(id_2_check));
-            if (!(!isNaN(value) && value >= 1 && value <= 100)) {
-                error_message = translate_text_item("Value of auto-check must be between 0s and 99s !!");
-                status = false;
-            }
-            break;
-        case "xy_feedrate":
-            value = parseInt(getValue(id_2_check));
-            if (!(!isNaN(value) && value >= 1)) {
-                error_message = translate_text_item("XY Feedrate value must be at least 1 mm/min!");
-                status = false;
-            }
-            break;
-        case "z_feedrate":
-            value = parseInt(getValue(id_2_check));
-            if (!(!isNaN(value) && value >= 1)) {
-                error_message = translate_text_item("Z Feedrate value must be at least 1 mm/min!");
-                status = false;
-            }
-            break;
-        case "a_feedrate":
-        case "b_feedrate":
-        case "c_feedrate":
-            value = parseInt(getValue(id_2_check));
-            if (!(!isNaN(value) && value >= 1)) {
-                error_message = translate_text_item("Axis Feedrate value must be at least 1 mm/min!");
-                status = false;
-            }
-            break;
-        case "probefeedrate":
-            value = parseInt(getValue(id_2_check));
-            if (!(!isNaN(value) && value >= 1 && value <= 9999)) {
-                error_message = translate_text_item("Value of probe feedrate must be between 1 mm/min and 9999 mm/min !");
-                status = false;
-            }
-            break;
-        case "probemaxtravel":
-            value = parseInt(getValue(id_2_check));
-            if (!(!isNaN(value) && value >= 1 && value <= 9999)) {
-                error_message = translate_text_item("Value of maximum probe travel must be between 1 mm and 9999 mm !");
-                status = false;
-            }
-            break;
-        case "proberetract":
-            value = parseInt(getValue(id_2_check));
-            if (!(!isNaN(value) && value >= 0 && value <= 9999)) {
-                error_message = translate_text_item("Value of probe retract must be between 0 mm and 9999 mm !");
-                status = false;
-            }
-            break;
-        case "probetouchplatethickness":
-            value = parseInt(getValue(id_2_check));
-            if (!(!isNaN(value) && value >= 0 && value <= 9999)) {
-                error_message = translate_text_item("Value of probe touch plate thickness must be between 0 mm and 9999 mm !");
-                status = false;
-            }
-            break;
-        case "f_filters":
-            //TODO a regex would be better
-            value = getValue(id_2_check);
-            if ((value.indexOf(".") != -1) ||
-                (value.indexOf("*") != -1)) {
-                error_message = translate_text_item("Only alphanumeric chars separated by ; for extensions filters");
-                status = false;
-            }
-            break;
+    const errorList = [];
+    const value = id(fId).value;
+    // Check for any specific test and use that in preference
+    if ("valFunc" in valueDef) {
+        const vfTest = valueDef.valFunc(value);
+        if (vfTest) {
+            errorList.append(vfTest);
+        }
+    } else {
+        switch (valueDef.valueType) {
+            case "panel":
+            case "bool":
+                // These are both boolean values
+                break;
+            case "int":
+                const vInt = parseInt(value);
+                if (isNaN(vInt)) {
+                    errorList.append(translate_text_item(`${valueDef.label} must be an integer"`));
+                } else {
+                    errorList.append(valueMinTest(vInt, valueDef));
+                    errorList.append(valueMaxTest(vInt, valueDef));
+                }
+                break;
+            case "float":
+                const vFlt = parseFloat(value);
+                if (isNaN(vFlt)) {
+                    errorList.append(translate_text_item(`${valueDef.label} must be an float"`));
+                } else {
+                    errorList.append(valueMinTest(vFlt, valueDef));
+                    errorList.append(valueMaxTest(vFlt, valueDef));
+                }
+                break;
+            case "text":
+                break;   
+            case "select":
+                break;
+            default:
+                console.log(`${key}: ${JSON.stringify(value)}`);
+                break;
+        }
     }
-    if (status) {
-        id(id_2_check + "_group").classList.remove("has-feedback");
-        id(id_2_check + "_group").classList.remove("has-error");
-        id(id_2_check + "_icon").innerHTML = "";
+
+    // Old skul hack to remove unwanted entries from an array, faster than filter
+    for (let ix = errorList.length - 1; ix >= 0; ix--) {
+        if (!errorList[ix]) {
+            errorList.splice(ix, 1);
+        }
+    }
+
+    if (errorList.length == 0) {
+        id(fId + "_group").classList.remove("has-feedback");
+        id(fId + "_group").classList.remove("has-error");
+        id(fId + "_icon").innerHTML = "";
     } else {
         // has-feedback hides the value so it is hard to fix it
-        // id(id_2_check + "_group").classList.add("has-feedback");
-        id(id_2_check + "_group").classList.add("has-error");
-        // id(id_2_check + "_icon").innerHTML = get_icon_svg("remove");
+        // id(fId + "_group").classList.add("has-feedback");
+        id(fId + "_group").classList.add("has-error");
+        // id(fId + "_icon").innerHTML = get_icon_svg("remove");
         alertdlg(translate_text_item("Out of range"), error_message);
     }
-    return status;
+    return errorList.length == 0;
 }
 
 export { enable_ping, getPrefValue, initpreferences, showpreferencesdlg };
