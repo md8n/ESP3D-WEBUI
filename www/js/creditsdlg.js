@@ -1,4 +1,4 @@
-import { setactiveModal, showModal } from "./modaldlg";
+import { closeModal, setactiveModal, showModal } from "./modaldlg";
 import { id } from "./util";
 
 //Credits dialog
