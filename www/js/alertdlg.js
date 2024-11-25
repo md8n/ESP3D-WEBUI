@@ -8,6 +8,7 @@ export const alertdlg = (titledlg, textdlg, closefunc) => {
         return;
     }
 
+    id("cancelAlertDlg").addEventListener("click", (event) => closeModal('cancel'));
     id("closeAlertDlg").addEventListener("click", (event) => closeModal('Ok'));
 
     var title = modal.element.getElementsByClassName("modal-title")[0];

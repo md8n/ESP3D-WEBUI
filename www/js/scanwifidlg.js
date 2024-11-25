@@ -2,14 +2,22 @@ import { SendGetHttp } from "./http";
 import { get_icon_svg } from "./icons";
 import { closeModal, setactiveModal, showModal } from "./modaldlg";
 import { translate_text_item } from "./translate";
-import { conErr, stdErrMsg, displayBlock, displayNone, getValue, setValue } from "./util";
+import { conErr, stdErrMsg, displayBlock, displayNone, id, getValue, setValue } from "./util";
 
 var ssid_item_scanwifi = -1;
 var ssid_subitem_scanwifi = -1;
-//scanwifi dialog
-function scanwifidlg(item, subitem) {
+
+/** scanwifi dialog */
+const scanwifidlg = (item, subitem) => {
     var modal = setactiveModal('scanwifidlg.html', scanwifidlg_close);
-    if (modal == null) return;
+    if (modal == null) {
+        return;
+    }
+
+    id("scanWiFiDlgCancel").addEventListener("click", (event) => closeModal('cancel'));
+    id("scanWiFiDlgClose").addEventListener("click", (event) => closeModal('cancel'));
+    id("refresh_scanwifi_btn").addEventListener("click", (event) => refresh_scanwifi());
+
     ssid_item_scanwifi = item;
     ssid_subitem_scanwifi = subitem;
     showModal();
@@ -101,3 +109,5 @@ function getscanWififailed(error_code, response) {
 function scanwifidlg_close(response) {
     //console.log(response);
 }
+
+export { scanwifidlg };

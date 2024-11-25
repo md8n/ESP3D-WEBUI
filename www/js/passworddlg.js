@@ -1,12 +1,21 @@
 import { SendGetHttp } from "./http";
 import { closeModal, setactiveModal, showModal } from "./modaldlg";
 import { translate_text_item } from "./translate";
-import { conErr, displayBlock, displayNone } from "./util";
+import { conErr, displayBlock, displayNone, id } from "./util";
 
-//changepassword dialog
-function changepassworddlg() {
+/** Change Password dialog */
+const changepassworddlg = () => {
     var modal = setactiveModal('passworddlg.html');
-    if (modal == null) return;
+    if (modal == null) {
+        return;
+    }
+
+    id("passwordDlgClose").addEventListener("click", (event) => closeModal('cancel'));
+    id("password_password_text1").addEventListener("keyup", (event) => checkpassword());
+    id("password_password_text2").addEventListener("keyup", (event) => checkpassword());
+    id("passwordDlgCancel").addEventListener("click", (event) => closeModal('cancel'));
+    id("change_password_btn").addEventListener("click", (event) => SubmitChangePassword());
+
     displayNone('password_loader');
     displayBlock('change_password_content');
     displayNone('change_password_btn');
@@ -16,7 +25,6 @@ function changepassworddlg() {
     id('password_password_text2').innerHTML = "";
     showModal();
 }
-
 
 function checkpassword() {
     var pwd = id('password_password_text').value.trim();
@@ -52,3 +60,5 @@ function SubmitChangePassword() {
     displayNone('change_password_content');
     SendGetHttp(url, ChangePasswordsuccess, ChangePasswordfailed);
 }
+
+export { changepassworddlg };

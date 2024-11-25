@@ -60,6 +60,8 @@ const setupdlg = () => {
     id('settings_list_data').innerHTML = "";
     active_wizard_page = 0;
 
+    id("setupDlgCancel").addEventListener("click", (event) => closeModal('cancel'));
+
     wizardDone("startsteplink");
 
     id("wizard_button").innerHTML = translate_text_item("Start setup");

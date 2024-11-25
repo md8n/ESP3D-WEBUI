@@ -1,3 +1,5 @@
+import { creditsdlg } from "./creditsdlg";
+import { changepassworddlg } from "./passworddlg";
 import { showpreferencesdlg } from "./preferencesdlg";
 import { settingstab } from "./settingstab";
 import { setupdlg } from "./setupdlg";
@@ -8,14 +10,20 @@ import { disable_items, displayNone, getChecked, id, setChecked } from "./util";
 /** Set up the event handlers for the navbar */
 const navbar = () => {
     id("toggleLockUI").addEventListener("click", (event) => ontoggleLock());
+
     id("showPreferencesDlg").addEventListener("click", (event) => showpreferencesdlg());
     id("showSetupDlg").addEventListener("click", (event) => setupdlg());
+    id("showCreditsDlg").addEventListener("click", (event) => creditsdlg());
 
     id("maintablink").addEventListener("click", (event) => opentab(event, 'maintab', 'mainuitabscontent', 'mainuitablinks'));
     id("camtablink").addEventListener("click", (event) => opentab(event, 'cameratab', 'mainuitabscontent', 'mainuitablinks'));
     id("configtablink").addEventListener("click", (event) => opentab(event, 'configtab', 'mainuitabscontent', 'mainuitablinks'));
     id("settingtablink").addEventListener("click", (event) => opentab(event, 'settingstab', 'mainuitabscontent', 'mainuitablinks'));
     id("tablettablink").addEventListener("click", (event) => opentab(event, 'tablettab', 'mainuitabscontent', 'mainuitablinks'));
+
+    id("password_menu").addEventListener("click", (event) => changepassworddlg());
+    id("showLoginDlg").addEventListener("click", (event) => logindlg());
+    id("logout_menu").addEventListener("click", (event) => confirmdlg(translate_text_item('Disconnection requested'), translate_text_item('Please confirm disconnection.'), DisconnectLogin));
 
     settingstab();
 }
