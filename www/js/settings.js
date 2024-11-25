@@ -4,6 +4,7 @@ import { M } from "./constants";
 import { calibrationResults } from "./grbl";
 import { http_communication_locked, SendGetHttp } from "./http";
 import { get_icon_svg } from "./icons";
+import { restartdlg } from "./restartdlg";
 import { translate_text_item } from "./translate";
 import { conErr, stdErrMsg, displayBlock, displayNone, id, setChecked } from "./util";
 

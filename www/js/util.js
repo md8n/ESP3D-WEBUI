@@ -103,4 +103,12 @@ const conErr = (error_code, response, error_prefix = "Error") => {
   console.error(errMsg);
 }
 
-export { classes, conErr, stdErrMsg, disable_items, displayBlock, displayFlex, displayNone, getChecked, setChecked, getValue, setValue, id };
+let lastPing = 0;
+const last_ping = (value) => {
+  if (typeof value === "number") {
+    lastPing = value;
+  }
+  return lastPing;
+}
+
+export { classes, conErr, stdErrMsg, disable_items, displayBlock, displayFlex, displayNone, last_ping, getChecked, setChecked, getValue, setValue, id };

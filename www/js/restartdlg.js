@@ -2,13 +2,16 @@ import { http_communication_locked } from "./http";
 import { closeModal, setactiveModal, showModal } from "./modaldlg";
 import { SendPrinterCommand } from "./printercmd";
 import { translate_text_item } from "./translate";
-import { conErr, stdErrMsg, displayBlock, displayNone } from "./util";
+import { conErr, stdErrMsg, displayBlock, displayNone, id, last_ping } from "./util";
 
-//restart dialog
-function restartdlg() {
+/** Restart dialog */
+const restartdlg = () => {
     console.log("show restart");
     var modal = setactiveModal('restartdlg.html');
-    if (modal == null) return;
+    if (modal == null) {
+        return;
+    }
+
     displayBlock('prgrestart');
     id('restartmsg').innerHTML = translate_text_item("Restarting, please wait....");
     showModal();
@@ -22,7 +25,7 @@ function restart_esp_success(response) {
     http_communication_locked(true);
     x.max = 10;
     interval = setInterval(function() {
-        last_ping = Date.now();
+        last_ping(Date.now());
         i = i + 1;
         var x = id("prgrestart");
         x.value = i;
@@ -41,3 +44,5 @@ function restart_esp_failed(error_code, response) {
     conErr(error_code, response);
     closeModal('Cancel')
 }
+
+export { restartdlg };

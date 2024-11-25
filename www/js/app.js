@@ -39,7 +39,6 @@ var SETTINGS_AP_MODE = 1
 var SETTINGS_STA_MODE = 2
 var SETTINGS_FALLBACK_MODE = 3
 var interval_ping = -1
-var last_ping = 0
 
 //Check for IE
 //Edge

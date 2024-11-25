@@ -5,6 +5,7 @@ import { clear_cmd_list, http_communication_locked } from "./http";
 import { enable_ping } from "./preferencesdlg";
 import { decode_entitie, translate_text_item } from "./translate";
 import { UIdisableddlg } from "./UIdisableddlg";
+import { last_ping } from "./util";
 
 let asyncWebComm = false;
 let convertDHT2Fahrenheit = false;
@@ -25,7 +26,7 @@ const CancelCurrentUpload = () => {
 }
 
 const check_ping = () => {
-    if ((Date.now() - last_ping) > 20000) {
+    if ((Date.now() - last_ping()) > 20000) {
         Disable_interface(true);
         console.log("No heart beat for more than 20s");
     }
@@ -164,7 +165,7 @@ const startSocket = () => {
                     if (tval[0] == 'PING') {
                         page_id = tval[1]
                         // console.log("ping from id = " + page_id);
-                        last_ping = Date.now()
+                        last_ping(Date.now())
                         if (interval_ping == -1)
                             interval_ping = setInterval(function () {
                                 check_ping()

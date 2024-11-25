@@ -13,7 +13,7 @@ import { ontoggleLock } from "./navbar";
 import { build_HTML_setting_list, current_setting_filter } from "./settings";
 import { check_ping } from "./socket";
 import { decode_entitie, translate_text, translate_text_item } from "./translate";
-import { conErr, displayBlock, displayFlex, displayNone, getChecked, getValue, id, setChecked, setValue } from "./util";
+import { conErr, displayBlock, displayFlex, displayNone, last_ping, getChecked, getValue, id, setChecked, setValue } from "./util";
 
 //Preferences dialog
 
@@ -432,7 +432,7 @@ const handlePing = () => {
         if (interval_ping) {
             clearInterval(interval_ping);
         }
-        last_ping = Date.now();
+        last_ping(Date.now());
         interval_ping = setInterval(() => check_ping(), 10 * 1000);
         console.log('enable ping');
     } else {
