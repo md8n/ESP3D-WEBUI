@@ -11,7 +11,18 @@ var current_update_filename = "";
 //update dialog
 const updatedlg = () => {
     var modal = setactiveModal('updatedlg.html');
-    if (modal == null) return;
+    if (modal == null) {
+        return;
+    }
+
+    id("updateDlgCancel").addEventListener("click", (event) => closeUpdateDialog('cancel'));
+    id("updateDlgClose").addEventListener("click", (event) => closeUpdateDialog('cancel'));
+
+    id("fw-select").addEventListener("change", (event) => checkupdatefile());
+    id("fw_select_files").addEventListener("click", (event) => document.getElementById('fw-select').click());
+    id("fw_file_name").addEventListener("mouseup", (event) => document.getElementById('fw_select_files').click());
+    id("uploadfw-button").addEventListener("click", (event) => UploadUpdatefile());
+
     id("fw_file_name").innerHTML = translate_text_item("No file chosen");
     displayNone('prgfw');
     displayNone('uploadfw-button');
@@ -32,8 +43,11 @@ function closeUpdateDialog(msg) {
 function checkupdatefile() {
     var files = id('fw-select').files;
     displayNone('updatemsg');
-    if (files.length == 0) displayNone('uploadfw-button');
-    else displayBlock('uploadfw-button');
+    if (files.length == 0) {
+        displayNone('uploadfw-button');
+    } else {
+        displayBlock('uploadfw-button');
+    }
     if (files.length > 0) {
         if (files.length == 1) {
             id("fw_file_name").innerHTML = files[0].name;
@@ -60,8 +74,6 @@ function UpdateProgressDisplay(oEvent) {
 function UploadUpdatefile() {
     confirmdlg(translate_text_item("Please confirm"), translate_text_item("Update Firmware ?"), StartUploadUpdatefile)
 }
-
-
 
 function StartUploadUpdatefile(response) {
     if (response != "yes") return;

@@ -3,7 +3,7 @@
     <!-- update content -->
     <div class="modal-content">
         <div class="modal-header">
-            <span class="close" onclick="closeUpdateDialog('cancel')"><b>&times;</b></span>
+            <span id="updateDlgCancel" class="close"><b>&times;</b></span>
             <h3>
                 <div class="modal-title" id="fw_update_dlg_title" translate>FluidNC Firmware Update</div>
             </h3>
@@ -12,21 +12,21 @@
             <table>
                 <tr>
                     <td>
-                        <input type="file" style='display:none' id="fw-select" name="myfiles[]" accept=".bin, .bin.gz" onchange="checkupdatefile();" />
+                        <input id="fw-select" type="file" style='display:none' name="myfiles[]" accept=".bin, .bin.gz"/>
                         <table id="fw-select_form">
                             <tr>
                                 <td>
-                                    <button class="btn btn-info" type="button" id="fw_select_files" onclick="document.getElementById('fw-select').click();" translate>Select file</button>
+                                    <button id="fw_select_files" class="btn btn-info" type="button" translate>Select file</button>
                                 </td>
                                 <td>
-                                    <div class="filetext no_overflow" id="fw_file_name" onmouseup="document.getElementById('fw_select_files').click();"></div>
+                                    <div id="fw_file_name" class="filetext no_overflow"></div>
                                 </td>
                             </tr>
                         </table>
                     </td>
 
                     <td>&nbsp;</td>
-                    <td><button class="btn btn-primary" id="uploadfw-button" style='display:none;' onclick="UploadUpdatefile();" translate>Update</button></td>
+                    <td><button id="uploadfw-button" class="btn btn-primary" style='display:none;' translate>Update</button></td>
                     <td><progress style='display:none;' name='prgfw' id='prgfw' max='100'></progress></td>
                     <td>&nbsp;</td>
                     <td><span id='updatemsg' style='display:none;' translate>Restarting, please wait....</span><span id='counter'></span></td>
@@ -35,7 +35,7 @@
         </div>
         <div class="modal-footer">
             <span class="pull-right">
-                <button class="btn btn-warning" onclick="closeUpdateDialog('cancel')" translate>Close</button>
+                <button id="updateDlgClose" class="btn btn-warning" translate>Close</button>
             </span>
         </div>
     </div>
