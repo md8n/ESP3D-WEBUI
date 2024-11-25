@@ -2,7 +2,7 @@ import { http_communication_locked } from "./http";
 import { closeModal, setactiveModal, showModal } from "./modaldlg";
 import { SendPrinterCommand } from "./printercmd";
 import { translate_text_item } from "./translate";
-import { conErr, displayBlock, displayNone } from "./util";
+import { conErr, stdErrMsg, displayBlock, displayNone } from "./util";
 
 //restart dialog
 function restartdlg() {

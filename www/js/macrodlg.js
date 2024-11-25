@@ -1,7 +1,7 @@
 import { alertdlg } from "./alertdlg";
 import { confirmdlg } from "./confirmdlg";
 import { clear_drop_menu } from "./dropmenu";
-import { http_communication_locked } from "./http";
+import { http_communication_locked, SendFileHttp } from "./http";
 import { get_icon_svg } from "./icons";
 import { closeModal, setactiveModal, showModal } from "./modaldlg";
 import { translate_text_item } from "./translate";

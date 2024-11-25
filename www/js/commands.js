@@ -1,7 +1,7 @@
 import { SendGetHttp } from "./http";
 import { process_socket_response } from "./socket";
 import { decode_entitie, translate_text_item } from "./translate";
-import { conErr, getChecked, id } from "./util";
+import { conErr, stdErrMsg, getChecked, id } from "./util";
 
 var CustomCommand_history = [];
 var CustomCommand_history_index = -1;

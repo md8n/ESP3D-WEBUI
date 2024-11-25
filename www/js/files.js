@@ -2,11 +2,12 @@ import { alertdlg } from "./alertdlg";
 import { Monitor_output_Update } from "./commands";
 import { confirmdlg } from "./confirmdlg";
 import { esp_error_code, esp_error_message } from "./constants";
-import { http_communication_locked, SendGetHttp } from "./http";
+import { http_communication_locked, SendFileHttp, SendGetHttp } from "./http";
 import { get_icon_svg } from "./icons";
+import { inputdlg } from "./inputdlg";
 import { SendPrinterCommand } from "./printercmd";
 import { translate_text_item } from "./translate";
-import { displayBlock, displayNone, id } from "./util";
+import { displayBlock, displayNone, id, stdErrMsg } from "./util";
 
 var files_currentPath = "/";
 var files_filter_sd_list = false;

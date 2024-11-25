@@ -5,7 +5,7 @@ import { clear_drop_menu } from "./dropmenu";
 import { build_file_filter_list } from "./files";
 import { grblaxis, onAutoReportIntervalChange, reportNone } from "./grbl";
 import { grblpanel } from "./grblpanel";
-import { http_communication_locked, SendGetHttp } from "./http";
+import { http_communication_locked, SendFileHttp, SendGetHttp } from "./http";
 import { get_icon_svg } from "./icons";
 import { add_language_list_event_handler, build_language_list, language } from "./languages";
 import { closeModal, setactiveModal, showModal } from "./modaldlg";

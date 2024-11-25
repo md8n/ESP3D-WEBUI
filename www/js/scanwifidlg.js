@@ -2,7 +2,7 @@ import { SendGetHttp } from "./http";
 import { get_icon_svg } from "./icons";
 import { closeModal, setactiveModal, showModal } from "./modaldlg";
 import { translate_text_item } from "./translate";
-import { conErr, displayBlock, displayNone, getValue, setValue } from "./util";
+import { conErr, stdErrMsg, displayBlock, displayNone, getValue, setValue } from "./util";
 
 var ssid_item_scanwifi = -1;
 var ssid_subitem_scanwifi = -1;

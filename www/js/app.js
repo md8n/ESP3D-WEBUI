@@ -262,13 +262,6 @@ function show_main_UI() {
   displayUndoNone('main_ui')
 }
 
-function compareStrings(a, b) {
-  // case-insensitive comparison
-  a = a.toLowerCase()
-  b = b.toLowerCase()
-  return a < b ? -1 : a > b ? 1 : 0
-}
-
 function compareInts(a, b) {
   return a < b ? -1 : a > b ? 1 : 0
 }

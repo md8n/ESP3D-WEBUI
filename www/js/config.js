@@ -2,7 +2,7 @@ import { alertdlg } from "./alertdlg";
 import { http_communication_locked, SendGetHttp } from "./http";
 import { get_icon_svg } from "./icons";
 import { translate_text_item } from "./translate";
-import { conErr, displayBlock, displayNone, setChecked } from "./util";
+import { conErr,stdErrMsg, displayBlock, displayNone, setChecked } from "./util";
 
 var config_configList = [];
 var config_override_List = [];

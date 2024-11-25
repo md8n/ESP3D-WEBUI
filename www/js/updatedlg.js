@@ -1,10 +1,10 @@
 import { alertdlg } from "./alertdlg";
 import { confirmdlg } from "./confirmdlg";
 import { esp_error_code, esp_error_message } from "./constants";
-import { http_communication_locked, SendGetHttp } from "./http";
+import { http_communication_locked, SendFileHttp, SendGetHttp } from "./http";
 import { closeModal, setactiveModal, showModal } from "./modaldlg";
 import { translate_text_item } from "./translate";
-import { conErr, displayBlock, displayNone, setValue } from "./util";
+import { conErr, stdErrMsg, displayBlock, displayNone, setValue } from "./util";
 
 var update_ongoing = false;
 var current_update_filename = "";

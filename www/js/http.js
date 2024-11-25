@@ -253,4 +253,4 @@ function ProcessFileHttp(url, postdata, progressfn, resultfn, errorfn) {
     xmlhttpupload.send(postdata);
 }
 
-export { clear_cmd_list, http_communication_locked, SendGetHttp };
+export { clear_cmd_list, http_communication_locked, SendFileHttp, SendGetHttp };

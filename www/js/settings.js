@@ -5,7 +5,7 @@ import { calibrationResults } from "./grbl";
 import { http_communication_locked, SendGetHttp } from "./http";
 import { get_icon_svg } from "./icons";
 import { translate_text_item } from "./translate";
-import { conErr, displayBlock, displayNone, id, setChecked } from "./util";
+import { conErr, stdErrMsg, displayBlock, displayNone, id, setChecked } from "./util";
 
 var scl = [] // setting_configList
 var setting_error_msg = ''

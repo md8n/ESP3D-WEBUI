@@ -1,7 +1,7 @@
 import { Monitor_output_Update } from "./commands";
 import { SendGetHttp } from "./http";
 import { decode_entitie, translate_text_item } from "./translate";
-import { conErr } from "./util";
+import { conErr, stdErrMsg } from "./util";
 
 var grbl_processfn = null;
 var grbl_errorfn = null;
