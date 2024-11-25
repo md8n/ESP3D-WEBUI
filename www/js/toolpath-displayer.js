@@ -1,6 +1,6 @@
 // Display the XY-plane projection of a GCode toolpath on a 2D canvas
 
-import { getValue } from "./util";
+import { getValue, id } from "./util";
 
 var root = window;
 

@@ -1,7 +1,7 @@
 import { SendGetHttp } from "./http";
 import { closeModal, setactiveModal, showModal } from "./modaldlg";
 import { translate_text_item } from "./translate";
-import { conErr, displayBlock, displayNone } from "./util";
+import { conErr, displayBlock, displayNone, id } from "./util";
 
 //login dialog
 function logindlg(closefunc, check_first) {

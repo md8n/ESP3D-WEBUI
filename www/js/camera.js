@@ -1,6 +1,6 @@
 import { getPrefValue } from "./preferencesdlg";
 import { decode_entitie } from "./translate";
-import { displayBlock, displayNone } from "./util";
+import { displayBlock, displayNone, id } from "./util";
 
 function cameraformataddress() {
     var saddress = id('camera_webaddress').value;

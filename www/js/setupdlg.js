@@ -4,7 +4,7 @@ import { closeModal, setactiveModal, showModal } from "./modaldlg";
 import { getPrefValue } from "./preferencesdlg";
 import { build_HTML_setting_list, current_setting_filter, setup_is_done } from "./settings";
 import { translate_text_item } from "./translate";
-import { displayBlock, displayNone } from "./util";
+import { displayBlock, displayNone, id } from "./util";
 
 //setup dialog
 

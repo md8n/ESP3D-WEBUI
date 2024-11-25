@@ -1,5 +1,6 @@
 import { setactiveModal, showModal } from "./modaldlg";
 import { translate_text_item } from "./translate";
+import { id } from "./util";
 
 //UIdisabled dialog
 export const UIdisableddlg = (lostcon) => {

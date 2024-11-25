@@ -5,7 +5,7 @@ import { clear_cmd_list, http_communication_locked } from "./http";
 import { enable_ping } from "./preferencesdlg";
 import { decode_entitie, translate_text_item } from "./translate";
 import { UIdisableddlg } from "./UIdisableddlg";
-import { last_ping } from "./util";
+import { id, last_ping } from "./util";
 
 let asyncWebComm = false;
 let convertDHT2Fahrenheit = false;

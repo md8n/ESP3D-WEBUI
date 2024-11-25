@@ -8,7 +8,7 @@ import { initpreferences } from "./preferencesdlg";
 import { build_HTML_setting_list, current_setting_filter, setup_is_done } from "./settings";
 import { setupdlg } from "./setupdlg";
 import { tabletInit } from "./tablet";
-import { displayBlock, displayFlex, displayNone } from "./util";
+import { displayBlock, displayFlex, displayNone, id } from "./util";
 
 var ESP3D_authentication = false
 
