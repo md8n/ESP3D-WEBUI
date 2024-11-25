@@ -9,7 +9,7 @@ import { conErr, displayBlock, displayNone, setValue } from "./util";
 var update_ongoing = false;
 var current_update_filename = "";
 //update dialog
-function updatedlg() {
+const updatedlg = () => {
     var modal = setactiveModal('updatedlg.html');
     if (modal == null) return;
     id("fw_file_name").innerHTML = translate_text_item("No file chosen");
@@ -130,3 +130,5 @@ function updatefailed(error_code, response) {
     update_ongoing = false;
     SendGetHttp("/updatefw");
 }
+
+export { updatedlg };

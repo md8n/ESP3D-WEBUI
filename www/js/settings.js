@@ -17,7 +17,13 @@ const current_setting_filter = (value) => {
   currentSettingFilter = (typeof value === "string") ? value : currentSettingFilter || "nvs";
   return currentSettingFilter;
 }
-var setup_is_done = false
+
+let setupIsDone = false;
+const setup_is_done = (value) => {
+  setupIsDone = (typeof value === "boolean") ? value : setupIsDone || false;
+  return setupIsDone;
+}
+
 var do_not_build_settings = false
 const CONFIG_TOOLTIPS = {
   Maslow_vertical: `If the ${M} is oriented horizontally, set this to false`,
@@ -43,7 +49,7 @@ const CONFIG_TOOLTIPS = {
   Maslow_calibration_extend_bottom_y: "starting Y for bottom belts on extend all (-1000 to 1000) default ",
 }
 
-function refreshSettings(hide_setting_list) {
+const refreshSettings = (hide_setting_list) => {
   if (http_communication_locked()) {
     id('config_status').innerHTML = translate_text_item('Communication locked by another process, retry later.')
     return
@@ -323,7 +329,9 @@ function process_settings_answer(response_text) {
           vi = create_setting_entry(response.EEPROM[i], vi)
         }
         if (vi > 0) {
-          if (setup_is_done) build_HTML_setting_list(current_setting_filter())
+          if (setup_is_done) {
+            build_HTML_setting_list(current_setting_filter())
+          }
           update_UI_setting()
         } else result = false
       } else result = false
@@ -562,7 +570,7 @@ function getESPsettingsfailed(error_code, response) {
   displayBlock('settings_refresh_btn');
 }
 
-function restart_esp() {
+const restart_esp = () => {
   confirmdlg(translate_text_item('Please Confirm'), translate_text_item('Restart FluidNC'), process_restart_esp)
 }
 
@@ -596,4 +604,4 @@ function define_esp_role_from_pos(pos) {
   define_esp_role(get_index_from_eeprom_pos(pos))
 }
 
-export { build_HTML_setting_list, current_setting_filter };
+export { build_HTML_setting_list, current_setting_filter, refreshSettings, restart_esp, setup_is_done };

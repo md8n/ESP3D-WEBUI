@@ -1,4 +1,4 @@
-import { classes, displayBlock } from "./util";
+import { classes, displayBlock, id } from "./util";
 
 export const opentab = (evt, tabname, tabcontentid, tablinkid) => {
     var i, tabcontent, tablinks;

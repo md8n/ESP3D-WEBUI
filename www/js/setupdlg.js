@@ -2,7 +2,7 @@ import { get_icon_svg } from "./icons";
 import { add_language_list_event_handler, build_language_list, language } from "./languages";
 import { closeModal, setactiveModal, showModal } from "./modaldlg";
 import { getPrefValue } from "./preferencesdlg";
-import { build_HTML_setting_list, current_setting_filter } from "./settings";
+import { build_HTML_setting_list, current_setting_filter, setup_is_done } from "./settings";
 import { translate_text_item } from "./translate";
 import { displayBlock, displayNone } from "./util";
 
@@ -53,8 +53,8 @@ function endDiv() {
     return "</div>";
 }
 
-function setupdlg() {
-    setup_is_done = false;
+const setupdlg = () => {
+    setup_is_done(false);
     language_save = language();
     displayNone('main_ui');
     id('settings_list_data').innerHTML = "";
@@ -84,7 +84,7 @@ function setupdlg() {
 
 
 function setupdone(response) {
-    setup_is_done = true;
+    setup_is_done(true);
     do_not_build_settings = false;
     build_HTML_setting_list(current_setting_filter());
     translate_text(language_save);
@@ -208,3 +208,5 @@ function enablestep4() {
     openStep("wizard_line4", "endsteplink");
     id("endsteplink").click();
 }
+
+export { setupdlg };

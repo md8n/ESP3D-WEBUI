@@ -103,4 +103,4 @@ const conErr = (error_code, response, error_prefix = "Error") => {
   console.error(errMsg);
 }
 
-export { classes, conErr, disable_items, displayBlock, displayFlex, displayNone, getChecked, setChecked, getValue, setValue, id };
+export { classes, conErr, stdErrMsg, disable_items, displayBlock, displayFlex, displayNone, getChecked, setChecked, getValue, setValue, id };

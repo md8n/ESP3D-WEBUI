@@ -12,7 +12,7 @@ var SPIFFS_currentpath = "/";
 var SPIFFS_currentfile = "";
 var SPIFFS_upload_ongoing = false;
 
-function SPIFFSdlg(root) {
+const SPIFFSdlg = (root) => {
     var modal = setactiveModal('SPIFFSdlg.html');
     if (modal == null) return;
     if (typeof root !== 'undefined') SPIFFS_currentpath = root;
@@ -303,3 +303,5 @@ function SPIFFSUploadfailed(error_code, response) {
     SPIFFS_upload_ongoing = false;
     refreshSPIFFS();
 }
+
+export { SPIFFSdlg };

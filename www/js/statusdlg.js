@@ -1,15 +1,23 @@
 import { SendGetHttp } from "./http";
 import { get_icon_svg } from "./icons";
-import { getactiveModal, setactiveModal, showModal } from "./modaldlg";
+import { closeModal, getactiveModal, setactiveModal, showModal } from "./modaldlg";
 import { translate_text_item } from "./translate";
-import { conErr, displayBlock, displayNone } from "./util";
+import { conErr, stdErrMsg, displayBlock, displayNone, id } from "./util";
 
 var statuspage = 0;
 var statuscontent = "";
 //status dialog
-function statusdlg() {
+const statusdlg = () => {
     var modal = setactiveModal('statusdlg.html');
-    if (modal == null) return;
+    if (modal == null) {
+        return;
+    }
+
+    id("status_dlg_close").addEventListener("click", (event) => closeModal('cancel'));
+    id("next_status_btn").addEventListener("click", (event) => next_status());
+    id("status_dlg_btn_close").addEventListener("click", (event) => closeModal('cancel'));
+    id("status_dlg_refreshstatus").addEventListener("click", (event) => refreshstatus());
+
     showModal();
     refreshstatus();
     update_btn_status(0);
@@ -18,11 +26,9 @@ function statusdlg() {
 function next_status() {
     var modal = getactiveModal();
     var text = modal.element.getElementsByClassName("modal-text")[0];
-    if (statuspage == 0) {
-        text.innerHTML = statuscontent;
-    } else {
-        text.innerHTML = "<table><tr><td width='auto' style='vertical-align:top;'><label translate>Browser:</label></td><td>&nbsp;</td><td width='100%'><span class='text-info'><strong>" + navigator.userAgent + "</strong></span></td></tr></table>";
-    }
+    text.innerHTML = (statuspage == 0)
+        ? statuscontent
+        : "<table><tr><td width='auto' style='vertical-align:top;'><label translate>Browser:</label></td><td>&nbsp;</td><td width='100%'><span class='text-info'><strong>" + navigator.userAgent + "</strong></span></td></tr></table>";
     update_btn_status();
 }
 
@@ -90,3 +96,5 @@ function refreshstatus() {
     var url = "/command?plain=" + encodeURIComponent("[ESP420]plain");;
     SendGetHttp(url, statussuccess, statusfailed)
 }
+
+export { statusdlg };

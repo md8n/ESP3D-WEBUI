@@ -18,16 +18,6 @@ import { conErr, displayBlock, displayFlex, displayNone, getChecked, getValue, i
 //Preferences dialog
 
 const prefFile = "/preferences.json";
-const fetchJson = async (fileName) => {
-    try {
-        const data = await fetch(fileName);
-        return await data.json();
-    } catch (err) {
-        console.error(`Error fetching JSON file ${fileName}: ${err}`);
-    }
-
-    return null;
-}
 
 var preferenceslist = [];
 var language_save = language();
@@ -402,11 +392,6 @@ const initpreferences = () => {
     // displayBlock('grbl_pref_panel');
     // displayTable('has_TFT_SD');
     // displayTable('has_TFT_USB');
-
-    // if (defPrefList) {
-    //     // The defaultpreferences file is good (enough), we hope
-    //     default_preferenceslist = defPrefList;
-    // }
 }
 
 /** Get the part of the preferences structure identified by the name supplied */
@@ -434,14 +419,6 @@ const getPrefValue = (prefName) => {
         pref.value = pref.defValue;
     }
     return pref.value;
-}
-
-const setPrefValue = (prefName, value) => {
-    let pref = getPrefPath(prefName);
-    if (typeof pref === "undefined") {
-        return;
-    }
-    pref.value = value;
 }
 
 /** Helper method to get the `enable_ping` preference value */
@@ -576,40 +553,40 @@ if (autoReportChanged || statusIntervalChanged) {
     onAutoReportIntervalChange();
 }
 
-setValue('interval_positions', parseInt(getPrefValue("enable_control_panel.interval_positions")));
-setValue('xy_feedrate', parseInt(getPrefValue("enable_control_panel.xy_feedrate")));
-setValue('z_feedrate', parseInt(getPrefValue("enable_control_panel.z_feedrate")));
+// setValue('interval_positions', parseInt(getPrefValue("enable_control_panel.interval_positions")));
+// setValue('xy_feedrate', parseInt(getPrefValue("enable_control_panel.xy_feedrate")));
+// setValue('z_feedrate', parseInt(getPrefValue("enable_control_panel.z_feedrate")));
 
 let axis_Z_feedrate, axis_A_feedrate, axis_B_feedrate, axis_C_feedrate;
 
-if (grblaxis() > 2) axis_Z_feedrate = parseInt(getPrefValue("enable_control_panel.z_feedrate"));
-if (grblaxis() > 3) axis_A_feedrate = parseInt(getPrefValue("enable_control_panel.a_feedrate"));
-if (grblaxis() > 4) axis_B_feedrate = parseInt(getPrefValue("enable_control_panel.b_feedrate"));
-if (grblaxis() > 5) axis_C_feedrate = parseInt(getPrefValue("enable_control_panel.c_feedrate"));
+// if (grblaxis() > 2) axis_Z_feedrate = parseInt(getPrefValue("enable_control_panel.z_feedrate"));
+// if (grblaxis() > 3) axis_A_feedrate = parseInt(getPrefValue("enable_control_panel.a_feedrate"));
+// if (grblaxis() > 4) axis_B_feedrate = parseInt(getPrefValue("enable_control_panel.b_feedrate"));
+// if (grblaxis() > 5) axis_C_feedrate = parseInt(getPrefValue("enable_control_panel.c_feedrate"));
 
-if (grblaxis() > 3) {
-    var letter = getValue('control_select_axis');
-    switch (letter) {
-        case "Z":
-            setValue('z_feedrate', axis_Z_feedrate);
-            break;
-        case "A":
-            setValue('a_feedrate', axis_A_feedrate);
-            break;
-        case "B":
-            setValue('b_feedrate', axis_B_feedrate);
-            break;
-        case "C":
-            setValue('c_feedrate', axis_C_feedrate);
-            break;
-    }
-}
+// if (grblaxis() > 3) {
+//     var letter = getValue('control_select_axis');
+//     switch (letter) {
+//         case "Z":
+//             setValue('z_feedrate', axis_Z_feedrate);
+//             break;
+//         case "A":
+//             setValue('a_feedrate', axis_A_feedrate);
+//             break;
+//         case "B":
+//             setValue('b_feedrate', axis_B_feedrate);
+//             break;
+//         case "C":
+//             setValue('c_feedrate', axis_C_feedrate);
+//             break;
+//     }
+// }
 
-setValue('probemaxtravel', parseFloat(getPrefValue("enable_grbl_panel.enable_grbl_probe_panel.probemaxtravel")));
-setValue('probefeedrate', parseInt(getPrefValue("enable_grbl_panel.enable_grbl_probe_panel.probefeedrate")));
-setValue('proberetract', parseFloat(getPrefValue("enable_grbl_panel.enable_grbl_probe_panel.proberetract")));
-setValue('probetouchplatethickness', parseFloat(getPrefValue("enable_grbl_panel.enable_grbl_probe_panel.probetouchplatethickness")));
-build_file_filter_list(getPrefValue("enable_files_panel.f_filters"));
+// setValue('probemaxtravel', parseFloat(getPrefValue("enable_grbl_panel.enable_grbl_probe_panel.probemaxtravel")));
+// setValue('probefeedrate', parseInt(getPrefValue("enable_grbl_panel.enable_grbl_probe_panel.probefeedrate")));
+// setValue('proberetract', parseFloat(getPrefValue("enable_grbl_panel.enable_grbl_probe_panel.proberetract")));
+// setValue('probetouchplatethickness', parseFloat(getPrefValue("enable_grbl_panel.enable_grbl_probe_panel.probetouchplatethickness")));
+// build_file_filter_list(getPrefValue("enable_files_panel.f_filters"));
 
 function getpreferenceslist() {
     var url = prefFile;
@@ -823,7 +800,7 @@ const showpreferencesdlg = () => {
     id("PreferencesDialogSave").addEventListener("click", (event) => SavePreferences());
 
     language_save = language();
-    build_dlg_preferences_list();
+    // build_dlg_preferences_list();
     displayNone('preferencesdlg_upload_msg');
     showModal();
 }
@@ -1108,18 +1085,16 @@ function SavePreferences(current_preferences) {
     var blob = new Blob([JSON.stringify(preferenceslist, null, " ")], {
         type: 'application/json'
     });
-    var file;
-    if (browser_is("IE") || browser_is("Edge")) {
-        file = blob;
-        file.name = prefFile;
-        file.lastModifiedDate = new Date();
-    } else file = new File([blob], prefFile);
+    var file = new File([blob], prefFile);
     var formData = new FormData();
     var url = "/files";
     formData.append('path', '/');
     formData.append('myfile[]', file, prefFile);
-    if ((typeof (current_preferences) != 'undefined') && current_preferences) SendFileHttp(url, formData);
-    else SendFileHttp(url, formData, preferencesdlgUploadProgressDisplay, preferencesUploadsuccess, preferencesUploadfailed);
+    if ((typeof (current_preferences) != 'undefined') && current_preferences) {
+        SendFileHttp(url, formData);
+    } else {
+        SendFileHttp(url, formData, preferencesdlgUploadProgressDisplay, preferencesUploadsuccess, preferencesUploadfailed);
+    }
 }
 
 function preferencesdlgUploadProgressDisplay(oEvent) {

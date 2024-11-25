@@ -5,7 +5,8 @@ import { grblpanel } from "./grblpanel";
 import { closeModal } from "./modaldlg";
 import { navbar } from "./navbar";
 import { initpreferences } from "./preferencesdlg";
-import { build_HTML_setting_list, current_setting_filter } from "./settings";
+import { build_HTML_setting_list, current_setting_filter, setup_is_done } from "./settings";
+import { setupdlg } from "./setupdlg";
 import { tabletInit } from "./tablet";
 import { displayBlock, displayFlex, displayNone } from "./util";
 
@@ -248,7 +249,7 @@ function initUI_4() {
     setupdlg()
   } else {
     //wizard is done UI can be updated
-    setup_is_done = true
+    setup_is_done(true);
     do_not_build_settings = false
     AddCmd(display_boot_progress)
     build_HTML_setting_list((current_setting_filter()))

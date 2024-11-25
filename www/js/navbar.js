@@ -1,4 +1,6 @@
 import { showpreferencesdlg } from "./preferencesdlg";
+import { settingstab } from "./settingstab";
+import { setupdlg } from "./setupdlg";
 import { opentab } from "./tabs";
 import { translate_text_item } from "./translate";
 import { disable_items, displayNone, getChecked, id, setChecked } from "./util";
@@ -7,12 +9,15 @@ import { disable_items, displayNone, getChecked, id, setChecked } from "./util";
 const navbar = () => {
     id("toggleLockUI").addEventListener("click", (event) => ontoggleLock());
     id("showPreferencesDlg").addEventListener("click", (event) => showpreferencesdlg());
+    id("showSetupDlg").addEventListener("click", (event) => setupdlg());
 
     id("maintablink").addEventListener("click", (event) => opentab(event, 'maintab', 'mainuitabscontent', 'mainuitablinks'));
     id("camtablink").addEventListener("click", (event) => opentab(event, 'cameratab', 'mainuitabscontent', 'mainuitablinks'));
     id("configtablink").addEventListener("click", (event) => opentab(event, 'configtab', 'mainuitabscontent', 'mainuitablinks'));
     id("settingtablink").addEventListener("click", (event) => opentab(event, 'settingstab', 'mainuitabscontent', 'mainuitablinks'));
     id("tablettablink").addEventListener("click", (event) => opentab(event, 'tablettab', 'mainuitabscontent', 'mainuitablinks'));
+
+    settingstab();
 }
 
 const enableItem = (itemName) => {
