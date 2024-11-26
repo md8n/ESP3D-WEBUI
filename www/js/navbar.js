@@ -1,4 +1,5 @@
 import { creditsdlg } from "./creditsdlg";
+import { DisconnectLogin } from "./logindlg";
 import { changepassworddlg } from "./passworddlg";
 import { showpreferencesdlg } from "./preferencesdlg";
 import { settingstab } from "./settingstab";

@@ -1,3 +1,4 @@
+import { logindlg } from "./logindlg";
 import { translate_text_item } from "./translate";
 
 var http_cmd_list = [];
@@ -85,6 +86,22 @@ function AddCmd(cmd_fn, id) {
     http_cmd_list.push(cmd);
     //console.log("Now " + http_cmd_list.length);
     process_cmd();
+}
+
+function GetIdentificationStatus() {
+    var url = "/login";
+    SendGetHttp(url, GetIdentificationStatusSuccess);
+}
+
+/** This expects the logindlg to be visible */
+function GetIdentificationStatusSuccess(response_text) {
+    var response = JSON.parse(response_text);
+    if (typeof(response.authentication_lvl) !== 'undefined') {
+        if (response.authentication_lvl == "guest") {
+            id('current_ID').innerHTML = translate_text_item("guest");
+            id('current_auth_level').innerHTML = "";
+        }
+    }
 }
 
 const SendGetHttp = (url, result_fn, error_fn, id, max_id) => {

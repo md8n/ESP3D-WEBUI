@@ -18,18 +18,18 @@
         <div class="modal-body">
             <span>
                 <span class="modal-text" translate>User:</span>
-                <input class='form-control' type="text" onkeyup="login_id_OnKeyUp(event)" id="login_user_text" autocomplete="username" style="width:auto" />
+                <input id="login_user_text" class='form-control' type="text" autocomplete="username" style="width:auto" />
             </span>
             <hr>
             <form>
                 <span class="modal-text" translate>Password:</span>
-                <input class='form-control' type="password" autocomplete="login-password" onkeyup="current-password_OnKeyUp(event)" id="login_password_text" style="width:auto" />
+                <input id="login_password_text" class='form-control' type="password" autocomplete="login-password" style="width:auto" />
             </form>
             <br>
         </div>
         <div class="modal-footer">
             <span class="pull-right">
-                <button id="login_submit_btn" class="btn btn-primary" onclick="SubmitLogin()" translate>Submit</button>
+                <button id="login_submit_btn" class="btn btn-primary" translate>Submit</button>
             </span>
         </div>
     </div>

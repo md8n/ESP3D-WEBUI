@@ -3,15 +3,24 @@ import { closeModal, setactiveModal, showModal } from "./modaldlg";
 import { translate_text_item } from "./translate";
 import { conErr, displayBlock, displayNone, id } from "./util";
 
-//login dialog
-function logindlg(closefunc, check_first) {
+/** login dialog */
+const logindlg = (closefunc, check_first) => {
     var modal = setactiveModal('logindlg.html', closefunc);
     var need_query_auth = false;
-    if (modal == null) return;
+    if (modal == null) {
+        return;
+    }
+
+    id("login_user_text").addEventListener("keyup", (event) => login_id_OnKeyUp(event));
+    id("login_password_text").addEventListener("keyup", (event) => login_password_OnKeyUp(event));
+    id("login_submit_btn").addEventListener("click", (event) => SubmitLogin());
+
     id('login_title').innerHTML = translate_text_item("Identification requested");
     displayNone('login_loader');
     displayBlock('login_content');
-    if (typeof check_first !== 'undefined') need_query_auth = check_first;
+    if (typeof check_first !== 'undefined') {
+        need_query_auth = check_first;
+    }
     if (need_query_auth) {
         var url = "/login";
         SendGetHttp(url, checkloginsuccess);
@@ -77,21 +86,6 @@ function SubmitLogin() {
     SendGetHttp(url, loginsuccess, loginfailed);
 }
 
-function GetIdentificationStatus() {
-    var url = "/login";
-    SendGetHttp(url, GetIdentificationStatusSuccess);
-}
-
-function GetIdentificationStatusSuccess(response_text) {
-    var response = JSON.parse(response_text);
-    if (typeof(response.authentication_lvl) !== 'undefined') {
-        if (response.authentication_lvl == "guest") {
-            id('current_ID').innerHTML = translate_text_item("guest");
-            id('current_auth_level').innerHTML = "";
-        }
-    }
-}
-
 function DisconnectionSuccess(response_text) {
     id('current_ID').innerHTML = translate_text_item("guest");
     id('current_auth_level').innerHTML = "";
@@ -115,3 +109,5 @@ function DisconnectLogin(answer) {
         SendGetHttp(url, DisconnectionSuccess, DisconnectionFailed);
     }
 }
+
+export { DisconnectLogin, logindlg };
