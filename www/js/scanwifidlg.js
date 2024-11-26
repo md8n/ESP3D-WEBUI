@@ -42,6 +42,7 @@ function refresh_scanwifi() {
 function process_scanWifi_answer(response_text) {
     var result = true;
     var content = "";
+    const actions = [];
     try {
         var response = JSON.parse(response_text);
         if (typeof response.AP_LIST == 'undefined') {
@@ -53,22 +54,16 @@ function process_scanWifi_answer(response_text) {
                 return (parseInt(a.SIGNAL) < parseInt(b.SIGNAL)) ? -1 : (parseInt(a.SIGNAL) > parseInt(b.SIGNAL)) ? 1 : 0
             });
             for (var i = aplist.length - 1; i >= 0; i--) {
+                let protIcon = (aplist[i].IS_PROTECTED == "1") ? get_icon_svg("lock") : "";
+                let escapedSSID = aplist[i].SSID.replace("'","\\'").replace("\"","\\\"");
+                let btnId = `scanWiFiDlg_btn_select_${i}`;
                 content += "<tr>";
-                content += "<td style='vertical-align:middle'>";
-                content += aplist[i].SSID;
-                content += "</td>";
-                content += "<td style='text-align: center;vertical-align:middle;'>";
-                content += aplist[i].SIGNAL;
-                content += "%</td>";
-                content += "<td style='vertical-align:middle'><center>";
-                if (aplist[i].IS_PROTECTED == "1") content += get_icon_svg("lock");
-                content += "</></td>";
-                content += "<td>";
-                content += "<button class='btn btn-primary' onclick='select_ap_ssid(\"" + aplist[i].SSID.replace("'","\\'").replace("\"","\\\"") + "\");'>";
-                content += get_icon_svg("ok");
-                content += "</button>";
-                content += "</td>";
+                content += `<td style='vertical-align:middle'>${aplist[i].SSID}</td>`;
+                content += `<td style='text-align:center;vertical-align:middle;'>${aplist[i].SIGNAL}%</td>`;
+                content += `<td style='text-align:center;vertical-align:middle'>${protIcon}</td>`;
+                content += `<td><button id="${btnId}" class='btn btn-primary'>${get_icon_svg("ok")}</button></td>`;
                 content += "</tr>";
+                actions.push({id: btnId, type: "click", method: select_ap_ssid(escapedSSID)});
             }
         }
     } catch (e) {
@@ -76,14 +71,21 @@ function process_scanWifi_answer(response_text) {
         result = false;
     }
     id('AP_scan_data').innerHTML = content;
+    actions.forEach((action) => {
+        id(action.id).addEventListener(action.type, (event) => action.method);
+    });
+
     return result;
 }
 
 function select_ap_ssid(ssid_name) {
-    var val = getValue("setting_" + ssid_item_scanwifi + "_" + ssid_subitem_scanwifi);
-    setValue("setting_" + ssid_item_scanwifi + "_" + ssid_subitem_scanwifi, ssid_name);
-    id("setting_" + ssid_item_scanwifi + "_" + ssid_subitem_scanwifi).focus();
-    if (val != ssid_name)setsettingchanged(ssid_item_scanwifi, ssid_subitem_scanwifi);
+    const settingName = `setting_${ssid_item_scanwifi}_${ssid_subitem_scanwifi}`;
+    const val = getValue(settingName);
+    setValue(settingName, ssid_name);
+    id(settingName).focus();
+    if (val != ssid_name) {
+        setsettingchanged(ssid_item_scanwifi, ssid_subitem_scanwifi);
+    }
     closeModal("Ok");
 }
 
