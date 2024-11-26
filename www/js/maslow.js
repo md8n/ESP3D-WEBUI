@@ -1,7 +1,8 @@
 import { M } from "./constants";
 import { get_Position } from "./controls";
 import { SendPrinterCommand } from "./printercmd";
-import { current_setting_filter } from "./settings";
+import { current_setting_filter, refreshSettings, saveMaslowYaml } from "./settings";
+import { hideModal, loadedValues } from "./tablet";
 
 /** Maslow Status */
 let maslowStatus = { homed: false, extended: false };
@@ -10,14 +11,14 @@ let maslowStatus = { homed: false, extended: false };
 let lastHeartBeatTime = new Date().getTime();
 
 const err = "error: ";
-export const MaslowErrMsgKeyValueCantUse = `${err}Could not use supplied key-value pair.`;
-export const MaslowErrMsgNoKey = `${err}No key supplied for value.`;
-export const MaslowErrMsgNoValue = `${err}No value supplied for key.`;
-export const MaslowErrMsgNoMatchingKey = `${err}Could not find key for value in reference table.`;
-export const MaslowErrMsgKeyValueSuffix = "This is probably a programming error\nKey-Value pair supplied was:";
+const MaslowErrMsgKeyValueCantUse = `${err}Could not use supplied key-value pair.`;
+const MaslowErrMsgNoKey = `${err}No key supplied for value.`;
+const MaslowErrMsgNoValue = `${err}No value supplied for key.`;
+const MaslowErrMsgNoMatchingKey = `${err}Could not find key for value in reference table.`;
+const MaslowErrMsgKeyValueSuffix = "This is probably a programming error\nKey-Value pair supplied was:";
 
 /** Perform maslow specific-ish info message handling */
-export const maslowInfoMsgHandling = (msg) => {
+const maslowInfoMsgHandling = (msg) => {
     if (msg.startsWith('MINFO: ')) {
         maslowStatus = JSON.parse(msg.substring(7));
         return true;
@@ -38,7 +39,7 @@ export const maslowInfoMsgHandling = (msg) => {
 }
 
 /** Perform maslow specific-ish error message handling */
-export const maslowErrorMsgHandling = (msg) => {
+const maslowErrorMsgHandling = (msg) => {
     if (!msg.startsWith("error:")) {
         // Nothing to see here - move along
         return "";
@@ -57,7 +58,7 @@ export const maslowErrorMsgHandling = (msg) => {
 /** Handle Maslow specific configuration messages
  * These would have all started with `$/Maslow_` which is expected to have been stripped away before calling this function
  */
-export const maslowMsgHandling = (msg) => {
+const maslowMsgHandling = (msg) => {
     const keyValue = msg.split("=");
     const errMsgSuffix = `${MaslowErrMsgKeyValueSuffix}${msg}`;
     if (keyValue.length != 2) {
@@ -74,7 +75,7 @@ export const maslowMsgHandling = (msg) => {
 
     const stdAction = (id, value) => {
         document.getElementById(id).value = value;
-        loadedValues[id] = value;
+        loadedValues(id, value);
     }
     const fullDimensionAction = (id, value) => {
         stdAction(id, value);
@@ -113,7 +114,7 @@ export const maslowMsgHandling = (msg) => {
     return "";
 }
 
-export const checkHomed = () => {
+const checkHomed = () => {
     if (!maslowStatus.homed) {
         const err_msg = `${M} does not know belt lengths. Please retract and extend before continuing.`;
         alert(err_msg);
@@ -130,12 +131,12 @@ export const checkHomed = () => {
 /** Short hand convenience call to SendPrinterCommand with some preset values.
  * Uses the global function get_position, which is also a SendPrinterCommand with presets
  */
-export const sendCommand = (cmd) => {
+const sendCommand = (cmd) => {
     SendPrinterCommand(cmd, true, get_Position);
 }
 
 /** Used to populate the config popup when it loads */
-export const loadConfigValues = () => {
+const loadConfigValues = () => {
     SendPrinterCommand(`$/${M}_vertical`);
     SendPrinterCommand(`$/${M}_calibration_grid_width_mm_X`);
     SendPrinterCommand(`$/${M}_calibration_grid_height_mm_Y`);
@@ -147,7 +148,7 @@ export const loadConfigValues = () => {
 }
 
 /** Load all of the corner values */
-export const loadCornerValues = () => {
+const loadCornerValues = () => {
     SendPrinterCommand(`$/${M}_tlX`);
     SendPrinterCommand(`$/${M}_tlY`);
     SendPrinterCommand(`$/${M}_trX`);
@@ -159,7 +160,7 @@ export const loadCornerValues = () => {
 // They rely on the global function SendPrinterCommand defined in printercmd.js
 
 /** Save the Maslow configuration values */
-function saveConfigValues() {
+const saveConfigValues = () => {
     let gridWidth = document.getElementById('gridWidth').value;
     let gridHeight = document.getElementById('gridHeight').value;
     let gridSize = document.getElementById('gridSize').value;
@@ -177,22 +178,22 @@ function saveConfigValues() {
         return;
     }
 
-    if (gridWidth != loadedValues['gridWidth']) {
+    if (gridWidth != loadedValues('gridWidth')) {
         sendCommand(`$/${M}_calibration_grid_width_mm_X=${gridWidth}`);
     }
-    if (gridHeight != loadedValues['gridHeight']) {
+    if (gridHeight != loadedValues('gridHeight')) {
         sendCommand(`$/${M}_calibration_grid_height_mm_Y=${gridHeight}`);
     }
-    if (gridSize != loadedValues['gridSize']) {
+    if (gridSize != loadedValues('gridSize')) {
         sendCommand(`$/${M}_calibration_grid_size=${gridSize}`);
     }
-    if (retractionForce != loadedValues['retractionForce']) {
+    if (retractionForce != loadedValues('retractionForce')) {
         sendCommand(`$/${M}_Retract_Current_Threshold=${retractionForce}`);
     }
-    if (machineOrientation != loadedValues['machineOrientation']) {
+    if (machineOrientation != loadedValues('machineOrientation')) {
         sendCommand(`$/${M}_vertical=${machineOrientation === 'horizontal' ? 'false' : 'true'}`);
     }
-    if (machineWidth != loadedValues['machineWidth'] || machineHeight != loadedValues['machineHeight']) {
+    if (machineWidth != loadedValues('machineWidth') || machineHeight != loadedValues('machineHeight')) {
         sendCommand(`$/${M}_tlX=0`);
         sendCommand(`$/${M}_tlY=${machineHeight}`);
         sendCommand(`$/${M}_trX=${machineWidth}`);
@@ -207,3 +208,18 @@ function saveConfigValues() {
     hideModal('configuration-popup');
 }
 
+export {
+    MaslowErrMsgKeyValueCantUse,
+    MaslowErrMsgNoKey,
+    MaslowErrMsgNoValue,
+    MaslowErrMsgNoMatchingKey,
+    MaslowErrMsgKeyValueSuffix,
+    maslowInfoMsgHandling,
+    maslowErrorMsgHandling,
+    maslowMsgHandling,
+    checkHomed,
+    sendCommand,
+    loadConfigValues,
+    loadCornerValues,
+    saveConfigValues
+};

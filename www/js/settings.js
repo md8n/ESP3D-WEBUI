@@ -174,11 +174,11 @@ function build_control_from_index(i, extra_set_function) {
       content += "<div class='input-group-btn'>"
       content += `<button id='${sId(i, j, "btn_")}' class='btn btn-default' onclick='settingsetvalue(${params});' `;
       if (typeof extra_set_function != 'undefined') {
-        content += extra_set_function + '(' + i + ');'
+        content += `${extra_set_function}(${i});`;
       }
       content += "' translate english_content='Set' >" + translate_text_item('Set') + '</button>'
       if (scl[i].pos == EP_STA_SSID) {
-        content += "<button class='btn btn-default btn-svg' onclick='scanwifidlg(\"" + i + '","' + j + '")\'>'
+        content += `<button class='btn btn-default btn-svg' onclick='scanwifidlg("${i}","${j}")'>`
         content += get_icon_svg('search')
         content += '</button>'
       }
@@ -213,9 +213,7 @@ function build_control_from_pos(pos, extra) {
  * Then the error code 153 will be returned via the socket.
  * @see maslow.js maslowErrorMsgHandling()
  */
-function saveMaslowYaml() {
-  SendGetHttp('/command?plain=' + encodeURIComponent("$CO"));
-}
+const saveMaslowYaml = () => SendGetHttp(`/command?plain=${encodeURIComponent("$CO")}`);
 
 const build_HTML_setting_list = (filter) => {
   //this to prevent concurrent process to update after we clean content
@@ -605,4 +603,4 @@ function define_esp_role_from_pos(pos) {
   define_esp_role(get_index_from_eeprom_pos(pos))
 }
 
-export { build_HTML_setting_list, current_setting_filter, refreshSettings, restart_esp, setup_is_done };
+export { build_HTML_setting_list, current_setting_filter, refreshSettings, restart_esp, saveMaslowYaml, setup_is_done };

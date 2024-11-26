@@ -1,7 +1,7 @@
 import { files_list_success, gCodeFilename } from "./files";
 import { SendRealtimeCmd } from "./grbl";
 import { SendGetHttp } from "./http";
-import { checkHomed, loadConfigValues, loadCornerValues, maslowErrorMsgHandling, maslowInfoMsgHandling, maslowMsgHandling, sendCommand } from "./maslow";
+import { checkHomed, loadConfigValues, loadCornerValues, maslowErrorMsgHandling, maslowInfoMsgHandling, maslowMsgHandling, saveConfigValues, sendCommand } from "./maslow";
 import { numpad } from "./numpad";
 import { SendPrinterCommand } from "./printercmd";
 import { getValue, id, setValue } from "./util";
@@ -363,8 +363,9 @@ const moveHome = () => {
 //     lastHeartBeatTime = new Date().getTime();
 //   }
 // }
-function saveSerialMessages() {
-  // save off the serial messages
+
+/** save off the serial messages */
+const saveSerialMessages = () => {
   const msgs = getValue('messages');
   const link = document.createElement('a');
   link.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURI(msgs));
@@ -374,7 +375,29 @@ function saveSerialMessages() {
   document.body.removeChild(link);
 }
 
-var loadedValues = {};
+/** Loaded Values of the maslow config, this can be a const because we only change the fields within it */
+const loaded_values = {};
+/** Work with the maslow config loaded values.
+ * If `fieldName` is undefined, or `value` is undefined and `fieldname` is not in the values, then return the values we have.
+ * If `value` is undefined, but `fieldname` exists, just return the value for `fieldname`
+ * Otherwise set `fieldname` to the `value` and return it
+ */
+const loadedValues = (fieldName, value) => {
+  if (typeof fieldName === "undefined") {
+    return loaded_values;
+  }
+  if (typeof value === "undefined") {
+    if (!(fieldName in loaded_values)) {
+      return loaded_values;
+    }
+    return loaded_values[fieldName];
+  }
+  if (!(fieldName in loaded_values)) {
+    loaded_values[fieldName] = value;
+  }
+  return loaded_values[fieldName];
+};
+
 function tabletShowMessage(msg, collecting) {
   if (
     collecting ||
@@ -408,10 +431,11 @@ function tabletShowMessage(msg, collecting) {
 
 function tabletShowResponse(response) { }
 
-function clearAlarm() {
-  if (id('systemStatus').innerText == 'Alarm') {
-    id('systemStatus').classList.remove('system-status-alarm')
-    SendPrinterCommand('$X', true, null, null, 114, 1)
+const clearAlarm = () => {
+  const sysStatus = id('systemStatus');
+  if (sysStatus.innerText == 'Alarm') {
+    sysStatus.classList.remove('system-status-alarm');
+    SendPrinterCommand('$X', true, null, null, 114, 1);
   }
 }
 
@@ -1117,7 +1141,46 @@ function setBottomHeight() {
 }
 window.onresize = setBottomHeight
 
-id('tablettablink').addEventListener('DOMActivate', setBottomHeight, false)
+id('tablettablink').addEventListener('DOMActivate', setBottomHeight, false);
+id('calibrationBTN').addEventListener('click', (event) => {
+  loadCornerValues();
+  openModal('calibration-popup');
+});
+id('tablettab_gcode_pause').addEventListener('click', (event) => doPlayButton());
+id('tablettab_gcode_pause').addEventListener('click', (event) => doPauseButton());
+id('tablettab_gcode_stop').addEventListener('click', (event) => onCalibrationButtonsClick('$STOP','Stop Maslow and Gcode'));
+id('tablettab_cal_retract').addEventListener('click', (event) => onCalibrationButtonsClick('$ALL','Retract All'));
+id('tablettab_cal_extend').addEventListener('click', (event) => onCalibrationButtonsClick('$EXT','Extend All'));
+id('tablettab_cal_calibrate').addEventListener('click', (event) => {
+  onCalibrationButtonsClick('$CAL','Calibrate');
+  setTimeout(function() {
+    hideModal('calibration-popup');
+  }, 1000);
+});
+id('tablettab_cal_tense').addEventListener('click', (event) => {
+  onCalibrationButtonsClick('$TKSLK','Apply Tension');
+  setTimeout(function() {
+    hideModal('calibration-popup');
+  }, 1000);
+});
+// id('tablettab_cal_homez').addEventListener('click', (event) => onCalibrationButtonsClick('$TKSLK','Home Z'));
+id('tablettab_cal_config').addEventListener('click', (event) => {
+  loadConfigValues();
+  openModal('configuration-popup');
+});
+id('tablettab_cal_stop').addEventListener('click', (event) => onCalibrationButtonsClick('$STOP','Stop'));
+id('tablettab_cal_zstop').addEventListener('click', (event) => onCalibrationButtonsClick('$SETZSTOP','Set Z-Stop'));
+id('tablettab_cal_test').addEventListener('click', (event) => onCalibrationButtonsClick('$TEST','Test'));
+id('tablettab_cal_relax').addEventListener('click', (event) => onCalibrationButtonsClick('$CMP','Release Tension'));
+id('tablettab_config_save').addEventListener('click', (event) => saveConfigValues());
+
+id('tablettab_save_serial_msg').addEventListener('click', (event) => saveSerialMessages());
+
+id('calibration-popup').addEventListener('click', (event) => hideModal('calibration-popup'));
+id('calibration_popup_content').addEventListener('click', (event) => event.stopPropagation());
+id('configuration-popup').addEventListener('click', (event) => hideModal('configuration-popup'));
+
+id('systemStatus').addEventListener('click', (event) => clearAlarm());
 
 function updateGcodeViewerAngle() {
   const gcode = id('gcode').value
@@ -1152,30 +1215,31 @@ function homeZ() {
 }
 
 document.addEventListener('click', function (event) {
-  if (
-    !document.getElementById('calibration-popup').contains(event.target) &&
-    !document.getElementById('calibrationBTN').contains(event.target) &&
-    !document.getElementById('numPad').contains(event.target)
-  ) {
-    document.getElementById('calibration-popup').style.display = 'none'
+  const elemIdsToTest = ['calibration-popup', 'calibrationBTN', 'numPad'];
+  const turnOffCalPopup = elemIdsToTest.every((elemId) => {
+    const elem = document.getElementById(elemId);
+    return (!elem || !elem.contains(event.target));
+  })
+  if (turnOffCalPopup) {
+    document.getElementById('calibration-popup').style.display = 'none';
   }
 })
 
 /* Calibration modal */
 
-function openModal(modalId) {
-  let modal = document.getElementById(modalId)
+const openModal = (modalId) => {
+  let modal = document.getElementById(modalId);
 
   if (modal) {
-    modal.style.display = 'flex'
+    modal.style.display = 'flex';
   }
 }
 
-function hideModal(modalId) {
-  let modal = document.getElementById(modalId)
+const hideModal = (modalId) => {
+  let modal = document.getElementById(modalId);
 
   if (modal) {
-    modal.style.display = 'none'
+    modal.style.display = 'none';
   }
 }
 
@@ -1196,5 +1260,5 @@ const onCalibrationButtonsClick = async (command, msg) => {
   }
 }
 
-export { tabletInit };
+export { loadedValues, openModal, hideModal, onCalibrationButtonsClick, saveSerialMessages, tabletInit };
 /* Calibration modal END */

@@ -7,6 +7,7 @@ import {
   MaslowErrMsgKeyValueSuffix,
   maslowMsgHandling
 } from "../maslow";
+import { loadedValues } from "../tablet";
 
 describe('maslowMsgHandling', () => {
   beforeEach(() => {
@@ -20,7 +21,6 @@ describe('maslowMsgHandling', () => {
               <input id="machineWidth" value="" />
               <input id="machineHeight" value="" />
           `;
-    global.loadedValues = {};
     global.initialGuess = {
       tr: { x: 0, y: 0, z: 0 },
       tl: { x: 0, y: 0, z: 0 },
@@ -56,7 +56,7 @@ describe('maslowMsgHandling', () => {
 
   test.each(stdActions)("Key %p sets value %p into %p", (key, value, outputValueName) => {
     noErrorResult(key, value);
-    expect(global.loadedValues[outputValueName]).toBe(value);
+    expect(loadedValues(outputValueName)).toBe(value);
   });
 
   const orientationActions = [
@@ -67,7 +67,7 @@ describe('maslowMsgHandling', () => {
 
   test.each(orientationActions)("Key %p with value %p sets %p to %p", (key, value, outputValueName, outputValue) => {
     noErrorResult(key, value);
-    expect(global.loadedValues[outputValueName]).toBe(outputValue);
+    expect(loadedValues(outputValueName)).toBe(outputValue);
   });
 
   const setDim = (key, value, outDim, outValue) => {
@@ -89,7 +89,7 @@ describe('maslowMsgHandling', () => {
 
   test.each(fullDimensionActions)("Key %p with value %p sets %p and %p.%p as well", (key, value, outputValueName, outDim) => {
     setDim(key, value, outDim, undefined);
-    expect(global.loadedValues[outputValueName]).toBe(value);
+    expect(loadedValues(outputValueName)).toBe(value);
   });
 
   const stdDimensionActions = [
