@@ -1,5 +1,6 @@
 import { alertdlg } from "./alertdlg";
 import { confirmdlg } from "./confirmdlg";
+import { control_macrolist } from "./controls";
 import { clear_drop_menu } from "./dropmenu";
 import { http_communication_locked, SendFileHttp } from "./http";
 import { get_icon_svg } from "./icons";
@@ -174,21 +175,15 @@ function build_dlg_macrolist_ui() {
     var content = "";
     macrodlg_macrolist = [];
     for (var i = 0; i < 9; i++) {
-        var entry = {
-            name: control_macrolist[i].name,
-            glyph: control_macrolist[i].glyph,
-            filename: control_macrolist[i].filename,
-            target: control_macrolist[i].target,
-            class: control_macrolist[i].class,
-            index: control_macrolist[i].index
-        };
-        macrodlg_macrolist.push(entry);
+        macrodlg_macrolist.push(control_macrolist()[i]);
         content += "<tr style='vertical-align:middle' id='macro_line_" + i + "'>";
         content += "</tr>";
     }
 
     id('dlg_macro_list').innerHTML = content;
-    for (var i = 0; i < 9; i++) build_dlg_macrolist_line(i);
+    for (var i = 0; i < 9; i++) {
+        build_dlg_macrolist_line(i);
+    }
 }
 
 function macro_reset_button(index) {
@@ -234,7 +229,9 @@ const closeMacroDialog = () => {
     let modified = false;
     const fieldsTest = ["filename", "name", "glyph", "class", "target"];
     for (let i = 0; i < 9; i++) {
-        if (fieldsTest.some((fieldName) => macrodlg_macrolist[i][fieldName] !== control_macrolist[i][fieldName])) {
+        let macEntry = macrodlg_macrolist[i];
+        let conEntry = control_macrolist()[i];
+        if (fieldsTest.some((fieldName) => macEntry[fieldName] !== conEntry[fieldName])) {
             modified =true;
             break;
         }
@@ -296,7 +293,7 @@ function macrodlgUploadProgressDisplay(oEvent) {
 }
 
 function macroUploadsuccess(response) {
-    control_macrolist = [];
+    control_macrolist([]);
     for (var i = 0; i < 9; i++) {
         var entry;
         if ((macrodlg_macrolist.length != 0)) {
@@ -318,7 +315,7 @@ function macroUploadsuccess(response) {
                 index: i
             };
         }
-        control_macrolist.push(entry);
+        control_macrolist(entry);
     }
     displayNone('macrodlg_upload_msg');
     closeModal('ok');

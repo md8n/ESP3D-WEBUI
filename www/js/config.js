@@ -13,20 +13,23 @@ var commandtxt = "$$";
 var is_override_config = false;
 var config_file_name = "/sd/config";
 
-
 function refreshconfig(is_override) {
     if (http_communication_locked()) {
         id('config_status').innerHTML = translate_text_item("Communication locked by another process, retry later.");
         return;
     }
     is_override_config = false;
-    if ((typeof is_override != 'undefined') && is_override) is_override_config = is_override;
+    if ((typeof is_override != 'undefined') && is_override) {
+        is_override_config = is_override;
+    }
     config_display_override(is_override_config);
     displayBlock('config_loader');
     displayNone('config_list_content');
     displayNone('config_status');
     displayNone('config_refresh_btn');
-    if (!is_override) config_configList = [];
+    if (!is_override) {
+        config_configList = [];
+    }
     config_override_List = [];
     getprinterconfig(is_override_config);
 }
@@ -49,7 +52,9 @@ function getprinterconfig(is_override) {
         cmd = "M503";
         config_override_List = [];
         is_override_config = true;
-    } else is_override_config = false;
+    } else {
+        is_override_config = false;
+    }
     var url = "/command?plain=" + encodeURIComponent(cmd);
     SendGetHttp(url);
 }
@@ -70,51 +75,46 @@ function getESPUpdateconfigSuccess(response) {
 
 function build_HTML_config_list() {
     var content = "";
-    var array_len = config_configList.length;
-    if (is_override_config) array_len = config_override_List.length;
+    const array_len = (is_override_config) ? config_override_List.length : config_configList.length;
+    const prefix = (is_override_config) ? "override" : "";
+    const actions = [];
     for (var i = 0; i < array_len; i++) {
-        var item;
-        var prefix = "";
-        if (is_override_config) {
-            item = config_override_List[i];
-            prefix = "_override"
-        } else item = config_configList[i];
+        let item = (is_override_config) ? config_override_List[i] : config_configList[i];
         content += "<tr>";
+        let fullpref = `${prefix}${i}`;
         if (item.showcomment) {
             content += "<td colspan='3' class='info'>";
             content += item.comment;
         } else {
-            content += "<td style='vertical-align:middle'>";
-            content += item.label;
-            content += "</td>";
+            content += `<td style='vertical-align:middle;'>${item.label}</td>`;
             content += "<td style='vertical-align:middle;'>";
             content += "<table><tr><td>"
-            content += "<div id='status_config_" + prefix + i + "' class='form-group has-feedback' style='margin: auto;'>";
+            content += `<div id='status_config_${fullpref}' class='form-group has-feedback' style='margin: auto;'>`;
             content += "<div class='item-flex-row'>";
             content += "<table><tr><td>";
             content += "<div class='input-group'>";
             content += "<span class='input-group-btn'>";
-            content += "<button class='btn btn-default btn-svg' onclick='config_revert_to_default(" + i + "," + is_override_config + ")' >";
-            content += get_icon_svg("repeat");
-            content += "</button>";
+            content += `<button id='btn_revert_config_${fullpref}' class='btn btn-default btn-svg'>${get_icon_svg("repeat")}</button>`;
             content += "</span>";
+            actions.push({id: `btn_revert_config_${fullpref}`, type: "click", method: config_revert_to_default(i, is_override_config)});
             content += "<input class='hide_it'></input>";
             content += "</div>";
-            content += "</td><td>";
+            content += "</td>";
+            content += "<td>";
             content += "<div class='input-group'>";
-            content += "<span class='input-group-addon hide_it' ></span>";
-            content += "<input id='config_" + prefix + i + "' type='text' class='form-control' style='width:";
-            content += "auto";
-            content += "'  value='" + item.defaultvalue + "' onkeyup='config_checkchange(" + i + "," + is_override_config + ")' />";
-            content += "<span id='icon_config_" + prefix + i + "'class='form-control-feedback ico_feedback' ></span>";
-            content += "<span class='input-group-addon hide_it' ></span>";
+            content += "<span class='input-group-addon hide_it'></span>";
+            content += `<input id='config_${fullpref}' type='text' class='form-control' style='width:auto' value='${item.defaultvalue}'/>`;
+            actions.push({id: `config_${fullpref}`, type: "keyup", method: config_checkchange(i, is_override_config)});
+            content += `<span id='icon_config_${fullpref}'class='form-control-feedback ico_feedback' ></span>`;
+            content += "<span class='input-group-addon hide_it'></span>";
             content += "</div>";
             content += "</td></tr></table>";
             content += "<div class='input-group'>";
             content += "<input class='hide_it'></input>";
             content += "<span class='input-group-btn'>";
-            content += "<button  id='btn_config_" + prefix + i + "' class='btn btn-default' onclick='configGetvalue(" + i + "," + is_override_config + ")' translate english_content='Set' >" + translate_text_item("Set") + "</button>&nbsp;";
+            content += `<button id='btn_config_${fullpref}' class='btn btn-default' translate english_content='Set'>${translate_text_item("Set")}</button>&nbsp;`;
             content += "</span>";
+            actions.push({id: `btn_config_${fullpref}`, type: "click", method: configGetvalue(i, is_override_config)});
             content += "</div>";
             content += "</div>";
             content += "</div>";
@@ -128,6 +128,9 @@ function build_HTML_config_list() {
     }
     if (content.length > 0) {
         id('config_list_data').innerHTML = content;
+        actions.forEach((action) => {
+            id(action.id).addEventListener(action.type, (event) => action.method);
+        });
     }
     displayNone('config_loader');
     displayBlock('config_list_content');

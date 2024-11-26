@@ -8,8 +8,23 @@ import { translate_text_item } from "./translate";
 import { conErr, displayBlock, displayNone, getChecked, id, setChecked } from "./util";
 
 var interval_position = -1;
-var control_macrolist = [];
 
+let controlMacroList = [];
+/** Handle the array of control macros.
+ * If a new array is provided this will overwrite any existing macro list. 
+ * If a single value is provided this will be pushed to the end of the existing macro list. 
+ * The current macro list is always returned */
+const control_macrolist = (value) => {
+    if (typeof value === "undefined") {
+        return controlMacroList;
+    }
+    if (Array.isArray(value)) {
+        controlMacroList = value;
+    } else {
+        controlMacroList.push(value);
+    }
+    return controlMacroList;
+}
 
 function init_controls_panel() {
     loadmacrolist();
@@ -35,7 +50,7 @@ function showAxiscontrols() {
 }
 
 function loadmacrolist() {
-    control_macrolist = [];
+    control_macrolist([]);
     var url = "/macrocfg.json";
     SendGetHttp(url, processMacroGetSuccess, processMacroGetFailed);
 }
@@ -70,15 +85,12 @@ function Macro_build_list(response_text) {
                 index: i
             };
         }
-        control_macrolist.push(entry);
+        control_macrolist(entry);
     }
     control_build_macro_ui();
 }
 
-function processMacroGetSuccess(response) {
-    if (response.indexOf("<HTML>") == -1) Macro_build_list(response);
-    else Macro_build_list("");
-}
+const processMacroGetSuccess = (response) => Macro_build_list((response.indexOf("<HTML>") == -1) ? response : "");
 
 function processMacroGetFailed(error_code, response) {
     conErr(error_code, response);
@@ -235,7 +247,6 @@ function onZvelocityChange() {
     }
 }
 
-
 function processMacroSave(answer) {
     if (answer == "ok") {
         //console.log("now rebuild list");
@@ -243,32 +254,24 @@ function processMacroSave(answer) {
     }
 }
 
-function control_build_macro_button(index) {
-    var content = "";
-    var entry = control_macrolist[index];
-    content += "<button class='btn fixedbutton " + control_macrolist[index].class + "' type='text' ";
-    if (entry.glyph.length == 0) {
-        content += "style='display:none'";
-    }
-    content += "onclick='macro_command (\"" + entry.target + "\",\"" + entry.filename + "\")'";
-    content += "><span style='position:relative; top:3px;'>";
-    if (entry.glyph.length == 0) {
-        content += get_icon_svg("star");
-    } else content += get_icon_svg(entry.glyph);
-    content += "</span>";
-    if (entry.name.length > 0) {
-        content += "&nbsp;";
-    }
-    content += entry.name;
+function control_build_macro_button(index, entry) {
+    const noGlyph = entry.glyph.length === 0;
+    const btnStyle = noGlyph ? " style='display:none'" : "";
+    const entryIcon = get_icon_svg(noGlyph ? "star" : entry.glyph);
+
+    let content = `<button id="control_macro_${i}" class='btn fixedbutton ${entry.class}' type='text'${btnStyle}>`;
+    content += `<span style='position:relative; top:3px;'>${entryIcon}</span>${(entry.name.length > 0) ? "&nbsp;" : ""}${entry.name}`;
     content += "</button>";
 
     return content;
 }
 
 function control_build_macro_ui() {
+    const actions = [];
     var content = "<div class='tooltip'>";
     content += "<span class='tooltip-text'>Manage macros</span>"
-    content += "<button class='btn btn-primary' onclick='showmacrodlg(processMacroSave)'>";
+    content += "<button id='control_btn_show_macro_dlg' class='btn btn-primary'>";
+    actions.push({id: 'control_btn_show_macro_dlg', type: "click", method: showmacrodlg(processMacroSave)});
     content += "<span class='badge'>";
     content += "<svg width='1.3em' height='1.2em' viewBox='0 0 1300 1200'>";
     content += "<g transform='translate(50,1200) scale(1, -1)'>";
@@ -284,9 +287,14 @@ function control_build_macro_ui() {
     content += "</button>";
     content += "</div>";
     for (var i = 0; i < 9; i++) {
-        content += control_build_macro_button(i);
+        let entry = control_macrolist()[i];
+        content += control_build_macro_button(i, entry);
+        actions.push({id: `control_macro_${i}`, type: "click", method: macro_command(entry.target, entry.filename)});
     }
     id('Macro_list').innerHTML = content;
+    actions.forEach((action) => {
+        id(action.id).addEventListener(action.type, (event) => action.method);
+    });
 }
 
 function macro_command(target, filename) {
@@ -302,4 +310,4 @@ function macro_command(target, filename) {
     SendPrinterCommand(cmd);
 }
 
-export { get_Position, on_autocheck_position };
+export { control_macrolist,  get_Position, on_autocheck_position };
