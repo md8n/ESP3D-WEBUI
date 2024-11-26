@@ -1111,6 +1111,9 @@ window.onresize = setBottomHeight
 
 id('tablettablink').addEventListener('DOMActivate', setBottomHeight, false);
 
+id('filelist').addEventListener('change', (event) => selectFile());
+id('tabelttab_config_popup_content').addEventListener('click', (event) => event.stopPropagation());
+
 id('tablettab_zUp').addEventListener('click', (event) => sendMove('Z+'));
 id('tablettab_topLeft').addEventListener('click', (event) => sendMove('X-Y+'));
 id('tablettab_top').addEventListener('click', (event) => sendMove('Y+'));
