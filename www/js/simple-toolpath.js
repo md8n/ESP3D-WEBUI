@@ -3,6 +3,10 @@
 // by Babel (http://babeljs.io/repl), with preset "stage-2"
 // The import and export statements were first removed from Toolpath.js
 
+// and then the imports and exports were added back in, because using globals everywhere is a @#$%#$%#$% recipe for complete disaster
+
+import { Interpreter } from "./simple-interpreter";
+
 'use strict';
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
@@ -834,3 +838,5 @@ var Toolpath = function () {
 
     return Toolpath;
 }();
+
+export { Toolpath };

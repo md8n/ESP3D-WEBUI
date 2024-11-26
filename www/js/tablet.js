@@ -1,9 +1,10 @@
 import { files_list_success, files_select_upload, gCodeFilename } from "./files";
-import { SendRealtimeCmd } from "./grbl";
+import { modal, SendRealtimeCmd, MPOS, WPOS } from "./grbl";
 import { SendGetHttp } from "./http";
 import { checkHomed, loadConfigValues, loadCornerValues, maslowErrorMsgHandling, maslowInfoMsgHandling, maslowMsgHandling, saveConfigValues, sendCommand } from "./maslow";
 import { numpad } from "./numpad";
 import { SendPrinterCommand } from "./printercmd";
+import { arrayToXYZ, displayer, refreshGcode } from "./toolpath-displayer";
 import { getValue, id, setValue } from "./util";
 
 var gCodeLoaded = false;
@@ -95,7 +96,7 @@ const inputBlurred = () => {
 
 // Define XY Home functions
 let xyHomeTimerId = null;
-const xyHomeBtnId = "defineHomeBTN";
+const xyHomeBtnId = "tablettab_set_xy_home";
 const xyHomeLabelDefault = "Define XY Home";
 const xyHomeLabelInstr = "Press+Hold Tap_x2";
 const xyHomeLabelRedefined = "XY Home Redefined";
@@ -163,7 +164,7 @@ const zeroAxis = (axis) => {
 
 const toggleUnits = () => {
   tabletClick()
-  sendCommand(modal.units === 'G21' ? 'G20' : 'G21');
+  sendCommand(modal("units") === 'G21' ? 'G20' : 'G21');
   // The button label will be fixed by the response to $G
   sendCommand('$G');
 }
@@ -182,7 +183,7 @@ const setDistance = (distance) => {
 const jogTo = (axisAndDistance) => {
   // Always force G90 mode because synchronization of modal reports is unreliable
   var feedrate = JogFeedrate(axisAndDistance)
-  if (modal.units == 'G20') {
+  if (modal("units") == 'G20') {
     feedrate /= 25.4;
     feedrate = feedrate.toFixed(2);
   }
@@ -214,7 +215,7 @@ function long_jog(target) {
   distance = 1000
   var axisAndDirection = target.value
   var feedrate = JogFeedrate(axisAndDirection)
-  if (modal.units == 'G20') {
+  if (modal("units") == 'G20') {
     distance /= 25.4
     distance = distance.toFixed(3)
     feedrate /= 25.4
@@ -387,14 +388,9 @@ const loadedValues = (fieldName, value) => {
     return loaded_values;
   }
   if (typeof value === "undefined") {
-    if (!(fieldName in loaded_values)) {
-      return loaded_values;
-    }
-    return loaded_values[fieldName];
+    return !(fieldName in loaded_values) ? loaded_values : loaded_values[fieldName];
   }
-  if (!(fieldName in loaded_values)) {
-    loaded_values[fieldName] = value;
-  }
+  loaded_values[fieldName] = value;
   return loaded_values[fieldName];
 };
 
@@ -570,7 +566,7 @@ function scaleUnits(target) {
   let currentValue = Number(disMElement.innerText);
 
   if (!isNaN(currentValue)) {
-    disMElement.innerText = modal.units == 'G20' ? currentValue / 25 : currentValue * 25;
+    disMElement.innerText = modal("units") == 'G20' ? currentValue / 25.4 : currentValue * 25.4;
   } else {
     console.error('Invalid number in disM element');
   }
@@ -578,10 +574,10 @@ function scaleUnits(target) {
 
 
 function tabletUpdateModal() {
-  var newUnits = modal.units == 'G21' ? 'mm' : 'Inch'
-  if (getText('units') != newUnits) {
-    setText('units', newUnits)
-    setJogSelector(modal.units)
+  var newUnits = modal("units") == 'G21' ? 'mm' : 'Inch'
+  if (getText('tablettab_toggle_units') != newUnits) {
+    setText('tablettab_toggle_units', newUnits)
+    setJogSelector(modal("units"))
     scaleUnits("disM")
     scaleUnits("disZ")
   }
@@ -601,7 +597,7 @@ function tabletGrblState(grbl, response) {
   //  spindleOverride = OVR.spindle/100.0;
 
   var mmPerInch = 25.4
-  switch (modal.units) {
+  switch (modal("units")) {
     case 'G20':
       factor = grblReportingUnits === 0 ? 1 / mmPerInch : 1.0
       break
@@ -689,15 +685,15 @@ function tabletGrblState(grbl, response) {
 
   //setText('runtime', runTime);
 
-  //setText('wpos-label', modal.wcs);
-  var distanceText = modal.distance == 'G90' ? modal.distance : "<div style='color:red'>" + modal.distance + '</div>'
+  //setText('wpos-label', modal("wcs"));
+  var distanceText = modal("distance") == 'G90' ? modal("distance") : "<div style='color:red'>" + modal("distance")+ '</div>'
   //setHTML('distance', distanceText);
 
   var stateText = ''
   if (stateName == 'Run') {
-    var rateNumber = modal.units == 'G21' ? Number(grbl.feedrate).toFixed(0) : Number(grbl.feedrate / 25.4).toFixed(2)
+    var rateNumber = modal("units") == 'G21' ? Number(grbl.feedrate).toFixed(0) : Number(grbl.feedrate / 25.4).toFixed(2)
 
-    var rateText = rateNumber + (modal.units == 'G21' ? ' mm/min' : ' in/min')
+    var rateText = rateNumber + (modal("units") == 'G21' ? ' mm/min' : ' in/min')
 
     stateText = rateText + ' ' + spindleSpeed + ' ' + spindleDirection
   } else {
@@ -706,22 +702,7 @@ function tabletGrblState(grbl, response) {
   }
   //setText('active-state', stateText);
 
-  var modeText =
-    modal.distance +
-    ' ' +
-    modal.wcs +
-    ' ' +
-    modal.units +
-    ' ' +
-    'T' +
-    modal.tool +
-    ' ' +
-    'F' +
-    modal.feedrate +
-    ' ' +
-    'S' +
-    modal.spindle +
-    ' '
+  var modeText = `${modal("distance")} ${modal("wcs")} ${modal("units")} T${modal("tool")} F${modal("feedrate")} S${modal("spindle")}`;
 
   if (grbl.lineNumber && (stateName == 'Run' || stateName == 'Hold' || stateName == 'Stop')) {
     //setText('line', grbl.lineNumber);
@@ -730,18 +711,18 @@ function tabletGrblState(grbl, response) {
     }
   }
   if (gCodeDisplayable) {
-    displayer.reDrawTool(modal, arrayToXYZ(WPOS))
+    displayer.reDrawTool(modal, arrayToXYZ(WPOS()))
   }
 
-  var digits = modal.units == 'G20' ? 4 : 2
+  var digits = modal("units") == 'G20' ? 4 : 2
 
-  if (WPOS) {
-    WPOS.forEach(function (pos, index) {
+  if (WPOS()) {
+    WPOS().forEach(function (pos, index) {
       setTextContent('mpos-' + axisNames[index], Number(pos * factor).toFixed(index > 2 ? 2 : digits))
     })
   }
 
-  MPOS.forEach(function (pos, index) {
+  MPOS().forEach(function (pos, index) {
     //setTextContent('mpos-'+axisNames[index], Number(pos*factor).toFixed(index > 2 ? 2 : digits));
   })
 }
@@ -770,29 +751,15 @@ const tabletInit = () => {
   }, 1000);
 }
 
-function arrayToXYZ(a) {
-  return {
-    x: a[0],
-    y: a[1],
-    z: a[2],
-  }
-}
-
 function showGCode(gcode) {
-  gCodeLoaded = gcode != ''
+  gCodeLoaded = gcode != '';
   if (!gCodeLoaded) {
-    setValue('gcode', '(No GCode loaded)')
-    displayer.clear()
+    setValue("tablettab_gcode", '(No GCode loaded)');
+    displayer.clear();
   } else {
-    setValue('gcode', gcode)
-    var initialPosition = {
-      x: WPOS[0],
-      y: WPOS[1],
-      z: WPOS[2],
-    }
-
+    setValue("tablettab_gcode", gcode);
     if (gCodeDisplayable) {
-      displayer.showToolpath(gcode, modal, arrayToXYZ(WPOS))
+      displayer.showToolpath(gcode, modal, arrayToXYZ(WPOS()));
     }
   }
 
@@ -812,7 +779,7 @@ function nthLineEnd(str, n) {
 }
 
 function scrollToLine(lineNumber) {
-  var gCodeLines = id('gcode')
+  var gCodeLines = id("tablettab_gcode")
   var lineHeight = parseFloat(getComputedStyle(gCodeLines).getPropertyValue('line-height'))
   var gCodeText = gCodeLines.value
 
@@ -1143,14 +1110,38 @@ function setBottomHeight() {
 window.onresize = setBottomHeight
 
 id('tablettablink').addEventListener('DOMActivate', setBottomHeight, false);
+
+id('tablettab_zUp').addEventListener('click', (event) => sendMove('Z+'));
+id('tablettab_topLeft').addEventListener('click', (event) => sendMove('X-Y+'));
+id('tablettab_top').addEventListener('click', (event) => sendMove('Y+'));
+id('tablettab_topRight').addEventListener('click', (event) => sendMove('X+Y+'));
+
 id('calibrationBTN').addEventListener('click', (event) => {
   loadCornerValues();
   openModal('calibration-popup');
 });
+
+id('tablettab_left').addEventListener('click', (event) => sendMove('X-'));
+id('tablettab_right').addEventListener('click', (event) => sendMove('X+'));
+
+id('tablettab_zDown').addEventListener('click', (event) => sendMove('Z-'));
+id('tablettab_bottomLeft').addEventListener('click', (event) => sendMove('X-Y-'));
+id('tablettab_bottom').addEventListener('click', (event) => sendMove('Y-'));
+id('tablettab_bottomRight').addEventListener('click', (event) => sendMove('X+Y-'));
+
+id('tablettab_set_z_home').addEventListener('mousedown', (event) => zeroAxis('Z'));
+id('tablettab_set_z_home').addEventListener('mouseup', (event) => refreshGcode());
+id('tablettab_move_to_xy_home').addEventListener('click', (event) => moveHome());
+id('tablettab_toggle_units').addEventListener('click', (event) => toggleUnits());
+id('tablettab_set_xy_home').addEventListener('mousedown', (event) => setHomeClickDown());
+id('tablettab_set_xy_home').addEventListener('mouseup', (event) => setHomeClickUp());
+id('tablettab_set_xy_home').addEventListener('dblclick', (event) => setXYHome());
+
 id('tablettab_gcode_upload').addEventListener('click', (event) => files_select_upload());
 id('tablettab_gcode_play').addEventListener('click', (event) => doPlayButton());
 id('tablettab_gcode_pause').addEventListener('click', (event) => doPauseButton());
 id('tablettab_gcode_stop').addEventListener('click', (event) => onCalibrationButtonsClick('$STOP','Stop Maslow and Gcode'));
+
 id('tablettab_cal_retract').addEventListener('click', (event) => onCalibrationButtonsClick('$ALL','Retract All'));
 id('tablettab_cal_extend').addEventListener('click', (event) => onCalibrationButtonsClick('$EXT','Extend All'));
 id('tablettab_cal_calibrate').addEventListener('click', (event) => {
@@ -1183,11 +1174,6 @@ id('calibration_popup_content').addEventListener('click', (event) => event.stopP
 id('configuration-popup').addEventListener('click', (event) => hideModal('configuration-popup'));
 
 id('systemStatus').addEventListener('click', (event) => clearAlarm());
-
-function updateGcodeViewerAngle() {
-  const gcode = id('gcode').value
-  displayer.cycleCameraAngle(gcode, modal, arrayToXYZ(WPOS))
-}
 
 function showCalibrationPopup() {
   document.getElementById('calibration-popup').style.display = 'block'

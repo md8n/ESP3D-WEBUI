@@ -11,15 +11,44 @@ var probe_progress_status = 0
 var grbl_error_msg = ''
 var WCO = undefined
 var OVR = { feed: undefined, rapid: undefined, spindle: undefined }
-var MPOS = [0, 0, 0]
-var WPOS = [0, 0, 0]
+var mpos = [0, 0, 0];
+/** gets/sets MPOS array [x, y, z] */
+const MPOS = (value) => {
+  if (Array.isArray(value) && value.length == 3) {
+    mpos = value;
+  }
+  return mpos;
+}
+let wpos = [0, 0, 0];
+/** gets/sets WPOS array [x, y, z] */
+const WPOS = (value) => {
+  if (Array.isArray(value) && value.length == 3) {
+    wpos = value;
+  }
+  return wpos;
+}
 var grblzerocmd = 'X0 Y0 Z0'
 var feedrate = [0, 0, 0, 0, 0, 0]
 var last_axis_letter = 'Z'
 
 var axisNames = ['x', 'y', 'z', 'a', 'b', 'c']
 
-var modal = { modes: '', plane: 'G17', units: 'G21', wcs: 'G54', distance: 'G90' }
+let Modal = { modes: '', plane: 'G17', units: 'G21', wcs: 'G54', distance: 'G90' };
+/** Work with the gCode 'modal' values
+ * If `fieldName` is undefined, or `value` is undefined (and fieldName is not in the values), then return the values we have.
+ * If `value` is undefined, but `fieldname` exists, just return the value for `fieldname`
+ * Otherwise set `fieldname` to the `value` and return it
+ */
+const modal = (fieldName, value) => {
+  if (typeof fieldName === "undefined") {
+    return Modal;
+  }
+  if (typeof value === "undefined") {
+    return !(fieldName in Modal) ? Modal : Modal[fieldName];
+  }
+  Modal[fieldName] = value;
+  return Modal[fieldName];
+};
 
 let calibrationResults = {};
 
@@ -519,21 +548,17 @@ function grblProcessStatus(response) {
     OVR = grbl.ovr
   }
   if (grbl.mpos) {
-    MPOS = grbl.mpos
+    MPOS(grbl.mpos);
     if (WCO) {
-      WPOS = grbl.mpos.map(function (v, index) {
-        return v - WCO[index]
-      })
+      WPOS(grbl.mpos.map((v, index) => v - WCO[index]));
     }
   } else if (grbl.wpos) {
-    WPOS = grbl.wpos
+    WPOS(grbl.wpos);
     if (WCO) {
-      MPOS = grbl.wpos.map(function (v, index) {
-        return v + WCO[index]
-      })
+      MPOS(grbl.wpos.map((v, index) => v + WCO[index]));
     }
   }
-  show_grbl_position(WPOS, MPOS)
+  show_grbl_position(WPOS(), MPOS());
   show_grbl_status(grbl.stateName, grbl.message, grbl.sdName)
   show_grbl_SD(grbl.sdName, grbl.sdPercent)
   show_grbl_probe_status(grbl.pins && grbl.pins.indexOf('P') != -1)
@@ -584,26 +609,26 @@ var modalModes = [
 ]
 
 function grblGetModal(msg) {
-  modal.modes = msg.replace('[GC:', '').replace(']', '')
-  var modes = modal.modes.split(' ')
-  modal.parking = undefined // Otherwise there is no way to turn it off
-  modal.program = '' // Otherwise there is no way to turn it off
-  modes.forEach(function (mode) {
+  modal("modes", msg.replace('[GC:', '').replace(']', ''));
+  var modes = modal("modes").split(' ');
+  Modal.parking = undefined; // Otherwise there is no way to turn it off
+  modal("program", ''); // Otherwise there is no way to turn it off
+  modes().forEach((mode) => {
     if (mode == 'M9') {
-      modal.flood = mode
-      modal.mist = mode
+      modal("flood", mode);
+      modal("mist", mode);
     } else {
       if (mode.charAt(0) === 'T') {
-        modal.tool = mode.substring(1)
+        modal("tool", mode.substring(1));
       } else if (mode.charAt(0) === 'F') {
-        modal.feedrate = mode.substring(1)
+        modal("feedrate", mode.substring(1));
       } else if (mode.charAt(0) === 'S') {
-        modal.spindle = mode.substring(1)
+        modal("spindle", mode.substring(1));
       } else {
         modalModes.forEach(function (modeType) {
           modeType.values.forEach(function (s) {
             if (mode == s) {
-              modal[modeType.name] = mode
+              modal(modeType.name, mode);
             }
           })
         })
@@ -797,4 +822,4 @@ function setSpindleSpeed(speed) {
   }
 }
 
-export { calibrationResults, grblaxis, grblHandleMessage, onAutoReportIntervalChange, reportNone };
+export { calibrationResults, grblaxis, grblHandleMessage, modal, onAutoReportIntervalChange, reportNone, MPOS, WPOS };

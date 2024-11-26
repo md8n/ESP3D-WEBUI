@@ -15,6 +15,10 @@
 // d) Replaced arrow functions with real functions
 // e) Replaced let with var
 
+// and all of the above is a profoundly bad way of supporting old browsers, so it will be progressively reverted
+// More importantly anyone still using IE should NOT be supported, it is NOT in their interest to do so.
+// Yes that means they MUST update to a more modern browser. This is NOT optional.
+
 /**
  * Returns an object composed from arrays of property names and values.
  * @example
@@ -141,3 +145,5 @@ Interpreter.prototype.loadFromLinesSync = function(lines) {
         }
     }
 }
+
+export { Interpreter };
