@@ -8,6 +8,10 @@ const inputdlg = (titledlg, textdlg, closefunc, preset) => {
         return;
     }
 
+    id("inputdlg_close").addEventListener("click", (event) => closeInputModal('cancel'));
+    id("inputdlg_cancel").addEventListener("click", (event) => closeInputModal('cancel'));
+    id("inputdlg_ok").addEventListener("click", (event) => closeInputModal('ok'));
+
     var title = modal.element.getElementsByClassName("modal-title")[0];
     var body = modal.element.getElementsByClassName("modal-text")[0];
     title.innerHTML = titledlg;
