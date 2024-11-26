@@ -18,7 +18,6 @@ var log_off = false
 var websocket_port = 0
 var websocket_ip = ''
 var esp_hostname = 'ESP3D WebUI'
-var EP_HOSTNAME
 var EP_STA_SSID
 var EP_STA_PASSWORD
 var EP_STA_IP_MODE
@@ -159,7 +158,6 @@ function update_UI_firmware_target() {
   id('control_x_position_label').innerHTML = 'Xw'
   id('control_y_position_label').innerHTML = 'Yw'
 
-  EP_HOSTNAME = 'Hostname'
   EP_STA_SSID = 'Sta/SSID'
   EP_STA_PASSWORD = 'Sta/Password'
   EP_STA_IP_MODE = 'Sta/IPMode'

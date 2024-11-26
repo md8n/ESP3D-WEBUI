@@ -334,7 +334,7 @@ const buildDialog = (parentElem, definitions, isFirstLevel = false) => {
                 break;
             case "select":
                 // Generate a mini table with select field
-                const inpSTable = buildTable( `<tr>${buildTdIcon("flag")}<td>${build_language_list(fId)}</td></tr>`);
+                const inpSTable = buildTable(`<tr>${buildTdIcon("flag")}<td>${build_language_list(fId)}</td></tr>`);
                 // Use the key for the containing table, instead of the fId, which has been used for the select
                 inpSTable.setAttribute("id", key);
                 setGroupId(inpSTable, fId);
@@ -421,6 +421,19 @@ const getPrefValue = (prefName) => {
     return pref.value;
 }
 
+/** Set the preference item to the supplied value.
+ * Returns true for success, false for failure - usually because the preference item does not exist
+  */
+const setPrefValue = (prefName, value) => {
+    let pref = getPrefPath(prefName);
+    if (typeof pref === "undefined") {
+        return false;
+    }
+    // TODO: test the typeof the value is compatible with the valueType
+    pref.value = value;
+    return true;
+}
+
 /** Helper method to get the `enable_ping` preference value */
 const enable_ping = () => getPrefValue("enable_ping");
 
@@ -442,7 +455,7 @@ const handlePing = () => {
     }
 }
 
-translate_text(getPrefValue("language"));
+translate_text(getPrefValue("language_list")?.valueDef);
 build_HTML_setting_list(current_setting_filter());
 if (typeof id('camtab') != "undefined") {
     var camoutput = false;
@@ -638,7 +651,7 @@ function Preferences_build_list(response_text) {
 
 function applypreferenceslist() {
     //Assign each control state
-    translate_text(getPrefValue("language"));
+    translate_text(getPrefValue("language_list")?.valueDef);
     build_HTML_setting_list(current_setting_filter());
     if (typeof id('camtab') != "undefined") {
         var camoutput = false;
@@ -900,7 +913,7 @@ function build_dlg_preferences_list() {
 function closePreferencesDialog() {
     var modified = false;
     //check dialog compare to global state
-    if ((typeof (getPrefValue("language")) === 'undefined') ||
+    if ((typeof (getPrefValue("language_list")?.valueDef) === 'undefined') ||
         (typeof (getPrefValue("enable_camera")) === 'undefined') ||
         (typeof (getPrefValue("enable_camera.auto_load_camera")) === 'undefined') ||
         (typeof (getPrefValue("enable_camera.camera_address")) === 'undefined') ||
@@ -1017,16 +1030,17 @@ function process_preferencesCloseDialog(answer) {
     }
 }
 
-function SavePreferences(current_preferences) {
+const SavePreferences = (save_current_preferences = false) => {
     if (http_communication_locked()) {
         alertdlg(translate_text_item("Busy..."), translate_text_item("Communications are currently locked, please wait and retry."));
         return;
     }
     console.log("save prefs");
-    if (((typeof (current_preferences) != 'undefined') && !current_preferences) || (typeof (current_preferences) == 'undefined')) {
-        if (!CheckValue("autoreport_interval") ||
-            !CheckValue("interval_positions") ||
-            !CheckValue("interval_status") ||
+
+    if (!!save_current_preferences) {
+        if (!CheckValue("autoreport_interval", getPrefPath("enable_grbl_panel.autoreport_interval")) ||
+            !CheckValue("interval_status", getPrefPath("enable_grbl_panel.interval_status")) ||
+            !CheckValue("interval_positions", getPrefPath("enable_control_panel.interval_positions")) ||
             !CheckValue("xy_feedrate") ||
             !CheckValue("f_filters") ||
             !CheckValue("probemaxtravel") ||
@@ -1090,7 +1104,7 @@ function SavePreferences(current_preferences) {
     var url = "/files";
     formData.append('path', '/');
     formData.append('myfile[]', file, prefFile);
-    if ((typeof (current_preferences) != 'undefined') && current_preferences) {
+    if (!!save_current_preferences) {
         SendFileHttp(url, formData);
     } else {
         SendFileHttp(url, formData, preferencesdlgUploadProgressDisplay, preferencesUploadsuccess, preferencesUploadfailed);
@@ -1120,14 +1134,14 @@ function preferencesUploadfailed(error_code, response) {
 
 /** Test the supplied numeric value against any defined `min` test */
 const valueMinTest = (value, valueDef) => {
-    return ("min" in valueDef && value < valueDef.min) 
+    return ("min" in valueDef && value < valueDef.min)
         ? translate_text_item(`${valueDef.label} must be greater than or equal to ${valueDef.min}"`)
         : "";
 }
 
 /** Test the supplied numeric value against any defined `max` test */
 const valueMaxTest = (value, valueDef) => {
-    return ("max" in valueDef && value > valueDef.max) 
+    return ("max" in valueDef && value > valueDef.max)
         ? translate_text_item(`${valueDef.label} must be less than or equal to ${valueDef.max}"`)
         : "";
 }
@@ -1135,45 +1149,50 @@ const valueMaxTest = (value, valueDef) => {
 
 const CheckValue = (fId, valueDef) => {
     const errorList = [];
-    const value = id(fId).value;
-    // Check for any specific test and use that in preference
-    if ("valFunc" in valueDef) {
-        const vfTest = valueDef.valFunc(value);
-        if (vfTest) {
-            errorList.push(vfTest);
-        }
+    if (typeof valueDef === "undefined") {
+        errorList.push(`No definition provided for the field '${fId}'. Its value cannot be checked`);
     } else {
-        switch (valueDef.valueType) {
-            case "panel":
-            case "bool":
-                // These are both boolean values
-                break;
-            case "int":
-                const vInt = parseInt(value);
-                if (isNaN(vInt)) {
-                    errorList.push(translate_text_item(`${valueDef.label} must be an integer"`));
-                } else {
-                    errorList.push(valueMinTest(vInt, valueDef));
-                    errorList.push(valueMaxTest(vInt, valueDef));
-                }
-                break;
-            case "float":
-                const vFlt = parseFloat(value);
-                if (isNaN(vFlt)) {
-                    errorList.push(translate_text_item(`${valueDef.label} must be an float"`));
-                } else {
-                    errorList.push(valueMinTest(vFlt, valueDef));
-                    errorList.push(valueMaxTest(vFlt, valueDef));
-                }
-                break;
-            case "text":
-                break;   
-            case "select":
-                break;
-            default:
-                console.log(`${key}: ${JSON.stringify(value)}`);
-                break;
-        }
+        const elem = id(fId);
+        const value = elem ? elem.value : valueDef.defValue;
+        // Check for any specific test and use that in preference
+        if ("valFunc" in valueDef) {
+            const vfTest = valueDef.valFunc(value);
+            if (vfTest) {
+                errorList.push(vfTest);
+            }
+        } else {
+            switch (valueDef.valueType) {
+                case "panel":
+                case "bool":
+                    // These are both boolean values
+                    break;
+                case "int":
+                    const vInt = parseInt(value);
+                    if (isNaN(vInt)) {
+                        errorList.push(translate_text_item(`${valueDef.label} must be an integer"`));
+                    } else {
+                        errorList.push(valueMinTest(vInt, valueDef));
+                        errorList.push(valueMaxTest(vInt, valueDef));
+                    }
+                    break;
+                case "float":
+                    const vFlt = parseFloat(value);
+                    if (isNaN(vFlt)) {
+                        errorList.push(translate_text_item(`${valueDef.label} must be an float"`));
+                    } else {
+                        errorList.push(valueMinTest(vFlt, valueDef));
+                        errorList.push(valueMaxTest(vFlt, valueDef));
+                    }
+                    break;
+                case "text":
+                    break;
+                case "select":
+                    break;
+                default:
+                    console.log(`${key}: ${JSON.stringify(value)}`);
+                    break;
+            }
+        }    
     }
 
     // Old skul hack to remove unwanted entries from an array, faster than filter
@@ -1183,18 +1202,28 @@ const CheckValue = (fId, valueDef) => {
         }
     }
 
+    const elemIdGroup = id(`${fId}_group`);
+    const elemIdIcon = id(`${fId}_icon`);
     if (errorList.length == 0) {
-        id(fId + "_group").classList.remove("has-feedback");
-        id(fId + "_group").classList.remove("has-error");
-        id(fId + "_icon").innerHTML = "";
+        if (elemIdGroup) {
+            elemIdGroup.classList.remove("has-feedback");
+            elemIdGroup.classList.remove("has-error");
+        }
+        if (elemIdIcon) {
+            elemIdIcon.innerHTML = "";
+        }
     } else {
-        // has-feedback hides the value so it is hard to fix it
-        // id(fId + "_group").classList.add("has-feedback");
-        id(fId + "_group").classList.add("has-error");
-        // id(fId + "_icon").innerHTML = get_icon_svg("remove");
-        alertdlg(translate_text_item("Out of range"), error_message);
+        if (elemIdGroup) {
+            // has-feedback hides the value so it is hard to fix it
+            // elemIdGroup.classList.add("has-feedback");
+            elemIdGroup.classList.add("has-error");
+        }
+        if (elemIdIcon) {
+            // elemIdIcon.innerHTML = get_icon_svg("remove");
+        }
+        alertdlg(translate_text_item("Errors with settings & preferences"), errorList.join("\n"));
     }
     return errorList.length == 0;
 }
 
-export { enable_ping, getPrefValue, initpreferences, showpreferencesdlg };
+export { enable_ping, getPrefValue, setPrefValue, initpreferences, showpreferencesdlg, SavePreferences };

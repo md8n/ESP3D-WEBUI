@@ -9,7 +9,8 @@ import { restartdlg } from "./restartdlg";
 import { translate_text_item } from "./translate";
 import { conErr, stdErrMsg, displayBlock, displayNone, id, setChecked } from "./util";
 
-var scl = [] // setting_configList
+/** setting_configList */
+let scl = [];
 var setting_error_msg = ''
 var setting_lasti = -1
 var setting_lastj = -1
@@ -120,10 +121,11 @@ function update_UI_setting() {
     }
   }
 }
-//to generate setting editor in setting or setup
-function build_control_from_index(i, extra_set_function) {
-  var content = '<table>'
-  if (i < scl.length) {
+
+/** to generate setting editor in setting or setup */
+const build_control_from_index = (i, extra_set_function) => {
+  let content = '<table>';
+  if (i < scl.length && i > -1) {
     nbsub = scl[i].type == 'F' ? scl[i].Options.length : 1
     for (var j = 0; j < nbsub; j++) {
       let params = `${i},${j}`;
@@ -190,23 +192,23 @@ function build_control_from_index(i, extra_set_function) {
       content += '</td></tr>'
     }
   }
-  content += '</table>'
-  return content
+  content += '</table>';
+  return content;
 }
 
-//get setting UI for specific component instead of parse all
+/** get setting UI for specific component instead of parse all */
 function get_index_from_eeprom_pos(pos) {
-  for (var i = 0; i < scl.length; i++) {
+  for (let i = 0; i < scl.length; i++) {
     if (pos == scl[i].pos) {
-      return i
+      return i;
     }
   }
-  return -1
+
+  // Indicates failure
+  return -1;
 }
 
-function build_control_from_pos(pos, extra) {
-  return build_control_from_index(get_index_from_eeprom_pos(pos), extra)
-}
+const build_control_from_pos = (pos, extra) => build_control_from_index(get_index_from_eeprom_pos(pos), extra);
 
 /** Send a command to call Config/Overwrite.
  * 
@@ -344,53 +346,61 @@ function process_settings_answer(response_text) {
 }
 
 function create_setting_entry(sentry, vi) {
-  if (!is_setting_entry(sentry)) return vi
-  var slabel = sentry.H
-  var svalue = sentry.V
-  var scmd = '[ESP401]P=' + sentry.P + ' T=' + sentry.T + ' V='
-  var options = []
-  var min
-  var max
+  if (!is_setting_entry(sentry)) {
+    return vi;
+  }
+
+  var scmd = `[ESP401]P=${sentry.P} T=${sentry.T} V=`;
+  var options = [];
+  let min;
+  let max;
   if (typeof sentry.M !== 'undefined') {
     min = sentry.M
   } else {
     //add limit according the type
-    if (sentry.T == 'B') min = -127
-    else if (sentry.T == 'S') min = 0
-    else if (sentry.T == 'A') min = 7
-    else if (sentry.T == 'I') min = 0
+    switch (sentry.T) {
+      case 'B': min = -127; break;
+      case 'A': min = 7; break;
+      case 'S':
+      case 'I':
+        min = 0; break;
+      default: min = 0; break;
+    }
   }
   if (typeof sentry.S !== 'undefined') {
-    max = sentry.S
+    max = sentry.S;
   } else {
     //add limit according the type
-    if (sentry.T == 'B') max = 255
-    else if (sentry.T == 'S') max = 255
-    else if (sentry.T == 'A') max = 15
-    else if (sentry.T == 'I') max = 2147483647
+    switch (sentry.T) {
+      case 'B':
+      case 'S': max = 255; break;
+      case 'A': max = 15; break;
+      case 'I': max = 2147483647; break;
+      default: max = 2147483647; break;
+    }
   }
+
   //list possible options if defined
   if (typeof sentry.O !== 'undefined') {
     for (var i in sentry.O) {
-      var key = i
-      var val = sentry.O[i]
+      var val = sentry.O[i];
       for (var j in val) {
         var option = {
           id: val[j].trim(),
           display: j.trim(),
-        }
-        options.push(option)
+        };
+        options.push(option);
         //console.log("*" + option.display + "* and *" + option.id + "*");
       }
     }
   }
-  svalue = svalue.trim()
+
   //create entry in list
   var config_entry = {
     index: vi,
     F: sentry.F,
-    label: slabel,
-    defaultvalue: svalue,
+    label: sentry.H,
+    defaultvalue: sentry.V.trim(),
     cmd: scmd,
     Options: options,
     min_val: min,
@@ -400,7 +410,7 @@ function create_setting_entry(sentry, vi) {
   }
   scl.push(config_entry)
   vi++
-  return vi
+  return vi;
 }
 //check it is valid entry
 function is_setting_entry(sline) {
@@ -417,16 +427,8 @@ function is_setting_entry(sline) {
 
 const getFlag = (i, j) => (scl[i].type !== 'F' || scl[i].Options.length <= j) ? -1 : parseInt(scl[i].Options[j].id);
 
-function getFlag_description(i, j) {
-  if (scl[i].type != 'F' || scl[i].Options.length <= j) {
-    return -1;
-  }
-  return scl[i].Options[j].display;
-}
+const setting = (i, j) => id(sId(i, j));
 
-function setting(i, j) {
-  return id(sId(i, j));
-}
 function setBtn(i, j, value) {
   id(sId(i, j, 'btn_')).className = `btn ${value}`;
 }
@@ -604,4 +606,4 @@ function define_esp_role_from_pos(pos) {
   define_esp_role(get_index_from_eeprom_pos(pos))
 }
 
-export { build_HTML_setting_list, current_setting_filter, refreshSettings, restart_esp, saveMaslowYaml, setup_is_done };
+export { build_control_from_pos, build_HTML_setting_list, current_setting_filter, refreshSettings, restart_esp, saveMaslowYaml, setup_is_done };

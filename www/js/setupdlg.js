@@ -1,9 +1,10 @@
 import { get_icon_svg } from "./icons";
 import { add_language_list_event_handler, build_language_list, language } from "./languages";
 import { closeModal, setactiveModal, showModal } from "./modaldlg";
-import { getPrefValue } from "./preferencesdlg";
-import { build_HTML_setting_list, current_setting_filter, setup_is_done } from "./settings";
-import { translate_text_item } from "./translate";
+import { setPrefValue, SavePreferences } from "./preferencesdlg";
+import { build_control_from_pos, build_HTML_setting_list, current_setting_filter, setup_is_done } from "./settings";
+import { can_revert_wizard, openstep } from "./wizard";
+import { translate_text, translate_text_item } from "./translate";
 import { displayBlock, displayNone, id } from "./util";
 
 //setup dialog
@@ -11,9 +12,10 @@ import { displayBlock, displayNone, id } from "./util";
 var active_wizard_page = 0;
 var maz_page_wizard = 5;
 
-function td(value) {
-    return "<td>" + value + "</td>";
-}
+var EP_HOSTNAME = 'Hostname';
+
+const td = (content) => `<td>${content}</td>`;
+
 function table(value) {
     return "<table><tr>" + value + "</tr></table>";
 }
@@ -40,7 +42,9 @@ function openStep(wizard, step) {
 function closeStep(step) {
     if (id(step).className.indexOf(" wizard_done") == -1) {
         id(step).className += " wizard_done";
-        if (!can_revert_wizard) id(step).className += " no_revert_wizard";
+        if (!can_revert_wizard()) {
+            id(step).className += " no_revert_wizard";
+        }
     }
 }
 function spacer() {
@@ -55,12 +59,19 @@ function endDiv() {
 
 const setupdlg = () => {
     setup_is_done(false);
-    language_save = language();
     displayNone('main_ui');
     id('settings_list_data').innerHTML = "";
     active_wizard_page = 0;
 
     id("setupDlgCancel").addEventListener("click", (event) => closeModal('cancel'));
+
+    id("startsteplink").addEventListener("click", (event) => openstep(event, 'startstep'));
+    id("step1link").addEventListener("click", (event) => openstep(event, 'step1'));
+    id("step2link").addEventListener("click", (event) => openstep(event, 'step2'));
+    id("step3link").addEventListener("click", (event) => openstep(event, 'step3'));
+    id("endsteplink").addEventListener("click", (event) => openstep(event, 'endstep'));
+
+    id("wizard_button").addEventListener("click", (event) => continue_setup_wizard());
 
     wizardDone("startsteplink");
 
@@ -89,7 +100,7 @@ function setupdone(response) {
     setup_is_done(true);
     do_not_build_settings = false;
     build_HTML_setting_list(current_setting_filter());
-    translate_text(language_save);
+    translate_text(language());
     displayUndoNone('main_ui');
     closeModal("setup done");
 }
@@ -99,9 +110,8 @@ function continue_setup_wizard() {
     switch (active_wizard_page) {
         case 1:
             enablestep1();
-            getPrefValue("language") = language();
+            setPrefValue("language", language());
             SavePreferences(true);
-            language_save = language();
             break;
         case 2:
             enablestep2();
@@ -123,11 +133,10 @@ function continue_setup_wizard() {
 }
 
 function enablestep1() {
-    var content = "";
     closeStep("startsteplink")
     id("wizard_button").innerHTML = translate_text_item("Continue");
     openStep("wizard_line1", "step1link");
-    content += heading("FluidNC Settings");
+    let content = heading("FluidNC Settings");
     content += item("Define ESP name:", EP_HOSTNAME);
 
     id("step1").innerHTML = content
