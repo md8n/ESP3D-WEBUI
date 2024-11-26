@@ -1,6 +1,7 @@
 import { alertdlg } from "./alertdlg";
 import { confirmdlg } from "./confirmdlg";
 import { M } from "./constants";
+import { init_files_panel } from "./files";
 import { calibrationResults } from "./grbl";
 import { http_communication_locked, SendGetHttp } from "./http";
 import { get_icon_svg } from "./icons";
@@ -110,7 +111,7 @@ function update_UI_setting() {
       case '850':
         direct_sd = defval(i) == 1 ? true : false
         update_UI_firmware_target()
-        init_files_panel(false)
+        init_files_panel(false);
         break
       case '130':
         //set title using hostname

@@ -1,5 +1,6 @@
 import { connectdlg } from "./connectdlg";
 import { esp_error_code, esp_error_message } from "./constants";
+import { init_files_panel } from "./files";
 import { grblaxis } from "./grbl";
 import { grblpanel } from "./grblpanel";
 import { closeModal } from "./modaldlg";
@@ -239,7 +240,7 @@ function initUI_3() {
 function initUI_4() {
   AddCmd(display_boot_progress)
   init_command_panel()
-  init_files_panel(false)
+  init_files_panel(false);
   //check if we need setup
   if (target_firmware == '???') {
     console.log('Launch Setup')

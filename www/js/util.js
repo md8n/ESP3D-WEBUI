@@ -111,4 +111,14 @@ const last_ping = (value) => {
   return lastPing;
 }
 
-export { classes, conErr, stdErrMsg, disable_items, displayBlock, displayFlex, displayNone, last_ping, getChecked, setChecked, getValue, setValue, id };
+export {
+  classes,
+  conErr,
+  stdErrMsg,
+  disable_items,
+  displayBlock, displayFlex, displayInline, displayNone,
+  last_ping,
+  getChecked, setChecked,
+  getValue, setValue,
+  id
+};

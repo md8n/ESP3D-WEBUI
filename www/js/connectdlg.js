@@ -2,7 +2,7 @@ import { grblaxis } from "./grbl";
 import { SendGetHttp } from "./http";
 import { closeModal, setactiveModal, showModal } from "./modaldlg";
 import { async_webcommunication, EventListenerSetup, startSocket } from "./socket";
-import { conErr, displayBlock, displayNone, id } from "./util";
+import { conErr, displayBlock, displayInline, displayNone, id } from "./util";
 
 /** Connect Dialog */
 const connectdlg = (getFw) => {

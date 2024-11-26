@@ -7,7 +7,7 @@ import { get_icon_svg } from "./icons";
 import { inputdlg } from "./inputdlg";
 import { SendPrinterCommand } from "./printercmd";
 import { translate_text_item } from "./translate";
-import { displayBlock, displayNone, id, stdErrMsg } from "./util";
+import { displayBlock, displayInline, displayNone, id, stdErrMsg } from "./util";
 
 var files_currentPath = "/";
 var files_filter_sd_list = false;
@@ -65,6 +65,8 @@ function init_files_panel(dorefresh) {
     displayInline('files_refresh_btn');
     displayNone('files_refresh_primary_sd_btn');
     displayNone('files_refresh_secondary_sd_btn');
+
+    id('print_upload_btn').addEventListener('click', (event) => files_select_upload());
 
     files_set_button_as_filter(files_filter_sd_list);
     var refreshlist = true;
@@ -648,9 +650,8 @@ function files_abort() {
     SendPrinterCommand("abort");
 }
 
-function files_select_upload() {
-    id('files_input_file').click();
-}
+/** Clicks the `files_input_file` element for you */
+const files_select_upload = () => id('files_input_file').click();
 
 function files_check_if_upload() {
     var canupload = true;
@@ -727,4 +728,4 @@ function FilesUploadProgressDisplay(oEvent) {
     }
 }
 
-export { build_file_filter_list, files_list_success, gCodeFilename };
+export { build_file_filter_list, files_list_success, files_select_upload, gCodeFilename, init_files_panel };

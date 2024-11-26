@@ -1,4 +1,4 @@
-import { files_list_success, gCodeFilename } from "./files";
+import { files_list_success, files_select_upload, gCodeFilename } from "./files";
 import { SendRealtimeCmd } from "./grbl";
 import { SendGetHttp } from "./http";
 import { checkHomed, loadConfigValues, loadCornerValues, maslowErrorMsgHandling, maslowInfoMsgHandling, maslowMsgHandling, saveConfigValues, sendCommand } from "./maslow";
@@ -512,6 +512,7 @@ function doPlayButton() {
     playButtonHandler()
   }
 
+  // selectElement does not exist anywhere else but here, looks like this code was orphaned a long time ago ...
   let msgWindow = document.getElementById('messages')
   let text = msgWindow.textContent
   text += '\n' + "Starting File: " + document.getElementById('filelist').options[selectElement.selectedIndex].text
@@ -1146,7 +1147,8 @@ id('calibrationBTN').addEventListener('click', (event) => {
   loadCornerValues();
   openModal('calibration-popup');
 });
-id('tablettab_gcode_pause').addEventListener('click', (event) => doPlayButton());
+id('tablettab_gcode_upload').addEventListener('click', (event) => files_select_upload());
+id('tablettab_gcode_play').addEventListener('click', (event) => doPlayButton());
 id('tablettab_gcode_pause').addEventListener('click', (event) => doPauseButton());
 id('tablettab_gcode_stop').addEventListener('click', (event) => onCalibrationButtonsClick('$STOP','Stop Maslow and Gcode'));
 id('tablettab_cal_retract').addEventListener('click', (event) => onCalibrationButtonsClick('$ALL','Retract All'));

@@ -5,7 +5,7 @@ import { get_icon_svg } from "./icons";
 import { getPrefValue } from "./preferencesdlg";
 import { SendPrinterCommand } from "./printercmd";
 import { translate_text_item } from "./translate";
-import { conErr, displayBlock, displayNone, getChecked, id, setChecked } from "./util";
+import { conErr, displayBlock, displayInline, displayNone, getChecked, id, setChecked } from "./util";
 
 var interval_position = -1;
 
