@@ -1048,8 +1048,8 @@ function mdiEnterKey(event) {
 window.addEventListener('keydown', handleKeyDown)
 window.addEventListener('keyup', handleKeyUp)
 
-numpad.attach({ target: 'disM', axis: 'D' })
-numpad.attach({ target: 'disZ', axis: 'Z' })
+numpad.attach({ target: 'disM', axis: 'D' });
+numpad.attach({ target: 'disZ', axis: 'Z' });
 //numpad.attach({target: "wpos-y", axis: "Y"});
 //numpad.attach({target: "wpos-z", axis: "Z"});
 //numpad.attach({target: "wpos-a", axis: "A"});

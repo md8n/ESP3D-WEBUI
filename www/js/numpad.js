@@ -8,6 +8,10 @@ export const numpad = {
   hbwrap: null, // buttons wrapper
   hbuttons: {}, // individual buttons
   init: function () {
+    if (id("numWrap")) {
+      // Singleton - test if numWrap already exists
+      return;
+    }
     // (A1) WRAPPER
     numpad.hwrap = document.createElement("div");
     numpad.hwrap.id = "numWrap";
