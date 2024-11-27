@@ -43,8 +43,13 @@ const displayNone = (name) => setDisplay(name, 'none');
 const displayBlock = (name) => setDisplay(name, 'block');
 
 const disable_items = (item, state) => {
+  if (!item) { 
+    return;
+  }
   const liste = item.getElementsByTagName('*');
-  for (let i = 0; i < liste.length; i++) liste[i].disabled = state;
+  for (let i = 0; i < liste.length; i++) {
+    liste[i].disabled = state;
+  }
 }
 
 function displayFlex(name) {

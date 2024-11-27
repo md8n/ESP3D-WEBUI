@@ -1,4 +1,5 @@
 import { alertdlg } from "./alertdlg";
+import { CALIBRATION_EVENT_NAME, findMaxFitness } from "./calculatesCalibrationStuff";
 import { get_icon_svg } from "./icons";
 import { sendCommand } from "./maslow";
 import { SendPrinterCommand } from "./printercmd";
@@ -50,7 +51,14 @@ const modal = (fieldName, value) => {
   return Modal[fieldName];
 };
 
-let calibrationResults = {};
+let calibration_results = {};
+const calibrationResults = (value) => {
+  if (typeof value !== "undefined") {
+    calibration_results = value;
+  }
+
+  return calibration_results;
+};
 
 let grblAxisCount = 3;
 const grblaxis = (value) => {
@@ -59,7 +67,7 @@ const grblaxis = (value) => {
     grblAxisCount = axisCount;
   }
   return grblAxisCount;
-}
+};
 
 function setClickability(element, visible) {
   setDisplay(element, visible ? 'table-row' : 'none')
@@ -258,7 +266,7 @@ function tryAutoReport() {
     '$Report/Interval=' + interval,
     true,
     // Do nothing more on success
-    function () {},
+    function () { },
 
     // Fall back to polling if the firmware does not support auto-reports
     function () {
@@ -652,14 +660,19 @@ var collectHandler = undefined
 var collectedSettings = null
 
 async function handleCalibrationData(measurements) {
-  document.querySelector('#messages').textContent += '\nComputing... This may take several minutes'
+  document.body.addEventListener(CALIBRATION_EVENT_NAME, (event) => {
+    const calData = event.detail.dataToSend;
+    console.info(`Received calibration results that were ${calData.good ? "good" : "not good"} and ${calData.final ? "final" : "not final"}`);
+    if (calData.good && calData.final) {
+      calibrationResults(calData.bestGuess);
+    }
+  })
+
+  document.querySelector('#messages').textContent += '\nComputing... This may take several minutes';
   sendCommand("$ACKCAL");
-  await sleep(500)
-  try {
-    calibrationResults = await findMaxFitness(measurements)
-  } catch (error) {
-    console.error('An error occurred:', error)
-  }
+
+  // Wait half a second and then kick off the party
+  setTimeout(() => findMaxFitness(measurements), 500);
 }
 
 const grblHandleMessage = (msg) => {

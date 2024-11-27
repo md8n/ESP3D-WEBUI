@@ -1,10 +1,17 @@
 <div id="maintab" class="tabcontent">
+    <script>
+        /** Load up the HTML from an iframe at the current location */
+        const loadHTML = (self) => {
+            self.before(...(self.contentWindow.document.body || self.contentWindow.document).children);
+            self.remove();
+        }
+    </script>
     <div class="panel-flex-col">
         <div class="grid-container">
-            <file-include w3-include-html="'sub/controlspanel.html'"></file-include>
-            <file-include w3-include-html="'sub/grblpanel.html'"></file-include>
-            <file-include w3-include-html="'sub/files.html'"></file-include>
-            <file-include w3-include-html="'sub/commandpanel.html'"></file-include>
+            <iframe src="./controlspanel.html" onload="loadHTML(this)"></iframe>
+            <iframe src="./grblpanel.html" onload="loadHTML(this)"></iframe>
+            <iframe src="./files.html" onload="loadHTML(this)"></iframe>
+            <iframe src="./commandpanel.html" onload="loadHTML(this)"></iframe>
         </div>
     </div>
 </div>

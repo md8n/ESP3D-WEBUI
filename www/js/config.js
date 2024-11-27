@@ -13,7 +13,7 @@ var commandtxt = "$$";
 var is_override_config = false;
 var config_file_name = "/sd/config";
 
-function refreshconfig(is_override) {
+const refreshconfig = (is_override) => {
     if (http_communication_locked()) {
         id('config_status').innerHTML = translate_text_item("Communication locked by another process, retry later.");
         return;
@@ -59,12 +59,12 @@ function getprinterconfig(is_override) {
     SendGetHttp(url);
 }
 
-function Apply_config_override() {
+const Apply_config_override = () => {
     var url = "/command?plain=" + encodeURIComponent("M500");
     SendGetHttp(url, getESPUpdateconfigSuccess);
 }
 
-function Delete_config_override() {
+const Delete_config_override = () => {
     var url = "/command?plain=" + encodeURIComponent("M502");
     SendGetHttp(url, getESPUpdateconfigSuccess);
 }
@@ -389,7 +389,6 @@ var grbl_help = {
     "$133": "A Max travel, mm",
     "$134": "B Max travel, mm",
     "$135": "C Max travel, mm"
-
 };
 
 function inline_help(label) {
@@ -429,3 +428,5 @@ function getESPconfigfailed(error_code, response) {
     id('config_status').innerHTML = stdErrMsg(error_code, response, translate_text_item("Failed"));
     displayBlock('config_refresh_btn');
 }
+
+export { Apply_config_override, Delete_config_override, refreshconfig };

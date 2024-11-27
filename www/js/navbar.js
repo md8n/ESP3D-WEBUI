@@ -1,3 +1,4 @@
+import { configtab } from "./configtab";
 import { creditsdlg } from "./creditsdlg";
 import { DisconnectLogin } from "./logindlg";
 import { changepassworddlg } from "./passworddlg";
@@ -16,6 +17,7 @@ const navbar = () => {
     id("showSetupDlg").addEventListener("click", (event) => setupdlg());
     id("showCreditsDlg").addEventListener("click", (event) => creditsdlg());
 
+    // Note: for `maintab` see dashtab.html
     id("maintablink").addEventListener("click", (event) => opentab(event, 'maintab', 'mainuitabscontent', 'mainuitablinks'));
     id("camtablink").addEventListener("click", (event) => opentab(event, 'cameratab', 'mainuitabscontent', 'mainuitablinks'));
     id("configtablink").addEventListener("click", (event) => opentab(event, 'configtab', 'mainuitabscontent', 'mainuitablinks'));
@@ -26,6 +28,7 @@ const navbar = () => {
     id("showLoginDlg").addEventListener("click", (event) => logindlg());
     id("logout_menu").addEventListener("click", (event) => confirmdlg(translate_text_item('Disconnection requested'), translate_text_item('Please confirm disconnection.'), DisconnectLogin));
 
+    configtab();
     settingstab();
 }
 

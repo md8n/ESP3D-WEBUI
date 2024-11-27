@@ -60,7 +60,11 @@ function endDiv() {
 const setupdlg = () => {
     setup_is_done(false);
     displayNone('main_ui');
-    id('settings_list_data').innerHTML = "";
+    // From settingstab
+    const settingstab_list_elem = id('settings_list_data');
+    if (settingstab_list_elem) {
+        settingstab_list_elem.innerHTML = "";
+    }
     active_wizard_page = 0;
 
     id("setupDlgCancel").addEventListener("click", (event) => closeModal('cancel'));

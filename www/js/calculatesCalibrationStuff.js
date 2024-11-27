@@ -512,8 +512,7 @@ function scaleMeasurementsBasedOnTension(measurements, guess) {
   return newMeasurements
 }
 
-
-function findMaxFitness(measurements) {
+const findMaxFitness = (measurements) => {
   sendCalibrationEvent({
     initialGuess
   }, true);
@@ -652,3 +651,5 @@ const CALIBRATION_EVENT_NAME = 'calibration-data';
 
 //Once we've figured out how good our guess was we try a different guess. We keep the good guesses and throw away the bad guesses
 //using a genetic algorithm
+
+export { CALIBRATION_EVENT_NAME, findMaxFitness };

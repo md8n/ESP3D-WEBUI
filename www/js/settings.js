@@ -253,20 +253,25 @@ const build_HTML_setting_list = (filter) => {
       content += tr;
     }
   }
-  id('settings_list_data').innerHTML = content;
+  // From settingstab
+  const settingstab_list_elem = id('settings_list_data');
+  if (settingstab_list_elem) {
+      settingstab_list_elem.innerHTML = content;
+  }
   if (filter === 'tree') {
     document.querySelector('#setting_32_0').value = result;
   }
   // set calibration values if exists
-  if (Object.keys(calibrationResults).length) {
-    document.querySelector('#setting_153_0').value = calibrationResults.br.x;
-    document.querySelector('#setting_154_0').value = calibrationResults.br.y;
-    document.querySelector('#setting_155_0').value = calibrationResults.tl.x;
-    document.querySelector('#setting_156_0').value = calibrationResults.tl.y;
-    document.querySelector('#setting_157_0').value = calibrationResults.tr.x;
-    document.querySelector('#setting_158_0').value = calibrationResults.tr.y;
-    document.querySelector('#setting_159_0').value = calibrationResults.bl.x;
-    document.querySelector('#setting_160_0').value = calibrationResults.bl.y;
+  const calRes = calibrationResults();
+  if (Object.keys(calRes).length) {
+    document.querySelector('#setting_153_0').value = calRes.br.x;
+    document.querySelector('#setting_154_0').value = calRes.br.y;
+    document.querySelector('#setting_155_0').value = calRes.tl.x;
+    document.querySelector('#setting_156_0').value = calRes.tl.y;
+    document.querySelector('#setting_157_0').value = calRes.tr.x;
+    document.querySelector('#setting_158_0').value = calRes.tr.y;
+    document.querySelector('#setting_159_0').value = calRes.bl.x;
+    document.querySelector('#setting_160_0').value = calRes.bl.y;
   }
   // set calibration values if exists END
 }
