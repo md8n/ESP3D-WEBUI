@@ -1,8 +1,9 @@
 import { init_command_panel } from "./commands";
 import { connectdlg } from "./connectdlg";
+import { ControlsPanel, init_controls_panel } from "./controls";
 import { esp_error_code, esp_error_message } from "./constants";
 import { init_files_panel } from "./files";
-import { grblaxis } from "./grbl";
+import { grblaxis, grblzerocmd } from "./grbl";
 import { grblpanel } from "./grblpanel";
 import { closeModal } from "./modaldlg";
 import { navbar } from "./navbar";
@@ -72,7 +73,8 @@ window.onload = function () {
   //to check if javascript is disabled like in anroid preview
   displayNone('loadingmsg')
   console.log('Connect to board')
-  connectdlg()
+  connectdlg();
+  ControlsPanel();
   //ugly hack for IE
   console.log(navigator.userAgent)
   if (browser_is('IE')) {
@@ -133,7 +135,7 @@ function update_UI_firmware_target() {
   }
   if (grblaxis() > 3) {
     id('zero_xyz_btn_txt').innerHTML += 'A'
-    grblzerocmd += ' A0'
+    grblzerocmd(' A0');
     build_axis_selection()
     displayBlock('a_feedrate_group')
     id('positions_labels2').style.display = 'inline-grid'
@@ -142,7 +144,7 @@ function update_UI_firmware_target() {
   if (grblaxis() > 4) {
     displayBlock('control_b_position_display')
     id('zero_xyz_btn_txt').innerHTML += 'B'
-    grblzerocmd += ' B0'
+    grblzerocmd(' B0');
     displayBlock('b_feedrate_group')
   }
   if (grblaxis() > 5) {
@@ -217,23 +219,23 @@ function initUI() {
 }
 
 function initUI_2() {
-  AddCmd(display_boot_progress)
+  AddCmd(display_boot_progress);
   //get all settings from ESP3D
-  console.log('Get settings')
+  console.log('Get settings');
   //query settings but do not update list in case wizard is showed
-  refreshSettings(true)
-  initUI_3()
+  refreshSettings(true);
+  initUI_3();
 }
 
 function initUI_3() {
-  AddCmd(display_boot_progress)
+  AddCmd(display_boot_progress);
   //init panels
-  console.log('Get macros')
-  init_controls_panel()
-  init_grbl_panel()
-  console.log('Get preferences')
-  getpreferenceslist()
-  initUI_4()
+  console.log('Get macros');
+  init_controls_panel();
+  init_grbl_panel();
+  console.log('Get preferences');
+  getpreferenceslist();
+  initUI_4();
 }
 
 function initUI_4() {

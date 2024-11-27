@@ -1,5 +1,5 @@
 import { alertdlg } from "./alertdlg";
-import { grblaxis } from "./grbl";
+import { grblaxis, grblzerocmd } from "./grbl";
 import { SendGetHttp } from "./http";
 import { get_icon_svg } from "./icons";
 import { getPrefValue } from "./preferencesdlg";
@@ -26,8 +26,28 @@ const control_macrolist = (value) => {
     return controlMacroList;
 }
 
-function init_controls_panel() {
+/** Set up the macro list for the Controls Panel */
+const init_controls_panel = () => {
     loadmacrolist();
+}
+
+/** Set up the event handlers for the Controls Panel */
+const ControlsPanel = () => {
+    id("autocheck_position").addEventListener("click", (event) => on_autocheck_position());
+    id("controlpanel_interval_positions").addEventListener("change", (event) => onPosIntervalChange());
+
+    id("zero_xyz_btn").addEventListener("click", (event) => SendZerocommand(grblzerocmd()));
+    id("zero_x_btn").addEventListener("click", (event) => SendZerocommand('X0'));
+    id("zero_y_btn").addEventListener("click", (event) => SendZerocommand('Y0'));
+    id("zero_z_btn").addEventListener("click", (event) => SendZerocommand('Z0'));
+    id("zero_a_btn").addEventListener("click", (event) => SendZerocommand('A0'));
+    id("zero_b_btn").addEventListener("click", (event) => SendZerocommand('B0'));
+    id("zero_c_btn").addEventListener("click", (event) => SendZerocommand('C0'));
+
+    id("controlpanel_xy_feedrate").addEventListener("change", (event) => onXYvelocityChange());
+    id("controlpanel_z_feedrate").addEventListener("change", (event) => onZvelocityChange());
+
+    id("motor_off_control").addEventListener("click", (event) => control_motorsOff());
 }
 
 function hideAxiscontrols() {
@@ -102,7 +122,7 @@ const on_autocheck_position = (use_value) => {
         setChecked('autocheck_position', !!use_value);
     }
     if (getChecked('autocheck_position') !== "false") {
-        const intPosElem = id('controlpanel_interval_position');
+        const intPosElem = id('controlpanel_interval_positions');
         var interval = parseInt(intPosElem?.value || undefined);
         if (!isNaN(interval) && interval > 0 && interval < 100) {
             if (interval_position != -1) clearInterval(interval_position);
@@ -124,12 +144,12 @@ const on_autocheck_position = (use_value) => {
 }
 
 function onPosIntervalChange() {
-    var interval = parseInt(id('controlpanel_interval_position').value);
+    var interval = parseInt(id('controlpanel_interval_positions').value);
     if (!isNaN(interval) && interval > 0 && interval < 100) {
         on_autocheck_position();
     } else {
         setChecked('autocheck_position', false);
-        id('controlpanel_interval_position').value = 0;
+        id('controlpanel_interval_positions').value = 0;
         if (interval != 0) alertdlg(translate_text_item("Out of range"), translate_text_item("Value of auto-check must be between 0s and 99s !!"));
         on_autocheck_position();
     }
@@ -310,4 +330,4 @@ function macro_command(target, filename) {
     SendPrinterCommand(cmd);
 }
 
-export { control_macrolist,  get_Position, on_autocheck_position };
+export { ControlsPanel, control_macrolist,  get_Position, init_controls_panel, on_autocheck_position };

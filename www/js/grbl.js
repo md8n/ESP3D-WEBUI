@@ -29,7 +29,15 @@ const WPOS = (value) => {
   }
   return wpos;
 }
-var grblzerocmd = 'X0 Y0 Z0'
+
+let grbl_zerocmd = 'X0 Y0 Z0';
+const grblzerocmd = (value) => {
+  if (typeof value === "string") {
+    grbl_zerocmd += value;
+  }
+  return grbl_zerocmd;
+}
+
 var feedrate = [0, 0, 0, 0, 0, 0]
 var last_axis_letter = 'Z'
 
@@ -836,4 +844,4 @@ function setSpindleSpeed(speed) {
   }
 }
 
-export { calibrationResults, grblaxis, grblHandleMessage, modal, onAutoReportIntervalChange, reportNone, MPOS, WPOS };
+export { calibrationResults, grblaxis, grblHandleMessage, grblzerocmd, modal, onAutoReportIntervalChange, reportNone, MPOS, WPOS };
