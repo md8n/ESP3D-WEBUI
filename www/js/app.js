@@ -3,7 +3,7 @@ import { connectdlg } from "./connectdlg";
 import { ControlsPanel, init_controls_panel } from "./controls";
 import { esp_error_code, esp_error_message } from "./constants";
 import { init_files_panel } from "./files";
-import { grblaxis, grblzerocmd } from "./grbl";
+import { grblaxis, grblzerocmd, tryAutoReport } from "./grbl";
 import { grblpanel } from "./grblpanel";
 import { closeModal } from "./modaldlg";
 import { navbar } from "./navbar";

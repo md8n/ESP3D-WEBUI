@@ -8,21 +8,20 @@
                 <div></div>
                 <div class="report"  id="autocheck">
                     <label translate>Reports:</label>
-
                     <span>
-                        <input type="radio" id="report_none" name="status_report" value="none" onchange="onReportType(this)" />
+                        <input id="report_none" type="radio" name="status_report" value="none"/>
                         <label for="report_none" translate>None</label>
                     </span>
                     <span>
-                        <input type="radio" id="report_auto" name="status_report" value="auto" onchange="onReportType(this)" />
+                        <input id="report_auto" type="radio" name="status_report" value="auto"/>
                         <label for="report_auto" translate>Auto</label>
-                        <input id="grblpanel_autoreport_interval" class="w4" type="number" min="50" max="30000" value=50 onchange="onAutoReportIntervalChange()" />
+                        <input id="grblpanel_autoreport_interval" class="w4" type="number" min="50" max="30000" value=50/>
                         <label for="grblpanel_autoreport_interval" translate>ms</label>
                     </span>
                     <span>
-                        <input type="radio" id="report_poll" name="status_report" value="poll" onchange="onReportType(this)" />
+                        <input id="report_poll" type="radio" name="status_report" value="poll"/>
                         <label for="report_poll" translate>Poll</label>
-                        <input id="grblpanel_interval_status" class="w4" type="number" min="0.1" max="99" value=3 onchange="onstatusIntervalChange()" />
+                        <input id="grblpanel_interval_status" class="w4" type="number" min="0.1" max="99" value=3/>
                         <label for="grblpanel_interval_status" translate>sec</label>
                     </span>
                 </div>
@@ -38,7 +37,7 @@
                         <table>
                             <tr>
                                 <td>
-                                    <button id="clear_status_btn" class="btn btn-default btn-xs hide-it tooltip" onclick="SendPrinterCommand('$X', true, null,null, 114, 1);" style="padding: 5px 5px 0 5px;">
+                                    <button id="clear_status_btn" class="btn btn-default btn-xs hide-it tooltip" style="padding: 5px 5px 0 5px;">
                                       <span class="tooltip-text">Clear Alarm</span>
 
                                         <svg width="2em" height="1.8em" viewBox="-200 -200 1700 1600">
@@ -64,7 +63,7 @@
                             <tr>
                                 <td style="width:100%;height:2em;"></td>
                                 <td>
-                                    <button id="sd_pause_btn" class="btn btn-default hide_it" onclick="SendRealtimeCmd(0x21);" style="padding: 5px 4px 0 5px;">
+                                    <button id="sd_pause_btn" class="btn btn-default hide_it" style="padding: 5px 4px 0 5px;">
                                         <svg width="2em" height="1.4em" viewBox="0 0 1300 1200">
                                             <g transform="translate(50,1200) scale(1, -1)">
                                                 <path fill="blue" d="M250 1000h200q21 0 35.5 -14.5t14.5 -35.5v-800q0 -21 -14.5 -35.5t-35.5 -14.5h-200q-21 0 -35.5 14.5t-14.5 35.5v800q0 21 14.5 35.5t35.5 14.5zM650 1000h200q21 0 35.5 -14.5t14.5 -35.5v-800q0 -21 -14.5 -35.5t-35.5 -14.5h-200q-21 0 -35.5 14.5t-14.5 35.5v800 q0 21 14.5 35.5t35.5 14.5z"></path>
@@ -76,7 +75,7 @@
                                     &nbsp;
                                 </td>
                                 <td>
-                                    <button id="sd_resume_btn" class="btn btn-default hide_it" onclick="SendRealtimeCmd(0x7e);" style="padding: 5px 4px 0 5px;">
+                                    <button id="sd_resume_btn" class="btn btn-default hide_it" style="padding: 5px 4px 0 5px;">
                                         <svg width="2em" height="1.4em" viewBox="0 0 1300 1200">
                                             <g transform="translate(50,1200) scale(1, -1)">
                                                 <path fill="green" d="M243 1074l814 -498q18 -11 18 -26t-18 -26l-814 -498q-18 -11 -30.5 -4t-12.5 28v1000q0 21 12.5 28t30.5 -4z"></path>
@@ -88,7 +87,7 @@
                                     &nbsp;
                                 </td>
                                 <td>
-                                    <button id="sd_reset_btn" class="btn btn-danger hide_it" onclick="grbl_reset();" style="padding: 5px 0px 0px 0px;">
+                                    <button id="sd_reset_btn" class="btn btn-danger hide_it" style="padding: 5px 0px 0px 0px;">
                                         <svg width="2em" height="1.4em" viewBox="0 0 1200 1200">
                                             <g transform="translate(1200,1200) scale(-1, -1)">
                                                 <path fill="white" d="M947 1060l135 135q7 7 12.5 5t5.5 -13v-362q0 -10 -7.5 -17.5t-17.5 -7.5h-362q-11 0 -13 5.5t5 12.5l133 133q-109 76 -238 76q-116 0 -214.5 -57t-155.5 -155.5t-57 -214.5t57 -214.5t155.5 -155.5t214.5 -57t214.5 57t155.5 155.5t57 214.5h150q0 -117 -45.5 -224 t-123 -184.5t-184.5 -123t-224 -45.5t-224 45.5t-184.5 123t-123 184.5t-45.5 224t45.5 224t123 184.5t184.5 123t224 45.5q192 0 347 -117z"></path>
@@ -130,7 +129,7 @@
                                 </tr>
                                 <tr>
                                     <td class="td_center">
-                                        <button class="btn btn-default" onclick="SendRealtimeCmd(0x92);" style="padding: 5px 4px 0 5px;">
+                                        <button id="grblpanel_F10_minus" class="btn btn-default" style="padding: 5px 4px 0 5px;">
                                             <table>
                                                 <tr>
                                                     <td>
@@ -148,7 +147,7 @@
                                         </button>
                                     </td>
                                     <td class="td_center">
-                                        <button class="btn btn-default" onclick="SendRealtimeCmd(0x94);" style="padding: 5px 4px 0 5px;">
+                                        <button id="grblpanel_F1_minus" class="btn btn-default" style="padding: 5px 4px 0 5px;">
                                             <table>
                                                 <tr>
                                                     <td>
@@ -166,7 +165,7 @@
                                         </button>
                                     </td>
                                     <td class="td_center">
-                                        <button class="btn btn-default" onclick="SendRealtimeCmd(0x90);" style="padding: 5px 4px 0 5px;">
+                                        <button id="grblpanel_F0" class="btn btn-default" style="padding: 5px 4px 0 5px;">
                                             <svg width="1.3em" height="1.4em" viewBox="0 0 1300 1200">
                                                 <g transform="translate(50,1200) scale(1, -1)">
                                                     <path fill="black" d="M947 1060l135 135q7 7 12.5 5t5.5 -13v-362q0 -10 -7.5 -17.5t-17.5 -7.5h-362q-11 0 -13 5.5t5 12.5l133 133q-109 76 -238 76q-116 0 -214.5 -57t-155.5 -155.5t-57 -214.5t57 -214.5t155.5 -155.5t214.5 -57t214.5 57t155.5 155.5t57 214.5h150q0 -117 -45.5 -224 t-123 -184.5t-184.5 -123t-224 -45.5t-224 45.5t-184.5 123t-123 184.5t-45.5 224t45.5 224t123 184.5t184.5 123t224 45.5q192 0 347 -117z"></path>
@@ -175,7 +174,7 @@
                                         </button>
                                     </td>
                                     <td class="td_center">
-                                        <button class="btn btn-default" onclick="SendRealtimeCmd(0x93);" style="padding: 5px 4px 0 5px;">
+                                        <button id="grblpanel_F1_plus" class="btn btn-default" style="padding: 5px 4px 0 5px;">
                                             <table>
                                                 <tr>
                                                     <td>
@@ -193,7 +192,7 @@
                                         </button>
                                     </td>
                                     <td class="td_center">
-                                        <button class="btn btn-default" onclick="SendRealtimeCmd(0x91);" style="padding: 5px 4px 0 5px;">
+                                        <button id="grblpanel_F10_plus" class="btn btn-default" style="padding: 5px 4px 0 5px;">
                                             <table>
                                                 <tr>
                                                     <td>
@@ -216,7 +215,7 @@
                                 </tr>
                                 <tr>
                                     <td class="td_center">
-                                        <button class="btn btn-default" onclick="SendRealtimeCmd(0x9B);" style="padding: 5px 4px 0 5px;">
+                                        <button id="grblpanel_S10_minus" class="btn btn-default" style="padding: 5px 4px 0 5px;">
                                             <table>
                                                 <tr>
                                                     <td>
@@ -234,7 +233,7 @@
                                         </button>
                                     </td>
                                     <td class="td_center">
-                                        <button class="btn btn-default" onclick="SendRealtimeCmd(0x9D);" style="padding: 5px 4px 0 5px;">
+                                        <button id="grblpanel_S1_minus" class="btn btn-default" style="padding: 5px 4px 0 5px;">
                                             <table>
                                                 <tr>
                                                     <td>
@@ -252,7 +251,7 @@
                                         </button>
                                     </td>
                                     <td class="td_center">
-                                        <button class="btn btn-default" onclick="SendRealtimeCmd(0x99);" style="padding: 5px 4px 0 5px;">
+                                        <button id="grblpanel_S0" class="btn btn-default" style="padding: 5px 4px 0 5px;">
                                             <svg width="1.3em" height="1.4em" viewBox="0 0 1300 1200">
                                                 <g transform="translate(50,1200) scale(1, -1)">
                                                     <path fill="black" d="M947 1060l135 135q7 7 12.5 5t5.5 -13v-362q0 -10 -7.5 -17.5t-17.5 -7.5h-362q-11 0 -13 5.5t5 12.5l133 133q-109 76 -238 76q-116 0 -214.5 -57t-155.5 -155.5t-57 -214.5t57 -214.5t155.5 -155.5t214.5 -57t214.5 57t155.5 155.5t57 214.5h150q0 -117 -45.5 -224 t-123 -184.5t-184.5 -123t-224 -45.5t-224 45.5t-184.5 123t-123 184.5t-45.5 224t45.5 224t123 184.5t184.5 123t224 45.5q192 0 347 -117z"></path>
@@ -261,7 +260,7 @@
                                         </button>
                                     </td>
                                     <td class="td_center">
-                                        <button class="btn btn-default" onclick="SendRealtimeCmd(0x9C);" style="padding: 5px 4px 0 5px;">
+                                        <button id="grblpanel_S1_plus" class="btn btn-default" style="padding: 5px 4px 0 5px;">
                                             <table>
                                                 <tr>
                                                     <td>
@@ -279,7 +278,7 @@
                                         </button>
                                     </td>
                                     <td class="td_center">
-                                        <button class="btn btn-default" onclick="SendRealtimeCmd(0x9A);" style="padding: 5px 4px 0 5px;">
+                                        <button id="grblpanel_S10_plus" class="btn btn-default" style="padding: 5px 4px 0 5px;">
                                             <table>
                                                 <tr>
                                                     <td>
@@ -304,7 +303,7 @@
                             <table width="100%">
                                 <tr>
                                     <td class="td_center" width="33%">
-                                        <button class="btn btn-default" onclick="SendRealtimeCmd(0x9E);" style="padding: 5px 4px 0 5px;">
+                                        <button id="grblpanel_spindle" class="btn btn-default" style="padding: 5px 4px 0 5px;">
                                             <table>
                                                 <tr>
                                                     <td>
@@ -323,7 +322,7 @@
                                     </td>
                                     <td>&nbsp;</td>
                                     <td class="td_center" width="33%">
-                                        <button class="btn btn-default" onclick="SendRealtimeCmd(0xA0);" style="padding: 5px 4px 0 5px;">
+                                        <button id="grblpanel_flood" class="btn btn-default" style="padding: 5px 4px 0 5px;">
                                             <table>
                                                 <tr>
                                                     <td>
@@ -342,7 +341,7 @@
                                     </td>
                                     <td>&nbsp;</td>
                                     <td class="td_center" width="33%">
-                                        <button class="btn btn-default" onclick="SendRealtimeCmd(0xA1);" style="padding: 5px 4px 0 5px;">
+                                        <button id="grblpanel_mist" class="btn btn-default" style="padding: 5px 4px 0 5px;">
                                             <table>
                                                 <tr>
                                                     <td>
@@ -370,7 +369,7 @@
                                 </tr>
                                 <tr>
                                     <td class="td_center">
-                                        <button class="btn btn-default" onclick="SendPrinterCommand('M3 S' + spindleTabSpindleSpeed, false, null, null, 1, 1);" style="margin: 0 5px">
+                                        <button id="grblspindle_fwd" class="btn btn-default" style="margin: 0 5px">
                                             On Fwd
                                             <svg width="1.3em" height="1.2em" viewBox="0 0 1300 1200">
                                                 <g transform="translate(30,1200) scale(1, -1)">
@@ -379,7 +378,7 @@
                                             </svg>
                                         </button>
 
-                                        <button class="btn btn-default" onclick="SendPrinterCommand('M4 S' + spindleTabSpindleSpeed, false, null, null, 1, 1);" style="margin: 0 5px">
+                                        <button id="grblspindle_rew" class="btn btn-default" style="margin: 0 5px">
                                             On Rew
                                             <svg width="1.3em" height="1.2em" viewBox="0 0 1300 1200">
                                                 <g transform="translate(30,1200) scale(1, -1)">
@@ -388,7 +387,7 @@
                                             </svg>
                                         </button>
 
-                                        <button class="btn btn-default" onclick="SendPrinterCommand('M5 S0', false, null, null, 1, 1);" style="margin: 0 5px">
+                                        <button id="grblspindle_off" class="btn btn-default" style="margin: 0 5px">
                                            Off
                                             <svg width="1.3em" height="1.2em" viewBox="0 0 1300 1200">
                                                 <g transform="translate(30,1200) scale(1, -1)">
@@ -412,7 +411,7 @@
                                                     </td>
                                                     <td>
                                                         <span class="input-group-addon hide_it"></span>
-                                                        <input class="form-control w8" type="number" min="1" value="1" onchange="setSpindleSpeed(this.value)" onkeyup="setSpindleSpeed(this.value)">
+                                                        <input id="grblspindle_rpm" class="form-control w8" type="number" min="1" value="1">
                                                         <span class="input-group-addon form_control">rpm</span>
                                                     </td>
                                                 </tr>
@@ -437,7 +436,7 @@
                                     <td>
                                         <div class="input-group">
                                             <span class="input-group-addon hide_it"></span>
-                                            <input id="grblpanel_probemaxtravel" class="form-control w6" type="number" min="1" onchange="onprobemaxtravelChange()" />
+                                            <input id="grblpanel_probemaxtravel" class="form-control w6" type="number" min="1"/>
                                             <span class="input-group-addon hide_it"></span>
                                         </div>
                                     </td>
@@ -461,7 +460,7 @@
                                     <td>
                                         <div class="input-group">
                                             <span class="input-group-addon hide_it"></span>
-                                            <input id="grblpanel_probefeedrate" class="form-control w6" type="number" min="1" onchange="onprobefeedrateChange()" />
+                                            <input id="grblpanel_probefeedrate" class="form-control w6" type="number" min="1"/>
                                             <span class="input-group-addon hide_it"></span>
                                         </div>
                                     </td>
@@ -485,7 +484,7 @@
                                     <td>
                                         <div class="input-group">
                                             <span class="input-group-addon hide_it"></span>
-                                            <input id="grblpanel_proberetract" class="form-control w5" type="number" min="0" onchange="onproberetractChange()" />
+                                            <input id="grblpanel_proberetract" class="form-control w5" type="number" min="0"/>
                                             <span class="input-group-addon hide_it"></span>
                                         </div>
                                     </td>
@@ -509,7 +508,7 @@
                                     <td>
                                         <div class="input-group">
                                             <span class="input-group-addon hide_it"></span>
-                                            <input id="grblpanel_probetouchplatethickness" class="form-control w5" type="number" min="0" onchange="onprobetouchplatethicknessChange()" />
+                                            <input id="grblpanel_probetouchplatethickness" class="form-control w5" type="number" min="0"/>
                                             <span class="input-group-addon hide_it"></span>
                                         </div>
                                     </td>
@@ -540,7 +539,7 @@
                                                 </tr>
                                             </table>
                                         </span>
-                                        <button class="btn btn-primary" id="probingbtn" onclick="StartProbeProcess();" translate>Start Probe</button>
+                                        <button id="probingbtn" class="btn btn-primary" translate>Start Probe</button>
                                     </td>
                                 </tr>
                             </table>
@@ -553,7 +552,7 @@
     <div class="panel-footer">
         <div class="panel-flex-row tooltip">
           <span class="tooltip-text">Reset the firmware</span>
-            <button id="global_reset_btn" class="btn btn-danger" onclick="grbl_reset();" style="padding: 5px 0px 0px 0px;">
+            <button id="global_reset_btn" class="btn btn-danger" style="padding: 5px 0px 0px 0px;">
                 <svg width="2em" height="1.4em" viewBox="0 0 1200 1200">
                     <g transform="translate(1200,1200) scale(-1, -1)">
                         <path fill="white" d="M947 1060l135 135q7 7 12.5 5t5.5 -13v-362q0 -10 -7.5 -17.5t-17.5 -7.5h-362q-11 0 -13 5.5t5 12.5l133 133q-109 76 -238 76q-116 0 -214.5 -57t-155.5 -155.5t-57 -214.5t57 -214.5t155.5 -155.5t214.5 -57t214.5 57t155.5 155.5t57 214.5h150q0 -117 -45.5 -224 t-123 -184.5t-184.5 -123t-224 -45.5t-224 45.5t-184.5 123t-123 184.5t-45.5 224t45.5 224t123 184.5t184.5 123t224 45.5q192 0 347 -117z"></path>
