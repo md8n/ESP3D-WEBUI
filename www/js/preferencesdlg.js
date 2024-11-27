@@ -266,6 +266,89 @@ const setGroupId = (elem, fId) => elem.setAttribute("id", `${fId}_group`);
 /** Return the `fieldId`, if defined, otherwise return the `key` */
 const buildFieldId = (key, value) => value.fieldId || key;
 
+/** Build an input within a label for a checkbox element */
+const buildCheckBox = (key, value) => {
+    const inpCheckBox = `<input type="checkbox" ${buildFieldIdAttr(key, value)}/>`;
+    return `<label>${inpCheckBox}${translate_text_item(value.label || key, true)}</label>`;
+}
+
+/** Generate a panel controlled by a checkbox */
+const buildPanel = (key, value, parentElem, isFirstLevel = false) => {
+    const fId = buildFieldId(key, value);
+    const inpCheckBox = buildCheckBox(key, value);
+    const panelCheckBox = isFirstLevel ? buildDivPanel(`<div class="checkbox">${inpCheckBox}</div>`) : buildDiv(inpCheckBox, "checkbox");
+
+    setGroupId(panelCheckBox, fId);
+    parentElem.append(panelCheckBox);
+
+    // Preferences is tested for, but we do expect it always to be present
+    if ("preferences" in value) {
+        const pBody = buildDiv("", "panel-body");
+        if ("panel" in value) {
+            pBody.setAttribute("id", value.panel);
+        }
+        panelCheckBox.append(pBody);
+        id(fId).addEventListener("click", (event) => togglePanel(fId, value.panel));
+        // Loop around for the child elements
+        buildDialog(pBody, value.preferences);
+    }
+};
+
+/** Generate a checkbox that represents a boolean value */
+const buildBoolean = (key, value, parentElem) => {
+    const fId = buildFieldId(key, value);
+    const panelCheckBox = buildDiv(buildCheckBox(key, value), "checkbox");
+
+    setGroupId(panelCheckBox, fId);
+    appendElemToParent(parentElem, panelCheckBox);
+};
+
+/** Generate a mini table for various numeric inputs */
+const buildNumeric = (key, value, parentElem) => {
+    const fId = buildFieldId(key, value);
+    const inpNFld = `<input type="number" ${buildFieldIdAttr(key, value)}${buildMinMaxAttr(value)} class="form-control ${value.inpClass || ""}"/>`;
+    const inpNTd = buildTdInp(inpNFld, key, value);
+
+    const unitTd = `<td><div class="input-group"><input class="hide_it" /><span class="input-group-addon form_control" translate>${value.units}</span></div></td>`;
+
+    const inpNTable = buildTable(`<tr>${buildTdLabel(key, value)}${inpNTd}${unitTd}</tr>`);
+    setGroupId(inpNTable, fId);
+    // Check for feedrate that might not be visible
+    if (fId.endsWith("_feedrate")) {
+        if (["a_feedrate", "b_feedrate", "c_feedrate"].includes(fId)) {
+            inpNTable.setAttribute("class", "hide_it topmarginspace");
+        }
+    }
+
+    appendElemToParent(parentElem, inpNTable);
+    id(fId).addEventListener("change", (event) => CheckValue(fId, value));
+};
+
+/** Generate a mini table for text inputs */
+const buildText = (key, value, parentElem) => {
+    const fId = buildFieldId(key, value);
+    const inpTFld = `<input type="text" ${buildFieldIdAttr(key, value)} class="form-control ${value.inpClass || ""}" ${buildPlaceholderAttr(value)}/>`;
+    const inpTTd = `<td><div class="input-group has-control">${inpTFld}${buildSpnErrFld(value, key)}</div></td>`;
+
+    const inpTTable = buildTable(`<tr>${buildTdLabel(key, value)}${inpTTd}</tr>`);
+    setGroupId(inpTTable, fId);
+
+    appendElemToParent(parentElem, inpTTable);
+    id(fId).addEventListener("change", (event) => CheckValue(fId, value));
+};
+
+/** Generate a mini table for selects */
+const buildSelect = (key, value, parentElem) => {
+    const fId = buildFieldId(key, value);
+    const inpSTable = buildTable(`<tr>${buildTdIcon("flag")}<td>${build_language_list(fId)}</td></tr>`);
+    // Use the key for the containing table, instead of the fId, which has been used for the select
+    inpSTable.setAttribute("id", key);
+    setGroupId(inpSTable, fId);
+
+    appendElemToParent(parentElem, inpSTable);
+    add_language_list_event_handler(fId);
+}
+
 /** Build the dialog from the preferences metadata */
 const buildDialog = (parentElem, definitions, isFirstLevel = false) => {
     for (const [key, value] of Object.entries(definitions)) {
@@ -275,72 +358,12 @@ const buildDialog = (parentElem, definitions, isFirstLevel = false) => {
             return;
         }
         switch (value.valueType) {
-            case "panel":
-                // Generate a checkbox to control a panel
-                const inpPCheckBox = `<input type="checkbox" ${buildFieldIdAttr(key, value)}/>`;
-                const lblPCheckBox = `<label>${inpPCheckBox}${translate_text_item(value.label || key, true)}</label>`;
-                const panelPCheckBox = isFirstLevel ? buildDivPanel(`<div class="checkbox">${lblPCheckBox}</div>`) : buildDiv(lblPCheckBox, "checkbox");
-                setGroupId(panelPCheckBox, fId);
-                parentElem.append(panelPCheckBox);
-
-                // Preferences is tested for, but we do expect it always to be present
-                if ("preferences" in value) {
-                    const pBody = buildDiv("", "panel-body");
-                    if ("panel" in value) {
-                        pBody.setAttribute("id", value.panel);
-                    }
-                    panelPCheckBox.append(pBody);
-                    id(fId).addEventListener("click", (event) => togglePanel(fId, value.panel));
-                    buildDialog(pBody, value.preferences);
-                }
-                break;
-            case "bool":
-                // Generate a checkbox for a boolean value
-                const inpBCheckBox = `<input type="checkbox" ${buildFieldIdAttr(key, value)}/>`;
-                const lblBCheckBox = `<label>${inpBCheckBox}${translate_text_item(value.label || key, true)}</label>`;
-                const panelBCheckBox = buildDiv(lblBCheckBox, "checkbox");
-                setGroupId(panelBCheckBox, fId);
-                appendElemToParent(parentElem, panelBCheckBox);
-                break;
+            case "panel": buildPanel(key, value, parentElem, isFirstLevel); break;
+            case "bool": buildBoolean(key, value, parentElem); break;
             case "int":
-            case "float":
-                // Generate a mini table with input field
-                const inpNFld = `<input type="number" ${buildFieldIdAttr(key, value)}${buildMinMaxAttr(value)} class="form-control ${value.inpClass || ""}"/>`;
-                const inpNTd = buildTdInp(inpNFld, key, value);
-
-                const unitTd = `<td><div class="input-group"><input class="hide_it" /><span class="input-group-addon form_control" translate>${value.units}</span></div></td>`;
-
-                const inpNTable = buildTable(`<tr>${buildTdLabel(key, value)}${inpNTd}${unitTd}</tr>`);
-                setGroupId(inpNTable, fId);
-                // Check for feedrate that might not be visible
-                if (fId.endsWith("_feedrate")) {
-
-                    if (["a_feedrate", "b_feedrate", "c_feedrate"].includes(fId)) {
-                        inpNTable.setAttribute("class", "hide_it topmarginspace");
-                    }
-                }
-                appendElemToParent(parentElem, inpNTable);
-                id(fId).addEventListener("change", (event) => CheckValue(fId, value));
-                break;
-            case "text":
-                // Generate a mini table with input field
-                const inpTFld = `<input type="text" ${buildFieldIdAttr(key, value)} class="form-control ${value.inpClass || ""}" ${buildPlaceholderAttr(value)}/>`;
-                const inpTTd = `<td><div class="input-group has-control">${inpTFld}${buildSpnErrFld(value, key)}</div></td>`;
-
-                const inpTTable = buildTable(`<tr>${buildTdLabel(key, value)}${inpTTd}</tr>`);
-                setGroupId(inpTTable, fId);
-                appendElemToParent(parentElem, inpTTable);
-                id(fId).addEventListener("change", (event) => CheckValue(fId, value));
-                break;
-            case "select":
-                // Generate a mini table with select field
-                const inpSTable = buildTable(`<tr>${buildTdIcon("flag")}<td>${build_language_list(fId)}</td></tr>`);
-                // Use the key for the containing table, instead of the fId, which has been used for the select
-                inpSTable.setAttribute("id", key);
-                setGroupId(inpSTable, fId);
-                appendElemToParent(parentElem, inpSTable);
-                add_language_list_event_handler(fId);
-                break;
+            case "float": buildNumeric(key, value, parentElem); break;
+            case "text": buildText(key, value, parentElem); break;
+            case "select": buildSelect(key, value, parentElem); break;
             default:
                 console.log(`${key}: ${JSON.stringify(value)}`);
                 break;
@@ -351,17 +374,20 @@ const buildDialog = (parentElem, definitions, isFirstLevel = false) => {
 /** Set the values into the dialog. First from the defValue, and then whatever is in the preferences file */
 const setDialog = (parentElem, definitions, isFirstLevel = false) => {
     for (const [key, value] of Object.entries(definitions)) {
-        const fId = buildFieldId(key, value);
+        // It is possible for the field element to not exist based on what happens in buildDialog
+        const fElem = id(buildFieldId(key, value));
         switch (value.valueType) {
             case "panel":
             case "bool":
                 // Set the `checked` attribute of a checkbox to the default value
-                // - note that this does not change, the actual value is in the checkbox `value`
-                id(fId).checked = ("defValue" in value)
-                    ? (typeof value.defValue === "string" && value.defValue.toLowerCase() === "false") ? false : value.defValue
-                    : false;
-                id(fId).value = ("defValue" in value) ? value.defValue : "";
-                id(fId).click();
+                // - note that this does not change. The actual value is in the checkbox `value`
+                if (fElem) {
+                    fElem.checked = ("defValue" in value)
+                        ? (typeof value.defValue === "string" && value.defValue.toLowerCase() === "false") ? false : value.defValue
+                        : false;
+                    fElem.value = ("defValue" in value) ? value.defValue : "";
+                    fElem.click();
+                }
 
                 if ("panel" in value && "preferences" in value) {
                     setDialog(id(value.panel), value.preferences);
@@ -371,8 +397,8 @@ const setDialog = (parentElem, definitions, isFirstLevel = false) => {
             case "float":
             case "text":
             case "select":
-                if ("defValue" in value) {
-                    id(fId).value = value.defValue;
+                if ("defValue" in value && fElem) {
+                    fElem.value = value.defValue;
                 }
                 break;
             default:
@@ -509,11 +535,11 @@ if (getPrefValue("enable_grbl_panel") === 'true') {
     reportNone(false);
 }
 
-if (getPrefValue("enable_control_panel") === 'true') displayFlex('controlPanel');
-else {
-    displayNone('controlPanel');
-    on_autocheck_position(false);
-}
+// if (getPrefValue("enable_control_panel") === 'true') displayFlex('controlPanel');
+// else {
+//     displayNone('controlPanel');
+//     on_autocheck_position(false);
+// }
 if (getPrefValue("enable_commands_panel.enable_verbose_mode") === 'true') {
     setChecked('monitor_enable_verbose_mode', true);
     Monitor_check_verbose_mode();
@@ -708,11 +734,11 @@ function applypreferenceslist() {
         reportNone(false);
     }
 
-    if (getPrefValue("enable_control_panel") === 'true') displayFlex('controlPanel');
-    else {
-        displayNone('controlPanel');
-        on_autocheck_position(false);
-    }
+    // if (getPrefValue("enable_control_panel") === 'true') displayFlex('controlPanel');
+    // else {
+    //     displayNone('controlPanel');
+    //     on_autocheck_position(false);
+    // }
     if (getPrefValue("enable_commands_panel.enable_verbose_mode") === 'true') {
         setChecked('monitor_enable_verbose_mode', true);
         Monitor_check_verbose_mode();
@@ -875,7 +901,7 @@ function build_dlg_preferences_list() {
     setBoolElem('show_grbl_panel', 'enable_grbl_panel');
     setBoolElem('show_grbl_probe_tab', 'enable_grbl_probe_panel');
 
-    setBoolElem('show_control_panel', 'enable_control_panel');
+    // setBoolElem('show_control_panel', 'enable_control_panel');
     setBoolElem('show_files_panel', 'enable_files_panel');
     setBoolElem('show_commands_panel', 'enable_commands_panel');
     //TFT

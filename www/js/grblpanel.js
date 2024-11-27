@@ -5,5 +5,5 @@ import { id } from "./util";
 export const grblpanel = () => {
     id("grblcontroltablink").addEventListener("click", (event) => opentab(event, 'grblcontroltab', 'grbluitabscontent', 'grbluitablinks'));
     id("grblspindletablink").addEventListener("click", (event) => opentab(event, 'grblspindletab', 'grbluitabscontent', 'grbluitablinks'));
-    id("grblprobetablink").addEventListener("click", (event) => opentab(event, 'grblprobetab', 'grbluitabscontent', 'grbluitablinks'));
+    id("grblpanel_probetablink").addEventListener("click", (event) => opentab(event, 'grblprobetab', 'grbluitabscontent', 'grbluitablinks'));
 }

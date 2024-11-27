@@ -5,17 +5,17 @@
             <div class="form-group">
                 <div class="input-group">
                     <div class="input-group-addon">@</div>
-                    <input type="text" class="form-control w50" id="camera_webaddress" onkeyup="camera_OnKeyUp(event)" translateph placeholder="Camera address">
+                    <input id="camera_webaddress" type="text" class="form-control w50" translateph placeholder="Camera address">
                 </div>
             </div>
-            <button type="button" class="btn btn-primary" onclick="camera_loadframe();">
+            <button id="cameratab_loadframe" type="button" class="btn btn-primary">
                 <span><svg width='1.3em' height='1.2em' viewBox='0 0 1300 1200'>
                         <g transform='translate(50,1200) scale(1, -1)'>
                             <path fill='currentColor' d='M639 1109l522 -427q16 -13 16 -32t-16 -32l-522 -427q-16 -13 -27.5 -8t-11.5 26v291q-94 -2 -182 -20t-170.5 -52t-147 -92.5t-100.5 -135.5q5 105 27 193.5t67.5 167t113 135t167 91.5t225.5 42v262q0 21 11.5 26t27.5 -8z'></path>
                         </g>
                     </svg></span>
             </button>
-            <button type="button" class="btn btn-info" onclick="camera_GetAddress();">
+            <button id="cameratab_getaddress" type="button" class="btn btn-info">
                 <span>
                     <svg width='1.3em' height='1.2em' viewBox='0 0 1300 1200'>
                         <g transform='translate(50,1200) scale(1, -1)'>
@@ -24,7 +24,7 @@
                     </svg>
                 </span>
             </button>
-            <button type="button" class="btn btn-warning" onclick="camera_saveaddress();">
+            <button id="cameratab_saveaddress" type="button" class="btn btn-warning">
                 <span><svg width='1.3em' height='1.2em' viewBox='0 0 1300 1200'>
                         <g transform='translate(50,1200) scale(1, -1)'>
                             <path fill='currentColor' d='M450 1200h200q21 0 35.5 -14.5t14.5 -35.5v-350h245q20 0 25 -11t-9 -26l-383 -426q-14 -15 -33.5 -15t-32.5 15l-379 426q-13 15 -8.5 26t25.5 11h250v350q0 21 14.5 35.5t35.5 14.5zM50 300h1000q21 0 35.5 -14.5t14.5 -35.5v-250h-1100v250q0 21 14.5 35.5t35.5 14.5z M900 200v-50h100v50h-100z'></path>
@@ -42,7 +42,7 @@
                     </div>
                 </td>
                 <td valign="top">
-                    <button type="button" id="camera_detach_button" onclick="camera_detachcam()" class="hide_it">
+                    <button id="camera_detach_button" type="button" class="hide_it">
                         <span>
                             <svg width='1.3em' height='1.2em' viewBox='0 0 1300 1200'>
                                 <g transform='translate(50,1200) scale(1, -1)'>

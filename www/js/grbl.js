@@ -4,9 +4,10 @@ import { get_icon_svg } from "./icons";
 import { sendCommand } from "./maslow";
 import { SendPrinterCommand } from "./printercmd";
 import { translate_text_item } from "./translate";
-import { getChecked, getValue, id, setChecked } from "./util";
+import { getChecked, getValue, setValue, id, setChecked } from "./util";
 
 
+/** interval timer ID */
 var interval_status = -1
 var probe_progress_status = 0
 var grbl_error_msg = ''
@@ -159,7 +160,7 @@ function grbl_set_probe_detected(state) {
 }
 
 function onprobemaxtravelChange() {
-  var travel = parseFloat(getValue('probemaxtravel'))
+  var travel = parseFloat(getValue('grblpanel_probemaxtravel'))
   if (travel > 9999 || travel <= 0 || isNaN(travel) || travel === null) {
     alertdlg(
       translate_text_item('Out of range'),
@@ -171,7 +172,7 @@ function onprobemaxtravelChange() {
 }
 
 function onprobefeedrateChange() {
-  var feedratevalue = parseInt(getValue('probefeedrate'))
+  var feedratevalue = parseInt(getValue('grblpanel_probefeedrate'))
   if (feedratevalue <= 0 || feedratevalue > 9999 || isNaN(feedratevalue) || feedratevalue === null) {
     alertdlg(
       translate_text_item('Out of range'),
@@ -183,7 +184,7 @@ function onprobefeedrateChange() {
 }
 
 function onproberetractChange() {
-  var thickness = parseFloat(getValue('proberetract'))
+  var thickness = parseFloat(getValue('grblpanel_proberetract'))
   if (thickness < 0 || thickness > 999 || isNaN(thickness) || thickness === null) {
     alertdlg(
       translate_text_item('Out of range'),
@@ -195,7 +196,7 @@ function onproberetractChange() {
 }
 
 function onprobetouchplatethicknessChange() {
-  var thickness = parseFloat(getValue('probetouchplatethickness'))
+  var thickness = parseFloat(getValue('grblpanel_probetouchplatethickness'))
   if (thickness < 0 || thickness > 999 || isNaN(thickness) || thickness === null) {
     alertdlg(
       translate_text_item('Out of range'),
@@ -210,7 +211,7 @@ var reportType = 'none'
 
 function disablePolling() {
   setAutocheck(false)
-  // setValue('interval_status', 0);
+  // setValue('grblpanel_interval_status', 0);
   if (interval_status != -1) {
     clearInterval(interval_status)
     interval_status = -1
@@ -221,7 +222,7 @@ function disablePolling() {
 }
 
 function enablePolling() {
-  var interval = parseFloat(getValue('interval_status'))
+  var interval = parseFloat(getValue('grblpanel_interval_status'))
   if (!isNaN(interval) && interval == 0) {
     if (interval_status != -1) {
       clearInterval(interval_status)
@@ -241,7 +242,7 @@ function enablePolling() {
     setChecked('report_poll', true)
     return
   }
-  setValue('interval_status', 0)
+  setValue('grblpanel_interval_status', 0)
   alertdlg(
     translate_text_item('Out of range'),
     translate_text_item('Value of auto-check must be between 0s and 99s !!')
@@ -255,7 +256,7 @@ function tryAutoReport() {
     disablePolling()
   }
   reportType == 'auto'
-  var interval = getValue('autoreport_interval')
+  var interval = getValue('grblpanel_autoreport_interval')
   if (interval == 0) {
     enablePolling()
     return
@@ -586,7 +587,7 @@ function grblGetProbeResult(response) {
       if (probe_progress_status != 0) {
         var cmd =
           '$J=G90 G21 F1000 Z' +
-          (parseFloat(getValue('probetouchplatethickness')) + parseFloat(getValue('proberetract')))
+          (parseFloat(getValue('grblpanel_probetouchplatethickness')) + parseFloat(getValue('grblpanel_proberetract')))
         SendPrinterCommand(cmd, true, null, null, 0, 1)
         finalize_probing()
       }
@@ -799,11 +800,11 @@ function StartProbeProcess() {
     return
   }
   cmd +=
-    parseFloat(getValue('probemaxtravel')) +
+    parseFloat(getValue('grblpanel_probemaxtravel')) +
     ' F' +
-    parseInt(getValue('probefeedrate')) +
+    parseInt(getValue('grblpanel_probefeedrate')) +
     ' P' +
-    getValue('probetouchplatethickness')
+    getValue('grblpanel_probetouchplatethickness')
   console.log(cmd)
   probe_progress_status = 1
   var restoreReport = false

@@ -2,6 +2,16 @@ import { getPrefValue, setPrefValue, SavePreferences } from "./preferencesdlg";
 import { decode_entitie } from "./translate";
 import { displayBlock, displayNone, id } from "./util";
 
+/** Set up the event handlers for the camera tab */
+const cameratab = () => {
+    id("camera_webaddress").addEventListener("keyup", (event) => camera_OnKeyUp(event));
+
+    id("cameratab_loadframe").addEventListener("click", (event) => camera_loadframe());
+    id("cameratab_getaddress").addEventListener("click", (event) => camera_GetAddress());
+    id("cameratab_saveaddress").addEventListener("click", (event) => camera_saveaddress());
+    id("camera_detach_button").addEventListener("click", (event) => camera_detachcam());
+}
+
 function cameraformataddress() {
     var saddress = id('camera_webaddress').value;
     var saddressl = saddress.trim().toLowerCase();
@@ -55,3 +65,5 @@ function camera_GetAddress() {
     id('camera_webaddress').value = (typeof(getPrefValue("enable_camera.camera_address")) !== 'undefined')
         ? decode_entitie(getPrefValue("enable_camera.camera_address")) : "";
 }
+
+export { cameratab };

@@ -102,7 +102,7 @@ const on_autocheck_position = (use_value) => {
         setChecked('autocheck_position', !!use_value);
     }
     if (getChecked('autocheck_position') !== "false") {
-        const intPosElem = id('interval_positions');
+        const intPosElem = id('controlpanel_interval_position');
         var interval = parseInt(intPosElem?.value || undefined);
         if (!isNaN(interval) && interval > 0 && interval < 100) {
             if (interval_position != -1) clearInterval(interval_position);
@@ -124,12 +124,12 @@ const on_autocheck_position = (use_value) => {
 }
 
 function onPosIntervalChange() {
-    var interval = parseInt(id('interval_positions').value);
+    var interval = parseInt(id('controlpanel_interval_position').value);
     if (!isNaN(interval) && interval > 0 && interval < 100) {
         on_autocheck_position();
     } else {
         setChecked('autocheck_position', false);
-        id('interval_positions').value = 0;
+        id('controlpanel_interval_position').value = 0;
         if (interval != 0) alertdlg(translate_text_item("Out of range"), translate_text_item("Value of auto-check must be between 0s and 99s !!"));
         on_autocheck_position();
     }
@@ -192,7 +192,7 @@ function SendZerocommand(cmd) {
 }
 
 function JogFeedrate(axis) {
-    var controlName = axis.startsWith("Z") ? "z_feedrate" : "xy_feedrate";
+    var controlName = axis.startsWith("Z") ? "controlpanel_z_feedrate" : "controlpanel_xy_feedrate";
     var feedrateValue = parseInt(id(controlName).value);
     if (feedrateValue < 1 || isNaN(feedrateValue) || (feedrateValue === null)) {
         alertdlg(translate_text_item("Out of range"), translate_text_item("Feedrate value must be at least 1 mm/min!"));
@@ -208,19 +208,19 @@ function SendJogcommand(cmd, feedrate) {
     var feedratevalue = "";
     var command = "";
     if (feedrate == "XYfeedrate") {
-        feedratevalue = parseInt(id('xy_feedrate').value);
+        feedratevalue = parseInt(id('controlpanel_xy_feedrate').value);
         if (feedratevalue < 1 || isNaN(feedratevalue) || (feedratevalue === null)) {
             alertdlg(translate_text_item("Out of range"), translate_text_item("XY Feedrate value must be at least 1 mm/min!"));
-            id('xy_feedrate').value = getPrefValue("enable_control_panel.xy_feedrate");
+            id('controlpanel_xy_feedrate').value = getPrefValue("enable_control_panel.xy_feedrate");
             return;
         }
     } else {
-        feedratevalue = parseInt(id('z_feedrate').value);
+        feedratevalue = parseInt(id('controlpanel_z_feedrate').value);
         if (feedratevalue < 1 || isNaN(feedratevalue) || (feedratevalue === null)) {
             var letter = "Z";
             if (grblaxis() > 3) letter = "Axis";
             alertdlg(translate_text_item("Out of range"), translate_text_item(letter + " Feedrate value must be at least 1 mm/min!"));
-            id('z_feedrate').value = getPrefValue("enable_control_panel.z_feedrate");
+            id('controlpanel_z_feedrate').value = getPrefValue("enable_control_panel.z_feedrate");
             return;
         }
     }
@@ -234,14 +234,14 @@ function SendJogcommand(cmd, feedrate) {
 }
 
 function onXYvelocityChange() {
-    var feedratevalue = parseInt(id('xy_feedrate').value);
+    var feedratevalue = parseInt(id('controlpanel_xy_feedrate').value);
     if (feedratevalue < 1 || feedratevalue > 9999 || isNaN(feedratevalue) || (feedratevalue === null)) {
         //we could display error but we do not
     }
 }
 
 function onZvelocityChange() {
-    var feedratevalue = parseInt(id('z_feedrate').value);
+    var feedratevalue = parseInt(id('controlpanel_z_feedrate').value);
     if (feedratevalue < 1 || feedratevalue > 999 || isNaN(feedratevalue) || (feedratevalue === null)) {
         //we could display error but we do not
     }

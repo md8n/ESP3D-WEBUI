@@ -1,3 +1,4 @@
+import { cameratab } from "./camera";
 import { configtab } from "./configtab";
 import { creditsdlg } from "./creditsdlg";
 import { DisconnectLogin } from "./logindlg";
@@ -28,6 +29,7 @@ const navbar = () => {
     id("showLoginDlg").addEventListener("click", (event) => logindlg());
     id("logout_menu").addEventListener("click", (event) => confirmdlg(translate_text_item('Disconnection requested'), translate_text_item('Please confirm disconnection.'), DisconnectLogin));
 
+    cameratab();
     configtab();
     settingstab();
 }
