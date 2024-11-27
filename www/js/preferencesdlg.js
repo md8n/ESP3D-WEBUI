@@ -13,7 +13,7 @@ import { ontoggleLock } from "./navbar";
 import { build_HTML_setting_list, current_setting_filter } from "./settings";
 import { check_ping } from "./socket";
 import { decode_entitie, translate_text, translate_text_item } from "./translate";
-import { conErr, displayBlock, displayFlex, displayNone, last_ping, getChecked, getValue, id, setChecked, setValue } from "./util";
+import { conErr, displayBlock, displayFlex, displayNone, last_ping, getChecked, getValue, id, setChecked, setValue, setHTML } from "./util";
 
 //Preferences dialog
 
@@ -1141,7 +1141,7 @@ function preferencesdlgUploadProgressDisplay(oEvent) {
     if (oEvent.lengthComputable) {
         var percentComplete = (oEvent.loaded / oEvent.total) * 100;
         setValue('preferencesdlg_prg', percentComplete);
-        id('preferencesdlg_upload_percent').innerHTML = percentComplete.toFixed(0);
+        setHTML('preferencesdlg_upload_percent', percentComplete.toFixed(0));
         displayBlock('preferencesdlg_upload_msg');
     } else {
         // Impossible because size is unknown

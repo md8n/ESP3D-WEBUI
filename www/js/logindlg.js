@@ -1,7 +1,7 @@
 import { SendGetHttp } from "./http";
 import { closeModal, setactiveModal, showModal } from "./modaldlg";
 import { translate_text_item } from "./translate";
-import { conErr, displayBlock, displayNone, id } from "./util";
+import { conErr, displayBlock, displayNone, id, setHTML } from "./util";
 
 /** login dialog */
 const logindlg = (closefunc, check_first) => {
@@ -15,7 +15,7 @@ const logindlg = (closefunc, check_first) => {
     id("login_password_text").addEventListener("keyup", (event) => login_password_OnKeyUp(event));
     id("login_submit_btn").addEventListener("click", (event) => SubmitLogin());
 
-    id('login_title').innerHTML = translate_text_item("Identification requested");
+    setHTML('login_title', translate_text_item("Identification requested"));
     displayNone('login_loader');
     displayBlock('login_content');
     if (typeof check_first !== 'undefined') {
@@ -33,8 +33,12 @@ function checkloginsuccess(response_text) {
     var response = JSON.parse(response_text);
     if (typeof(response.authentication_lvl) !== 'undefined') {
         if (response.authentication_lvl != "guest") {
-            if (typeof(response.authentication_lvl) !== 'undefined') id('current_auth_level').innerHTML = "(" + translate_text_item(response.authentication_lvl) + ")";
-            if (typeof(response.user) !== 'undefined') id('current_ID').innerHTML = response.user;
+            if (typeof(response.authentication_lvl) !== 'undefined') {
+                setHTML('current_auth_level', `(${translate_text_item(response.authentication_lvl)})`);
+            }
+            if (typeof(response.user) !== 'undefined') {
+                setHTML('current_ID', response.user);
+            }
             closeModal('cancel');
         } else showModal();
     } else {
@@ -55,11 +59,11 @@ function login_password_OnKeyUp(event) {
 
 function loginfailed(error_code, response_text) {
     var response = JSON.parse(response_text);
-    id('login_title').innerHTML = translate_text_item(response.status || "Identification invalid!");
+    setHTML('login_title', translate_text_item(response.status || "Identification invalid!"));
     conErr(error_code, response_text);
     displayBlock('login_content');
     displayNone('login_loader');
-    id('current_ID').innerHTML = translate_text_item("guest");
+    setHTML('current_ID', translate_text_item("guest"));
     displayNone('logout_menu');
     displayNone('logout_menu_divider');
     displayNone("password_menu");
@@ -67,7 +71,9 @@ function loginfailed(error_code, response_text) {
 
 function loginsuccess(response_text) {
     var response = JSON.parse(response_text);
-    if (typeof(response.authentication_lvl) !== 'undefined') id('current_auth_level').innerHTML = "(" + translate_text_item(response.authentication_lvl) + ")";
+    if (typeof(response.authentication_lvl) !== 'undefined') {
+        setHTML('current_auth_level', `(${translate_text_item(response.authentication_lvl)})`);
+    }
     displayNone('login_loader');
     displayBlock('logout_menu');
     displayBlock('logout_menu_divider');
@@ -79,24 +85,24 @@ function SubmitLogin() {
     var user = id('login_user_text').value.trim();
     var password = id('login_password_text').value.trim();
     var url = "/login?USER=" + encodeURIComponent(user) + "&PASSWORD=" + encodeURIComponent(password) + "&SUBMIT=yes";
-    id('current_ID').innerHTML = user;
-    id('current_auth_level').innerHTML = "";
+    setHTML('current_ID', user);
+    setHTML('current_auth_level', "");
     displayNone('login_content');
     displayBlock('login_loader');
     SendGetHttp(url, loginsuccess, loginfailed);
 }
 
 function DisconnectionSuccess(response_text) {
-    id('current_ID').innerHTML = translate_text_item("guest");
-    id('current_auth_level').innerHTML = "";
+    setHTML('current_ID', translate_text_item("guest"));
+    setHTML('current_auth_level', "");
     displayNone('logout_menu');
     displayNone('logout_menu_divider');
     displayNone("password_menu");
 }
 
 function DisconnectionFailed(error_code, response) {
-    id('current_ID').innerHTML = translate_text_item("guest");
-    id('current_auth_level').innerHTML = "";
+    setHTML('current_ID', translate_text_item("guest"));
+    setHTML('current_auth_level', "");
     displayNone('logout_menu');
     displayNone('logout_menu_divider');
     displayNone("password_menu");

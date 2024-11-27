@@ -8,7 +8,7 @@ import { settingstab } from "./settingstab";
 import { setupdlg } from "./setupdlg";
 import { opentab } from "./tabs";
 import { translate_text_item } from "./translate";
-import { disable_items, displayNone, getChecked, id, setChecked } from "./util";
+import { disable_items, displayNone, getChecked, id, setChecked, setHTML } from "./util";
 
 /** Set up the event handlers for the navbar */
 const navbar = () => {
@@ -47,7 +47,7 @@ const ontoggleLock = (forcevalue) => {
     if (typeof forcevalue != 'undefined') setChecked('lock_UI', forcevalue);
     const jogUIElem = id('JogUI');
     if (getChecked('lock_UI') !== "false") {
-        id('lock_UI_btn_txt').innerHTML = translate_text_item('Unlock interface');
+        setHTML('lock_UI_btn_txt', translate_text_item('Unlock interface'));
         disable_items(id('maintab'), true);
         disable_items(id('configtab'), true);
         enableItem('progress_btn');
@@ -61,7 +61,7 @@ const ontoggleLock = (forcevalue) => {
             displayNone('JogUI');
         }
     } else {
-        id('lock_UI_btn_txt').innerHTML = translate_text_item('Lock interface');
+        setHTML('lock_UI_btn_txt', translate_text_item('Lock interface'));
         disable_items(id('maintab'), false);
         disable_items(id('configtab'), false);
         enableItem('settings_update_fw_btn');

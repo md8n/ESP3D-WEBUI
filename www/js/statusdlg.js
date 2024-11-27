@@ -2,7 +2,7 @@ import { SendGetHttp } from "./http";
 import { get_icon_svg } from "./icons";
 import { closeModal, getactiveModal, setactiveModal, showModal } from "./modaldlg";
 import { translate_text_item } from "./translate";
-import { conErr, stdErrMsg, displayBlock, displayNone, id } from "./util";
+import { conErr, stdErrMsg, displayBlock, displayNone, id, setHTML } from "./util";
 
 var statuspage = 0;
 var statuscontent = "";
@@ -36,13 +36,8 @@ function update_btn_status(forcevalue) {
     if (typeof forcevalue !== 'undefined') {
         statuspage = forcevalue;
     }
-    if (statuspage == 0) {
-        statuspage = 1;
-        id('next_status_btn').innerHTML = get_icon_svg("triangle-right", "1em", "1em")
-    } else {
-        statuspage = 0;
-        id('next_status_btn').innerHTML = get_icon_svg("triangle-left", "1em", "1em")
-    }
+    setHTML('next_status_btn', get_icon_svg((statuspage == 0) ? "triangle-right" : "triangle-left", "1em", "1em"));
+    statuspage = (statuspage == 0) ? 1 : 0;
 }
 
 function statussuccess(response) {
@@ -82,7 +77,7 @@ function statusfailed(error_code, response) {
     displayBlock('status_msg');
     const errMsg = stdErrMsg(error_code, response);
     conErr(errMsg);
-    id('status_msg').innerHTML = errMsg;
+    setHTML('status_msg', errMsg);
 }
 
 function refreshstatus() {

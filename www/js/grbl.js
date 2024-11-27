@@ -4,7 +4,7 @@ import { get_icon_svg } from "./icons";
 import { sendCommand } from "./maslow";
 import { SendPrinterCommand } from "./printercmd";
 import { translate_text_item } from "./translate";
-import { getChecked, getValue, setValue, id, setChecked } from "./util";
+import { getChecked, getValue, setValue, id, setChecked, setHTML } from "./util";
 
 
 /** interval timer ID */

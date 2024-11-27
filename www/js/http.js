@@ -1,5 +1,6 @@
 import { logindlg } from "./logindlg";
 import { translate_text_item } from "./translate";
+import { setHTML } from "./util";
 
 var http_cmd_list = [];
 var processing_cmd = false;
@@ -98,8 +99,8 @@ function GetIdentificationStatusSuccess(response_text) {
     var response = JSON.parse(response_text);
     if (typeof(response.authentication_lvl) !== 'undefined') {
         if (response.authentication_lvl == "guest") {
-            id('current_ID').innerHTML = translate_text_item("guest");
-            id('current_auth_level').innerHTML = "";
+            setHTML('current_ID', translate_text_item("guest"));
+            setHTML('current_auth_level', "");
         }
     }
 }

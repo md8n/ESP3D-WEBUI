@@ -4,7 +4,7 @@ import { esp_error_code, esp_error_message } from "./constants";
 import { http_communication_locked, SendFileHttp, SendGetHttp } from "./http";
 import { closeModal, setactiveModal, showModal } from "./modaldlg";
 import { translate_text_item } from "./translate";
-import { conErr, stdErrMsg, id, displayBlock, displayNone, setValue } from "./util";
+import { conErr, stdErrMsg, id, displayBlock, displayNone, setValue, setHTML } from "./util";
 
 var update_ongoing = false;
 var current_update_filename = "";
@@ -23,12 +23,12 @@ const updatedlg = () => {
     id("fw_file_name").addEventListener("mouseup", (event) => document.getElementById('fw_select_files').click());
     id("uploadfw-button").addEventListener("click", (event) => UploadUpdatefile());
 
-    id("fw_file_name").innerHTML = translate_text_item("No file chosen");
+    setHTML("fw_file_name", translate_text_item("No file chosen"));
     displayNone('prgfw');
     displayNone('uploadfw-button');
-    id('updatemsg').innerHTML = "";
+    setHTML('updatemsg', "");
     setValue('fw-select', "");
-    id('fw_update_dlg_title').innerHTML = translate_text_item("ESP3D Update").replace("ESP3D", "FluidNC");
+    setHTML('fw_update_dlg_title', translate_text_item("ESP3D Update").replace("ESP3D", "FluidNC"));
     showModal();
 }
 
@@ -50,13 +50,13 @@ function checkupdatefile() {
     }
     if (files.length > 0) {
         if (files.length == 1) {
-            id("fw_file_name").innerHTML = files[0].name;
+            setHTML("fw_file_name", files[0].name);
         } else {
             var tmp = translate_text_item("$n files");
-            id("fw_file_name").innerHTML = tmp.replace("$n", files.length);
+            setHTML("fw_file_name", tmp.replace("$n", files.length));
         }
     } else {
-        id("fw_file_name").innerHTML = translate_text_item("No file chosen");
+        setHTML("fw_file_name", translate_text_item("No file chosen"));
     }
 }
 
@@ -65,7 +65,7 @@ function UpdateProgressDisplay(oEvent) {
     if (oEvent.lengthComputable) {
         var percentComplete = (oEvent.loaded / oEvent.total) * 100;
         setValue('prgfw', percentComplete);
-        id('updatemsg').innerHTML = translate_text_item("Uploading ") + current_update_filename + " " + percentComplete.toFixed(0) + "%";
+        setHTML('updatemsg', `${translate_text_item("Uploading")} ${current_update_filename} ${percentComplete.toFixed(0)}%`);
     } else {
         // Impossible because size is unknown
     }
@@ -98,13 +98,13 @@ function StartUploadUpdatefile(response) {
     displayBlock('prgfw');
     if (files.length == 1) current_update_filename = files[0].name;
     else current_update_filename = "";
-    id('updatemsg').innerHTML = translate_text_item("Uploading ") + current_update_filename;
+    setHTML('updatemsg', `${translate_text_item("Uploading")} ${current_update_filename}`);
     SendFileHttp(url, formData, UpdateProgressDisplay, updatesuccess, updatefailed)
 }
 
 function updatesuccess(response) {
-    id('updatemsg').innerHTML = translate_text_item("Restarting, please wait....");
-    id("fw_file_name").innerHTML = "";
+    setHTML('updatemsg', translate_text_item("Restarting, please wait...."));
+    setHTML("fw_file_name", "");
     var i = 0;
     var interval;
     var x = id("prgfw");
@@ -113,7 +113,7 @@ function updatesuccess(response) {
         i = i + 1;
         var x = id("prgfw");
         x.value = i;
-        id('updatemsg').innerHTML = translate_text_item("Restarting, please wait....") + (41 - i) + translate_text_item(" seconds");
+        setHTML('updatemsg', `${translate_text_item("Restarting, please wait....")} ${(41 - i)} ${translate_text_item("seconds")}`);
         if (i > x.max) {
             update_ongoing = false;
             clearInterval(interval);
@@ -126,17 +126,17 @@ function updatesuccess(response) {
 function updatefailed(error_code, response) {
     displayBlock('fw-select_form');
     displayNone('prgfw');
-    id("fw_file_name").innerHTML = translate_text_item("No file chosen");
+    setHTML("fw_file_name", translate_text_item("No file chosen"));
     displayNone('uploadfw-button');
-    //id('updatemsg').innerHTML = "";
+    //setHTML('updatemsg', "");
     id('fw-select').value = "";
     if (esp_error_code != 0) {
         alertdlg(translate_text_item("Error"), stdErrMsg(`(${esp_error_code})`, esp_error_message));
-        id('updatemsg').innerHTML = translate_text_item("Upload failed : ") + esp_error_message;
+        setHTML('updatemsg', translate_text_item("Upload failed : ") + esp_error_message);
         esp_error_code = 0;
     } else {
         alertdlg(translate_text_item("Error"), stdErrMsg(error_code, response));
-        id('updatemsg').innerHTML = stdErrMsg(error_code, response, translate_text_item("Upload failed"));
+        setHTML('updatemsg', stdErrMsg(error_code, response, translate_text_item("Upload failed")));
     }
     conErr(error_code, response);
     update_ongoing = false;

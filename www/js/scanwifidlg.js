@@ -2,7 +2,7 @@ import { SendGetHttp } from "./http";
 import { get_icon_svg } from "./icons";
 import { closeModal, setactiveModal, showModal } from "./modaldlg";
 import { translate_text_item } from "./translate";
-import { conErr, stdErrMsg, displayBlock, displayNone, id, getValue, setValue } from "./util";
+import { conErr, stdErrMsg, displayBlock, displayNone, id, getValue, setValue, setHTML } from "./util";
 
 var ssid_item_scanwifi = -1;
 var ssid_subitem_scanwifi = -1;
@@ -28,7 +28,7 @@ function refresh_scanwifi() {
     displayBlock('AP_scan_loader');
     displayNone('AP_scan_list');
     displayBlock('AP_scan_status');
-    id('AP_scan_status').innerHTML = translate_text_item("Scanning");
+    setHTML('AP_scan_status', translate_text_item("Scanning"));
     displayNone('refresh_scanwifi_btn');
     //removeIf(production)
     var response_text = "{\"AP_LIST\":[{\"SSID\":\"HP-Setup>71-M277LaserJet\",\"SIGNAL\":\"90\",\"IS_PROTECTED\":\"0\"},{\"SSID\":\"NETGEAR_2GEXT_OFFICE2\",\"SIGNAL\":\"58\",\"IS_PROTECTED\":\"1\"},{\"SSID\":\"NETGEAR_2GEXT_OFFICE\",\"SIGNAL\":\"34\",\"IS_PROTECTED\":\"1\"},{\"SSID\":\"NETGEAR_2GEXT_COULOIR\",\"SIGNAL\":\"18\",\"IS_PROTECTED\":\"1\"},{\"SSID\":\"HP-Print-D3-ColorLaserJetPro\",\"SIGNAL\":\"14\",\"IS_PROTECTED\":\"0\"},{\"SSID\":\"external-wifi\",\"SIGNAL\":\"20\",\"IS_PROTECTED\":\"1\"},{\"SSID\":\"Livebox-4D0F\",\"SIGNAL\":\"24\",\"IS_PROTECTED\":\"1\"},{\"SSID\":\"SFR_2000\",\"SIGNAL\":\"20\",\"IS_PROTECTED\":\"1\"},{\"SSID\":\"SFR_0D90\",\"SIGNAL\":\"26\",\"IS_PROTECTED\":\"1\"},{\"SSID\":\"SFRWiFiFON\",\"SIGNAL\":\"18\",\"IS_PROTECTED\":\"0\"},{\"SSID\":\"SFRWiFiMobile\",\"SIGNAL\":\"18\",\"IS_PROTECTED\":\"1\"},{\"SSID\":\"FreeWifi\",\"SIGNAL\":\"16\",\"IS_PROTECTED\":\"0\"}]}";
@@ -70,7 +70,7 @@ function process_scanWifi_answer(response_text) {
         console.error("Parsing error:", e);
         result = false;
     }
-    id('AP_scan_data').innerHTML = content;
+    setHTML('AP_scan_data', content);
     actions.forEach((action) => {
         id(action.id).addEventListener(action.type, (event) => action.method);
     });
@@ -104,7 +104,7 @@ function getscanWififailed(error_code, response) {
     conErr(error_code, response);
     displayNone('AP_scan_loader');
     displayBlock('AP_scan_status');
-    id('AP_scan_status').innerHTML = stdErrMsg(error_code, response, translate_text_item("Failed"));
+    setHTML('AP_scan_status', stdErrMsg(error_code, response, translate_text_item("Failed")));
     displayBlock('refresh_scanwifi_btn');
 }
 

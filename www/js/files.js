@@ -8,7 +8,7 @@ import { get_icon_svg } from "./icons";
 import { inputdlg } from "./inputdlg";
 import { SendPrinterCommand } from "./printercmd";
 import { translate_text_item } from "./translate";
-import { displayBlock, displayInline, displayNone, id, stdErrMsg } from "./util";
+import { displayBlock, displayInline, displayNone, id, stdErrMsg, setHTML } from "./util";
 
 var files_currentPath = "/";
 var files_filter_sd_list = false;
@@ -101,13 +101,7 @@ function init_files_panel(dorefresh) {
     }
 }
 
-function files_set_button_as_filter(isfilter) {
-    if (!isfilter) {
-        id('files_filter_glyph').innerHTML = get_icon_svg("filter", "1em", "1em");
-    } else {
-        id('files_filter_glyph').innerHTML = get_icon_svg("list-alt", "1em", "1em");
-    }
-}
+const files_set_button_as_filter = (isfilter) => setHTML('files_filter_glyph', get_icon_svg(!isfilter ? "filter" : "list-alt", "1em", "1em"));
 
 function files_filter_button() {
     files_filter_sd_list = !files_filter_sd_list;
@@ -399,8 +393,10 @@ function files_refreshFiles(path, usecache) {
     } else {
         displayBlock('print_upload_btn');
     }
-    if (typeof usecache === 'undefined') usecache = false;
-    id('files_currentPath').innerHTML = files_currentPath;
+    if (typeof usecache === 'undefined') {
+        usecache = false;
+    }
+    setHTML('files_currentPath', files_currentPath);
     files_file_list = [];
     files_status_list = [];
     files_build_display_filelist(false);
@@ -652,10 +648,10 @@ function files_build_display_filelist(displaylist) {
     }
     if (files_status_list.length > 0) {
         if (files_status_list[0].total != "-1") {
-            id('files_sd_status_total').innerHTML = files_status_list[0].total;
-            id('files_sd_status_used').innerHTML = files_status_list[0].used;
+            setHTML('files_sd_status_total', files_status_list[0].total);
+            setHTML('files_sd_status_used', files_status_list[0].used);
             id('files_sd_status_occupation').value = files_status_list[0].occupation;
-            id('files_sd_status_percent').innerHTML = files_status_list[0].occupation;
+            setHTML('files_sd_status_percent', files_status_list[0].occupation);
             displayTable('files_space_sd_status');
         } else {
             displayNone('files_space_sd_status');
@@ -665,7 +661,7 @@ function files_build_display_filelist(displaylist) {
         }
         files_error_status = "";
         if (files_status_list[0].status.toLowerCase() != "ok") {
-            id('files_sd_status_msg').innerHTML = translate_text_item(files_status_list[0].status, true);
+            setHTML('files_sd_status_msg', translate_text_item(files_status_list[0].status, true));
             displayTable('files_status_sd_status');
         } else {
             displayNone('files_status_sd_status');
@@ -697,7 +693,7 @@ function process_check_sd_presence(answer) {
             alertdlg(translate_text_item("Upload failed"), translate_text_item("No SD card detected"));
             files_error_status = "No SD card"
             files_build_display_filelist(false);
-            id('files_sd_status_msg').innerHTML = translate_text_item(files_error_status, true);
+            setHTML('files_sd_status_msg', translate_text_item(files_error_status, true));
             displayTable('files_status_sd_status');
         } else files_start_upload();
     } else { //for smoothiware ls say no directory
@@ -732,7 +728,7 @@ function files_start_upload() {
         //console.log( path +file.name);
     }
     files_error_status = "Upload " + file.name;
-    id('files_currentUpload_msg').innerHTML = file.name;
+    setHTML('files_currentUpload_msg', file.name);
     displayBlock('files_uploading_msg');
     displayNone('files_navigation_buttons');
     if (direct_sd) {
@@ -747,7 +743,7 @@ function FilesUploadProgressDisplay(oEvent) {
     if (oEvent.lengthComputable) {
         var percentComplete = (oEvent.loaded / oEvent.total) * 100;
         id('files_prg').value = percentComplete;
-        id('files_percent_upload').innerHTML = percentComplete.toFixed(0);
+        setHTML('files_percent_upload', percentComplete.toFixed(0));
     } else {
         // Impossible because size is unknown
     }

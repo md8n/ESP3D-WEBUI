@@ -2,7 +2,7 @@ import { http_communication_locked } from "./http";
 import { closeModal, setactiveModal, showModal } from "./modaldlg";
 import { SendPrinterCommand } from "./printercmd";
 import { translate_text_item } from "./translate";
-import { conErr, stdErrMsg, displayBlock, displayNone, id, last_ping } from "./util";
+import { conErr, stdErrMsg, displayBlock, displayNone, id, last_ping, setHTML } from "./util";
 
 /** Restart dialog */
 const restartdlg = () => {
@@ -13,7 +13,7 @@ const restartdlg = () => {
     }
 
     displayBlock('prgrestart');
-    id('restartmsg').innerHTML = translate_text_item("Restarting, please wait....");
+    setHTML('restartmsg', translate_text_item("Restarting, please wait...."));
     showModal();
     SendPrinterCommand("[ESP444]RESTART", false, restart_esp_success, restart_esp_failed);
 }
@@ -29,7 +29,7 @@ function restart_esp_success(response) {
         i = i + 1;
         var x = id("prgrestart");
         x.value = i;
-        id('restartmsg').innerHTML = translate_text_item("Restarting, please wait....") + (x.max + 1 - i) + translate_text_item(" seconds");
+        setHTML('restartmsg', `${translate_text_item("Restarting, please wait....")} ${(x.max + 1 - i)} ${translate_text_item("seconds")}`);
         if (i > x.max) {
             clearInterval(interval);
             location.reload();
@@ -40,7 +40,7 @@ function restart_esp_success(response) {
 
 function restart_esp_failed(error_code, response) {
     displayNone('prgrestart');
-    id('restartmsg').innerHTML = stdErrMsg(error_code, response, translate_text_item("Upload failed"));
+    setHTML('restartmsg', stdErrMsg(error_code, response, translate_text_item("Upload failed")));
     conErr(error_code, response);
     closeModal('Cancel')
 }

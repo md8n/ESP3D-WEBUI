@@ -6,7 +6,7 @@ import { http_communication_locked, SendFileHttp } from "./http";
 import { get_icon_svg } from "./icons";
 import { closeModal, setactiveModal, showModal } from "./modaldlg";
 import { translate_text_item } from "./translate";
-import { displayBlock, displayNone, id } from "./util";
+import { displayBlock, displayNone, id, setHTML } from "./util";
 
 //Macro dialog
 var macrodlg_macrolist = [];
@@ -132,7 +132,7 @@ function build_dlg_macrolist_line(index) {
         content += "<td style='vertical-align:middle'>" + build_filename_selection(index) + "</td>";
     }
     content += "</td>";
-    id('macro_line_' + index).innerHTML = content;
+    setHTML('macro_line_' + index, content);
 }
 
 function macro_filename_OnKeyUp(event, index) {
@@ -180,7 +180,7 @@ function build_dlg_macrolist_ui() {
         content += "</tr>";
     }
 
-    id('dlg_macro_list').innerHTML = content;
+    setHTML('dlg_macro_list', content);
     for (var i = 0; i < 9; i++) {
         build_dlg_macrolist_line(i);
     }
@@ -285,7 +285,7 @@ function macrodlgUploadProgressDisplay(oEvent) {
     if (oEvent.lengthComputable) {
         var percentComplete = (oEvent.loaded / oEvent.total) * 100;
         id('macrodlg_prg').value = percentComplete;
-        id('macrodlg_upload_percent').innerHTML = percentComplete.toFixed(0);
+        setHTML('macrodlg_upload_percent', percentComplete.toFixed(0));
         displayBlock('macrodlg_upload_msg');
     } else {
         // Impossible because size is unknown

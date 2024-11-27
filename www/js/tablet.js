@@ -5,7 +5,7 @@ import { checkHomed, loadConfigValues, loadCornerValues, maslowErrorMsgHandling,
 import { numpad } from "./numpad";
 import { SendPrinterCommand } from "./printercmd";
 import { arrayToXYZ, displayer, refreshGcode } from "./toolpath-displayer";
-import { getValue, id, setValue } from "./util";
+import { getValue, id, setValue, setHTML } from "./util";
 
 var gCodeLoaded = false;
 var gCodeDisplayable = false;

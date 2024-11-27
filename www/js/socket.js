@@ -5,7 +5,7 @@ import { clear_cmd_list, http_communication_locked } from "./http";
 import { enable_ping } from "./preferencesdlg";
 import { decode_entitie, translate_text_item } from "./translate";
 import { UIdisableddlg } from "./UIdisableddlg";
-import { id, last_ping } from "./util";
+import { id, last_ping, setHTML } from "./util";
 
 let asyncWebComm = false;
 let convertDHT2Fahrenheit = false;
@@ -92,9 +92,9 @@ const Handle_DHT = (data) => {
     }
 
     var temp = convertDHT2Fahrenheit ? parseFloat(tdata[0]) * 1.8 + 32 : parseFloat(tdata[0]);
-    id('DHT_humidity').innerHTML = parseFloat(tdata[1]).toFixed(2).toString() + '%';
+    setHTML('DHT_humidity', parseFloat(tdata[1]).toFixed(2).toString() + '%');
     var temps = `${temp.toFixed(2).toString()}&deg;${(convertDHT2Fahrenheit) ? 'F' : 'C'}`;
-    id('DHT_temperature').innerHTML = temps;
+    setHTML('DHT_temperature', temps);
 }
 
 const process_socket_response = (msg) => {

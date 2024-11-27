@@ -17,8 +17,14 @@ const getValue = (name) => id(name)?.value;
 function setTextContent(name, val) {
   id(name).textContent = val
 }
-function setHTML(name, val) {
-  id(name).innerHTML = val
+/** Set the innerHTML if the element with an id matching the supplied name.
+ * If the element cannot be found - nothing happens
+ */
+const setHTML = (name, val) => {
+  const elem = id(name);
+  if (elem) {
+    elem.innerHTML = val;
+  }
 }
 function setText(name, val) {
   id(name).innerText = val
@@ -125,5 +131,6 @@ export {
   last_ping,
   getChecked, setChecked,
   getValue, setValue,
+  setHTML,
   id
 };

@@ -5,7 +5,7 @@ import { get_icon_svg } from "./icons";
 import { getPrefValue } from "./preferencesdlg";
 import { SendPrinterCommand } from "./printercmd";
 import { translate_text_item } from "./translate";
-import { conErr, displayBlock, displayInline, displayNone, getChecked, id, setChecked } from "./util";
+import { conErr, displayBlock, displayInline, displayNone, getChecked, id, setChecked, setHTML } from "./util";
 
 var interval_position = -1;
 
@@ -311,7 +311,7 @@ function control_build_macro_ui() {
         content += control_build_macro_button(i, entry);
         actions.push({id: `control_macro_${i}`, type: "click", method: macro_command(entry.target, entry.filename)});
     }
-    id('Macro_list').innerHTML = content;
+    setHTML('Macro_list', content);
     actions.forEach((action) => {
         id(action.id).addEventListener(action.type, (event) => action.method);
     });

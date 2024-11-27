@@ -11,7 +11,7 @@ import { initpreferences } from "./preferencesdlg";
 import { build_HTML_setting_list, current_setting_filter, refreshSettings, setup_is_done } from "./settings";
 import { setupdlg } from "./setupdlg";
 import { tabletInit } from "./tablet";
-import { displayBlock, displayFlex, displayNone, id } from "./util";
+import { displayBlock, displayFlex, displayNone, id, setHTML } from "./util";
 
 var ESP3D_authentication = false
 
@@ -105,9 +105,9 @@ function display_boot_progress(step) {
 function update_UI_firmware_target() {
   var fwName
   initpreferences()
-  id('control_x_position_label').innerHTML = 'X'
-  id('control_y_position_label').innerHTML = 'Y'
-  id('control_z_position_label').innerHTML = 'Z'
+  setHTML('control_x_position_label', 'X');
+  setHTML('control_y_position_label', 'Y');
+  setHTML('control_z_position_label', 'Z');
   showAxiscontrols()
 
   fwName = 'FluidNC'
@@ -117,8 +117,8 @@ function update_UI_firmware_target() {
   displayNone('progress_btn')
   displayNone('abort_btn')
   displayNone('motor_off_control')
-  id('tab_title_configuration').innerHTML = '<span translate>GRBL configuration</span>'
-  id('tab_printer_configuration').innerHTML = '<span translate>GRBL</span>'
+  setHTML('tab_title_configuration', '<span translate>GRBL configuration</span>');
+  setHTML('tab_printer_configuration', '<span translate>GRBL</span>');
   const fif = id('files_input_file');
   if (fif) {
     fif.accept = ' .g, .gco, .gcode, .txt, .ncc, .G, .GCO, .GCODE, .TXT, .NC'
@@ -128,7 +128,7 @@ function update_UI_firmware_target() {
   displayInitial('zero_y_btn')
   if (grblaxis() > 2) {
     //displayInitial('control_z_position_display');
-    id('control_z_position_label').innerHTML = 'Zw'
+    setHTML('control_z_position_label', 'Zw');
   } else {
     hideAxiscontrols()
     displayNone('z_feedrate_group')
@@ -158,8 +158,8 @@ function update_UI_firmware_target() {
   grblpanel();
   // id('FW_github').href = 'https://github.com/bdring/FluidNC';
   displayBlock('settings_filters')
-  id('control_x_position_label').innerHTML = 'Xw'
-  id('control_y_position_label').innerHTML = 'Yw'
+  setHTML('control_x_position_label', 'Xw');
+  setHTML('control_y_position_label', 'Yw');
 
   EP_STA_SSID = 'Sta/SSID'
   EP_STA_PASSWORD = 'Sta/Password'
@@ -174,13 +174,13 @@ function update_UI_firmware_target() {
   SETTINGS_AP_MODE = 2
   SETTINGS_STA_MODE = 1
 
-  if (typeof id('fwName') != 'undefined') id('fwName').innerHTML = fwName
+  setHTML('fwName', fwName);
   //SD image or not
-  if (direct_sd && typeof id('showSDused') != 'undefined')
-    id('showSDused').innerHTML =
-      "<svg width='1.3em' height='1.2em' viewBox='0 0 1300 1200'><g transform='translate(50,1200) scale(1, -1)'><path  fill='#777777' d='M200 1100h700q124 0 212 -88t88 -212v-500q0 -124 -88 -212t-212 -88h-700q-124 0 -212 88t-88 212v500q0 124 88 212t212 88zM100 900v-700h900v700h-900zM500 700h-200v-100h200v-300h-300v100h200v100h-200v300h300v-100zM900 700v-300l-100 -100h-200v500h200z M700 700v-300h100v300h-100z' /></g></svg>"
-  else id('showSDused').innerHTML = ''
-  return fwName
+  setHTML('showSDused', direct_sd
+    ? "<svg width='1.3em' height='1.2em' viewBox='0 0 1300 1200'><g transform='translate(50,1200) scale(1, -1)'><path  fill='#777777' d='M200 1100h700q124 0 212 -88t88 -212v-500q0 -124 -88 -212t-212 -88h-700q-124 0 -212 88t-88 212v500q0 124 88 212t212 88zM100 900v-700h900v700h-900zM500 700h-200v-100h200v-300h-300v100h200v100h-200v300h300v-100zM900 700v-300l-100 -100h-200v500h200z M700 700v-300h100v300h-100z' /></g></svg>"
+    : "");
+
+  return fwName;
 }
 
 function Set_page_title(page_title) {
@@ -200,9 +200,9 @@ function initUI() {
   //set title using hostname
   Set_page_title()
   //update UI version
-  if (typeof id('UI_VERSION') != 'undefined') id('UI_VERSION').innerHTML = web_ui_version
+  setHTML('UI_VERSION', web_ui_version);
   //update FW version
-  if (typeof id('FW_VERSION') != 'undefined') id('FW_VERSION').innerHTML = fw_version
+  setHTML('FW_VERSION', fw_version);
   // Get the element with id="defaultOpen" and click on it
   id('tablettablink').click()
 
