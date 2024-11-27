@@ -67,12 +67,38 @@ function init_files_panel(dorefresh) {
     displayNone('files_refresh_primary_sd_btn');
     displayNone('files_refresh_secondary_sd_btn');
 
+    id('files_createdir_btn').addEventListener('click', (event) => files_Createdir());
+    id('files_filter_btn').addEventListener('click', (event) => files_filter_button());
+
+    id('files_refresh_btn').addEventListener('click', (event) => files_refreshFiles(files_currentPath));
+    id('files_refresh_primary_sd_btn').addEventListener('click', (event) => files_refreshFiles(primary_sd));
+    id('files_refresh_secondary_sd_btn').addEventListener('click', (event) => files_refreshFiles(secondary_sd));
+    
+    id('files_refresh_printer_sd_btn').addEventListener('click', (event) => {
+        current_source = printer_sd;
+        files_refreshFiles(files_currentPath);
+    });
+    id('files_refresh_tft_sd_btn').addEventListener('click', (event) => {
+        current_source = tft_sd;
+        files_refreshFiles(files_currentPath);
+    });
+    id('files_refresh_tft_usb_btn').addEventListener('click', (event) => {
+        current_source = tft_usb;
+        files_refreshFiles(files_currentPath);
+    });
+
+    // TODO: Find out what happened to the `files_progress` method
+    // id('progress_btn').addEventListener('click', (event) => files_progress());
+    id('abort_btn').addEventListener('click', (event) => files_abort());
     id('print_upload_btn').addEventListener('click', (event) => files_select_upload());
 
+    id('files_input_file').addEventListener('change', (event) => files_check_if_upload());
+
     files_set_button_as_filter(files_filter_sd_list);
-    var refreshlist = true;
-    if (typeof dorefresh !== 'undefined') refreshlist = dorefresh;
-    if (direct_sd && refreshlist) files_refreshFiles(files_currentPath);
+    const refreshlist = (typeof dorefresh !== 'undefined') ? dorefresh : true;
+    if (direct_sd && refreshlist) {
+        files_refreshFiles(files_currentPath);
+    }
 }
 
 function files_set_button_as_filter(isfilter) {
@@ -83,7 +109,7 @@ function files_set_button_as_filter(isfilter) {
     }
 }
 
-function files_filter_button(item) {
+function files_filter_button() {
     files_filter_sd_list = !files_filter_sd_list;
     files_set_button_as_filter(files_filter_sd_list);
     files_build_display_filelist();
@@ -647,9 +673,7 @@ function files_build_display_filelist(displaylist) {
     } else displayNone('files_space_sd_status');
 }
 
-function files_abort() {
-    SendPrinterCommand("abort");
-}
+const files_abort = () => SendPrinterCommand("abort");
 
 /** Clicks the `files_input_file` element for you */
 const files_select_upload = () => id('files_input_file').click();

@@ -549,24 +549,24 @@ if (getPrefValue("enable_files_panel") === 'true') displayFlex('filesPanel');
 else displayNone('filesPanel');
 
 if (getPrefValue("enable_files_panel.has_TFT_SD") === 'true') {
-    displayFlex('files_refresh_tft_sd_btn');
+    displayFlex('files_refresh_tft_sd');
 }
 else {
-    displayNone('files_refresh_tft_sd_btn');
+    displayNone('files_refresh_tft_sd');
 }
 
 if (getPrefValue("enable_files_panel.has_TFT_USB") === 'true') {
-    displayFlex('files_refresh_tft_usb_btn');
+    displayFlex('files_refresh_tft_usb');
 }
 else {
-    displayNone('files_refresh_tft_usb_btn');
+    displayNone('files_refresh_tft_usb');
 }
 
 if ((getPrefValue("enable_files_panel.has_TFT_SD") === 'true') || (getPrefValue("enable_files_panel.has_TFT_USB") === 'true')) {
-    displayFlex('files_refresh_printer_sd_btn');
+    displayFlex('files_refresh_printer_sd');
     displayNone('files_refresh_btn');
 } else {
-    displayNone('files_refresh_printer_sd_btn');
+    displayNone('files_refresh_printer_sd');
     displayFlex('files_refresh_btn');
 }
 
@@ -748,17 +748,17 @@ function applypreferenceslist() {
     else displayNone('filesPanel');
 
     if (getPrefValue("enable_files_panel.has_TFT_SD") === 'true') {
-        displayFlex('files_refresh_tft_sd_btn');
+        displayFlex('files_refresh_tft_sd');
     }
     else {
-        displayNone('files_refresh_tft_sd_btn');
+        displayNone('files_refresh_tft_sd');
     }
 
     if (getPrefValue("enable_files_panel.has_TFT_USB") === 'true') {
-        displayFlex('files_refresh_tft_usb_btn');
+        displayFlex('files_refresh_tft_usb');
     }
     else {
-        displayNone('files_refresh_tft_usb_btn');
+        displayNone('files_refresh_tft_usb');
     }
 
     if ((getPrefValue("enable_files_panel.has_TFT_SD") === 'true') || (getPrefValue("enable_files_panel.has_TFT_USB") === 'true')) {

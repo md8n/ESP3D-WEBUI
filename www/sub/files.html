@@ -9,7 +9,7 @@
                             <td>&nbsp;&nbsp;</td>
                             <td class="tooltip">
                               <span class="tooltip-text">Make a directory</span>
-                                <button id="files_createdir_btn" onclick="files_Createdir()" class="btn btn-info btn-xs" style="padding: -2px 2px 0x 0px;">
+                                <button id="files_createdir_btn" class="btn btn-info btn-xs" style="padding: -2px 2px 0x 0px;">
                                     <svg width="1.5em" height="1.2em" viewBox="5 10 30 10">
                                         <rect x="5" y="10" width="30" height="20" rx="2" ry="2" fill="currentColor"></rect>
                                         <rect x="20" y="5" width="15" height="15" rx="2" ry="2" fill="currentColor"></rect>
@@ -42,7 +42,7 @@
                     <div class="item-flex-row-wrap">
                         <div class="tooltip">
                           <span class="tooltip-text">Show runnable files or all files</span>
-                          <button class="btn btn-xs btn-primary" onclick="files_filter_button(this);">
+                          <button id="files_filter_btn" class="btn btn-xs btn-primary">
                             <span id="files_filter_glyph" style="position:relative; top:2px">
                               <svg width='1.3em' height='1.2em' viewBox='0 0 1300 1200'>
                                 <g transform='translate(50,1200) scale(1, -1)'>
@@ -53,29 +53,29 @@
                           </button>
                         </div>
                         &nbsp;
-                        <button class="btn btn-xs btn-primary hide_it" id="files_refresh_btn" onclick="files_refreshFiles(files_currentPath)" translate>Refresh</button>
-                        <button class="btn btn-xs btn-primary hide_it" id="files_refresh_primary_sd_btn" onclick="files_refreshFiles(primary_sd)">SD 1</button>
+                        <button id="files_refresh_btn" class="btn btn-xs btn-primary hide_it" translate>Refresh</button>
+                        <button id="files_refresh_primary_sd_btn" class="btn btn-xs btn-primary hide_it">SD 1</button>
                         &nbsp;
-                        <button class="btn btn-xs btn-primary hide_it" id="files_refresh_secondary_sd_btn" onclick="files_refreshFiles(secondary_sd)">SD 2</button>
+                        <button id="files_refresh_secondary_sd_btn" class="btn btn-xs btn-primary hide_it">SD 2</button>
                         &nbsp;
-                        <span class="hide_it" id="files_refresh_printer_sd_btn">
-                            <button class="btn btn-xs btn-primary"  onclick="current_source = printer_sd ;files_refreshFiles(files_currentPath)">SD</button>
+                        <span id="files_refresh_printer_sd" class="hide_it">
+                            <button id="files_refresh_printer_sd_btn" class="btn btn-xs btn-primary">SD</button>
                             &nbsp;
                         </span>
-                        <span class="hide_it" id="files_refresh_tft_sd_btn">
-                            <button class="btn btn-xs btn-primary"  onclick="current_source = tft_sd ;files_refreshFiles(files_currentPath)">TFT SD</button>
+                        <span id="files_refresh_tft_sd" class="hide_it">
+                            <button id="files_refresh_tft_sd_btn" class="btn btn-xs btn-primary">TFT SD</button>
                             &nbsp;
                         </span>
-                        <span class="hide_it" id="files_refresh_tft_usb_btn">
-                            <button class="btn btn-xs btn-primary"  onclick="current_source = tft_usb ;files_refreshFiles(files_currentPath)">TFT USB</button>
+                        <span id="files_refresh_tft_usb" class="hide_it">
+                            <button id="files_refresh_tft_usb_btn" class="btn btn-xs btn-primary">TFT USB</button>
                             &nbsp;
                         </span>
-                        <button id="progress_btn" class="btn btn-xs btn-primary" onclick="files_progress()" translate>Progress</button>
+                        <button id="progress_btn" class="btn btn-xs btn-primary" translate>Progress</button>
                         &nbsp;
-                        <button id="abort_btn" class="btn btn-xs btn-primary" onclick="files_abort()" translate>Abort</button>
+                        <button id="abort_btn" class="btn btn-xs btn-primary" translate>Abort</button>
                         &nbsp;
                         <button id="print_upload_btn" class="btn btn-xs btn-primary" translate>Upload</button>
-                        <input type="file" id="files_input_file" onchange="files_check_if_upload()" accept=" .g, .gco, .gcode, .G, .GCO, .GCODE" style="display:none" />
+                        <input id="files_input_file" type="file" accept=" .g, .gco, .gcode, .G, .GCO, .GCODE" style="display:none" />
                     </div>
                 </div>
             </div>
