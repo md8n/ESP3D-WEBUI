@@ -1,3 +1,4 @@
+import { init_command_panel } from "./commands";
 import { connectdlg } from "./connectdlg";
 import { esp_error_code, esp_error_message } from "./constants";
 import { init_files_panel } from "./files";

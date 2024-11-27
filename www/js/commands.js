@@ -7,8 +7,13 @@ var CustomCommand_history = [];
 var CustomCommand_history_index = -1;
 var Monitor_output = [];
 
-function init_command_panel() {
-
+/** Set up the event handlers for the commands panel */
+const init_command_panel = () => {
+    id("clear_monitor_btn").addEventListener("click", (event) => Monitor_output_Clear());
+    id("custom_cmd_txt").addEventListener("keyup", (event) => CustomCommand_OnKeyUp(event));
+    id("commandspanel_send").addEventListener("click", (event) => SendCustomCommand());
+    id("monitor_enable_autoscroll").addEventListener("click", (event) => Monitor_check_autoscroll());
+    id("monitor_enable_verbose_mode").addEventListener("click", (event) => Monitor_check_verbose_mode());
 }
 
 function Monitor_output_autoscrollcmd() {
@@ -147,3 +152,5 @@ function SendCustomCommandFailed(error_code, response) {
 
     conErr(error_code, decode_entitie(response), "cmd Error");
 }
+
+export { init_command_panel };
