@@ -204,7 +204,6 @@ const initpreferences = () => {
     // displayNone('DHT_pref_panel');
     // displayBlock('grbl_pref_panel');
     // displayTable('has_TFT_SD');
-    // displayTable('has_TFT_USB');
 
     // Do final setup for other parts of the app
     setupNavbar();
@@ -212,24 +211,22 @@ const initpreferences = () => {
     setupCommands();
 }
 
-const navbar_lockUI = (enable) => {
+const elemBlockOrNone = (elemName, enable) => {
     if (enable) {
-        displayBlock('lock_ui_btn');
-        ontoggleLock(true);
+        displayBlock(elemName);
     } else {
-        displayNone('lock_ui_btn');
-        ontoggleLock(false);
+        displayNone(elemName);
     }
 }
 
+const navbar_lockUI = (enable) => {
+    elemBlockOrNone('lock_ui_btn', enable);
+    ontoggleLock(enable);
+}
+
 const navbar_enableDHT = (enable) => {
-    if (enable) {
-        displayBlock('DHT_humidity');
-        displayBlock('DHT_temperature');
-    } else {
-        displayNone('DHT_humidity');
-        displayNone('DHT_temperature');
-    }
+    elemBlockOrNone('DHT_humidity', enable);
+    elemBlockOrNone('DHT_temperature', enable);
 }
 
 const navbar_enableCamTab = (enable) => {
@@ -239,8 +236,8 @@ const navbar_enableCamTab = (enable) => {
 
     let camoutput = false;
 
+    elemBlockOrNone('camtablink', enable);
     if (enable) {
-        displayBlock('camtablink');
         camera_GetAddress();
         if (getPrefValue("auto_load_camera")) {
             camera_loadframe();
@@ -248,7 +245,6 @@ const navbar_enableCamTab = (enable) => {
         }
     } else {
         id("tablettablink").click();
-        displayNone('camtablink');
     }
 
     if (!camoutput) {
@@ -271,13 +267,50 @@ const setupNavbarHandlers = () => {
     id("show_camera_panel").addEventListener("change", (event) => navbar_enableCamTab(getPrefValue("enable_camera")));
 }
 
-const commands_showCommandsPanel = (enable) => {
-    if (enable) {
-        displayFlex('commandsPanel');
+const files_showFilesPanel = (enable) => elemBlockOrNone('filesPanel', enable);
+
+const files_refreshBtns = (enableSD, enableUSB) => {
+    if (enableSD || enableUSB) {
+        displayFlex('files_refresh_printer_sd_btn');
+        displayNone('files_refresh_btn');
     } else {
-        displayNone('commandsPanel');
+        displayNone('files_refresh_printer_sd_btn');
+        displayFlex('files_refresh_btn');
     }
 }
+
+const files_TFTSD = (enableSD, enableUSB) => {
+    elemBlockOrNone('files_refresh_tft_sd', enable);
+    files_refreshBtns(enableSD, enableUSB);
+}
+
+const files_TFTUSB = (enableSD, enableUSB) => {
+    elemBlockOrNone('files_refresh_tft_usb', enable);
+    files_refreshBtns(enableSD, enableUSB);
+}
+
+const files_filterList = (value) => build_file_filter_list(value);
+
+/** Initial setup of the Files Dialog from the preferences coming from the file */
+const setupFiles = () => {
+    files_showFilesPanel(getPrefValue("show_files_panel"));
+    files_TFTUSB(getPrefValue("has_TFT_SD"), getPrefValue("has_TFT_USB"))
+    files_TFTUSB(getPrefValue("has_TFT_SD"), getPrefValue("has_TFT_USB"))
+    files_filterList(getPrefValue("f_filters"));
+}
+
+const setupFilesHandlers = () => {
+    id("show_files_panel").addEventListener("change", (event) => files_showFilesPanel(getPrefValue("show_files_panel")));
+    id("has_TFT_SD").addEventListener("change", (event) => files_TFTSD(getPrefValue("has_TFT_SD"), getPrefValue("has_TFT_USB")));
+    id("has_TFT_USB").addEventListener("change", (event) => files_TFTUSB(getPrefValue("has_TFT_SD"), getPrefValue("has_TFT_USB")));
+    // TODO: Check if this one needs a debounce
+    id("f_filters").addEventListener("change", (event) => files_filterList(getPrefValue("f_filters")));
+
+    if (getPrefValue("enable_files_panel") === 'true') displayFlex('filesPanel');
+    else displayNone('filesPanel');
+}
+
+const commands_showCommandsPanel = (enable) => elemBlockOrNone('commandsPanel', enable);
 
 const commands_autoScroll = (enable) => {
     setChecked('monitor_enable_autoscroll', enable);
@@ -304,18 +337,6 @@ const setupCommandsHandlers = () => {
     id("show_commands_panel").addEventListener("change", (event) => commands_showCommandsPanel(getPrefValue("show_commands_panel")));
     id("enable_autoscroll").addEventListener("change", (event) => commands_autoScroll(getPrefValue("enable_autoscroll")));
     id("enable_verbose_mode").addEventListener("change", (event) => commands_verboseMode(getPrefValue("enable_verbose_mode")));
-}
-
-const files_filterList = (value) => build_file_filter_list(value);
-
-/** Initial setup of the Files Dialog from the preferences coming from the file */
-const setupFiles = () => {
-    files_filterList(getPrefValue("f_filters"));
-}
-
-const setupFilesHandlers = () => {
-    // TODO: Check if this one needs a debounce
-    id("f_filters").addEventListener("change", (event) => files_filterList(getPrefValue("f_filters")));
 }
 
 /** Get the named preference object */
@@ -398,31 +419,6 @@ const bleh = () => {
     //     displayNone('controlPanel');
     //     on_autocheck_position(false);
     // }
-
-    if (getPrefValue("enable_files_panel") === 'true') displayFlex('filesPanel');
-    else displayNone('filesPanel');
-
-    if (getPrefValue("enable_files_panel.has_TFT_SD") === 'true') {
-        displayFlex('files_refresh_tft_sd');
-    }
-    else {
-        displayNone('files_refresh_tft_sd');
-    }
-
-    if (getPrefValue("enable_files_panel.has_TFT_USB") === 'true') {
-        displayFlex('files_refresh_tft_usb');
-    }
-    else {
-        displayNone('files_refresh_tft_usb');
-    }
-
-    if ((getPrefValue("enable_files_panel.has_TFT_SD") === 'true') || (getPrefValue("enable_files_panel.has_TFT_USB") === 'true')) {
-        displayFlex('files_refresh_printer_sd');
-        displayNone('files_refresh_btn');
-    } else {
-        displayNone('files_refresh_printer_sd');
-        displayFlex('files_refresh_btn');
-    }
 
     var autoReportValue = parseInt(getPrefValue("enable_grbl_panel.autoreport_interval"));
     var autoReportChanged = getValue('autoreport_interval') !== autoReportValue;
@@ -552,31 +548,6 @@ function applypreferenceslist() {
     //     on_autocheck_position(false);
     // }
 
-    if (getPrefValue("enable_files_panel") === 'true') displayFlex('filesPanel');
-    else displayNone('filesPanel');
-
-    if (getPrefValue("enable_files_panel.has_TFT_SD") === 'true') {
-        displayFlex('files_refresh_tft_sd');
-    }
-    else {
-        displayNone('files_refresh_tft_sd');
-    }
-
-    if (getPrefValue("enable_files_panel.has_TFT_USB") === 'true') {
-        displayFlex('files_refresh_tft_usb');
-    }
-    else {
-        displayNone('files_refresh_tft_usb');
-    }
-
-    if ((getPrefValue("enable_files_panel.has_TFT_SD") === 'true') || (getPrefValue("enable_files_panel.has_TFT_USB") === 'true')) {
-        displayFlex('files_refresh_printer_sd_btn');
-        displayNone('files_refresh_btn');
-    } else {
-        displayNone('files_refresh_printer_sd_btn');
-        displayFlex('files_refresh_btn');
-    }
-
     var autoReportValue = parseInt(getPrefValue("enable_grbl_panel.autoreport_interval"));
     var autoReportChanged = getValue('autoreport_interval') !== autoReportValue;
     if (autoReportChanged) {
@@ -698,13 +669,6 @@ function build_dlg_preferences_list() {
     setBoolElem('show_grbl_panel', 'enable_grbl_panel');
     setBoolElem('show_grbl_probe_tab', 'enable_grbl_probe_panel');
 
-    // setBoolElem('show_control_panel', 'enable_control_panel');
-    setBoolElem('show_files_panel', 'enable_files_panel');
-
-    //TFT
-    setBoolElem('has_TFT_SD', 'has_TFT_SD');
-    setBoolElem('has_TFT_USB', 'has_TFT_USB');
-
     //interval
     setIntElem('autoreport_interval', 'autoreport_interval');
     setIntElem('interval_positions', 'interval_positions');
@@ -748,9 +712,6 @@ function closePreferencesDialog() {
         (typeof (getPrefValue("enable_grbl_panel.enable_grbl_probe_panel.probefeedrate")) === 'undefined') ||
         (typeof (getPrefValue("enable_grbl_panel.enable_grbl_probe_panel.proberetract")) === 'undefined') ||
         (typeof (getPrefValue("enable_grbl_panel.enable_grbl_probe_panel.probetouchplatethickness")) === 'undefined') ||
-        (typeof (getPrefValue("enable_files_panel")) === 'undefined') ||
-        (typeof (getPrefValue("enable_files_panel.has_TFT_SD")) === 'undefined') ||
-        (typeof (getPrefValue("enable_files_panel.has_TFT_USB")) === 'undefined') ||
         (typeof (getPrefValue("enable_grbl_panel.autoreport_interval")) === 'undefined') ||
         (typeof (getPrefValue("enable_control_panel.interval_positions")) === 'undefined') ||
         (typeof (getPrefValue("enable_grbl_panel.interval_status")) === 'undefined')) {
@@ -772,12 +733,6 @@ function closePreferencesDialog() {
         if (getChecked('show_grbl_panel') != getPrefValue("enable_grbl_panel")) modified = true;
         //grbl probe panel
         if (getChecked('show_grbl_probe_tab') != getPrefValue("enable_grbl_panel.enable_grbl_probe_panel")) modified = true;
-        //files panel
-        if (getChecked('show_files_panel') != getPrefValue("enable_files_panel")) modified = true;
-        //TFT SD
-        if (getChecked('has_TFT_SD') != getPrefValue("enable_files_panel.has_TFT_SD")) modified = true;
-        //TFT USB
-        if (getChecked('has_TFT_USB') != getPrefValue("enable_files_panel.has_TFT_USB")) modified = true;
         //interval positions
         if (getValue('autoreport_interval') != parseInt(getPrefValue("enable_grbl_panel.autoreport_interval"))) modified = true;
         if (getValue('interval_positions') != parseInt(getPrefValue("enable_control_panel.interval_positions"))) modified = true;
@@ -863,9 +818,6 @@ const SavePreferences = (save_current_preferences = false) => {
         saveprefs += "\",\"enable_control_panel\":\"" + getChecked('show_control_panel');
         saveprefs += "\",\"enable_grbl_probe_panel\":\"" + getChecked('show_grbl_probe_tab');
         saveprefs += "\",\"enable_grbl_panel\":\"" + getChecked('show_grbl_panel');
-        saveprefs += "\",\"enable_files_panel\":\"" + getChecked('show_files_panel');
-        saveprefs += "\",\"has_TFT_SD\":\"" + getChecked('has_TFT_SD');
-        saveprefs += "\",\"has_TFT_USB\":\"" + getChecked('has_TFT_USB');
         saveprefs += "\",\"probemaxtravel\":\"" + getValue('probemaxtravel');
         saveprefs += "\",\"probefeedrate\":\"" + getValue('probefeedrate');
         saveprefs += "\",\"proberetract\":\"" + getValue('proberetract');
