@@ -231,7 +231,7 @@ function SendJogcommand(cmd, feedrate) {
         feedratevalue = parseInt(id('controlpanel_xy_feedrate').value);
         if (feedratevalue < 1 || isNaN(feedratevalue) || (feedratevalue === null)) {
             alertdlg(translate_text_item("Out of range"), translate_text_item("XY Feedrate value must be at least 1 mm/min!"));
-            id('controlpanel_xy_feedrate').value = getPrefValue("enable_control_panel.xy_feedrate");
+            id('controlpanel_xy_feedrate').value = getPrefValue("xy_feedrate");
             return;
         }
     } else {
@@ -240,7 +240,7 @@ function SendJogcommand(cmd, feedrate) {
             var letter = "Z";
             if (grblaxis() > 3) letter = "Axis";
             alertdlg(translate_text_item("Out of range"), translate_text_item(letter + " Feedrate value must be at least 1 mm/min!"));
-            id('controlpanel_z_feedrate').value = getPrefValue("enable_control_panel.z_feedrate");
+            id('controlpanel_z_feedrate').value = getPrefValue("z_feedrate");
             return;
         }
     }

@@ -106,7 +106,11 @@ const buildNumeric = (key, value, parentElem) => {
     }
 
     parentElem.append(inpNTable);
-    id(fId).addEventListener("change", (event) => CheckValue(fId, value));
+    id(fId).addEventListener("change", (event) => {
+        if (CheckValue(fId, value)) {
+            handleInputChange(fID);
+        }
+    });
 };
 
 /** Generate a mini table for text inputs */
@@ -119,7 +123,11 @@ const buildText = (key, value, parentElem) => {
     setGroupId(inpTTable, fId);
 
     parentElem.append(inpTTable);
-    id(fId).addEventListener("change", (event) => CheckValue(fId, value));
+    id(fId).addEventListener("change", (event) => {
+        if (CheckValue(fId, value)) {
+            handleInputChange(fID);
+        }
+    });
 };
 
 /** Generate a mini table for selects */
@@ -200,6 +208,7 @@ const initpreferences = () => {
     // And handlers for the other parts of the app
     setupNavbarHandlers();
     setupFilesHandlers();
+    setupGRBLHandlers();
     setupCommandsHandlers();
     // displayNone('DHT_pref_panel');
     // displayBlock('grbl_pref_panel');
@@ -207,6 +216,7 @@ const initpreferences = () => {
 
     // Do final setup for other parts of the app
     setupNavbar();
+    setupGRBL();
     setupFiles();
     setupCommands();
 }
@@ -267,6 +277,42 @@ const setupNavbarHandlers = () => {
     id("show_camera_panel").addEventListener("change", (event) => navbar_enableCamTab(getPrefValue("enable_camera")));
 }
 
+const grbl_showGRBLPanel = (enable) => {
+    elemBlockOrNone('grblPanel', enable)
+    if (enable) {
+        grblpanel();
+    } else {
+        reportNone(false);
+    }
+}
+
+const grbl_ReportIntervalChange = (changed) => {
+    if (changed) {
+        onAutoReportIntervalChange();
+    }
+}
+
+const grbl_showProbeTab = (enable) => {
+    elemBlockOrNone('grblprobetablink', enable);
+    if (!enable) {
+        id("grblcontroltablink").click();
+    }
+}
+
+/** Initial setup of the GRBL Panel from the preferences coming from the file */
+const setupGRBL = () => {
+    grbl_showGRBLPanel(getPrefValue("show_grbl_panel"));
+    grbl_ReportIntervalChange(getPrefValue("autoreport_interval") || getPrefValue("interval_status"));
+    grbl_showProbeTab(getPrefValue("show_grbl_probe_tab"));
+}
+
+const setupGRBLHandlers = () => {
+    id("show_grbl_panel").addEventListener("change", (event) => grbl_showGRBLPanel(getPrefValue("show_grbl_panel")));
+    id("autoreport_interval").addEventListener("change", (event) => grbl_ReportIntervalChange(getPrefValue("autoreport_interval") || getPrefValue("interval_status")));
+    id("interval_status").addEventListener("change", (event) => grbl_ReportIntervalChange(getPrefValue("autoreport_interval") || getPrefValue("interval_status")));
+    id("show_grbl_probe_tab").addEventListener("change", (event) => grbl_showProbeTab(getPrefValue("show_grbl_probe_tab")));
+}
+
 const files_showFilesPanel = (enable) => elemBlockOrNone('filesPanel', enable);
 
 const files_refreshBtns = (enableSD, enableUSB) => {
@@ -305,9 +351,6 @@ const setupFilesHandlers = () => {
     id("has_TFT_USB").addEventListener("change", (event) => files_TFTUSB(getPrefValue("has_TFT_SD"), getPrefValue("has_TFT_USB")));
     // TODO: Check if this one needs a debounce
     id("f_filters").addEventListener("change", (event) => files_filterList(getPrefValue("f_filters")));
-
-    if (getPrefValue("enable_files_panel") === 'true') displayFlex('filesPanel');
-    else displayNone('filesPanel');
 }
 
 const commands_showCommandsPanel = (enable) => elemBlockOrNone('commandsPanel', enable);
@@ -406,67 +449,7 @@ const bleh = () => {
 
     handlePing();
 
-    if (getPrefValue("enable_grbl_panel") === 'true') {
-        displayFlex('grblPanel');
-        grblpanel();
-    } else {
-        displayNone('grblPanel');
-        reportNone(false);
-    }
-
-    // if (getPrefValue("enable_control_panel") === 'true') displayFlex('controlPanel');
-    // else {
-    //     displayNone('controlPanel');
-    //     on_autocheck_position(false);
-    // }
-
-    var autoReportValue = parseInt(getPrefValue("enable_grbl_panel.autoreport_interval"));
-    var autoReportChanged = getValue('autoreport_interval') !== autoReportValue;
-    if (autoReportChanged) {
-        setValue('autoreport_interval', autoReportValue);
-    }
-    var statusIntervalValue = parseInt(getPrefValue("enable_grbl_panel.interval_status"));
-    let statusIntervalChanged = getValue('interval_status') !== statusIntervalValue;
-    if (statusIntervalChanged) {
-        setValue('interval_status', statusIntervalValue);
-    }
-    if (autoReportChanged || statusIntervalChanged) {
-        onAutoReportIntervalChange();
-    }
-
-    // setValue('interval_positions', parseInt(getPrefValue("enable_control_panel.interval_positions")));
-    // setValue('xy_feedrate', parseInt(getPrefValue("enable_control_panel.xy_feedrate")));
-    // setValue('z_feedrate', parseInt(getPrefValue("enable_control_panel.z_feedrate")));
-
-    let axis_Z_feedrate, axis_A_feedrate, axis_B_feedrate, axis_C_feedrate;
-
-    // if (grblaxis() > 2) axis_Z_feedrate = parseInt(getPrefValue("enable_control_panel.z_feedrate"));
-    // if (grblaxis() > 3) axis_A_feedrate = parseInt(getPrefValue("enable_control_panel.a_feedrate"));
-    // if (grblaxis() > 4) axis_B_feedrate = parseInt(getPrefValue("enable_control_panel.b_feedrate"));
-    // if (grblaxis() > 5) axis_C_feedrate = parseInt(getPrefValue("enable_control_panel.c_feedrate"));
-
-    // if (grblaxis() > 3) {
-    //     var letter = getValue('control_select_axis');
-    //     switch (letter) {
-    //         case "Z":
-    //             setValue('z_feedrate', axis_Z_feedrate);
-    //             break;
-    //         case "A":
-    //             setValue('a_feedrate', axis_A_feedrate);
-    //             break;
-    //         case "B":
-    //             setValue('b_feedrate', axis_B_feedrate);
-    //             break;
-    //         case "C":
-    //             setValue('c_feedrate', axis_C_feedrate);
-    //             break;
-    //     }
-    // }
-
-    // setValue('probemaxtravel', parseFloat(getPrefValue("enable_grbl_panel.enable_grbl_probe_panel.probemaxtravel")));
-    // setValue('probefeedrate', parseInt(getPrefValue("enable_grbl_panel.enable_grbl_probe_panel.probefeedrate")));
-    // setValue('proberetract', parseFloat(getPrefValue("enable_grbl_panel.enable_grbl_probe_panel.proberetract")));
-    // setValue('probetouchplatethickness', parseFloat(getPrefValue("enable_grbl_panel.enable_grbl_probe_panel.probetouchplatethickness")));
+    // setValue('interval_positions', parseInt(getPrefValue("interval_positions")));
 }
 
 function getpreferenceslist() {
@@ -477,6 +460,18 @@ function getpreferenceslist() {
     return;
     //endRemoveIf(production)
     SendGetHttp(url, processPreferencesGetSuccess, processPreferencesGetFailed);
+}
+
+/** Gets a Text, Int or Float's new value after a change, and stores it in the preferences */
+const handleInputChange = (fieldId) => {
+    const newValue = getValue(fieldId);
+    if (typeof newValue === "undefined") {
+        console.error(stdErrMsg("Unknown Field", `'${fieldId}' not found as an input field with a value`));
+        return undefined;
+    }
+    const pref = getPref(checkboxId);
+    pref.value = newValue;
+    return newValue;
 }
 
 /** Gets the checkbox's current value, reverses it, and stores the reversed value in the preferences */
@@ -528,71 +523,9 @@ function applypreferenceslist() {
     translate_text(getPrefValue("language_list")?.valueDef);
     build_HTML_setting_list(current_setting_filter());
 
-    if (getPrefValue("enable_grbl_panel.enable_grbl_probe_panel") === 'true') {
-        displayBlock('grblprobetablink');
-    } else {
-        id("grblcontroltablink").click();
-        displayNone('grblprobetablink');
-    }
-
     handlePing();
-    if (getPrefValue("enable_grbl_panel") === 'true') displayFlex('grblPanel');
-    else {
-        displayNone('grblPanel');
-        reportNone(false);
-    }
 
-    // if (getPrefValue("enable_control_panel") === 'true') displayFlex('controlPanel');
-    // else {
-    //     displayNone('controlPanel');
-    //     on_autocheck_position(false);
-    // }
-
-    var autoReportValue = parseInt(getPrefValue("enable_grbl_panel.autoreport_interval"));
-    var autoReportChanged = getValue('autoreport_interval') !== autoReportValue;
-    if (autoReportChanged) {
-        setValue('autoreport_interval', autoReportValue);
-    }
-    var statusIntervalValue = parseInt(getPrefValue("enable_grbl_panel.interval_status"));
-    statusIntervalChanged = getValue('interval_status') !== statusIntervalValue;
-    if (statusIntervalChanged) {
-        setValue('interval_status', statusIntervalValue);
-    }
-    if (autoReportChanged || statusIntervalChanged) {
-        onAutoReportIntervalChange();
-    }
-
-    setValue('interval_positions', parseInt(getPrefValue("enable_control_panel.interval_positions")));
-    setValue('xy_feedrate', parseInt(getPrefValue("enable_control_panel.xy_feedrate")));
-    setValue('z_feedrate', parseInt(getPrefValue("enable_control_panel.z_feedrate")));
-
-    if (grblaxis() > 2) axis_Z_feedrate = parseInt(getPrefValue("enable_control_panel.z_feedrate"));
-    if (grblaxis() > 3) axis_A_feedrate = parseInt(getPrefValue("enable_control_panel.a_feedrate"));
-    if (grblaxis() > 4) axis_B_feedrate = parseInt(getPrefValue("enable_control_panel.b_feedrate"));
-    if (grblaxis() > 5) axis_C_feedrate = parseInt(getPrefValue("enable_control_panel.c_feedrate"));
-
-    if (grblaxis() > 3) {
-        var letter = getValue('control_select_axis');
-        switch (letter) {
-            case "Z":
-                setValue('z_feedrate', axis_Z_feedrate);
-                break;
-            case "A":
-                setValue('a_feedrate', axis_A_feedrate);
-                break;
-            case "B":
-                setValue('b_feedrate', axis_B_feedrate);
-                break;
-            case "C":
-                setValue('c_feedrate', axis_C_feedrate);
-                break;
-        }
-    }
-
-    setValue('probemaxtravel', parseFloat(getPrefValue("enable_grbl_panel.enable_grbl_probe_panel.probemaxtravel")));
-    setValue('probefeedrate', parseInt(getPrefValue("enable_grbl_panel.enable_grbl_probe_panel.probefeedrate")));
-    setValue('proberetract', parseFloat(getPrefValue("enable_grbl_panel.enable_grbl_probe_panel.proberetract")));
-    setValue('probetouchplatethickness', parseFloat(getPrefValue("enable_grbl_panel.enable_grbl_probe_panel.probetouchplatethickness")));
+    setValue('interval_positions', parseInt(getPrefValue("interval_positions")));
 }
 
 const showpreferencesdlg = () => {
@@ -642,19 +575,6 @@ const setFloatElem = (idName, memName) => {
     }
     // else - quietly do nothing
 }
-const setStringElem = (idName, memName) => {
-    const prefVal = getPrefValue(memName);
-    if (typeof prefVal === "string") {
-        setValue(idName, prefVal);
-        return;
-    }
-    const defPrefVal = getDefPref(memName);
-    if (typeof defPrefVal === "string") {
-        setValue(idName, defPrefVal);
-        return;
-    }
-    // else - quietly do nothing
-}
 
 function build_dlg_preferences_list() {
     //camera address
@@ -666,29 +586,8 @@ function build_dlg_preferences_list() {
     //Monitor connection
     setBoolElem('enable_ping', 'enable_ping');
 
-    setBoolElem('show_grbl_panel', 'enable_grbl_panel');
-    setBoolElem('show_grbl_probe_tab', 'enable_grbl_probe_panel');
-
     //interval
-    setIntElem('autoreport_interval', 'autoreport_interval');
     setIntElem('interval_positions', 'interval_positions');
-    setIntElem('interval_status', 'interval_status');
-
-    // feedrate - using case fall through
-    switch (grblaxis()) {
-        case 6: setIntElem('c_feedrate', 'c_feedrate');
-        case 5: setIntElem('b_feedrate', 'b_feedrate');
-        case 4: setIntElem('a_feedrate', 'a_feedrate');
-        case 3: setIntElem('z_feedrate', 'z_feedrate');
-        default:
-            setIntElem('xy_feedrate', 'xy_feedrate');
-            break;
-    }
-
-    setFloatElem('probemaxtravel', 'probemaxtravel');
-    setIntElem('probefeedrate', 'probefeedrate');
-    setFloatElem('proberetract', 'proberetract');
-    setFloatElem('probetouchplatethickness', 'probetouchplatethickness');
 }
 
 function closePreferencesDialog() {
@@ -701,20 +600,9 @@ function closePreferencesDialog() {
         (typeof (getPrefValue("enable_ping")) === 'undefined') ||
         (typeof (getPrefValue("enable_redundant")) === 'undefined') ||
         (typeof (getPrefValue("enable_probe")) === 'undefined') ||
-        (typeof (getPrefValue("enable_control_panel.xy_feedrate")) === 'undefined') ||
-        (typeof (getPrefValue("enable_control_panel.z_feedrate")) === 'undefined') ||
         // (typeof (getPrefValue("e_feedrate")) === 'undefined') ||
         // (typeof (getPrefValue("e_distance")) === 'undefined') ||
-        (typeof (getPrefValue("enable_control_panel")) === 'undefined') ||
-        (typeof (getPrefValue("enable_grbl_panel")) === 'undefined') ||
-        (typeof (getPrefValue("enable_grbl_panel.enable_grbl_probe_panel")) === 'undefined') ||
-        (typeof (getPrefValue("enable_grbl_panel.enable_grbl_probe_panel.probemaxtravel")) === 'undefined') ||
-        (typeof (getPrefValue("enable_grbl_panel.enable_grbl_probe_panel.probefeedrate")) === 'undefined') ||
-        (typeof (getPrefValue("enable_grbl_panel.enable_grbl_probe_panel.proberetract")) === 'undefined') ||
-        (typeof (getPrefValue("enable_grbl_panel.enable_grbl_probe_panel.probetouchplatethickness")) === 'undefined') ||
-        (typeof (getPrefValue("enable_grbl_panel.autoreport_interval")) === 'undefined') ||
-        (typeof (getPrefValue("enable_control_panel.interval_positions")) === 'undefined') ||
-        (typeof (getPrefValue("enable_grbl_panel.interval_status")) === 'undefined')) {
+        (typeof (getPrefValue("interval_positions")) === 'undefined')){
         modified = true;
     } else {
         //camera
@@ -727,45 +615,9 @@ function closePreferencesDialog() {
         if (getChecked('enable_ping') != getPrefValue("enable_ping")) modified = true;
         //probe
         if (getChecked('enable_probe_controls') != getPrefValue("enable_probe")) modified = true;
-        //control panel
-        if (getChecked('show_control_panel') != getPrefValue("enable_control_panel")) modified = true;
-        //grbl panel
-        if (getChecked('show_grbl_panel') != getPrefValue("enable_grbl_panel")) modified = true;
-        //grbl probe panel
-        if (getChecked('show_grbl_probe_tab') != getPrefValue("enable_grbl_panel.enable_grbl_probe_panel")) modified = true;
         //interval positions
-        if (getValue('autoreport_interval') != parseInt(getPrefValue("enable_grbl_panel.autoreport_interval"))) modified = true;
-        if (getValue('interval_positions') != parseInt(getPrefValue("enable_control_panel.interval_positions"))) modified = true;
-        //interval status
-        if (getValue('interval_status') != parseInt(getPrefValue("enable_grbl_panel.interval_status"))) modified = true;
-        //xy feedrate
-        if (getValue('xy_feedrate') != parseInt(getPrefValue("enable_control_panel.xy_feedrate"))) modified = true;
-        if (grblaxis() > 2) {
-            //z feedrate
-            if (getValue('z_feedrate') != parseInt(getPrefValue("enable_control_panel.z_feedrate"))) modified = true;
-        }
-        if (grblaxis() > 3) {
-            //a feedrate
-            if (getValue('a_feedrate') != parseInt(getPrefValue("enable_control_panel.a_feedrate"))) modified = true;
-        }
-        if (grblaxis() > 4) {
-            //b feedrate
-            if (getValue('b_feedrate') != parseInt(getPrefValue("enable_control_panel.b_feedrate"))) modified = true;
-        }
-        if (grblaxis() > 5) {
-            //c feedrate
-            if (getValue('c_feedrate') != parseInt(getPrefValue("enable_control_panel.c_feedrate"))) modified = true;
-        }
+        if (getValue('interval_positions') != parseInt(getPrefValue("interval_positions"))) modified = true;
     }
-    //probemaxtravel
-    if (getValue('probemaxtravel') != parseFloat(getPrefValue("enable_grbl_panel.enable_grbl_probe_panel.probemaxtravel"))) modified = true;
-    //probefeedrate
-    if (getValue('probefeedrate') != parseInt(getPrefValue("enable_grbl_panel.enable_grbl_probe_panel.probefeedrate"))) modified = true;
-    //proberetract
-    if (getValue('proberetract') != parseFloat(getPrefValue("enable_grbl_panel.enable_grbl_probe_panel.proberetract"))) modified = true;
-    //probetouchplatethickness
-    if (getValue('probetouchplatethickness') != parseFloat(getPrefValue("enable_grbl_panel.enable_grbl_probe_panel.probetouchplatethickness"))) modified = true;
-
     if (language_save != language()) modified = true;
     if (modified) {
         confirmdlg(translate_text_item("Data modified"), translate_text_item("Do you want to save?"), process_preferencesCloseDialog)
@@ -793,21 +645,7 @@ const SavePreferences = (save_current_preferences = false) => {
     console.log("save prefs");
 
     if (!!save_current_preferences) {
-        if (!CheckValue("autoreport_interval", getPrefDefPath("enable_grbl_panel.autoreport_interval")) ||
-            !CheckValue("interval_status", getPrefDefPath("enable_grbl_panel.interval_status")) ||
-            !CheckValue("interval_positions", getPrefDefPath("enable_control_panel.interval_positions")) ||
-            !CheckValue("xy_feedrate") ||
-            !CheckValue("probemaxtravel") ||
-            !CheckValue("probefeedrate") ||
-            !CheckValue("proberetract") ||
-            !CheckValue("probetouchplatethickness")
-        ) return;
-        if (grblaxis() > 2) {
-            if (!CheckValue("z_feedrate")) return;
-        }
-        if ((grblaxis() > 3) && (!CheckValue("a_feedrate"))) return;
-        if ((grblaxis() > 4) && (!CheckValue("b_feedrate"))) return;
-        if ((grblaxis() > 5) && (!CheckValue("c_feedrate"))) return;
+        if (!CheckValue("interval_positions", getPrefDefPath("interval_positions"))   ) return;
 
         preferenceslist = [];
         var saveprefs = "[{\"language\":\"" + language();
@@ -815,29 +653,7 @@ const SavePreferences = (save_current_preferences = false) => {
         saveprefs += "\",\"auto_load_camera\":\"" + getChecked('autoload_camera_panel');
         saveprefs += "\",\"camera_address\":\"" + HTMLEncode(getValue('camera_address'));
         saveprefs += "\",\"enable_ping\":\"" + getChecked('enable_ping');
-        saveprefs += "\",\"enable_control_panel\":\"" + getChecked('show_control_panel');
-        saveprefs += "\",\"enable_grbl_probe_panel\":\"" + getChecked('show_grbl_probe_tab');
-        saveprefs += "\",\"enable_grbl_panel\":\"" + getChecked('show_grbl_panel');
-        saveprefs += "\",\"probemaxtravel\":\"" + getValue('probemaxtravel');
-        saveprefs += "\",\"probefeedrate\":\"" + getValue('probefeedrate');
-        saveprefs += "\",\"proberetract\":\"" + getValue('proberetract');
-        saveprefs += "\",\"probetouchplatethickness\":\"" + getValue('probetouchplatethickness');
-        saveprefs += "\",\"autoreport_interval\":\"" + getValue('autoreport_interval');
         saveprefs += "\",\"interval_positions\":\"" + getValue('interval_positions');
-        saveprefs += "\",\"interval_status\":\"" + getValue('interval_status');
-        saveprefs += "\",\"xy_feedrate\":\"" + getValue('xy_feedrate');
-        if (grblaxis() > 2) {
-            saveprefs += "\",\"z_feedrate\":\"" + getValue('z_feedrate');
-        }
-        if (grblaxis() > 3) {
-            saveprefs += "\",\"a_feedrate\":\"" + getValue('a_feedrate');
-        }
-        if (grblaxis() > 4) {
-            saveprefs += "\",\"b_feedrate\":\"" + getValue('b_feedrate');
-        }
-        if (grblaxis() > 5) {
-            saveprefs += "\",\"c_feedrate\":\"" + getValue('c_feedrate');
-        }
         preferenceslist = JSON.parse(saveprefs);
     }
     var blob = new Blob([JSON.stringify(preferenceslist, null, " ")], {

@@ -286,9 +286,8 @@ function tryAutoReport() {
     1
   )
 }
-function onAutoReportIntervalChange() {
-  tryAutoReport()
-}
+
+const onAutoReportIntervalChange = () => tryAutoReport();
 
 function disableAutoReport() {
   SendPrinterCommand('$Report/Interval=0', true, null, null, 99.0, 1)
