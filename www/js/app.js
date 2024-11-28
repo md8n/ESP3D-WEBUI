@@ -7,7 +7,7 @@ import { grblaxis, grblzerocmd, tryAutoReport } from "./grbl";
 import { grblpanel } from "./grblpanel";
 import { closeModal } from "./modaldlg";
 import { navbar } from "./navbar";
-import { initpreferences } from "./preferencesdlg";
+import { getpreferenceslist, initpreferences } from "./preferencesdlg";
 import { build_HTML_setting_list, current_setting_filter, refreshSettings, setup_is_done } from "./settings";
 import { setupdlg } from "./setupdlg";
 import { tabletInit } from "./tablet";

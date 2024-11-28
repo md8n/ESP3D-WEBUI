@@ -2,10 +2,9 @@ import { alertdlg } from "./alertdlg";
 import { camera_GetAddress } from "./camera";
 import { Monitor_check_autoscroll, Monitor_check_verbose_mode } from "./commands";
 import { confirmdlg } from "./confirmdlg";
-import { on_autocheck_position } from "./controls";
 import { clear_drop_menu } from "./dropmenu";
 import { build_file_filter_list } from "./files";
-import { grblaxis, onAutoReportIntervalChange, reportNone } from "./grbl";
+import { onAutoReportIntervalChange, reportNone } from "./grbl";
 import { grblpanel } from "./grblpanel";
 import { http_communication_locked, SendFileHttp, SendGetHttp } from "./http";
 import { get_icon_svg } from "./icons";
@@ -207,15 +206,14 @@ const initpreferences = () => {
 
     // And handlers for the other parts of the app
     setupNavbarHandlers();
+    setupControlsHandlers();
     setupFilesHandlers();
     setupGRBLHandlers();
     setupCommandsHandlers();
-    // displayNone('DHT_pref_panel');
-    // displayBlock('grbl_pref_panel');
-    // displayTable('has_TFT_SD');
 
     // Do final setup for other parts of the app
     setupNavbar();
+    setupControls();
     setupGRBL();
     setupFiles();
     setupCommands();
@@ -268,13 +266,26 @@ const navbar_enableCamTab = (enable) => {
 const setupNavbar = () => {
     navbar_lockUI(getPrefValue("enable_lock_UI"));
     navbar_enableDHT(getPrefValue("enable_DHT"));
-    navbar_enableCamTab(getPrefValue("enable_camera"));
+    navbar_enableCamTab(getPrefValue("show_camera_panel"));
 }
 
 const setupNavbarHandlers = () => {
     id("enable_lock_UI").addEventListener("change", (event) => navbar_lockUI(getPrefValue("enable_lock_UI")));
     id("enable_DHT").addEventListener("change", (event) => navbar_enableDHT(getPrefValue("enable_DHT")));
-    id("show_camera_panel").addEventListener("change", (event) => navbar_enableCamTab(getPrefValue("enable_camera")));
+    id("show_camera_panel").addEventListener("change", (event) => navbar_enableCamTab(getPrefValue("show_camera_panel")));
+}
+
+const controls_showControlsPanel = (enable) => {
+    elemBlockOrNone('control_preferences', enable)
+}
+
+/** Initial setup of the Controls Panel from the preferences coming from the file */
+const setupControls = () => {
+    controls_showControlsPanel(getPrefValue("show_control_panel"));
+}
+
+const setupControlsHandlers = () => {
+    id("show_control_panel").addEventListener("change", (event) => controls_showControlsPanel(getPrefValue("show_control_panel")));
 }
 
 const grbl_showGRBLPanel = (enable) => {
@@ -326,12 +337,12 @@ const files_refreshBtns = (enableSD, enableUSB) => {
 }
 
 const files_TFTSD = (enableSD, enableUSB) => {
-    elemBlockOrNone('files_refresh_tft_sd', enable);
+    elemBlockOrNone('files_refresh_tft_sd', enableSD, enableUSB);
     files_refreshBtns(enableSD, enableUSB);
 }
 
 const files_TFTUSB = (enableSD, enableUSB) => {
-    elemBlockOrNone('files_refresh_tft_usb', enable);
+    elemBlockOrNone('files_refresh_tft_usb', enableSD, enableUSB);
     files_refreshBtns(enableSD, enableUSB);
 }
 
@@ -444,14 +455,6 @@ const handlePing = () => {
     }
 }
 
-const bleh = () => {
-    build_HTML_setting_list(current_setting_filter());
-
-    handlePing();
-
-    // setValue('interval_positions', parseInt(getPrefValue("interval_positions")));
-}
-
 function getpreferenceslist() {
     var url = prefFile;
     //removeIf(production)
@@ -524,8 +527,6 @@ function applypreferenceslist() {
     build_HTML_setting_list(current_setting_filter());
 
     handlePing();
-
-    setValue('interval_positions', parseInt(getPrefValue("interval_positions")));
 }
 
 const showpreferencesdlg = () => {
@@ -547,76 +548,29 @@ const showpreferencesdlg = () => {
     showModal();
 }
 
-const getDefPref = (memName) => { };
 const setBoolElem = (idName, memName) => setChecked(idName, !!getPrefValue(memName));
-const setIntElem = (idName, memName) => {
-    const prefVal = parseInt(getPrefValue(memName) || "NaN");
-    if (!isNaN(prefVal)) {
-        setValue(idName, prefVal);
-        return;
-    }
-    const defPrefVal = parseInt(getDefPref(memName) || "NaN");
-    if (!isNaN(defPrefVal)) {
-        setValue(idName, defPrefVal);
-        return;
-    }
-    // else - quietly do nothing
-}
-const setFloatElem = (idName, memName) => {
-    const prefVal = parseFloat(getPrefValue(memName) || "NaN");
-    if (!isNaN(prefVal)) {
-        setValue(idName, prefVal);
-        return;
-    }
-    const defPrefVal = parseFloat(getDefPref(memName) || "NaN");
-    if (!isNaN(defPrefVal)) {
-        setValue(idName, defPrefVal);
-        return;
-    }
-    // else - quietly do nothing
-}
 
 function build_dlg_preferences_list() {
     //camera address
     const camAddress = !!getPrefValue("enable_camera.auto_load_camera") ? decode_entitie(getPrefValue("camera_address")) : "";
     setValue('camera_address', !camAddress);
-    setBoolElem('show_camera_panel', 'enable_camera');
-    setBoolElem('autoload_camera_panel', 'auto_load_camera');
 
     //Monitor connection
     setBoolElem('enable_ping', 'enable_ping');
-
-    //interval
-    setIntElem('interval_positions', 'interval_positions');
 }
 
 function closePreferencesDialog() {
     var modified = false;
     //check dialog compare to global state
     if ((typeof (getPrefValue("language_list")?.valueDef) === 'undefined') ||
-        (typeof (getPrefValue("enable_camera")) === 'undefined') ||
-        (typeof (getPrefValue("enable_camera.auto_load_camera")) === 'undefined') ||
-        (typeof (getPrefValue("camera_address")) === 'undefined') ||
-        (typeof (getPrefValue("enable_ping")) === 'undefined') ||
-        (typeof (getPrefValue("enable_redundant")) === 'undefined') ||
-        (typeof (getPrefValue("enable_probe")) === 'undefined') ||
-        // (typeof (getPrefValue("e_feedrate")) === 'undefined') ||
-        // (typeof (getPrefValue("e_distance")) === 'undefined') ||
-        (typeof (getPrefValue("interval_positions")) === 'undefined')){
+        (typeof (getPrefValue("enable_ping")) === 'undefined')
+        ){
         modified = true;
     } else {
-        //camera
-        if (getChecked('show_camera_panel') != getPrefValue("enable_camera")) modified = true;
-        //Autoload
-        if (getChecked('autoload_camera_panel') != getPrefValue("enable_camera.auto_load_camera")) modified = true;
         //camera address
         if (getChecked('camera_address') != decode_entitie(getPrefValue("camera_address"))) modified = true;
         //Monitor connection
         if (getChecked('enable_ping') != getPrefValue("enable_ping")) modified = true;
-        //probe
-        if (getChecked('enable_probe_controls') != getPrefValue("enable_probe")) modified = true;
-        //interval positions
-        if (getValue('interval_positions') != parseInt(getPrefValue("interval_positions"))) modified = true;
     }
     if (language_save != language()) modified = true;
     if (modified) {
@@ -645,15 +599,9 @@ const SavePreferences = (save_current_preferences = false) => {
     console.log("save prefs");
 
     if (!!save_current_preferences) {
-        if (!CheckValue("interval_positions", getPrefDefPath("interval_positions"))   ) return;
-
         preferenceslist = [];
         var saveprefs = "[{\"language\":\"" + language();
-        saveprefs += "\",\"enable_camera\":\"" + getChecked('show_camera_panel');
-        saveprefs += "\",\"auto_load_camera\":\"" + getChecked('autoload_camera_panel');
-        saveprefs += "\",\"camera_address\":\"" + HTMLEncode(getValue('camera_address'));
         saveprefs += "\",\"enable_ping\":\"" + getChecked('enable_ping');
-        saveprefs += "\",\"interval_positions\":\"" + getValue('interval_positions');
         preferenceslist = JSON.parse(saveprefs);
     }
     var blob = new Blob([JSON.stringify(preferenceslist, null, " ")], {
@@ -786,4 +734,4 @@ const CheckValue = (fId, valueDef) => {
     return errorList.length == 0;
 }
 
-export { enable_ping, getPref, getPrefValue, setPrefValue, initpreferences, showpreferencesdlg, SavePreferences };
+export { enable_ping, getpreferenceslist, getPref, getPrefValue, setPrefValue, initpreferences, showpreferencesdlg, SavePreferences };

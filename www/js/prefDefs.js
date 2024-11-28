@@ -203,12 +203,6 @@ const prefDefs = {
             "enable_verbose_mode": { "defValue": true, "valueType": "bool", "label": "Verbose mode" },
         },
     },
-
-    // "enable_redundant": {"defValue": false, "valueType": "bool"},
-    // "enable_probe": {"defValue": false, "valueType": "bool"},
-
-    // "e_feedrate": {"defValue": 400, "valueType": "int"},
-    // "e_distance": {"defValue": 5, "valueType": "int"},
 };
 
 /** Get the part of the prefDefs structure identified by the name supplied.
