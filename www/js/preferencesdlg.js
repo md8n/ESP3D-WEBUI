@@ -1,4 +1,5 @@
 import { alertdlg } from "./alertdlg";
+import { camera_GetAddress } from "./camera";
 import { confirmdlg } from "./confirmdlg";
 import { on_autocheck_position } from "./controls";
 import { clear_drop_menu } from "./dropmenu";
@@ -196,23 +197,78 @@ const initpreferences = () => {
     setDialog(preferences);
 
     // And handlers for the other parts of the app
-    setupNavbar();
+    setupNavbarHandlers();
     // displayNone('DHT_pref_panel');
     // displayBlock('grbl_pref_panel');
     // displayTable('has_TFT_SD');
     // displayTable('has_TFT_USB');
+
+    // Do final setup for other parts of the app
+    setupNavbar();
 }
 
-const setupNavbar = () => {
-    id("enable_DHT").addEventListener("click", (event) => () => {
-        if (getPrefValue("enable_DHT")) {
-            displayBlock('DHT_humidity');
-            displayBlock('DHT_temperature');
-        } else {
-            displayNone('DHT_humidity');
-            displayNone('DHT_temperature');
+const navbar_lockUI = (enable) => {
+    if (enable) {
+        displayBlock('lock_ui_btn');
+        ontoggleLock(true);
+    } else {
+        displayNone('lock_ui_btn');
+        ontoggleLock(false);
+    }
+}
+
+const navbar_enableDHT = (enable) => {
+    if (enable) {
+        displayBlock('DHT_humidity');
+        displayBlock('DHT_temperature');
+    } else {
+        displayNone('DHT_humidity');
+        displayNone('DHT_temperature');
+    }
+}
+
+const navbar_enableCamTab = (enable) => {
+    if (typeof id('camtab') === "undefined") {
+        return;
+    }
+
+    let camoutput = false;
+
+    if (enable) {
+        displayBlock('camtablink');
+        camera_GetAddress();
+        if (getPrefValue("auto_load_camera")) {
+            camera_loadframe();
+            camoutput = true;
         }
-    });
+    } else {
+        id("tablettablink").click();
+        displayNone('camtablink');
+    }
+
+    if (!camoutput) {
+        id('camera_frame').src = "";
+        displayNone('camera_frame_display');
+        displayNone('camera_detach_button');
+    }
+}
+
+/** Initial setup of the navbar from the preferences coming from the file */
+const setupNavbar = () => {
+    navbar_lockUI(getPrefValue("enable_lock_UI"));
+    navbar_enableDHT(getPrefValue("enable_DHT"));
+    navbar_enableCamTab(getPrefValue("enable_camera"));
+}
+
+const setupNavbarHandlers = () => {
+    id("enable_lock_UI").addEventListener("change", (event) => navbar_lockUI(getPrefValue("enable_lock_UI")));
+    id("enable_DHT").addEventListener("change", (event) => navbar_enableDHT(getPrefValue("enable_DHT")));
+    id("show_camera_panel").addEventListener("change", (event) => navbar_enableCamTab(getPrefValue("enable_camera")));
+
+
+
+
+
 }
 
 /** Get the named preference object */
@@ -279,48 +335,7 @@ const handlePing = () => {
 
 const bleh = () => {
     build_HTML_setting_list(current_setting_filter());
-    if (typeof id('camtab') != "undefined") {
-        var camoutput = false;
-        if (typeof (getPrefValue("enable_camera")) !== 'undefined') {
-            if (getPrefValue("enable_camera") === 'true') {
-                displayBlock('camtablink');
-                camera_GetAddress();
-                if (typeof (getPrefValue("enable_camera.auto_load_camera")) !== 'undefined') {
-                    if (getPrefValue("enable_camera.auto_load_camera") === 'true') {
-                        var saddress = getValue('camera_webaddress')
-                        camera_loadframe();
-                        camoutput = true;
-                    }
-                }
-            } else {
-                id("tablettablink").click();
-                displayNone('camtablink');
-            }
-        } else {
-            id("tablettablink").click();
-            displayNone('camtablink');
-        }
-        if (!camoutput) {
-            id('camera_frame').src = "";
-            displayNone('camera_frame_display');
-            displayNone('camera_detach_button');
-        }
-    }
 
-    if (getPrefValue("enable_DHT") === 'true') {
-        displayBlock('DHT_humidity');
-        displayBlock('DHT_temperature');
-    } else {
-        displayNone('DHT_humidity');
-        displayNone('DHT_temperature');
-    }
-    if (getPrefValue("enable_lock_UI") === 'true') {
-        displayBlock('lock_ui_btn');
-        ontoggleLock(true);
-    } else {
-        displayNone('lock_ui_btn');
-        ontoggleLock(false);
-    }
     handlePing();
 
     if (getPrefValue("enable_grbl_panel") === 'true') {
@@ -439,7 +454,7 @@ const handleCheckboxClick = (checkboxId) => {
     const currentValue = getChecked(checkboxId);
     const newValue = !(currentValue !== "false");
     const pref = getPref(checkboxId);
-    pref.newValue = newValue;
+    pref.value = newValue;
     setChecked(checkboxId, newValue);
     return newValue;
 }
@@ -482,33 +497,7 @@ function applypreferenceslist() {
     //Assign each control state
     translate_text(getPrefValue("language_list")?.valueDef);
     build_HTML_setting_list(current_setting_filter());
-    if (typeof id('camtab') != "undefined") {
-        var camoutput = false;
-        if (typeof (getPrefValue("enable_camera")) !== 'undefined') {
-            if (getPrefValue("enable_camera") === 'true') {
-                displayBlock('camtablink');
-                camera_GetAddress();
-                if (typeof (getPrefValue("enable_camera.auto_load_camera")) !== 'undefined') {
-                    if (getPrefValue("enable_camera.auto_load_camera") === 'true') {
-                        var saddress = getValue('camera_webaddress')
-                        camera_loadframe();
-                        camoutput = true;
-                    }
-                }
-            } else {
-                id("tablettablink").click();
-                displayNone('camtablink');
-            }
-        } else {
-            id("tablettablink").click();
-            displayNone('camtablink');
-        }
-        if (!camoutput) {
-            id('camera_frame').src = "";
-            displayNone('camera_frame_display');
-            displayNone('camera_detach_button');
-        }
-    }
+
     if (getPrefValue("enable_grbl_panel.enable_grbl_probe_panel") === 'true') {
         displayBlock('grblprobetablink');
     } else {
@@ -516,20 +505,6 @@ function applypreferenceslist() {
         displayNone('grblprobetablink');
     }
 
-    if (getPrefValue("enable_DHT") === 'true') {
-        displayBlock('DHT_humidity');
-        displayBlock('DHT_temperature');
-    } else {
-        displayNone('DHT_humidity');
-        displayNone('DHT_temperature');
-    }
-    if (getPrefValue("enable_lock_UI") === 'true') {
-        displayBlock('lock_ui_btn');
-        ontoggleLock(true);
-    } else {
-        displayNone('lock_ui_btn');
-        ontoggleLock(false);
-    }
     handlePing();
     if (getPrefValue("enable_grbl_panel") === 'true') displayFlex('grblPanel');
     else {
@@ -691,13 +666,11 @@ const setStringElem = (idName, memName) => {
 
 function build_dlg_preferences_list() {
     //camera address
-    const camAddress = !!getPrefValue("enable_camera.auto_load_camera") ? decode_entitie(getPrefValue("enable_camera.camera_address")) : "";
+    const camAddress = !!getPrefValue("enable_camera.auto_load_camera") ? decode_entitie(getPrefValue("camera_address")) : "";
     setValue('camera_address', !camAddress);
     setBoolElem('show_camera_panel', 'enable_camera');
     setBoolElem('autoload_camera_panel', 'auto_load_camera');
 
-    setBoolElem('enable_DHT', 'enable_DHT');
-    setBoolElem('enable_lock_UI', 'enable_lock_UI');
     //Monitor connection
     setBoolElem('enable_ping', 'enable_ping');
 
@@ -745,9 +718,7 @@ function closePreferencesDialog() {
     if ((typeof (getPrefValue("language_list")?.valueDef) === 'undefined') ||
         (typeof (getPrefValue("enable_camera")) === 'undefined') ||
         (typeof (getPrefValue("enable_camera.auto_load_camera")) === 'undefined') ||
-        (typeof (getPrefValue("enable_camera.camera_address")) === 'undefined') ||
-        (typeof (getPrefValue("enable_DHT")) === 'undefined') ||
-        (typeof (getPrefValue("enable_lock_UI")) === 'undefined') ||
+        (typeof (getPrefValue("camera_address")) === 'undefined') ||
         (typeof (getPrefValue("enable_ping")) === 'undefined') ||
         (typeof (getPrefValue("enable_redundant")) === 'undefined') ||
         (typeof (getPrefValue("enable_probe")) === 'undefined') ||
@@ -778,11 +749,7 @@ function closePreferencesDialog() {
         //Autoload
         if (getChecked('autoload_camera_panel') != getPrefValue("enable_camera.auto_load_camera")) modified = true;
         //camera address
-        if (getChecked('camera_address') != decode_entitie(getPrefValue("enable_camera.camera_address"))) modified = true;
-        //DHT
-        if (getChecked('enable_DHT') != getPrefValue("enable_DHT")) modified = true;
-        //Lock UI
-        if (getChecked('enable_lock_UI') != getPrefValue("enable_lock_UI")) modified = true;
+        if (getChecked('camera_address') != decode_entitie(getPrefValue("camera_address"))) modified = true;
         //Monitor connection
         if (getChecked('enable_ping') != getPrefValue("enable_ping")) modified = true;
         //probe
@@ -889,8 +856,6 @@ const SavePreferences = (save_current_preferences = false) => {
         saveprefs += "\",\"enable_camera\":\"" + getChecked('show_camera_panel');
         saveprefs += "\",\"auto_load_camera\":\"" + getChecked('autoload_camera_panel');
         saveprefs += "\",\"camera_address\":\"" + HTMLEncode(getValue('camera_address'));
-        saveprefs += "\",\"enable_DHT\":\"" + getChecked('enable_DHT');
-        saveprefs += "\",\"enable_lock_UI\":\"" + getChecked('enable_lock_UI');
         saveprefs += "\",\"enable_ping\":\"" + getChecked('enable_ping');
         saveprefs += "\",\"enable_control_panel\":\"" + getChecked('show_control_panel');
         saveprefs += "\",\"enable_grbl_probe_panel\":\"" + getChecked('show_grbl_probe_tab');

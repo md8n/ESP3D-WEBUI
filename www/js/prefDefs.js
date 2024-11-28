@@ -231,6 +231,9 @@ const buildFieldId = (key, value) => value.fieldId || key;
 
 /** Build a complete set of preferences from the prefDefs.
  * Useful for initialisation of preferences.json
+ * * `defValue` - is the original value as defined in the prefDefs above
+ * * `fileValue` - is the value as currently stored in the value (or that soon will be if the preferences are being saved)
+ * * `value` - is the value as currently set and in use in the UI
  */
 const buildPrefsFromDefs = (prefLevel = prefDefs) => {
     const prefs = {};
@@ -238,8 +241,8 @@ const buildPrefsFromDefs = (prefLevel = prefDefs) => {
         prefs[key] = {
             "valueType": value.valueType,
             "defValue": value.defValue,
+            "fileValue": value.defValue,
             "value": value.defValue,
-            "newValue": value.defValue,
             "fieldId": buildFieldId(key, value),
         };
 

@@ -45,7 +45,7 @@ const setDisplay = (name, val) => {
 /** Set the display style of the element identified by name to 'none' */
 const displayNone = (name) => setDisplay(name, 'none');
 
-/** Set the display style of the element identified by name to 'none' */
+/** Set the display style of the element identified by name to 'block' */
 const displayBlock = (name) => setDisplay(name, 'block');
 
 const disable_items = (item, state) => {
