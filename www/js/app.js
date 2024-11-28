@@ -266,19 +266,3 @@ function show_main_UI() {
 function compareInts(a, b) {
   return a < b ? -1 : a > b ? 1 : 0
 }
-
-function HTMLEncode(str) {
-  var i = str.length,
-    aRet = []
-
-  while (i--) {
-    var iC = str[i].charCodeAt()
-    if (iC < 65 || iC > 127 || (iC > 90 && iC < 97)) {
-      if (iC == 65533) iC = 176
-      aRet[i] = '&#' + iC + ';'
-    } else {
-      aRet[i] = str[i]
-    }
-  }
-  return aRet.join('')
-}

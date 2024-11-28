@@ -122,6 +122,25 @@ const last_ping = (value) => {
   return lastPing;
 }
 
+const HTMLEncode = (str) => {
+  let i = str.length, aRet = [];
+
+  while (i--) {
+    let iC = str[i].charCodeAt();
+    if (iC < 65 || iC > 127 || (iC > 90 && iC < 97)) {
+      if (iC == 65533) {
+        iC = 176;
+      }
+      aRet[i] = `&#${iC};`;
+    } else {
+      aRet[i] = str[i];
+    }
+  }
+
+  return aRet.join('');
+}
+
+
 export {
   classes,
   conErr,
@@ -132,5 +151,6 @@ export {
   getChecked, setChecked,
   getValue, setValue,
   setHTML,
+  HTMLEncode,
   id
 };

@@ -20,13 +20,13 @@ function Monitor_output_autoscrollcmd() {
     id('cmd_content').scrollTop = id('cmd_content').scrollHeight;
 }
 
-function Monitor_check_autoscroll() {
-    if (getChecked('monitor_enable_autoscroll') !== "false") Monitor_output_autoscrollcmd();
+const Monitor_check_autoscroll = () => {
+    if (getChecked('monitor_enable_autoscroll') !== "false") {
+        Monitor_output_autoscrollcmd();
+    }
 }
 
-function Monitor_check_verbose_mode() {
-    Monitor_output_Update();
-}
+const Monitor_check_verbose_mode = () => Monitor_output_Update();
 
 function Monitor_output_Clear() {
     Monitor_output = [];
@@ -153,4 +153,4 @@ function SendCustomCommandFailed(error_code, response) {
     conErr(error_code, decode_entitie(response), "cmd Error");
 }
 
-export { init_command_panel };
+export { init_command_panel, Monitor_check_autoscroll, Monitor_check_verbose_mode };

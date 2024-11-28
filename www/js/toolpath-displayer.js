@@ -962,7 +962,7 @@ ToolpathDisplayer.prototype.cycleCameraAngle = function (gcode, position) {
 
 /** Expects a simple array with 3 elements, and converts it to an xyz object */
 const arrayToXYZ = (arr) => {
-    return {x: a[0], y: a[1], z: a[2]};
+    return {x: arr[0], y: arr[1], z: arr[2]};
 }
 
 const updateGcodeViewerAngle = () => {

@@ -1,6 +1,6 @@
 import { getPrefValue, setPrefValue, SavePreferences } from "./preferencesdlg";
 import { decode_entitie } from "./translate";
-import { displayBlock, displayNone, id } from "./util";
+import { displayBlock, displayNone, id, HTMLEncode } from "./util";
 
 /** Set up the event handlers for the camera tab */
 const cameratab = () => {
