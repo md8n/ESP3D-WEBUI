@@ -10,227 +10,18 @@ import { get_icon_svg } from "./icons";
 import { add_language_list_event_handler, build_language_list, language } from "./languages";
 import { closeModal, setactiveModal, showModal } from "./modaldlg";
 import { ontoggleLock } from "./navbar";
+import { buildFieldId, buildPrefsFromDefs, getPrefDefPath, prefDefs } from "./prefDefs";
 import { build_HTML_setting_list, current_setting_filter } from "./settings";
 import { check_ping } from "./socket";
 import { decode_entitie, translate_text, translate_text_item } from "./translate";
-import { conErr, displayBlock, displayFlex, displayNone, last_ping, getChecked, getValue, id, setChecked, setValue, setHTML } from "./util";
+import { conErr, displayBlock, displayFlex, displayNone, last_ping, getChecked, getValue, id, setChecked, setValue, setHTML, stdErrMsg } from "./util";
 
 //Preferences dialog
 
 const prefFile = "/preferences.json";
+let preferences = buildPrefsFromDefs(prefDefs);
 
-var preferenceslist = [];
 var language_save = language();
-
-let preferences = {
-    "language_list": {
-        "defValue": "en",
-        "valueType": "select",
-        "fieldId": "language_preferences",
-        "label": "language",
-    },
-
-    "enable_lock_UI": { "defValue": false, "valueType": "bool", "label": "Enable lock interface" },
-    "enable_ping": { "defValue": true, "valueType": "bool", "label": "Connection monitoring" },
-    "enable_DHT": { "defValue": false, "valueType": "bool", "label": "Show DHT output" },
-
-    "enable_camera": {
-        "defValue": false,
-        "valueType": "panel",
-        "panel": "camera_preferences",
-        "fieldId": "show_camera_panel",
-        "label": "Show camera panel",
-        "preferences": {
-            "auto_load_camera": { "defValue": false, "valueType": "bool", "label": "Auto load camera" },
-            "camera_address": {
-                "defValue": "",
-                "valueType": "text",
-                "label": "Camera address",
-                "placeholder": "Camera address",
-                "inpClass": "w14",
-            },
-        },
-    },
-    "enable_control_panel": {
-        "defValue": true,
-        "valueType": "panel",
-        "panel": "control_preferences",
-        "fieldId": "show_control_panel",
-        "label": "Show control panel",
-        "preferences": {
-            "interval_positions": {
-                "defValue": 3,
-                "valueType": "int",
-                "units": "sec",
-                "label": "Position Refresh Time",
-                "inpClass": "w4",
-                "min": 1,
-                "max": 99
-            },
-            "xy_feedrate": {
-                "defValue": 2500,
-                "valueType": "int",
-                "units": "mm/min",
-                "label": "XY axis feedrate",
-                "inpClass": "w8",
-                "min": 1
-            },
-            "z_feedrate": {
-                "defValue": 300,
-                "valueType": "int",
-                "units": "mm/min",
-                "label": "Z axis feedrate",
-                "inpClass": "w8",
-                "min": 1
-            },
-            "a_feedrate": {
-                "defValue": 100,
-                "valueType": "int",
-                "units": "mm/min",
-                "label": "A axis feedrate",
-                "inpClass": "w6",
-                "min": 1
-            },
-            "b_feedrate": {
-                "defValue": 100,
-                "valueType": "int",
-                "units": "mm/min",
-                "label": "B axis feedrate",
-                "inpClass": "w6",
-                "min": 1
-            },
-            "c_feedrate": {
-                "defValue": 100,
-                "valueType": "int",
-                "units": "mm/min",
-                "label": "C axis feedrate",
-                "inpClass": "w6",
-                "min": 1
-            },
-        },
-    },
-
-    "enable_grbl_panel": {
-        "defValue": false,
-        "valueType": "panel",
-        "panel": "grbl_preferences",
-        "fieldId": "show_grbl_panel",
-        "label": "Show GRBL panel",
-        "preferences": {
-            "autoreport_interval": {
-                "defValue": 50,
-                "valueType": "int",
-                "units": "ms",
-                "label": "AutoReport Interval",
-                "inpClass": "w6",
-                "min": 0,
-                "max": 30000,
-                valFunc: (value) => {
-                    const vInt = parseInt(value);
-                    return !isNaN(vInt) && (vInt == 0 || (vInt >= 50 && vInt <= 30000))
-                        ? ""
-                        : translate_text_item("Value of auto-report must be 0 or between 50ms and 30000ms !!");
-                },
-            },
-            "interval_status": {
-                "defValue": 3,
-                "valueType": "int",
-                "units": "sec",
-                "label": "Status Refresh Time",
-                "inpClass": "w4",
-                "min": 0,
-                "max": 99
-            },
-            "enable_grbl_probe_panel": {
-                "defValue": false,
-                "valueType": "panel",
-                "panel": "grblprobetablink",
-                "fieldId": "show_grbl_probe_tab",
-                "label": "Show probe panel",
-                "preferences": {
-                    "probemaxtravel": {
-                        "defValue": 40,
-                        "valueType": "float",
-                        "units": "mm",
-                        "label": "Max travel",
-                        "inpClass": "w8",
-                        "min": 1,
-                        "max": 9999
-                    },
-                    "probefeedrate": {
-                        "defValue": 100,
-                        "valueType": "int",
-                        "units": "mm/min",
-                        "label": "Feed rate",
-                        "inpClass": "w8",
-                        "min": 1,
-                        "max": 9999
-                    },
-                    "probetouchplatethickness": {
-                        "defValue": 0.5,
-                        "valueType": "float",
-                        "units": "mm",
-                        "label": "Touch plate thickness",
-                        "inpClass": "w8",
-                        "min": 0,
-                        "max": 9999
-                    },
-                    "proberetract": {
-                        "defValue": 1.0,
-                        "valueType": "int",
-                        "units": "mm",
-                        "label": "Retract distance",
-                        "inpClass": "w8",
-                        "min": 0,
-                        "max": 9999
-                    },
-                }
-            }
-        }
-    },
-
-    "enable_files_panel": {
-        "defValue": true,
-        "valueType": "panel",
-        "panel": "files_preferences",
-        "fieldId": "show_files_panel",
-        "label": "Show files panel",
-        "preferences": {
-            "has_TFT_SD": { "defValue": false, "valueType": "bool", "label": "TFT SD card" },
-            "has_TFT_USB": { "defValue": false, "valueType": "bool", "label": "TFT USB disk" },
-            "f_filters": {
-                "defValue": "gco;gcode;nc",
-                "valueType": "text",
-                "label": "File extensions (use ; to separate)",
-                "inpClass": "w25",
-                valFunc: (value) => {
-                    const extPat = /^[a-z0-9;]*$/i;
-                    return value.match(extPat)
-                        ? ""
-                        : translate_text_item("Only alphanumeric chars separated by ; for extensions filters !!");
-                },
-            },
-        },
-    },
-
-    "enable_commands_panel": {
-        "defValue": true,
-        "valueType": "panel",
-        "panel": "cmd_preferences",
-        "fieldId": "show_commands_panel",
-        "label": "Show commands panel",
-        "preferences": {
-            "enable_autoscroll": { "defValue": true, "valueType": "bool", "label": "Autoscroll" },
-            "enable_verbose_mode": { "defValue": true, "valueType": "bool", "label": "Verbose mode" },
-        },
-    },
-
-    // "enable_redundant": {"defValue": false, "valueType": "bool"},
-    // "enable_probe": {"defValue": false, "valueType": "bool"},
-
-    // "e_feedrate": {"defValue": 400, "valueType": "int"},
-    // "e_distance": {"defValue": 5, "valueType": "int"},
-};
 
 const buildElem = (elem, contents, classVal) => {
     const elemPanel = document.createElement(elem);
@@ -255,16 +46,7 @@ const buildFieldIdAttr = (key, value) => `id="${buildFieldId(key, value)}"`;
 const buildMinMaxAttr = (value) => `${typeof value.min !== "undefined" ? ' min="' + value.min + '"' : ''}${typeof value.max !== "undefined" ? ' max="' + value.max + '"' : ''}`;
 const buildPlaceholderAttr = (value) => value.placeholder ? `placeholder="${value.placeholder}" translateph` : "";
 
-/** Appends the element to the parent element and adds a break after it */
-const appendElemToParent = (parentElem, elem) => {
-    parentElem.append(elem);
-    parentElem.append(document.createElement("br"));
-}
-
 const setGroupId = (elem, fId) => elem.setAttribute("id", `${fId}_group`);
-
-/** Return the `fieldId`, if defined, otherwise return the `key` */
-const buildFieldId = (key, value) => value.fieldId || key;
 
 /** Build an input within a label for a checkbox element */
 const buildCheckBox = (key, value) => {
@@ -281,8 +63,8 @@ const buildPanel = (key, value, parentElem, isFirstLevel = false) => {
     setGroupId(panelCheckBox, fId);
     parentElem.append(panelCheckBox);
 
-    // Preferences is tested for, but we do expect it always to be present
-    if ("preferences" in value) {
+    // prefDefs is tested for, but we do expect it always to be present
+    if ("prefDefs" in value) {
         const pBody = buildDiv("", "panel-body");
         if ("panel" in value) {
             pBody.setAttribute("id", value.panel);
@@ -290,7 +72,7 @@ const buildPanel = (key, value, parentElem, isFirstLevel = false) => {
         panelCheckBox.append(pBody);
         id(fId).addEventListener("click", (event) => togglePanel(fId, value.panel));
         // Loop around for the child elements
-        buildDialog(pBody, value.preferences);
+        buildDialog(pBody, value.prefDefs);
     }
 };
 
@@ -300,7 +82,8 @@ const buildBoolean = (key, value, parentElem) => {
     const panelCheckBox = buildDiv(buildCheckBox(key, value), "checkbox");
 
     setGroupId(panelCheckBox, fId);
-    appendElemToParent(parentElem, panelCheckBox);
+    parentElem.append(panelCheckBox);
+    id(fId).addEventListener("click", (event) => handleCheckboxClick(fId));
 };
 
 /** Generate a mini table for various numeric inputs */
@@ -320,7 +103,7 @@ const buildNumeric = (key, value, parentElem) => {
         }
     }
 
-    appendElemToParent(parentElem, inpNTable);
+    parentElem.append(inpNTable);
     id(fId).addEventListener("change", (event) => CheckValue(fId, value));
 };
 
@@ -333,7 +116,7 @@ const buildText = (key, value, parentElem) => {
     const inpTTable = buildTable(`<tr>${buildTdLabel(key, value)}${inpTTd}</tr>`);
     setGroupId(inpTTable, fId);
 
-    appendElemToParent(parentElem, inpTTable);
+    parentElem.append(inpTTable);
     id(fId).addEventListener("change", (event) => CheckValue(fId, value));
 };
 
@@ -345,11 +128,11 @@ const buildSelect = (key, value, parentElem) => {
     inpSTable.setAttribute("id", key);
     setGroupId(inpSTable, fId);
 
-    appendElemToParent(parentElem, inpSTable);
+    parentElem.append(inpSTable);
     add_language_list_event_handler(fId);
 }
 
-/** Build the dialog from the preferences metadata */
+/** Build the dialog from the prefDefs metadata */
 const buildDialog = (parentElem, definitions, isFirstLevel = false) => {
     for (const [key, value] of Object.entries(definitions)) {
         const fId = buildFieldId(key, value);
@@ -371,34 +154,33 @@ const buildDialog = (parentElem, definitions, isFirstLevel = false) => {
     }
 }
 
-/** Set the values into the dialog. First from the defValue, and then whatever is in the preferences file */
-const setDialog = (parentElem, definitions, isFirstLevel = false) => {
-    for (const [key, value] of Object.entries(definitions)) {
+/** Set the values into the dialog, and then for any checkbox, trigger the default behaviour */
+const setDialog = (prefs) => {
+    for (const [key, value] of Object.entries(prefs)) {
         // It is possible for the field element to not exist based on what happens in buildDialog
-        const fElem = id(buildFieldId(key, value));
+        const fElem = id(value.fieldId);
         switch (value.valueType) {
             case "panel":
             case "bool":
-                // Set the `checked` attribute of a checkbox to the default value
-                // - note that this does not change. The actual value is in the checkbox `value`
                 if (fElem) {
+                    // Set the `checked` attribute of a checkbox to the default value
+                    // - note that `checked` does not change, once set, it functions as the starting default value.
+                    // The actual value is in the checkbox `value`
                     fElem.checked = ("defValue" in value)
-                        ? (typeof value.defValue === "string" && value.defValue.toLowerCase() === "false") ? false : value.defValue
+                        ? (typeof value.defValue === "string" && value.defValue.toLowerCase() === "false") ? false : !!value.defValue
                         : false;
-                    fElem.value = ("defValue" in value) ? value.defValue : "";
+                    // Because `click`ing the checkbox will toggle it (one way or another) we click it twice
+                    fElem.value = (typeof value.value === "string" && value.value.toLowerCase() === "false") ? "false" : `${!!value.value}`;
                     fElem.click();
-                }
-
-                if ("panel" in value && "preferences" in value) {
-                    setDialog(id(value.panel), value.preferences);
+                    fElem.click();
                 }
                 break;
             case "int":
             case "float":
             case "text":
             case "select":
-                if ("defValue" in value && fElem) {
-                    fElem.value = value.defValue;
+                if (fElem) {
+                    fElem.value = value.value;
                 }
                 break;
             default:
@@ -410,39 +192,53 @@ const setDialog = (parentElem, definitions, isFirstLevel = false) => {
 
 /** Initialise the preferences dialog */
 const initpreferences = () => {
-    const prefBody = id("preferences_body");
-    buildDialog(prefBody, preferences, true);
-    setDialog(prefBody, preferences, true);
+    buildDialog(id("preferences_body"), prefDefs, true);
+    setDialog(preferences);
 
+    // And handlers for the other parts of the app
+    setupNavbar();
     // displayNone('DHT_pref_panel');
     // displayBlock('grbl_pref_panel');
     // displayTable('has_TFT_SD');
     // displayTable('has_TFT_USB');
 }
 
-/** Get the part of the preferences structure identified by the name supplied */
-const getPrefPath = (prefName) => {
-    const prefPath = prefName.trim().replace(".", ".preferences.").replace(".preferences.preferences.", ".preferences.");
-    let pref = preferences;
-    for (let ix = 0; ix < prefPath.length; ix++) {
-        if (typeof (pref[prefPath[ix]]) === "undefined") {
-            return undefined;
+const setupNavbar = () => {
+    id("enable_DHT").addEventListener("click", (event) => () => {
+        if (getPrefValue("enable_DHT")) {
+            displayBlock('DHT_humidity');
+            displayBlock('DHT_temperature');
+        } else {
+            displayNone('DHT_humidity');
+            displayNone('DHT_temperature');
         }
-        pref = pref[prefPath[ix]];
+    });
+}
+
+/** Get the named preference object */
+const getPref = (prefName) => {
+    let pref = preferences[prefName];
+    if (!pref) {
+        // try to find it by looking for the fieldId
+        for (const [key, value] of Object.entries(preferences)) {
+            if (value.fieldId === prefName) {
+                pref = value;
+                break;
+            }
+        }
+    }
+    if (!pref) {
+        console.error(stdErrMsg("Unknown Preference", `'${prefName}' not found as a preference key or as the fieldId within a preference value`));
+        return undefined;
     }
     return pref;
 }
 
+/** Get the named preference value */
 const getPrefValue = (prefName) => {
-    let pref = getPrefPath(prefName);
-    if (typeof pref === "undefined") {
+    let pref = getPref(prefName);
+    if (!pref) {
         return undefined;
-    }
-    if (typeof pref.value === "undefined") {
-        if (typeof pref.defValue === "undefined") {
-            return undefined;
-        }
-        pref.value = pref.defValue;
     }
     return pref.value;
 }
@@ -451,7 +247,7 @@ const getPrefValue = (prefName) => {
  * Returns true for success, false for failure - usually because the preference item does not exist
   */
 const setPrefValue = (prefName, value) => {
-    let pref = getPrefPath(prefName);
+    let pref = getPrefDefPath(prefName);
     if (typeof pref === "undefined") {
         return false;
     }
@@ -481,155 +277,155 @@ const handlePing = () => {
     }
 }
 
-translate_text(getPrefValue("language_list")?.valueDef);
-build_HTML_setting_list(current_setting_filter());
-if (typeof id('camtab') != "undefined") {
-    var camoutput = false;
-    if (typeof (getPrefValue("enable_camera")) !== 'undefined') {
-        if (getPrefValue("enable_camera") === 'true') {
-            displayBlock('camtablink');
-            camera_GetAddress();
-            if (typeof (getPrefValue("enable_camera.auto_load_camera")) !== 'undefined') {
-                if (getPrefValue("enable_camera.auto_load_camera") === 'true') {
-                    var saddress = getValue('camera_webaddress')
-                    camera_loadframe();
-                    camoutput = true;
+const bleh = () => {
+    build_HTML_setting_list(current_setting_filter());
+    if (typeof id('camtab') != "undefined") {
+        var camoutput = false;
+        if (typeof (getPrefValue("enable_camera")) !== 'undefined') {
+            if (getPrefValue("enable_camera") === 'true') {
+                displayBlock('camtablink');
+                camera_GetAddress();
+                if (typeof (getPrefValue("enable_camera.auto_load_camera")) !== 'undefined') {
+                    if (getPrefValue("enable_camera.auto_load_camera") === 'true') {
+                        var saddress = getValue('camera_webaddress')
+                        camera_loadframe();
+                        camoutput = true;
+                    }
                 }
+            } else {
+                id("tablettablink").click();
+                displayNone('camtablink');
             }
         } else {
             id("tablettablink").click();
             displayNone('camtablink');
         }
+        if (!camoutput) {
+            id('camera_frame').src = "";
+            displayNone('camera_frame_display');
+            displayNone('camera_detach_button');
+        }
+    }
+
+    if (getPrefValue("enable_DHT") === 'true') {
+        displayBlock('DHT_humidity');
+        displayBlock('DHT_temperature');
     } else {
-        id("tablettablink").click();
-        displayNone('camtablink');
+        displayNone('DHT_humidity');
+        displayNone('DHT_temperature');
     }
-    if (!camoutput) {
-        id('camera_frame').src = "";
-        displayNone('camera_frame_display');
-        displayNone('camera_detach_button');
+    if (getPrefValue("enable_lock_UI") === 'true') {
+        displayBlock('lock_ui_btn');
+        ontoggleLock(true);
+    } else {
+        displayNone('lock_ui_btn');
+        ontoggleLock(false);
     }
+    handlePing();
+
+    if (getPrefValue("enable_grbl_panel") === 'true') {
+        displayFlex('grblPanel');
+        grblpanel();
+    } else {
+        displayNone('grblPanel');
+        reportNone(false);
+    }
+
+    // if (getPrefValue("enable_control_panel") === 'true') displayFlex('controlPanel');
+    // else {
+    //     displayNone('controlPanel');
+    //     on_autocheck_position(false);
+    // }
+    if (getPrefValue("enable_commands_panel.enable_verbose_mode") === 'true') {
+        setChecked('monitor_enable_verbose_mode', true);
+        Monitor_check_verbose_mode();
+    } else setChecked('monitor_enable_verbose_mode', false);
+
+    if (getPrefValue("enable_files_panel") === 'true') displayFlex('filesPanel');
+    else displayNone('filesPanel');
+
+    if (getPrefValue("enable_files_panel.has_TFT_SD") === 'true') {
+        displayFlex('files_refresh_tft_sd');
+    }
+    else {
+        displayNone('files_refresh_tft_sd');
+    }
+
+    if (getPrefValue("enable_files_panel.has_TFT_USB") === 'true') {
+        displayFlex('files_refresh_tft_usb');
+    }
+    else {
+        displayNone('files_refresh_tft_usb');
+    }
+
+    if ((getPrefValue("enable_files_panel.has_TFT_SD") === 'true') || (getPrefValue("enable_files_panel.has_TFT_USB") === 'true')) {
+        displayFlex('files_refresh_printer_sd');
+        displayNone('files_refresh_btn');
+    } else {
+        displayNone('files_refresh_printer_sd');
+        displayFlex('files_refresh_btn');
+    }
+
+    if (getPrefValue("enable_commands_panel") === 'true') {
+        displayFlex('commandsPanel');
+        if (getPrefValue("enable_commands_panel.enable_autoscroll") === 'true') {
+            setChecked('monitor_enable_autoscroll', true);
+            Monitor_check_autoscroll();
+        } else setChecked('monitor_enable_autoscroll', false);
+    } else displayNone('commandsPanel');
+
+    var autoReportValue = parseInt(getPrefValue("enable_grbl_panel.autoreport_interval"));
+    var autoReportChanged = getValue('autoreport_interval') !== autoReportValue;
+    if (autoReportChanged) {
+        setValue('autoreport_interval', autoReportValue);
+    }
+    var statusIntervalValue = parseInt(getPrefValue("enable_grbl_panel.interval_status"));
+    let statusIntervalChanged = getValue('interval_status') !== statusIntervalValue;
+    if (statusIntervalChanged) {
+        setValue('interval_status', statusIntervalValue);
+    }
+    if (autoReportChanged || statusIntervalChanged) {
+        onAutoReportIntervalChange();
+    }
+
+    // setValue('interval_positions', parseInt(getPrefValue("enable_control_panel.interval_positions")));
+    // setValue('xy_feedrate', parseInt(getPrefValue("enable_control_panel.xy_feedrate")));
+    // setValue('z_feedrate', parseInt(getPrefValue("enable_control_panel.z_feedrate")));
+
+    let axis_Z_feedrate, axis_A_feedrate, axis_B_feedrate, axis_C_feedrate;
+
+    // if (grblaxis() > 2) axis_Z_feedrate = parseInt(getPrefValue("enable_control_panel.z_feedrate"));
+    // if (grblaxis() > 3) axis_A_feedrate = parseInt(getPrefValue("enable_control_panel.a_feedrate"));
+    // if (grblaxis() > 4) axis_B_feedrate = parseInt(getPrefValue("enable_control_panel.b_feedrate"));
+    // if (grblaxis() > 5) axis_C_feedrate = parseInt(getPrefValue("enable_control_panel.c_feedrate"));
+
+    // if (grblaxis() > 3) {
+    //     var letter = getValue('control_select_axis');
+    //     switch (letter) {
+    //         case "Z":
+    //             setValue('z_feedrate', axis_Z_feedrate);
+    //             break;
+    //         case "A":
+    //             setValue('a_feedrate', axis_A_feedrate);
+    //             break;
+    //         case "B":
+    //             setValue('b_feedrate', axis_B_feedrate);
+    //             break;
+    //         case "C":
+    //             setValue('c_feedrate', axis_C_feedrate);
+    //             break;
+    //     }
+    // }
+
+    // setValue('probemaxtravel', parseFloat(getPrefValue("enable_grbl_panel.enable_grbl_probe_panel.probemaxtravel")));
+    // setValue('probefeedrate', parseInt(getPrefValue("enable_grbl_panel.enable_grbl_probe_panel.probefeedrate")));
+    // setValue('proberetract', parseFloat(getPrefValue("enable_grbl_panel.enable_grbl_probe_panel.proberetract")));
+    // setValue('probetouchplatethickness', parseFloat(getPrefValue("enable_grbl_panel.enable_grbl_probe_panel.probetouchplatethickness")));
+    // build_file_filter_list(getPrefValue("enable_files_panel.f_filters"));
 }
-
-if (getPrefValue("enable_DHT") === 'true') {
-    displayBlock('DHT_humidity');
-    displayBlock('DHT_temperature');
-} else {
-    displayNone('DHT_humidity');
-    displayNone('DHT_temperature');
-}
-if (getPrefValue("enable_lock_UI") === 'true') {
-    displayBlock('lock_ui_btn');
-    ontoggleLock(true);
-} else {
-    displayNone('lock_ui_btn');
-    ontoggleLock(false);
-}
-handlePing();
-
-if (getPrefValue("enable_grbl_panel") === 'true') {
-    displayFlex('grblPanel');
-    grblpanel();
-} else {
-    displayNone('grblPanel');
-    reportNone(false);
-}
-
-// if (getPrefValue("enable_control_panel") === 'true') displayFlex('controlPanel');
-// else {
-//     displayNone('controlPanel');
-//     on_autocheck_position(false);
-// }
-if (getPrefValue("enable_commands_panel.enable_verbose_mode") === 'true') {
-    setChecked('monitor_enable_verbose_mode', true);
-    Monitor_check_verbose_mode();
-} else setChecked('monitor_enable_verbose_mode', false);
-
-if (getPrefValue("enable_files_panel") === 'true') displayFlex('filesPanel');
-else displayNone('filesPanel');
-
-if (getPrefValue("enable_files_panel.has_TFT_SD") === 'true') {
-    displayFlex('files_refresh_tft_sd');
-}
-else {
-    displayNone('files_refresh_tft_sd');
-}
-
-if (getPrefValue("enable_files_panel.has_TFT_USB") === 'true') {
-    displayFlex('files_refresh_tft_usb');
-}
-else {
-    displayNone('files_refresh_tft_usb');
-}
-
-if ((getPrefValue("enable_files_panel.has_TFT_SD") === 'true') || (getPrefValue("enable_files_panel.has_TFT_USB") === 'true')) {
-    displayFlex('files_refresh_printer_sd');
-    displayNone('files_refresh_btn');
-} else {
-    displayNone('files_refresh_printer_sd');
-    displayFlex('files_refresh_btn');
-}
-
-if (getPrefValue("enable_commands_panel") === 'true') {
-    displayFlex('commandsPanel');
-    if (getPrefValue("enable_commands_panel.enable_autoscroll") === 'true') {
-        setChecked('monitor_enable_autoscroll', true);
-        Monitor_check_autoscroll();
-    } else setChecked('monitor_enable_autoscroll', false);
-} else displayNone('commandsPanel');
-
-var autoReportValue = parseInt(getPrefValue("enable_grbl_panel.autoreport_interval"));
-var autoReportChanged = getValue('autoreport_interval') !== autoReportValue;
-if (autoReportChanged) {
-    setValue('autoreport_interval', autoReportValue);
-}
-var statusIntervalValue = parseInt(getPrefValue("enable_grbl_panel.interval_status"));
-let statusIntervalChanged = getValue('interval_status') !== statusIntervalValue;
-if (statusIntervalChanged) {
-    setValue('interval_status', statusIntervalValue);
-}
-if (autoReportChanged || statusIntervalChanged) {
-    onAutoReportIntervalChange();
-}
-
-// setValue('interval_positions', parseInt(getPrefValue("enable_control_panel.interval_positions")));
-// setValue('xy_feedrate', parseInt(getPrefValue("enable_control_panel.xy_feedrate")));
-// setValue('z_feedrate', parseInt(getPrefValue("enable_control_panel.z_feedrate")));
-
-let axis_Z_feedrate, axis_A_feedrate, axis_B_feedrate, axis_C_feedrate;
-
-// if (grblaxis() > 2) axis_Z_feedrate = parseInt(getPrefValue("enable_control_panel.z_feedrate"));
-// if (grblaxis() > 3) axis_A_feedrate = parseInt(getPrefValue("enable_control_panel.a_feedrate"));
-// if (grblaxis() > 4) axis_B_feedrate = parseInt(getPrefValue("enable_control_panel.b_feedrate"));
-// if (grblaxis() > 5) axis_C_feedrate = parseInt(getPrefValue("enable_control_panel.c_feedrate"));
-
-// if (grblaxis() > 3) {
-//     var letter = getValue('control_select_axis');
-//     switch (letter) {
-//         case "Z":
-//             setValue('z_feedrate', axis_Z_feedrate);
-//             break;
-//         case "A":
-//             setValue('a_feedrate', axis_A_feedrate);
-//             break;
-//         case "B":
-//             setValue('b_feedrate', axis_B_feedrate);
-//             break;
-//         case "C":
-//             setValue('c_feedrate', axis_C_feedrate);
-//             break;
-//     }
-// }
-
-// setValue('probemaxtravel', parseFloat(getPrefValue("enable_grbl_panel.enable_grbl_probe_panel.probemaxtravel")));
-// setValue('probefeedrate', parseInt(getPrefValue("enable_grbl_panel.enable_grbl_probe_panel.probefeedrate")));
-// setValue('proberetract', parseFloat(getPrefValue("enable_grbl_panel.enable_grbl_probe_panel.proberetract")));
-// setValue('probetouchplatethickness', parseFloat(getPrefValue("enable_grbl_panel.enable_grbl_probe_panel.probetouchplatethickness")));
-// build_file_filter_list(getPrefValue("enable_files_panel.f_filters"));
 
 function getpreferenceslist() {
     var url = prefFile;
-    preferenceslist = [];
     //removeIf(production)
     var response = defaultpreferenceslist;
     processPreferencesGetSuccess(response);
@@ -638,11 +434,18 @@ function getpreferenceslist() {
     SendGetHttp(url, processPreferencesGetSuccess, processPreferencesGetFailed);
 }
 
+/** Gets the checkbox's current value, reverses it, and stores the reversed value in the preferences */
+const handleCheckboxClick = (checkboxId) => {
+    const currentValue = getChecked(checkboxId);
+    const newValue = !(currentValue !== "false");
+    const pref = getPref(checkboxId);
+    pref.newValue = newValue;
+    setChecked(checkboxId, newValue);
+    return newValue;
+}
+
 const togglePanel = (checkboxId, panelId) => {
-    const currentValue = getChecked(checkboxId) !== "false";
-    // toggle the currentValue, and do all the rest
-    setChecked(checkboxId, !currentValue);
-    if (!currentValue) {
+    if (handleCheckboxClick(checkboxId)) {
         displayBlock(panelId);
     } else {
         displayNone(panelId);
@@ -1064,9 +867,9 @@ const SavePreferences = (save_current_preferences = false) => {
     console.log("save prefs");
 
     if (!!save_current_preferences) {
-        if (!CheckValue("autoreport_interval", getPrefPath("enable_grbl_panel.autoreport_interval")) ||
-            !CheckValue("interval_status", getPrefPath("enable_grbl_panel.interval_status")) ||
-            !CheckValue("interval_positions", getPrefPath("enable_control_panel.interval_positions")) ||
+        if (!CheckValue("autoreport_interval", getPrefDefPath("enable_grbl_panel.autoreport_interval")) ||
+            !CheckValue("interval_status", getPrefDefPath("enable_grbl_panel.interval_status")) ||
+            !CheckValue("interval_positions", getPrefDefPath("enable_control_panel.interval_positions")) ||
             !CheckValue("xy_feedrate") ||
             !CheckValue("f_filters") ||
             !CheckValue("probemaxtravel") ||
@@ -1218,7 +1021,7 @@ const CheckValue = (fId, valueDef) => {
                     console.log(`${key}: ${JSON.stringify(value)}`);
                     break;
             }
-        }    
+        }
     }
 
     // Old skul hack to remove unwanted entries from an array, faster than filter
@@ -1252,4 +1055,4 @@ const CheckValue = (fId, valueDef) => {
     return errorList.length == 0;
 }
 
-export { enable_ping, getPrefValue, setPrefValue, initpreferences, showpreferencesdlg, SavePreferences };
+export { enable_ping, getPref, getPrefValue, setPrefValue, initpreferences, showpreferencesdlg, SavePreferences };

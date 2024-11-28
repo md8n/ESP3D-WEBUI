@@ -2,7 +2,13 @@ import { get_icon_svg } from "./icons";
 import { add_language_list_event_handler, build_language_list, language } from "./languages";
 import { closeModal, setactiveModal, showModal } from "./modaldlg";
 import { setPrefValue, SavePreferences } from "./preferencesdlg";
-import { build_control_from_pos, build_HTML_setting_list, current_setting_filter, setup_is_done } from "./settings";
+import {
+    build_control_from_pos,
+    build_HTML_setting_list,
+    current_setting_filter,
+    define_esp_role, define_esp_role_from_pos,
+    setup_is_done
+} from "./settings";
 import { can_revert_wizard, openstep } from "./wizard";
 import { translate_text, translate_text_item } from "./translate";
 import { displayBlock, displayNone, id, setHTML } from "./util";
@@ -22,8 +28,8 @@ function table(value) {
 function heading(label) {
     return "<h4>" + translate_text_item(label) + "</h4><hr>";
 }
-function item(label, pos, extra) {
-    return translate_text_item(label) + table(build_control_from_pos(pos, extra));
+function buildControlItem(label, pos, actions, extra) {
+    return translate_text_item(label) + table(build_control_from_pos(pos, actions, extra));
 }
 function wizardDone(element) {
     id(element).className = id(element).className.replace(" wizard_done", "");
@@ -89,7 +95,7 @@ const setupdlg = () => {
     displayNone("wizard_line4")
     disableStep("wizard_line4", "endsteplink");
 
-    var content = table( td(get_icon_svg("flag") + "&nbsp;") + td(build_language_list("language_selection")));
+    var content = table(td(get_icon_svg("flag") + "&nbsp;") + td(build_language_list("language_selection")));
     setHTML("setup_langage_list", content);
     add_language_list_event_handler("language_selection");
 
@@ -136,51 +142,66 @@ function continue_setup_wizard() {
     }
 }
 
+const addActions = (actions) => {
+    actions.forEach((action) => {
+        id(action.id).addEventListener(action.type, (event) => action.method);
+    });
+}
+
 function enablestep1() {
     closeStep("startsteplink")
     setHTML("wizard_button", translate_text_item("Continue"));
     openStep("wizard_line1", "step1link");
+
+    const actions = [];
+ 
     let content = heading("FluidNC Settings");
-    content += item("Define ESP name:", EP_HOSTNAME);
+    content += buildControlItem("Define ESP name:", EP_HOSTNAME, actions);
 
     setHTML("step1", content);
+    addActions(actions);
+
     id("step1link").click();
 }
 
 function enablestep2() {
+    const actions = [];
+
     var content = "";
     closeStep("step1link");
     openStep("wizard_line2", "step2link");
     content += heading("WiFi Configuration");
 
-    content += item("Define ESP role:", EP_WIFI_MODE, "define_esp_role");
+    content += buildControlItem("Define ESP role:", EP_WIFI_MODE, actions, define_esp_role);
     content += translate_text_item("AP define access point / STA allows to join existing network") + "<br>";
     content += spacer();
 
     content += div("setup_STA");
 
-    content += item("What access point ESP need to be connected to:", EP_STA_SSID);
+    content += buildControlItem("What access point ESP need to be connected to:", EP_STA_SSID, actions);
     content += translate_text_item("You can use scan button, to list available access points.") + "<br>";
     content += spacer();
 
-    content += item("Password to join access point:", EP_STA_PASSWORD);
+    content += buildControlItem("Password to join access point:", EP_STA_PASSWORD, actions);
     content += endDiv();
 
     content += div("setup_AP");
 
-    content += item("What is ESP access point SSID:", EP_AP_SSID);
+    content += buildControlItem("What is ESP access point SSID:", EP_AP_SSID, actions);
     content += spacer();
 
-    content += item("Password for access point:", EP_AP_PASSWORD);
+    content += buildControlItem("Password for access point:", EP_AP_PASSWORD, actions);
 
     content += endDiv();
 
     setHTML("step2", content);
+    addActions(actions);
     define_esp_role_from_pos(EP_WIFI_MODE);
+
     id("step2link").click();
 }
 
-function define_sd_role(index) {
+const define_sd_role = (index) => {
     if (setting_configList[index].defaultvalue == 1) {
         displayBlock("setup_SD");
         displayNone("setup_primary_SD");;
@@ -191,29 +212,33 @@ function define_sd_role(index) {
 }
 
 function enablestep3() {
+    const actions = [];
+
     var content = "";
     closeStep("step2link");
     openStep("wizard_line3", "step3link");
     content += heading("SD Card Configuration");
-    content += item("Is ESP connected to SD card:", EP_IS_DIRECT_SD, "define_sd_role");
+    content += buildControlItem("Is ESP connected to SD card:", EP_IS_DIRECT_SD, actions, define_sd_role);
     content += spacer();
 
     content += div("setup_SD");
-    content += item("Check update using direct SD access:", EP_DIRECT_SD_CHECK);
+    content += buildControlItem("Check update using direct SD access:", EP_DIRECT_SD_CHECK, actions);
     content += spacer();
 
     content += div("setup_primary_SD");
-    content += item("SD card connected to ESP", EP_PRIMARY_SD);
+    content += buildControlItem("SD card connected to ESP", EP_PRIMARY_SD, actions);
     content += spacer();
 
-    content += item("SD card connected to printer", EP_SECONDARY_SD);
+    content += buildControlItem("SD card connected to printer", EP_SECONDARY_SD, actions);
     content += spacer();
     content += endDiv();
 
     content += endDiv();
 
     setHTML("step3", content);
+    addActions(actions);
     define_sd_role(get_index_from_eeprom_pos(EP_IS_DIRECT_SD));
+
     id("step3link").click();
 }
 

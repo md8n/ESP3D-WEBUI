@@ -184,6 +184,14 @@ button.center {
     animation-delay: 500ms;
 }
 
+/* overwrite what's in bootstrap */
+.panel-heading, .modal-body > .checkbox {
+    padding: 5px 15px;
+}
+.panel-body > table+table {
+    margin-top: 5px;
+}
+
 .panel-min-width {
     min-width: 350px;
 }

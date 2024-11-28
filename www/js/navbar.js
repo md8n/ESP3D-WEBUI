@@ -44,7 +44,10 @@ const enableItem = (itemName) => {
 }
 
 const ontoggleLock = (forcevalue) => {
-    if (typeof forcevalue != 'undefined') setChecked('lock_UI', forcevalue);
+    if (typeof forcevalue != 'undefined') {
+        setChecked('lock_UI', forcevalue);
+    }
+
     const jogUIElem = id('JogUI');
     if (getChecked('lock_UI') !== "false") {
         setHTML('lock_UI_btn_txt', translate_text_item('Unlock interface'));

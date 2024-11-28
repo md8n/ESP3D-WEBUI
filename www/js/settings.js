@@ -123,7 +123,7 @@ function update_UI_setting() {
 }
 
 /** to generate setting editor in setting or setup */
-const build_control_from_index = (i, extra_set_function) => {
+const build_control_from_index = (i, actions, extra_set_function = (i) => {}) => {
   let content = '<table>';
   if (i < scl.length && i > -1) {
     nbsub = scl[i].type == 'F' ? scl[i].Options.length : 1
@@ -138,13 +138,15 @@ const build_control_from_index = (i, extra_set_function) => {
         content += '</td><td>&nbsp;</td><td>'
       }
 
-      content += `<div id='${sId(i, j, "status_")}' class='form-group has-feedback' style='margin: auto;'>`
+      let statId = sId(i, j, "status_");
+      content += `<div id='${statId}' class='form-group has-feedback' style='margin: auto;'>`
       content += "<div class='item-flex-row'>"
       content += '<table><tr><td>'
       content += "<div class='input-group'>"
       content += "<div class='input-group-btn'>"
       // setting_revert_to_default() does not work for FluidNC, which cannot report default values
-      // content += "<button class='btn btn-default btn-svg' onclick='setting_revert_to_default(" + i + "," + j + ")' >";
+      // content += `<button id='btn_revert_setting_${statId}' class='btn btn-default btn-svg'>`;
+      // actions.push({id: `btn_revert_setting_${statId}`, type: "click", method: setting_revert_to_default(i, j)});
       // content += get_icon_svg("repeat");
       // content += "</button>";
       content += '</div>'
@@ -175,15 +177,14 @@ const build_control_from_index = (i, extra_set_function) => {
       content += "<div class='input-group'>"
       content += "<input class='hide_it'></input>"
       content += "<div class='input-group-btn'>"
-      content += `<button id='${sId(i, j, "btn_")}' class='btn btn-default' onclick='settingsetvalue(${params});' `;
-      if (typeof extra_set_function != 'undefined') {
-        content += `${extra_set_function}(${i});`;
-      }
-      content += "' translate english_content='Set' >" + translate_text_item('Set') + '</button>'
+      let btnId = sId(i, j, "btn_");
+      content += `<button id='${btnId}' class='btn btn-default' translate english_content='Set' >${translate_text_item('Set')}</button>`;
+      actions.push({id: btnId, type: "click", method: (i, j) => {
+        settingsetvalue(i, j);
+        extra_set_function(i);
+      }});
       if (scl[i].pos == EP_STA_SSID) {
-        content += `<button class='btn btn-default btn-svg' onclick='scanwifidlg("${i}","${j}")'>`
-        content += get_icon_svg('search')
-        content += '</button>'
+        content += `<button class='btn btn-default btn-svg' onclick='scanwifidlg("${i}","${j}")'>${get_icon_svg('search')}</button>`
       }
       content += '</div>'
       content += '</div>'
@@ -208,7 +209,7 @@ function get_index_from_eeprom_pos(pos) {
   return -1;
 }
 
-const build_control_from_pos = (pos, extra) => build_control_from_index(get_index_from_eeprom_pos(pos), extra);
+const build_control_from_pos = (pos, actions, extra) => build_control_from_index(get_index_from_eeprom_pos(pos), actions, extra);
 
 /** Send a command to call Config/Overwrite.
  * 
@@ -225,6 +226,8 @@ const build_HTML_setting_list = (filter) => {
   }
 
   const buildTR = (tds) => `<tr>${tds}</tr>`;
+
+  const actions = [];
 
   var content = buildTR('<td colspan="2">Click "Set" after changing a value to set it</td>');
   if (filter === 'tree') {
@@ -248,16 +251,16 @@ const build_HTML_setting_list = (filter) => {
         </div>`;
       }
       tr += '</td>\n';
-      tr += `<td style='vertical-align:middle'><table><tr><td>${build_control_from_index(i)}</td></tr></table></td>\n`;
+      tr += `<td style='vertical-align:middle'><table><tr><td>${build_control_from_index(i, actions)}</td></tr></table></td>\n`;
       tr += '</tr>\n';
       content += tr;
     }
   }
   // From settingstab
-  const settingstab_list_elem = id('settings_list_data');
-  if (settingstab_list_elem) {
-      settingstab_list_elem.innerHTML = content;
-  }
+  setHTML('settings_list_data', content);
+  actions.forEach((action) => {
+    id(action.id).addEventListener(action.type, (event) => action.method);
+  });
   if (filter === 'tree') {
     document.querySelector('#setting_32_0').value = result;
   }
@@ -588,7 +591,7 @@ function process_restart_esp(answer) {
   }
 }
 
-function define_esp_role(index) {
+const define_esp_role = (index) => {
   switch (Number(defval(index))) {
     case SETTINGS_FALLBACK_MODE:
       displayBlock('setup_STA')
@@ -608,8 +611,17 @@ function define_esp_role(index) {
       break
   }
 }
-function define_esp_role_from_pos(pos) {
-  define_esp_role(get_index_from_eeprom_pos(pos))
-}
 
-export { build_control_from_pos, build_HTML_setting_list, current_setting_filter, refreshSettings, restart_esp, saveMaslowYaml, setup_is_done };
+const define_esp_role_from_pos = (pos) => define_esp_role(get_index_from_eeprom_pos(pos));
+
+export {
+  build_control_from_pos,
+  build_HTML_setting_list,
+  current_setting_filter,
+  define_esp_role,
+  define_esp_role_from_pos,
+  refreshSettings,
+  restart_esp,
+  saveMaslowYaml,
+  setup_is_done
+};
