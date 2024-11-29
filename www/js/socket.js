@@ -3,9 +3,9 @@ import { on_autocheck_position } from "./controls";
 import { grblHandleMessage, reportNone } from "./grbl";
 import { clear_cmd_list, http_communication_locked } from "./http";
 import { enable_ping } from "./preferencesdlg";
-import { decode_entitie, translate_text_item } from "./translate";
+import { translate_text_item } from "./translate";
 import { UIdisableddlg } from "./UIdisableddlg";
-import { id, last_ping, setHTML } from "./util";
+import { id, HTMLDecode, last_ping, setHTML } from "./util";
 
 let asyncWebComm = false;
 let convertDHT2Fahrenheit = false;
@@ -52,7 +52,7 @@ const Disable_interface = (lostconnection) => {
         event_source.removeEventListener('DHT', DHT_events, false)
     }
     ws_source.close()
-    document.title += `('${decode_entitie(translate_text_item('Disabled'))})`
+    document.title += `('${HTMLDecode(translate_text_item('Disabled'))})`
     UIdisableddlg(lostcon)
 }
 

@@ -49,7 +49,7 @@ const displayNone = (name) => setDisplay(name, 'none');
 const displayBlock = (name) => setDisplay(name, 'block');
 
 const disable_items = (item, state) => {
-  if (!item) { 
+  if (!item) {
     return;
   }
   const liste = item.getElementsByTagName('*');
@@ -109,8 +109,8 @@ const stdErrMsg = (error_code, response = "", error_prefix = "Error") => `${erro
  */
 const conErr = (error_code, response, error_prefix = "Error") => {
   const errMsg = (!response && error_prefix === "Error")
-      ? error_code
-      : stdErrMsg(error_code, response || "", error_prefix);
+    ? error_code
+    : stdErrMsg(error_code, response || "", error_prefix);
   console.error(errMsg);
 }
 
@@ -122,24 +122,31 @@ const last_ping = (value) => {
   return lastPing;
 }
 
-const HTMLEncode = (str) => {
-  let i = str.length, aRet = [];
-
-  while (i--) {
-    let iC = str[i].charCodeAt();
+/** HTML encode the supplied string */
+const HTMLEncode = (value) => {
+  const valChars = [...value];
+  const aRet = valChars.map((vc) => {
+    const iC = vc.charCodeAt();
     if (iC < 65 || iC > 127 || (iC > 90 && iC < 97)) {
       if (iC == 65533) {
         iC = 176;
       }
-      aRet[i] = `&#${iC};`;
-    } else {
-      aRet[i] = str[i];
+      return `&#${iC};`;
     }
-  }
+    return vc;
+  });
 
   return aRet.join('');
 }
 
+/** Decode an HTML encoded string */
+const HTMLDecode = (value) => {
+  var tmpelement = document.createElement('div');
+  tmpelement.innerHTML = value;
+  value = tmpelement.textContent;
+  tmpelement.textContent = '';
+  return value;
+}
 
 export {
   classes,
@@ -151,6 +158,6 @@ export {
   getChecked, setChecked,
   getValue, setValue,
   setHTML,
-  HTMLEncode,
+  HTMLEncode, HTMLDecode,
   id
 };

@@ -1,7 +1,7 @@
 import { Monitor_output_Update } from "./commands";
 import { SendGetHttp } from "./http";
-import { decode_entitie, translate_text_item } from "./translate";
-import { conErr, stdErrMsg } from "./util";
+import { translate_text_item } from "./translate";
+import { conErr, HTMLDecode, stdErrMsg } from "./util";
 
 var grbl_processfn = null;
 var grbl_errorfn = null;
@@ -71,8 +71,8 @@ function SendPrinterCommandSuccess(response) {
 function SendPrinterCommandFailed(error_code, response) {
     let errMsg = (error_code == 0)
         ? translate_text_item("Connection error")
-        : stdErrMsg(error_code, decode_entitie(response), translate_text_item("Error"));
+        : stdErrMsg(error_code, HTMLDecode(response), translate_text_item("Error"));
     Monitor_output_Update(errMsg + "\n");
 
-    conErr(error_code, decode_entitie(response), "printer cmd Error");
+    conErr(error_code, HTMLDecode(response), "printer cmd Error");
 }

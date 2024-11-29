@@ -1,4 +1,6 @@
-import { language, language_list } from "./languages";
+import { language_list } from "./languages";
+import { getPrefValue } from "./preferencesdlg";
+import { HTMLDecode } from "./util";
 
 
 //removeIf(de_lang_disabled)
@@ -45,20 +47,10 @@ import { zh_CN_trans } from "./language/zh_CN";
 var translated_list = [];
 //endRemoveIf(production)
 
-
-const decode_entitie = (str_text) => {
-    var tmpelement = document.createElement('div')
-    tmpelement.innerHTML = str_text
-    str_text = tmpelement.textContent
-    tmpelement.textContent = ''
-    return str_text
-}
-
 /** Set up text translation to the selected language */
 const translate_text = (lang) => {
     var currenttrans = {};
     var translated_content = "";
-    language(lang);
     for (var lang_i = 0; lang_i < language_list.length; lang_i++) {
         if (language_list[lang_i][0] == lang) {
             currenttrans = eval(language_list[lang_i][2]);
@@ -100,7 +92,7 @@ const translate_text = (lang) => {
             }
             content = All[i].getAttribute('english_content');
 
-            translated_content = decode_entitie(translate_text_item(content));
+            translated_content = HTMLDecode(translate_text_item(content));
             All[i].setAttribute('placeholder', translated_content)
         }
     }
@@ -113,7 +105,7 @@ const translate_text_item = (item_text, withtag) => {
     const with_tag = (typeof withtag != "undefined") ? !!withtag : false;
 
     for (var lang_i = 0; lang_i < language_list.length; lang_i++) {
-        if (language_list[lang_i][0] == language()) {
+        if (language_list[lang_i][0] == getPrefValue("language_list")) {
             currenttrans = eval(language_list[lang_i][2]);
         }
     }
@@ -128,4 +120,4 @@ const translate_text_item = (item_text, withtag) => {
     return translated_content;
 }
 
-export { decode_entitie, translate_text, translate_text_item };
+export { translate_text, translate_text_item };

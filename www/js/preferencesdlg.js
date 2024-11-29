@@ -8,21 +8,19 @@ import { onAutoReportIntervalChange, reportNone } from "./grbl";
 import { grblpanel } from "./grblpanel";
 import { http_communication_locked, SendFileHttp, SendGetHttp } from "./http";
 import { get_icon_svg } from "./icons";
-import { add_language_list_event_handler, build_language_list, language } from "./languages";
+import { build_language_list } from "./languages";
 import { closeModal, setactiveModal, showModal } from "./modaldlg";
 import { ontoggleLock } from "./navbar";
 import { buildFieldId, buildPrefsFromDefs, getPrefDefPath, prefDefs } from "./prefDefs";
 import { build_HTML_setting_list, current_setting_filter } from "./settings";
 import { check_ping } from "./socket";
-import { decode_entitie, translate_text, translate_text_item } from "./translate";
-import { conErr, displayBlock, displayFlex, displayNone, last_ping, getChecked, getValue, id, setChecked, setValue, setHTML, stdErrMsg, HTMLEncode } from "./util";
+import { translate_text, translate_text_item } from "./translate";
+import { conErr, displayBlock, displayFlex, displayNone, last_ping, getChecked, getValue, id, setChecked, setValue, setHTML, stdErrMsg, HTMLEncode, HTMLDecode } from "./util";
 
 //Preferences dialog
 
 const prefFile = "/preferences.json";
 let preferences = buildPrefsFromDefs(prefDefs);
-
-var language_save = language();
 
 const buildElem = (elem, contents, classVal) => {
     const elemPanel = document.createElement(elem);
@@ -107,7 +105,7 @@ const buildNumeric = (key, value, parentElem) => {
     parentElem.append(inpNTable);
     id(fId).addEventListener("change", (event) => {
         if (CheckValue(fId, value)) {
-            handleInputChange(fID);
+            handleInputChange(fId);
         }
     });
 };
@@ -124,7 +122,7 @@ const buildText = (key, value, parentElem) => {
     parentElem.append(inpTTable);
     id(fId).addEventListener("change", (event) => {
         if (CheckValue(fId, value)) {
-            handleInputChange(fID);
+            handleInputChange(fId);
         }
     });
 };
@@ -138,7 +136,11 @@ const buildSelect = (key, value, parentElem) => {
     setGroupId(inpSTable, fId);
 
     parentElem.append(inpSTable);
-    add_language_list_event_handler(fId);
+    id(fId).addEventListener("change", (event) => {
+        if (CheckValue(fId, value)) {
+            handleInputChange(fId);
+        }
+    });
 }
 
 /** Build the dialog from the prefDefs metadata */
@@ -154,6 +156,7 @@ const buildDialog = (parentElem, definitions, isFirstLevel = false) => {
             case "bool": buildBoolean(key, value, parentElem); break;
             case "int":
             case "float": buildNumeric(key, value, parentElem); break;
+            case "enctext":
             case "text": buildText(key, value, parentElem); break;
             case "select": buildSelect(key, value, parentElem); break;
             default:
@@ -192,7 +195,11 @@ const setDialog = (prefs) => {
                     fElem.value = value.value;
                 }
                 break;
-            default:
+            case "enctext":
+                if (fElem) {
+                    fElem.value = value.value;
+                }
+                default:
                 console.log(`${key}: ${JSON.stringify(value)}`);
                 break;
         }
@@ -206,6 +213,7 @@ const initpreferences = () => {
 
     // And handlers for the other parts of the app
     setupNavbarHandlers();
+    setupPreferenceHandlers();
     setupControlsHandlers();
     setupFilesHandlers();
     setupGRBLHandlers();
@@ -213,6 +221,7 @@ const initpreferences = () => {
 
     // Do final setup for other parts of the app
     setupNavbar();
+    setupPreference();
     setupControls();
     setupGRBL();
     setupFiles();
@@ -273,6 +282,19 @@ const setupNavbarHandlers = () => {
     id("enable_lock_UI").addEventListener("change", (event) => navbar_lockUI(getPrefValue("enable_lock_UI")));
     id("enable_DHT").addEventListener("change", (event) => navbar_enableDHT(getPrefValue("enable_DHT")));
     id("show_camera_panel").addEventListener("change", (event) => navbar_enableCamTab(getPrefValue("show_camera_panel")));
+}
+
+const language_pref = (value) => {
+    translate_text(value);
+}
+
+/** Initial setup of other preferences coming from the file */
+const setupPreference = () => {
+    language_pref(getPrefValue("language_preferences"));
+}
+
+const setupPreferenceHandlers = () => {
+    id("language_preferences").addEventListener("change", (event) => language_pref(getPrefValue("language_preferences")));
 }
 
 const controls_showControlsPanel = (enable) => {
@@ -465,14 +487,14 @@ function getpreferenceslist() {
     SendGetHttp(url, processPreferencesGetSuccess, processPreferencesGetFailed);
 }
 
-/** Gets a Text, Int or Float's new value after a change, and stores it in the preferences */
+/** Gets a Select, Text, Int or Float's new value after a change, and stores it in the preferences */
 const handleInputChange = (fieldId) => {
     const newValue = getValue(fieldId);
     if (typeof newValue === "undefined") {
         console.error(stdErrMsg("Unknown Field", `'${fieldId}' not found as an input field with a value`));
         return undefined;
     }
-    const pref = getPref(checkboxId);
+    const pref = getPref(fieldId);
     pref.value = newValue;
     return newValue;
 }
@@ -523,7 +545,6 @@ function Preferences_build_list(response_text) {
 
 function applypreferenceslist() {
     //Assign each control state
-    translate_text(getPrefValue("language_list")?.valueDef);
     build_HTML_setting_list(current_setting_filter());
 
     handlePing();
@@ -542,37 +563,22 @@ const showpreferencesdlg = () => {
     id("PreferencesDialogCancel").addEventListener("click", (event) => closePreferencesDialog());
     id("PreferencesDialogSave").addEventListener("click", (event) => SavePreferences());
 
-    language_save = language();
-    // build_dlg_preferences_list();
     displayNone('preferencesdlg_upload_msg');
     showModal();
-}
-
-const setBoolElem = (idName, memName) => setChecked(idName, !!getPrefValue(memName));
-
-function build_dlg_preferences_list() {
-    //camera address
-    const camAddress = !!getPrefValue("enable_camera.auto_load_camera") ? decode_entitie(getPrefValue("camera_address")) : "";
-    setValue('camera_address', !camAddress);
-
-    //Monitor connection
-    setBoolElem('enable_ping', 'enable_ping');
 }
 
 function closePreferencesDialog() {
     var modified = false;
     //check dialog compare to global state
-    if ((typeof (getPrefValue("language_list")?.valueDef) === 'undefined') ||
-        (typeof (getPrefValue("enable_ping")) === 'undefined')
+    if ((typeof (getPrefValue("enable_ping")) === 'undefined')
         ){
         modified = true;
     } else {
         //camera address
-        if (getChecked('camera_address') != decode_entitie(getPrefValue("camera_address"))) modified = true;
+        if (getChecked('camera_address') != getPrefValue("camera_address")) modified = true;
         //Monitor connection
         if (getChecked('enable_ping') != getPrefValue("enable_ping")) modified = true;
     }
-    if (language_save != language()) modified = true;
     if (modified) {
         confirmdlg(translate_text_item("Data modified"), translate_text_item("Do you want to save?"), process_preferencesCloseDialog)
     } else {
@@ -600,7 +606,7 @@ const SavePreferences = (save_current_preferences = false) => {
 
     if (!!save_current_preferences) {
         preferenceslist = [];
-        var saveprefs = "[{\"language\":\"" + language();
+        var saveprefs = "[{\"language\":\"" + getPrefValue("language_list");
         saveprefs += "\",\"enable_ping\":\"" + getChecked('enable_ping');
         preferenceslist = JSON.parse(saveprefs);
     }
@@ -691,6 +697,8 @@ const CheckValue = (fId, valueDef) => {
                         errorList.push(valueMinTest(vFlt, valueDef));
                         errorList.push(valueMaxTest(vFlt, valueDef));
                     }
+                    break;
+                case "enctext":
                     break;
                 case "text":
                     break;

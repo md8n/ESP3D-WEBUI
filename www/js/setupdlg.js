@@ -1,7 +1,7 @@
 import { get_icon_svg } from "./icons";
-import { add_language_list_event_handler, build_language_list, language } from "./languages";
+import { add_language_list_event_handler, build_language_list } from "./languages";
 import { closeModal, setactiveModal, showModal } from "./modaldlg";
-import { setPrefValue, SavePreferences } from "./preferencesdlg";
+import { setPrefValue, SavePreferences, getPrefValue } from "./preferencesdlg";
 import {
     build_control_from_pos,
     build_HTML_setting_list,
@@ -110,7 +110,7 @@ function setupdone(response) {
     setup_is_done(true);
     do_not_build_settings = false;
     build_HTML_setting_list(current_setting_filter());
-    translate_text(language());
+    translate_text(getPrefValue("language_list"));
     displayUndoNone('main_ui');
     closeModal("setup done");
 }
@@ -120,7 +120,7 @@ function continue_setup_wizard() {
     switch (active_wizard_page) {
         case 1:
             enablestep1();
-            setPrefValue("language", language());
+            setPrefValue("language", getPrefValue("language_list"));
             SavePreferences(true);
             break;
         case 2:

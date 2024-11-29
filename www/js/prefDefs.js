@@ -1,4 +1,5 @@
 import { translate_text_item } from "./translate";
+import { HTMLDecode } from "./util";
 
 /** Definitions for all the preferences */
 const prefDefs = {
@@ -23,7 +24,7 @@ const prefDefs = {
             "auto_load_camera": { "defValue": false, "valueType": "bool", "label": "Auto load camera" },
             "camera_address": {
                 "defValue": "",
-                "valueType": "text",
+                "valueType": "enctext",
                 "label": "Camera address",
                 "placeholder": "Camera address",
                 "inpClass": "w14",
@@ -239,6 +240,13 @@ const buildPrefsFromDefs = (prefLevel = prefDefs) => {
             "value": value.defValue,
             "fieldId": buildFieldId(key, value),
         };
+
+        if (value.valueType === "enctext") {
+            // all values are stored as HTML encoded text
+            prefs[key].defValue = HTMLDecode(prefs[key].defValue);
+            prefs[key].fileValue = HTMLDecode(prefs[key].fileValue);
+            prefs[key].value = HTMLDecode(prefs[key].value);
+        }
 
         if ("prefDefs" in value) {
             // Transfer the child level values back to this parent level

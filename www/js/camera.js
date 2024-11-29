@@ -1,6 +1,5 @@
 import { getPrefValue, setPrefValue, SavePreferences } from "./preferencesdlg";
-import { decode_entitie } from "./translate";
-import { displayBlock, displayNone, id, HTMLEncode } from "./util";
+import { displayBlock, displayNone, id, HTMLEncode, HTMLDecode } from "./util";
 
 /** Set up the event handlers for the camera tab */
 const cameratab = () => {
@@ -46,10 +45,9 @@ function camera_OnKeyUp(event) {
     return true;
 }
 
-
 function camera_saveaddress() {
     cameraformataddress();
-    setPrefValue("camera_address", HTMLEncode(id('camera_webaddress').value));
+    setPrefValue("camera_address", id('camera_webaddress').value);
     SavePreferences(true);
 }
 
@@ -63,7 +61,7 @@ function camera_detachcam() {
 
 function camera_GetAddress() {
     id('camera_webaddress').value = (typeof(getPrefValue("camera_address")) !== 'undefined')
-        ? decode_entitie(getPrefValue("camera_address")) : "";
+        ? getPrefValue("camera_address") : "";
 }
 
 export { cameratab, camera_GetAddress };
