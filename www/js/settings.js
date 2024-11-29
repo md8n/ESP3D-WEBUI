@@ -180,7 +180,7 @@ const build_control_from_index = (i, actions, extra_set_function = (i) => { }) =
       content += "<input class='hide_it'></input>"
       content += "<div class='input-group-btn'>"
       let btnId = sId(i, j, "btn_");
-      content += `<button id='${btnId}' class='btn btn-default' translate english_content='Set' >${translate_text_item('Set')}</button>`;
+      content += `<button id='${btnId}' class='btn btn-default' translate english_content='Set'>${translate_text_item('Set')}</button>`;
       actions.push({
         id: btnId, type: "click", method: (i, j) => {
           settingsetvalue(i, j);
@@ -188,7 +188,9 @@ const build_control_from_index = (i, actions, extra_set_function = (i) => { }) =
         }
       });
       if (scl[i].pos == EP_STA_SSID) {
-        content += `<button class='btn btn-default btn-svg' onclick='scanwifidlg("${i}","${j}")'>${get_icon_svg('search')}</button>`
+        const btnId = sId(i, j, "scanwifi_")
+        content += `<button id='${btnId}' class='btn btn-default btn-svg'>${get_icon_svg('search')}</button>`;
+        actions.push({id: btnId, type: "click", method: scanwifidlg(i, j)});
       }
       content += '</div>'
       content += '</div>'
@@ -235,10 +237,12 @@ const build_HTML_setting_list = (filter) => {
 
   var content = buildTR('<td colspan="2">Click "Set" after changing a value to set it</td>');
   if (filter === 'tree') {
+    const btnId = "maslow_save_btn";
     content += `<tr>
     <td>Click "Save" after changing all values to save the <br/>whole configuration to maslow.yaml and restart</td>
-    <td><button type="button" class="btn btn-success" onclick="saveMaslowYaml();">Save</button></td>
+    <td><button id=$"{btnId}" type="button" class="btn btn-success">Save</button></td>
     </tr>`;
+    actions.push({id: btnId, type: "click", method: saveMaslowYaml()});
   }
   current_setting_filter(filter);
   setChecked(`${current_setting_filter()}_setting_filter`, true);
