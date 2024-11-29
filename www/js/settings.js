@@ -83,23 +83,23 @@ const fCall = (fn, i, j) => `${fn}(${i},${j})`;
 const bOpt = (value, isSelected, label) => `<option value='${value}' ${isSelected ? "selected " : ""}translate="yes">${label}${browser_is('MacOSX') ? "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" : ""}</option>\n`;
 
 function build_select_flag_for_setting_list(i, j) {
-  var html = `<select class='form-control' id='${sId(i, j)}' onchange='${fCall("setting_checkchange", i, j)}'>\n`;
+  var html = `<select class='form-control' id='${sId(i, j)}'>`;
   var tmp = scl[i].defaultvalue | getFlag(i, j);
   html += bOpt("1", tmp == defval(i), 'Disable');
   tmp = defval(i) & ~getFlag(i, j);
   html += bOpt("0", tmp == defval(i), 'Enable');
-  html += '</select>\n'
+  html += '</select>'
   //console.log("default:" + defval(i));
   //console.log(html);
   return html
 }
 
 function build_select_for_setting_list(i, j) {
-  var html = `<select class='form-control input-min wauto' id='${sId(i, j)}' onchange='${fCall("setting_checkchange", i, j)}'>\n`;
+  var html = `<select class='form-control input-min wauto' id='${sId(i, j)}'>`;
   for (var oi = 0; oi < scl[i].Options.length; oi++) {
     html += bOpt(scl[i].Options[oi].id, scl[i].Options[oi].id == defval(i), scl[i].Options[oi].display);
   }
-  html += '</select>\n'
+  html += '</select>'
   //console.log("default:" + defval(i));
   //console.log(html);
   return html
@@ -154,20 +154,23 @@ const build_control_from_index = (i, actions, extra_set_function = (i) => { }) =
       content += '</td><td>'
       content += "<div class='input-group'>"
       content += "<span class='input-group-addon hide_it' ></span>"
+      const sfId = sId(i, j);
       if (scl[i].type == 'F') {
         //flag
         //console.log(scl[i].label + " " + scl[i].type);
         //console.log(scl[i].Options.length);
-        content += build_select_flag_for_setting_list(i, j)
+        content += build_select_flag_for_setting_list(i, j);
+        actions.push({id: sfId, type: "change", method: fCall("setting_checkchange", i, j)});
       } else if (scl[i].Options.length > 0) {
         //drop list
-        content += build_select_for_setting_list(i, j)
+        content += build_select_for_setting_list(i, j);
+        actions.push({id: sfId, type: "change", method: fCall("setting_checkchange", i, j)});
       } else {
         //text
         input_type = defval(i).startsWith('******') ? 'password' : 'text';
         content +=
-          `<form><input id='${sId(i, j)}' type='${input_type}' class='form-control input-min' value='${defval(i)}'></form>`;
-        actions.push({id: sId(i, j), type: "keyup", method: setting_checkchange(i, j)});
+          `<form><input id='${sfId}' type='${input_type}' class='form-control input-min' value='${defval(i)}'></form>`;
+        actions.push({id: sfId, type: "keyup", method: setting_checkchange(i, j)});
       }
       content += `<span id='${sId(i, j, "icon_")}' class='form-control-feedback ico_feedback'></span>`;
       content += "<span class='input-group-addon hide_it' ></span>"

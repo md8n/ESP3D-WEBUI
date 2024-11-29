@@ -91,26 +91,29 @@ function setAutocheck(flag) {
 }
 
 function build_axis_selection() {
-  var html = "<select class='form-control wauto' id='control_select_axis' onchange='control_changeaxis()' >"
+  if (grblaxis() <= 3) {
+    return;
+  }
+
+  var html = "<select class='form-control wauto' id='control_select_axis'>"
   for (var i = 3; i <= grblaxis(); i++) {
     var letter
-    if (i == 3) letter = 'Z'
+    let sel = "";
+    if (i == 3) {
+      letter = 'Z';
+      sel = "selected";
+    }
     else if (i == 4) letter = 'A'
     else if (i == 5) letter = 'B'
     else if (i == 6) letter = 'C'
-    html += "<option value='" + letter + "'"
-    if (i == 3) html += ' selected '
-    html += '>'
-    html += letter
-    html += '</option>\n'
+    html += `<option value='${letter}' ${sel}>${letter}</option>\n`;
   }
+  html += '</select>\n';
 
-  html += '</select>\n'
-  if (grblaxis() > 3) {
-    setHTML('axis_selection', html)
-    setHTML('axis_label', translate_text_item('Axis') + ':')
-    setClickability('axis_selection', true)
-  }
+  setHTML('axis_selection', html);
+  id('control_select_axis').addEventListener("change", (event) => control_changeaxis());
+  setHTML('axis_label', translate_text_item('Axis') + ':');
+  setClickability('axis_selection', true);
 }
 
 function control_changeaxis() {
@@ -838,6 +841,7 @@ function setSpindleSpeed(speed) {
 }
 
 export {
+  build_axis_selection,
   calibrationResults,
   grblaxis,
   grblHandleMessage,
