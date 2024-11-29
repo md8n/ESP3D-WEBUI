@@ -98,44 +98,55 @@ function build_glyph_selection(index) {
     return content;
 }
 
-function build_filename_selection(index) {
-    var content = "";
+function build_filename_selection(index, actions) {
     var entry = macrodlg_macrolist[index];
-    content += "<span id='macro_filename_input_line_" + index + "' class='form-group "
-    if (entry.filename.length == 0) content += "has-error has-feedback"
-    content += "'>";
-    content += "<input type='text' id='macro_filename_line_" + index + "' style='width:9em' class='form-control' onkeyup='macro_filename_OnKeyUp(this," + index + ")'  onchange='on_macro_filename(this," + index + ")' value='" + entry.filename + "'  aria-describedby='inputStatus_line" + index + "'>";
-    content += "<span id='icon_macro_status_line_" + index + "' style='color:#a94442; position:absolute;bottom:4px;left:7.5em;";
-    if (entry.filename.length > 0) content += "display:none";
-    content += "'>" + get_icon_svg("remove") + "</span>";
+    const noFilename = (entry.filename.length == 0);
+    const mflId = `macro_filename_line_${index}`;
+
+    let content = `<span id='macro_filename_input_line_${index}' class='form-group ${noFilename ? "has-error has-feedback" : ""}'>`
+    content += `<input type='text' id='${mflId}' style='width:9em' class='form-control' value='${entry.filename}'  aria-describedby='inputStatus_line${index}'>`;
+    content += `<span id='icon_macro_status_line_${index}' style='color:#a94442; position:absolute;bottom:4px;left:7.5em;${noFilename ? "display:none" : ""}'>${get_icon_svg("remove")}</span>`;
     content += "</input></span>";
+
+    actions.push({id: mflId, type: "keyup", method: macro_filename_OnKeyUp(index)});
+    actions.push({id: mflId, type: "change", method: (event, index) => on_macro_filename(event, index)});
+
     return content;
 }
 
 function build_dlg_macrolist_line(index) {
     var content = "";
+    const actions = [];
     var entry = macrodlg_macrolist[index];
-    content += "<td style='vertical-align:middle'>";
-    content += "<button onclick='macro_reset_button(" + index + ")'  class='btn btn-xs ";
-    if (entry.class == '') {
-        content += "btn-default'  style='padding-top: 3px;padding-left: 4px;padding-right: 2px;padding-bottom: 0px;' >" + get_icon_svg("plus") + " </button></td><td colspan='5'>";
+
+    const buildTdVertMiddle = (content) => `<td style='vertical-align:middle'>${content}</td>`;
+
+    const noEC = entry.class === '';
+    const btnClass = `btn btn-xs ${noEC ? "btn-default" : "btn-danger"}`;
+    const btnStyle = `padding-top: 3px;padding-left: ${noEC ? "4" : "2"}px;padding-right: ${noEC ? "2" : "3"}px;padding-bottom: 0px;`;
+    const btnId = `macro_reset_btn_${index}`;
+    content += buildTdVertMiddle(`<button id='${btnId}' class='${btnClass}' style='${btnStyle}>${get_icon_svg(noEC ? "plus" : "trash")}</button>`);
+    actions.push({id: btnId, type: "click", method: macro_reset_button(index)});
+    if (noEC) {
+        content += "<td colspan='5'></td>";
     } else {
-        content += "btn-danger' style='padding-top: 3px;padding-left: 2px;padding-right: 3px;padding-bottom: 0px;' >" + get_icon_svg("trash") + "</button></td>";
-        content += "<td style='vertical-align:middle'><input type='text' id='macro_name_line_" + index + "' style='width:4em' class='form-control' onchange='on_macro_name(this," + index + ")' value='";
-        if (entry.name != "&nbsp;") {
-            content += entry.name;
-        }
-        content += "'/></td>";
-        content += "<td style='vertical-align:middle'>" + build_glyph_selection(index) + "</td>";
-        content += "<td style='vertical-align:middle'>" + build_color_selection(index) + "</td>";
-        content += "<td style='vertical-align:middle'>" + build_target_selection(index) + "</td>";
-        content += "<td style='vertical-align:middle'>" + build_filename_selection(index) + "</td>";
+        const inpId = `macro_name_line_${index}`;
+        const entryName = entry.name && entry.name !== "&nbsp;" ? entry.name : "";
+        content += buildTdVertMiddle(`<input type='text' id='${inpId}' style='width:4em' class='form-control' value='${entryName}'/>`);
+        actions.push({id: inpId, type: "change", method: (event, index) => on_macro_name(event, index)});
+        content += buildTdVertMiddle(build_glyph_selection(index));
+        content += buildTdVertMiddle(build_color_selection(index));
+        content += buildTdVertMiddle(build_target_selection(index));
+        content += buildTdVertMiddle(build_filename_selection(index, actions));
     }
-    content += "</td>";
-    setHTML('macro_line_' + index, content);
+
+    setHTML(`macro_line_${index}`, content);
+    actions.forEach((action) => {
+        id(action.id).addEventListener(action.type, (event) => action.method);
+    });
 }
 
-function macro_filename_OnKeyUp(event, index) {
+function macro_filename_OnKeyUp(index) {
     var item = id("macro_filename_line_" + index);
     var group = id("macro_filename_input_line_" + index);
     var value = item.value.trim();
@@ -151,21 +162,21 @@ function macro_filename_OnKeyUp(event, index) {
     return true;
 }
 
-function on_macro_filename(item, index) {
+function on_macro_filename(event, index) {
     var entry = macrodlg_macrolist[index];
-    var filename = item.value.trim();
-    entry.filename = item.value;
+    var filename = event.value.trim();
+    entry.filename = event.value;
     if (filename.length == 0) {
         alertdlg(translate_text_item("Out of range"), translate_text_item("File name cannot be empty!"));
     }
     build_dlg_macrolist_line(index);
 }
 
-function on_macro_name(item, index) {
+function on_macro_name(event, index) {
     var entry = macrodlg_macrolist[index];
-    var macroname = item.value.trim();
+    var macroname = event.value.trim();
     if (macroname.length > 0) {
-        entry.name = item.value;
+        entry.name = event.value;
     } else {
         entry.name = "&nbsp;";
     }

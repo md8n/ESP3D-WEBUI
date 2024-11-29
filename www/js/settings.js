@@ -123,12 +123,11 @@ function update_UI_setting() {
 }
 
 /** to generate setting editor in setting or setup */
-const build_control_from_index = (i, actions, extra_set_function = (i) => {}) => {
+const build_control_from_index = (i, actions, extra_set_function = (i) => { }) => {
   let content = '<table>';
   if (i < scl.length && i > -1) {
     nbsub = scl[i].type == 'F' ? scl[i].Options.length : 1
     for (var j = 0; j < nbsub; j++) {
-      let params = `${i},${j}`;
       if (j > 0) {
         content += "<tr><td style='height:10px;'></td></tr>"
       }
@@ -166,9 +165,9 @@ const build_control_from_index = (i, actions, extra_set_function = (i) => {}) =>
       } else {
         //text
         input_type = defval(i).startsWith('******') ? 'password' : 'text';
-        let action = `setting_checkchange(${params})`;
         content +=
-          `<form><input id='${sId(i, j)}' type='${input_type}' class='form-control input-min'  value='${defval(i)}' onkeyup='${action}'></form>`;
+          `<form><input id='${sId(i, j)}' type='${input_type}' class='form-control input-min' value='${defval(i)}'></form>`;
+        actions.push({id: sId(i, j), type: "keyup", method: setting_checkchange(i, j)});
       }
       content += `<span id='${sId(i, j, "icon_")}' class='form-control-feedback ico_feedback'></span>`;
       content += "<span class='input-group-addon hide_it' ></span>"
@@ -179,10 +178,12 @@ const build_control_from_index = (i, actions, extra_set_function = (i) => {}) =>
       content += "<div class='input-group-btn'>"
       let btnId = sId(i, j, "btn_");
       content += `<button id='${btnId}' class='btn btn-default' translate english_content='Set' >${translate_text_item('Set')}</button>`;
-      actions.push({id: btnId, type: "click", method: (i, j) => {
-        settingsetvalue(i, j);
-        extra_set_function(i);
-      }});
+      actions.push({
+        id: btnId, type: "click", method: (i, j) => {
+          settingsetvalue(i, j);
+          extra_set_function(i);
+        }
+      });
       if (scl[i].pos == EP_STA_SSID) {
         content += `<button class='btn btn-default btn-svg' onclick='scanwifidlg("${i}","${j}")'>${get_icon_svg('search')}</button>`
       }
