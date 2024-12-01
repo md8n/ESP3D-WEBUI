@@ -29,11 +29,15 @@ function hide_drop_menu(event) {
     }
 }
 
-function showhide_drop_menu(event) {
+const showhide_drop_menu = (event) => {
     var item = get_parent_by_class(event.target, "dropdownselect");
-    if (item === null) return;
+    if (item === null) {
+        return;
+    }
     var menu = item.getElementsByClassName("dropmenu-content")[0];
-    if (typeof menu !== 'undefined') menu.classList.toggle("show");
+    if (typeof menu !== 'undefined'){
+        menu.classList.toggle("show");
+    }
 }
 
-export { clear_drop_menu };
+export { clear_drop_menu, showhide_drop_menu };

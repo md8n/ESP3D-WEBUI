@@ -1,7 +1,7 @@
 import { alertdlg } from "./alertdlg";
 import { confirmdlg } from "./confirmdlg";
 import { control_macrolist } from "./controls";
-import { clear_drop_menu } from "./dropmenu";
+import { clear_drop_menu, showhide_drop_menu } from "./dropmenu";
 import { http_communication_locked, SendFileHttp } from "./http";
 import { get_icon_svg } from "./icons";
 import { closeModal, setactiveModal, showModal } from "./modaldlg";
@@ -27,71 +27,75 @@ function showmacrodlg(closefn) {
     showModal();
 }
 
-function build_color_selection(index) {
+function build_color_selection(index, actions) {
     var content = "";
     var entry = macrodlg_macrolist[index];
-    var menu_pos = "down";
-    if (index > 3) menu_pos = "up";
-    content += "<div class='dropdownselect'  id='macro_color_line" + index + "'>";
-    content += "<button class='btn " + entry.class + "' onclick='showhide_drop_menu(event)'>&nbsp;";
+    const menu_pos = (index > 3) ? "dropmenu-content-up" : "dropmenu-content-down";
+    content += `<div id='macro_color_line${index}' class='dropdownselect'>`;
+    content += `<button id='macro_color_line${index}_btn' class='btn ${entry.class}'>&nbsp;`;
     content += "<svg width='0.8em' height='0.8em' viewBox='0 0 1300 1200' style='pointer-events:none'>";
     content += "<g transform='translate(50,1200) scale(1, -1)'>";
     content += "<path  fill='currentColor' d='M100 900h1000q41 0 49.5 -21t-20.5 -50l-494 -494q-14 -14 -35 -14t-35 14l-494 494q-29 29 -20.5 50t49.5 21z'></path>";
     content += "</g>";
     content += "</svg>";
     content += "</button>";
-    content += "<div class='dropmenu-content dropmenu-content-" + menu_pos + "' style='min-width:auto; padding-left: 4px;padding-right: 4px;'>";
-    content += "<button class='btn btn-default' onclick='macro_select_color(event, \"default\" ," + index + ")'>&nbsp;</button>";
-    content += "<button class='btn btn-primary' onclick='macro_select_color(event, \"primary\" ," + index + ")'>&nbsp;</button>";
-    content += "<button class='btn btn-info' onclick='macro_select_color(event, \"info\" ," + index + ")'>&nbsp;</button>";
-    content += "<button class='btn btn-warning' onclick='macro_select_color(event, \"warning\" ," + index + ")'>&nbsp;</button>";
-    content += "<button class='btn btn-danger'  onclick='macro_select_color(event, \"danger\" ," + index + ")'>&nbsp;</button>";
+    actions.push({id: `macro_color_line${index}_btn`, type: "click", method: (event) => showhide_drop_menu(event)});
+    content += `<div class='dropmenu-content ${menu_pos}' style='min-width:auto; padding-left: 4px;padding-right: 4px;'>`;
+    ["default", "primary", "info", "warning", "danger"].forEach((col) => {
+        content += `<button id='macro_select_color_${col}${index}_btn' class='btn btn-${col}'>&nbsp;</button>`;
+        actions.push({id: `macro_select_color_${col}${index}_btn`, type: "click", method: (event) => macro_select_target(event, col, index)});
+    })
     content += "</div>";
     content += "</div>";
     return content;
 }
 
-function build_target_selection(index) {
+function build_target_selection(index, actions) {
     var content = "";
     var entry = macrodlg_macrolist[index];
-    var menu_pos = "down";
-    if (index > 3) menu_pos = "up";
-    content += "<div class='dropdownselect'  id='macro_target_line" + index + "'>";
-    content += "<button class='btn btn-default' style='min-width:5em;' onclick='showhide_drop_menu(event)'><span>" + entry.target + "</span>";
+    const menu_pos = (index > 3) ? "dropmenu-content-up" : "dropmenu-content-down";
+    content += `<div id='macro_target_line${index}' class='dropdownselect'>`;
+    content += `<button id='macro_target_line${index}_btn' class='btn btn-default' style='min-width:5em;'><span>${entry.target}</span>`;
     content += "<svg width='0.8em' height='0.8em' viewBox='0 0 1300 1200' style='pointer-events:none'>";
     content += "<g transform='translate(50,1200) scale(1, -1)'>";
-    content += "<path  fill='currentColor' d='M100 900h1000q41 0 49.5 -21t-20.5 -50l-494 -494q-14 -14 -35 -14t-35 14l-494 494q-29 29 -20.5 50t49.5 21z'></path>";
+    content += "<path fill='currentColor' d='M100 900h1000q41 0 49.5 -21t-20.5 -50l-494 -494q-14 -14 -35 -14t-35 14l-494 494q-29 29 -20.5 50t49.5 21z'></path>";
     content += "</g>";
     content += "</svg>";
     content += "</button>";
-    content += "<div class='dropmenu-content dropmenu-content-" + menu_pos + "' style='min-width:auto'>";
-    content += "<a href=# onclick='macro_select_target(event, \"ESP\" ," + index + ")'>ESP</a>";
-    content += "<a href=# onclick='macro_select_target(event, \"SD\" ," + index + ")'>SD</a>";
-    content += "<a href=# onclick='macro_select_target(event, \"URI\" ," + index + ")'>URI</a>"
+    actions.push({id: `macro_target_line${index}_btn`, type: "click", method: (event) => showhide_drop_menu(event)});
+    content += `<div class='dropmenu-content ${menu_pos}' style='min-width:auto'>`;
+    content += `<a id='macro_select_targetESP${index}_link' href=#>ESP</a>`;
+    content += `<a id='macro_select_targetSD${index}_link' href=#>SD</a>`;
+    content += `<a id='macro_select_targetURI${index}_link' href=#>URI</a>`
+    actions.push({id: `macro_select_targetESP${index}_link`, type: "click", method: (event) => macro_select_target(event, "ESP", index)});
+    actions.push({id: `macro_select_targetSD${index}_link`, type: "click", method: (event) => macro_select_target(event, "SD", index)});
+    actions.push({id: `macro_select_targetURI${index}_link`, type: "click", method: (event) => macro_select_target(event, "URI", index)});
+
     content += "</div>";
     content += "</div>";
     return content;
 }
 
-function build_glyph_selection(index) {
+function build_glyph_selection(index, actions) {
     var content = "";
     var entry = macrodlg_macrolist[index];
-    var menu_pos = "down";
-    if (index > 3) menu_pos = "up";
-    content += "<div class='dropdownselect'  id='macro_glyph_line" + index + "'>";
-    content += "<button class='btn " + entry.class + "' onclick='showhide_drop_menu(event)'><span>" + get_icon_svg(entry.glyph) + "</span>&nbsp;";
+    const menu_pos = (index > 3) ? "dropmenu-content-up" : "dropmenu-content-down";
+    content += `<div id='macro_glyph_line${index}' class='dropdownselect'>`;
+    content += `<button id='macro_glyph_line${index}_btn' class='btn ${entry.class}'><span>${get_icon_svg(entry.glyph)}</span>&nbsp;`;
     content += "<svg width='0.8em' height='0.8em' viewBox='0 0 1300 1200' style='pointer-events:none'>";
     content += "<g transform='translate(50,1200) scale(1, -1)'>";
-    content += "<path  fill='currentColor' d='M100 900h1000q41 0 49.5 -21t-20.5 -50l-494 -494q-14 -14 -35 -14t-35 14l-494 494q-29 29 -20.5 50t49.5 21z'></path>";
+    content += "<path fill='currentColor' d='M100 900h1000q41 0 49.5 -21t-20.5 -50l-494 -494q-14 -14 -35 -14t-35 14l-494 494q-29 29 -20.5 50t49.5 21z'></path>";
     content += "</g>";
     content += "</svg>";
     content += "</button>";
-    content += "<div class='dropmenu-content  dropmenu-content-" + menu_pos + "' style='min-width:30em'>";
+    actions.push({id: `macro_glyph_line${index}_btn`, type: "click", method: (event) => showhide_drop_menu(event)});
+    content += `<div class='dropmenu-content ${menu_pos}' style='min-width:30em'>`;
     for (var key in list_icon) {
-        if (key != "plus") {
-            content += "<button class='btn btn-default btn-xs' onclick='macro_select_glyph(event, \"" + key + "\" ," + index + ")'><span>" + get_icon_svg(key) + "</span>";
-            content += "</button>";
+        if (key === "plus") {
+            continue;
         }
+        content += `<button id='macro_glyph_select${index}_btn' class='btn btn-default btn-xs'><span>${get_icon_svg(key)}</span></button>`;
+        actions.push({id: `macro_glyph_select${index}_btn`, type: "click", method: (event) => macro_select_glyph(event, key, index)});
     }
     content += "</div>";
     content += "</div>";
@@ -134,9 +138,9 @@ function build_dlg_macrolist_line(index) {
         const entryName = entry.name && entry.name !== "&nbsp;" ? entry.name : "";
         content += buildTdVertMiddle(`<input type='text' id='${inpId}' style='width:4em' class='form-control' value='${entryName}'/>`);
         actions.push({id: inpId, type: "change", method: (event, index) => on_macro_name(event, index)});
-        content += buildTdVertMiddle(build_glyph_selection(index));
-        content += buildTdVertMiddle(build_color_selection(index));
-        content += buildTdVertMiddle(build_target_selection(index));
+        content += buildTdVertMiddle(build_glyph_selection(index, actions));
+        content += buildTdVertMiddle(build_color_selection(index, actions));
+        content += buildTdVertMiddle(build_target_selection(index, actions));
         content += buildTdVertMiddle(build_filename_selection(index, actions));
     }
 
