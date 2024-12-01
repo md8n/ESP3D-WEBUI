@@ -1,6 +1,6 @@
 import { alertdlg } from "./alertdlg";
 import { confirmdlg } from "./confirmdlg";
-import { esp_error_code, esp_error_message } from "./constants";
+import { esp_error_code, esp_error_message } from "./esp_error";
 import { http_communication_locked, SendFileHttp, SendGetHttp } from "./http";
 import { closeModal, setactiveModal, showModal } from "./modaldlg";
 import { translate_text_item } from "./translate";
@@ -130,10 +130,10 @@ function updatefailed(error_code, response) {
     displayNone('uploadfw-button');
     //setHTML('updatemsg', "");
     id('fw-select').value = "";
-    if (esp_error_code != 0) {
-        alertdlg(translate_text_item("Error"), stdErrMsg(`(${esp_error_code})`, esp_error_message));
-        setHTML('updatemsg', translate_text_item("Upload failed : ") + esp_error_message);
-        esp_error_code = 0;
+    if (esp_error_code() !== 0) {
+        alertdlg(translate_text_item("Error"), stdErrMsg(`(${esp_error_code()})`, esp_error_message()));
+        setHTML('updatemsg', translate_text_item("Upload failed : ") + esp_error_message());
+        esp_error_code(0);
     } else {
         alertdlg(translate_text_item("Error"), stdErrMsg(error_code, response));
         setHTML('updatemsg', stdErrMsg(error_code, response, translate_text_item("Upload failed")));

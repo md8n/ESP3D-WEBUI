@@ -1,7 +1,7 @@
 import { alertdlg } from "./alertdlg";
 import { Monitor_output_Update } from "./commands";
 import { confirmdlg } from "./confirmdlg";
-import { esp_error_code, esp_error_message } from "./constants";
+import { esp_error_code, esp_error_message } from "./esp_error";
 import { tryAutoReport } from "./grbl";
 import { http_communication_locked, SendFileHttp, SendGetHttp } from "./http";
 import { get_icon_svg } from "./icons";
@@ -558,13 +558,13 @@ const files_list_success = (response_text) => {
 
 /** Shows an alert dialog for the ESP error, and then clears the ESP error_code */
 const alertEspError = () => {
-    alertdlg(translate_text_item("Error"), stdErrMsg(`(${esp_error_code})`, esp_error_message));
-    esp_error_code = 0;
+    alertdlg(translate_text_item("Error"), stdErrMsg(`(${esp_error_code()})`, esp_error_message()));
+    esp_error_code(0);
 }
 
 function files_list_failed(error_code, response) {
     displayBlock('files_navigation_buttons');
-    if (esp_error_code != 0) {
+    if (esp_error_code() !== 0) {
         alertEspError();
     } else {
         alertdlg(translate_text_item("Error"), translate_text_item("No connection"));
@@ -573,7 +573,7 @@ function files_list_failed(error_code, response) {
 }
 
 function files_directSD_upload_failed(error_code, response) {
-    if (esp_error_code != 0) {
+    if (esp_error_code() !== 0) {
         alertEspError();
     } else {
         alertdlg(translate_text_item("Error"), translate_text_item("Upload failed"));

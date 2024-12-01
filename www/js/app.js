@@ -1,7 +1,6 @@
 import { init_command_panel } from "./commands";
 import { connectdlg } from "./connectdlg";
 import { ControlsPanel, init_controls_panel } from "./controls";
-import { esp_error_code, esp_error_message } from "./constants";
 import { init_files_panel } from "./files";
 import { build_axis_selection, grblaxis, grblzerocmd, tryAutoReport } from "./grbl";
 import { grblpanel } from "./grblpanel";

@@ -818,7 +818,7 @@ const StartProbeProcess = () => {
   }
 }
 
-var spindleSpeedSetTimeout
+let spindleSpeedSetTimeout;
 let spindleSpeed = 1;
 const spindleTabSpindleSpeed = (value) => {
   if (typeof value === "number") {
@@ -832,9 +832,9 @@ function setSpindleSpeed(speed) {
     clearTimeout(spindleSpeedSetTimeout);
   }
   if (speed >= 1) {
-    spindleTabSpindleSpeed = speed
+    spindleTabSpindleSpeed(speed);
     spindleSpeedSetTimeout = setTimeout(
-      () => SendPrinterCommand('S' + spindleTabSpindleSpeed(), false, null, null, 1, 1),
+      () => SendPrinterCommand(`S${spindleTabSpindleSpeed()}`, false, null, null, 1, 1),
       500
     );
   }

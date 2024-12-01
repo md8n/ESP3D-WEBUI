@@ -113,20 +113,20 @@ const startSocket = () => {
         console.error(exception)
     }
     ws_source.binaryType = 'arraybuffer'
-    ws_source.onopen = function (e) {
+    ws_source.onopen = (e) => {
         console.log('Connected')
     }
-    ws_source.onclose = function (e) {
+    ws_source.onclose = (e) => {
         console.log('Disconnected')
         //seems sometimes it disconnect so wait 3s and reconnect
         //if it is not a log off
         if (!log_off) setTimeout(startSocket, 3000)
     }
-    ws_source.onerror = function (e) {
+    ws_source.onerror = (e) => {
         //Monitor_output_Update("[#]Error "+ e.code +" " + e.reason + "\n");
         console.log('ws error', e)
     }
-    ws_source.onmessage = function (e) {
+    ws_source.onmessage = (e) => {
         var msg = ''
         //bin
         if (e.data instanceof ArrayBuffer) {
@@ -157,36 +157,36 @@ const startSocket = () => {
             msg += e.data
             var tval = msg.split(':')
             if (tval.length >= 2) {
-                if (tval[0] == 'CURRENT_ID') {
+                if (tval[0] === 'CURRENT_ID') {
                     page_id = tval[1]
-                    console.log('connection id = ' + page_id)
+                    console.log(`connection id = ${page_id}`)
                 }
                 if (enable_ping()) {
-                    if (tval[0] == 'PING') {
+                    if (tval[0] === 'PING') {
                         page_id = tval[1]
                         // console.log("ping from id = " + page_id);
                         last_ping(Date.now())
                         if (interval_ping == -1)
-                            interval_ping = setInterval(function () {
+                            interval_ping = setInterval(() => {
                                 check_ping()
                             }, 10 * 1000)
                     }
                 }
-                if (tval[0] == 'ACTIVE_ID') {
+                if (tval[0] === 'ACTIVE_ID') {
                     if (page_id != tval[1]) {
                         Disable_interface()
                     }
                 }
-                if (tval[0] == 'DHT') {
+                if (tval[0] === 'DHT') {
                     Handle_DHT(tval[1])
                 }
-                if (tval[0] == 'ERROR') {
-                    esp_error_message = tval[2]
-                    esp_error_code = tval[1]
+                if (tval[0] === 'ERROR') {
+                    esp_error_message(tval[2]);
+                    esp_error_code(tval[1]);
                     console.error(`ERROR: ${tval[2]} code:${tval[1]}`);
                     CancelCurrentUpload()
                 }
-                if (tval[0] == 'MSG') {
+                if (tval[0] === 'MSG') {
                     console.info(`MSG: ${tval[2]} code:${ tval[1]}`);
                 }
             }

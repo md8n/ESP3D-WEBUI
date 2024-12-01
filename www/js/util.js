@@ -126,7 +126,7 @@ const last_ping = (value) => {
 const HTMLEncode = (value) => {
   const valChars = [...value];
   const aRet = valChars.map((vc) => {
-    const iC = vc.charCodeAt();
+    let iC = vc.charCodeAt();
     if (iC < 65 || iC > 127 || (iC > 90 && iC < 97)) {
       if (iC == 65533) {
         iC = 176;

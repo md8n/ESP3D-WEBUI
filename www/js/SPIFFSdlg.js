@@ -1,6 +1,6 @@
 import { alertdlg } from "./alertdlg";
 import { confirmdlg } from "./confirmdlg";
-import { esp_error_code, esp_error_message } from "./constants";
+import { esp_error_code, esp_error_message } from "./esp_error";
 import { http_communication_locked, SendFileHttp, SendGetHttp } from "./http";
 import { get_icon_svg } from "./icons";
 import { inputdlg } from "./inputdlg";
@@ -366,10 +366,10 @@ function SPIFFSUploadfailed(error_code, response) {
     displayNone("uploadSPIFFSmsg");
     displayBlock('refreshSPIFFSbtn');
     conErr(stdErrMsg(error_code, response));
-    if (esp_error_code != 0) {
-        alertdlg(translate_text_item("Error"), stdErrMsg(`(${esp_error_code})`, esp_error_message));
-        setHTML('SPIFFS_status', translate_text_item("Error : ") + esp_error_message);
-        esp_error_code = 0;
+    if (esp_error_code() !== 0) {
+        alertdlg(translate_text_item("Error"), stdErrMsg(`(${esp_error_code()})`, esp_error_message()));
+        setHTML('SPIFFS_status', translate_text_item("Error : ") + esp_error_message());
+        esp_error_code(0);
     } else {
         alertdlg(translate_text_item("Error"), stdErrMsg(error_code, response));
         setHTML('SPIFFS_status', stdErrMsg(error_code, response, translate_text_item("Upload failed")));

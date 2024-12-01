@@ -9,7 +9,7 @@
   "scripts": {
     "build": "gulp package",
     "build:en": "gulp package -en",
-    "build:bun": "bun build www/index.html --outdir dist",
+    "build:bun": "bun run build.ts",
     "serve": "python fluidnc-web-sim.py maslow.local",
     "start": "bun run --hot serve.ts"
   },
@@ -17,6 +17,7 @@
     "@biomejs/biome": "1.9.4",
     "@happy-dom/global-registrator": "^15.11.0",
     "@types/bun": "latest",
+    "bun-plugin-html": "^2.2.1",
     "del": "6.0.0",
     "deprecated": "latest",
     "fs": "latest",
