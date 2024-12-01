@@ -131,7 +131,7 @@ const retryconnect = () => {
     displayNone('connectbtn');
     displayNone('failed_connect_msg');
     displayBlock('connecting_msg');
-    var url = "/command?plain=" + encodeURIComponent("[ESP800]");;
+    var url = "/command?plain=" + encodeURIComponent("[ESP800]");
     SendGetHttp(url, connectsuccess, connectfailed)
 }
 

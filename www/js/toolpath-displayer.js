@@ -843,7 +843,7 @@ var displayHandlers = {
             theta2 += Math.PI * ((cw) ? -2 : 2);
         }
         if (extraRotations > 1) {
-            theta2 += (extraRotations - 1) * Math.PI * ((cw) ? -2 : 2);;
+            theta2 += (extraRotations - 1) * Math.PI * ((cw) ? -2 : 2);
         }
 
         initialMoves = false;

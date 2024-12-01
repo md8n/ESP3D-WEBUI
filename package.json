@@ -14,6 +14,7 @@
     "start": "bun run --hot serve.ts"
   },
   "devDependencies": {
+    "@biomejs/biome": "1.9.4",
     "@happy-dom/global-registrator": "^15.11.0",
     "@types/bun": "latest",
     "del": "6.0.0",

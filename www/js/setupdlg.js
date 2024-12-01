@@ -204,7 +204,7 @@ function enablestep2() {
 const define_sd_role = (index) => {
     if (setting_configList[index].defaultvalue == 1) {
         displayBlock("setup_SD");
-        displayNone("setup_primary_SD");;
+        displayNone("setup_primary_SD");
     } else {
         displayNone("setup_SD");
         displayNone("setup_primary_SD");
