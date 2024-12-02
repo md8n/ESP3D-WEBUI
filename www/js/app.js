@@ -1,5 +1,6 @@
 import { init_command_panel } from "./commands.js";
 import { connectdlg } from "./connectdlg.js";
+import { Common } from "./common.js";
 import { ControlsPanel, init_controls_panel } from "./controls.js";
 import { init_files_panel } from "./files.js";
 import {
@@ -9,7 +10,6 @@ import {
 	tryAutoReport,
 } from "./grbl.js";
 import { grblpanel } from "./grblpanel.js";
-import { loadedHTML } from "./loadHTML.js";
 import { closeModal } from "./modaldlg.js";
 import { navbar } from "./navbar.js";
 import { getpreferenceslist, initpreferences } from "./preferencesdlg.js";
@@ -85,21 +85,28 @@ window.onload = () => {
 	let connectLoaded = false;
 	let controlsLoaded = false;
 	let navbarLoaded = false;
+	const common = new Common();
+	if (!common.loadedHTML.includes("In dev mode")) {
+		// we assume built and bundled mode
+		common.loadedHTML.push("./sub/connectdlg.html");
+		common.loadedHTML.push("./sub/controlspanel.html");
+		common.loadedHTML.push("./sub/navbar.html");
+	}
 	let startUpInt = setInterval(() => {
 		// Check for various key HTML panels and load them up
-		if (!connectLoaded && loadedHTML.includes("./sub/connectdlg.html")) {
+		if (!connectLoaded && common.loadedHTML.includes("./sub/connectdlg.html")) {
 			connectdlg();
 			connectLoaded = true;
 		}
 
-		if (!controlsLoaded && loadedHTML.includes("./sub/controlspanel.html")) {
+		if (!controlsLoaded && common.loadedHTML.includes("./sub/controlspanel.html")) {
 			ControlsPanel();
 			controlsLoaded = true;
 		}
 
-		if (!navbarLoaded && loadedHTML.includes("./sub/navbar.html")) {
+		if (!navbarLoaded && common.loadedHTML.includes("./sub/navbar.html")) {
 			navbar();
-      tabletInit();
+			tabletInit();
 			navbarLoaded = true;
 		}
 

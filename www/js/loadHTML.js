@@ -1,12 +1,12 @@
-const loadedHTML = [];
+import { Common } from "./common.js";
 
 const getHMTLIdsToLoad = (node, htmlElemIdsToLoad) => {
 	if (node.nodeType !== Node.ELEMENT_NODE) {
 		return;
 	}
-  for (const elem of node.getElementsByClassName("loadhtml")) {
-    htmlElemIdsToLoad.push(elem.id);
-  }
+	for (const elem of node.getElementsByClassName("loadhtml")) {
+		htmlElemIdsToLoad.push(elem.id);
+	}
 };
 
 /** The `elemId` should equate to a correct path for the html file to be loaded */
@@ -26,19 +26,20 @@ const loadHTML = (elemId) => {
 				getHMTLIdsToLoad(newElems[0], htmlElemIdsToLoad);
 				origDiv.parentNode.replaceChild(newElems[0], origDiv);
 			}
-      for (const elem_Id of htmlElemIdsToLoad) {
-        loadHTML(elem_Id);
-      }
-      loadedHTML.push(elemId);
+			for (const elem_Id of htmlElemIdsToLoad) {
+				loadHTML(elem_Id);
+			}
+			const common = new Common();
+			common.loadedHTML.push(elemId);
 		});
 };
 
 /** Load up the HTML identified via a div with the correct class replacing the div at its current location */
 window.addEventListener("DOMContentLoaded", (event) => {
+	const common = new Common();
+	common.loadedHTML.push("In dev mode");
 	const htmlToLoad = document.getElementsByClassName("loadhtml");
-  for (const elem of htmlToLoad) {
-    loadHTML(elem.id);
-  }
+	for (const elem of htmlToLoad) {
+		loadHTML(elem.id);
+	}
 });
-
-export { loadedHTML };

@@ -11,11 +11,70 @@ const lint = async () => {
 	}
 };
 
+const loadAndReplaceHTML = async (fileContents: string) => {
+	if (!fileContents.toLowerCase().includes("loadhtml")) {
+		// Leave the file as-is - and move on
+		return fileContents;
+	}
+
+	// Remove the script that does the html loading - we won't need it after bundling
+	const regexScript = /\<script.*loadhtml.*>\<\/script>/gim;
+	const fcNoLoad = fileContents.replace(regexScript, "");
+
+	// Now find all of the places where the above script was used
+	const regexHTML =
+		/\<div\s+id\s*=\s*['"](?<htmlpath>.*\.html)['"]\s*class.*loadhtml.*><\/div>/gm;
+	const loadHTMLResults = [...fcNoLoad.matchAll(regexHTML)];
+	if (!loadHTMLResults.length) {
+		// Leave the file as-is-ish - and move on
+		return fcNoLoad;
+	}
+
+	// Finally replace the original `div` with the actual file
+	let fcReplLoad = fcNoLoad;
+	for (let ix = 0; ix < loadHTMLResults.length; ix++) {
+		const lhr = loadHTMLResults[ix];
+		const hFile = Bun.file(lhr[1].replace("./sub/", "./www/sub/"));
+		const hText = await hFile.text();
+		fcReplLoad = fcReplLoad.replace(lhr[0], hText);
+
+		if (hText.includes("loadhtml")) {
+			console.log("Life is more fun with recursion");
+			fcReplLoad = await loadAndReplaceHTML(fcReplLoad);
+		}
+	}
+
+	return fcReplLoad;
+};
+
 const build = async () => {
 	await Bun.build({
 		entrypoints: ["./www/index.html"],
 		outdir: "./dist",
-		plugins: [html()],
+		naming: "[dir]/[name].[ext]",
+		minify: true,
+		plugins: [
+			html({
+				inline: true,
+				keepOriginalPaths: true,
+				async preprocessor(processor) {
+					const files = processor.getFiles();
+
+					for (const file of files) {
+						// if (file.path.endsWith("app.js")) {
+						// 	// Remove the loadHTML.js import
+						// 	const fa = await file.content;
+						// 	processor.writeFile(file.path, fa.replace('import { loadedHTML } from "./loadHTML.js";', 'let loadedHTML:any;'));
+						// }
+						if (file.extension === ".html") {
+							const fc = await file.content;
+
+							processor.writeFile(file.path, await loadAndReplaceHTML(fc))
+						}
+					}
+				},
+			}),
+		],
 	});
 };
 
