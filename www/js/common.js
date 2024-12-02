@@ -8,8 +8,9 @@ class Common {
 		}
 		/** See controls.js */
 		this.control_macrolist = [];
-		/** See loadHTML.js */
-		this.loadedHTML = [];
+
+        /** See file.js */
+        this.gCodeFilename = '';
 
         /** See grbl.js */
         this.calibrationResults = {};
@@ -20,6 +21,9 @@ class Common {
 
         /** See http.js */
         this.http_communication_locked = false;
+
+        		/** See loadHTML.js */
+		this.loadedHTML = [];
 
         /** See settings.js */
         this.current_setting_filter = 'nvs';
