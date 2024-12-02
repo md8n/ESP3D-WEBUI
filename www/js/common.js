@@ -11,6 +11,13 @@ class Common {
 		/** See loadHTML.js */
 		this.loadedHTML = [];
 
+        /** See grbl.js */
+        this.calibrationResults = {};
+        this.grblaxis = 3;
+        this.grblzerocmd = 'X0 Y0 Z0';
+        this.spindleTabSpindleSpeed = 1;
+        this.modal = { modes: '', plane: 'G17', units: 'G21', wcs: 'G54', distance: 'G90' };
+
         /** See http.js */
         this.http_communication_locked = false;
 

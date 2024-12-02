@@ -3,7 +3,6 @@ import { Common } from "./common.js";
 import { confirmdlg } from "./confirmdlg.js";
 import { M } from "./constants.js";
 import { init_files_panel } from "./files.js";
-import { calibrationResults } from "./grbl.js";
 import { SendGetHttp } from "./http.js";
 import { get_icon_svg } from "./icons.js";
 import { restartdlg } from "./restartdlg.js";
@@ -237,7 +236,7 @@ const build_HTML_setting_list = (filter) => {
 
   const actions = [];
 
-  var content = buildTR('<td colspan="2">Click "Set" after changing a value to set it</td>');
+  let content = buildTR('<td colspan="2">Click "Set" after changing a value to set it</td>');
   if (filter === 'tree') {
     const btnId = "maslow_save_btn";
     content += `<tr>
@@ -249,9 +248,9 @@ const build_HTML_setting_list = (filter) => {
   current_setting_filter(filter);
   setChecked(`${current_setting_filter()}_setting_filter`, true);
 
-  for (var i = 0; i < scl.length; i++) {
+  for (let i = 0; i < scl.length; i++) {
     fname = scl[i].F.trim().toLowerCase();
-    if (fname == 'network' || fname == filter || filter == 'all') {
+    if (fname === 'network' || fname === filter || filter === 'all') {
       let tr = `<tr><td style='vertical-align:middle'>${translate_text_item(scl[i].label, true)}`;
       const tooltip = CONFIG_TOOLTIPS[scl[i].label.substring(1)];
       if (tooltip) {
@@ -275,7 +274,8 @@ const build_HTML_setting_list = (filter) => {
     document.querySelector('#setting_32_0').value = result;
   }
   // set calibration values if exists
-  const calRes = calibrationResults();
+  const common = new Common();
+  const calRes = common.calibrationResults;
   if (Object.keys(calRes).length) {
     document.querySelector('#setting_153_0').value = calRes.br.x;
     document.querySelector('#setting_154_0').value = calRes.br.y;

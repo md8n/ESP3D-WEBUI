@@ -3,12 +3,7 @@ import { connectdlg } from "./connectdlg.js";
 import { Common } from "./common.js";
 import { ControlsPanel, init_controls_panel } from "./controls.js";
 import { init_files_panel } from "./files.js";
-import {
-	build_axis_selection,
-	grblaxis,
-	grblzerocmd,
-	tryAutoReport,
-} from "./grbl.js";
+import { build_axis_selection, tryAutoReport } from "./grbl.js";
 import { grblpanel } from "./grblpanel.js";
 import { closeModal } from "./modaldlg.js";
 import { navbar } from "./navbar.js";
@@ -136,6 +131,7 @@ function display_boot_progress(step) {
 }
 
 function update_UI_firmware_target() {
+	const common = new Common();
 	var fwName;
 	initpreferences();
 	setHTML("control_x_position_label", "X");
@@ -162,28 +158,28 @@ function update_UI_firmware_target() {
 	displayInitial("zero_xyz_btn");
 	displayInitial("zero_x_btn");
 	displayInitial("zero_y_btn");
-	if (grblaxis() > 2) {
+	if (common.grblaxis > 2) {
 		//displayInitial('control_z_position_display');
 		setHTML("control_z_position_label", "Zw");
 	} else {
 		hideAxiscontrols();
 		displayNone("z_feedrate_group");
 	}
-	if (grblaxis() > 3) {
+	if (common.grblaxis > 3) {
 		id("zero_xyz_btn_txt").innerHTML += "A";
-		grblzerocmd(" A0");
+		common.grblzerocmd += " A0";
 		build_axis_selection();
 		displayBlock("a_feedrate_group");
 		id("positions_labels2").style.display = "inline-grid";
 		displayBlock("control_a_position_display");
 	}
-	if (grblaxis() > 4) {
+	if (common.grblaxis > 4) {
 		displayBlock("control_b_position_display");
 		id("zero_xyz_btn_txt").innerHTML += "B";
-		grblzerocmd(" B0");
+		common.grblzerocmd += " B0";
 		displayBlock("b_feedrate_group");
 	}
-	if (grblaxis() > 5) {
+	if (common.grblaxis > 5) {
 		displayBlock("control_c_position_display");
 		id("zero_xyz_btn_txt").innerHTML += "C";
 		displayBlock("c_feedrate_group");

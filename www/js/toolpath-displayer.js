@@ -1,5 +1,6 @@
 // Display the XY-plane projection of a GCode toolpath on a 2D canvas
-import { modal, MPOS, WPOS } from "./grbl.js";
+import { Common } from "./common.js";
+import { MPOS, WPOS } from "./grbl.js";
 import { Toolpath } from "./simple-toolpath.js";
 import { getValue, id } from "./util.js";
 
@@ -929,7 +930,8 @@ ToolpathDisplayer.prototype.showToolpath = function (gcode, modal, initialPositi
     }
     initialMoves = true;
     displayHandlers.position = initialPosition;
-    displayHandlers.modal = modal();
+    const common = new Common();
+    displayHandlers.modal = common.modal;
     new Toolpath(displayHandlers).loadFromLinesSync(gcodeLines);
 
     drawTool(initialPosition);
@@ -957,7 +959,8 @@ ToolpathDisplayer.prototype.cycleCameraAngle = function (gcode, position) {
         cameraAngle = 0;
     }
 
-    displayer.showToolpath(gcode, modal(), position);
+    const common = new Common();
+    displayer.showToolpath(gcode, common.modal, position);
 }
 
 /** Expects a simple array with 3 elements, and converts it to an xyz object */

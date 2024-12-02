@@ -1,5 +1,4 @@
 import { Common } from "./common.js";
-import { grblaxis } from "./grbl.js";
 import { SendGetHttp } from "./http.js";
 import { logindlg } from "./logindlg.js";
 import { closeModal, setactiveModal, showModal } from "./modaldlg.js";
@@ -37,7 +36,7 @@ const getFWdata = (response) => {
     fw_version = sublist[1].toLowerCase().trim();
     //FW target
     sublist = tlist[1].split(":");
-    if (sublist.length != 2) {
+    if (sublist.length !== 2) {
         return false;
     }
     target_firmware = sublist[1].toLowerCase().trim();
@@ -46,7 +45,7 @@ const getFWdata = (response) => {
     if (sublist.length !== 2) {
         return false;
     }
-    var sddirect = sublist[1].toLowerCase().trim();
+    const sddirect = sublist[1].toLowerCase().trim();
     if (sddirect === "direct sd") direct_sd = true;
     else direct_sd = false;
     //primary sd
@@ -94,8 +93,9 @@ const getFWdata = (response) => {
 
     if (tlist.length > 8) {
         sublist = tlist[8].split(":");
-        if (sublist[0].trim() == "axis") {
-            grblaxis(parseInt(sublist[1].trim()));
+        if (sublist[0].trim() === "axis") {
+            const common = new Common();
+            common.grblaxis = Number.parseInt(sublist[1].trim());
         }
     }
 
@@ -114,7 +114,7 @@ const connectfailed = (error_code, response) => {
 
 const connectsuccess = (response) => {
     if (getFWdata(response)) {
-        console.log("Fw identification:" + response);
+        console.log(`Fw identification:${response}`);
         if (ESP3D_authentication) {
             closeModal("Connection successful");
             displayInline('menu_authentication');

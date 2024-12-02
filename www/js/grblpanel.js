@@ -1,10 +1,10 @@
+import { Common } from "./common.js";
 import {
     grbl_reset,
     reportNone, tryAutoReport, reportPolled,
     onAutoReportIntervalChange, onstatusIntervalChange,
     onprobemaxtravelChange, onprobefeedrateChange, onproberetractChange, onprobetouchplatethicknessChange,
     SendRealtimeCmd,
-    spindleTabSpindleSpeed,
     StartProbeProcess
 } from "./grbl.js";
 import { SendPrinterCommand } from "./printercmd.js";
@@ -14,6 +14,8 @@ import { id } from "./util.js";
 /** Set up the event handlers for the grblpanel */
 export const grblpanel = () => {
     // GRBL reporting
+    const common = new Common();
+
     id("report_none").addEventListener("change", (event) => onReportType(event));
     id("report_auto").addEventListener("change", (event) => onReportType(event));
     id("grblpanel_autoreport_interval").addEventListener("change", (event) => onAutoReportIntervalChange());
@@ -41,8 +43,8 @@ export const grblpanel = () => {
     id("grblpanel_flood").addEventListener("click", (event) => SendRealtimeCmd(0xA0));
     id("grblpanel_mist").addEventListener("click", (event) => SendRealtimeCmd(0xA1));
 
-    id("grblspindle_fwd").addEventListener("click", (event) => SendPrinterCommand(`M3 S${spindleTabSpindleSpeed()}`, false, null, null, 1, 1));
-    id("grblspindle_rew").addEventListener("click", (event) => SendPrinterCommand(`M4 S${spindleTabSpindleSpeed()}`, false, null, null, 1, 1));
+    id("grblspindle_fwd").addEventListener("click", (event) => SendPrinterCommand(`M3 S${common.spindleTabSpindleSpeed}`, false, null, null, 1, 1));
+    id("grblspindle_rew").addEventListener("click", (event) => SendPrinterCommand(`M4 S${common.spindleTabSpindleSpeed}`, false, null, null, 1, 1));
     id("grblspindle_off").addEventListener("click", (event) => SendPrinterCommand('M5 S0', false, null, null, 1, 1));
     id("grblspindle_rpm").addEventListener("change", (event) => setSpindleSpeed(event.value));
     id("grblspindle_rpm").addEventListener("keyup", (event) => setSpindleSpeed(event.value));

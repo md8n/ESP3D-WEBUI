@@ -1,6 +1,5 @@
 import { alertdlg } from "./alertdlg.js";
 import { Common } from "./common.js";
-import { grblaxis, grblzerocmd } from "./grbl.js";
 import { SendGetHttp } from "./http.js";
 import { get_icon_svg } from "./icons.js";
 import { getPrefValue } from "./preferencesdlg.js";
@@ -17,10 +16,11 @@ const init_controls_panel = () => {
 
 /** Set up the event handlers for the Controls Panel */
 const ControlsPanel = () => {
+    const common = new Common();
     id("autocheck_position").addEventListener("click", (event) => on_autocheck_position());
     id("controlpanel_interval_positions").addEventListener("change", (event) => onPosIntervalChange());
 
-    id("zero_xyz_btn").addEventListener("click", (event) => SendZerocommand(grblzerocmd()));
+    id("zero_xyz_btn").addEventListener("click", (event) => SendZerocommand(common.grblzerocmd));
     id("zero_x_btn").addEventListener("click", (event) => SendZerocommand('X0'));
     id("zero_y_btn").addEventListener("click", (event) => SendZerocommand('Y0'));
     id("zero_z_btn").addEventListener("click", (event) => SendZerocommand('Z0'));
@@ -168,6 +168,7 @@ function SendHomecommand(cmd) {
     if (getChecked('lock_UI') !== "false") {
         return;
     }
+    const common = new Common();
     switch (cmd) {
         case 'G28':
             cmd = '$H';
@@ -180,8 +181,8 @@ function SendHomecommand(cmd) {
             break;
 
         case 'G28 Z0':
-            if (grblaxis() > 3) {
-                cmd = '$H' + id('control_select_axis').value;
+            if (common.grblaxis > 3) {
+                cmd = `$H${id('control_select_axis').value}`;
             } else cmd = '$HZ';
             break;
         default:
@@ -193,7 +194,7 @@ function SendHomecommand(cmd) {
 }
 
 function SendZerocommand(cmd) {
-    var command = "G10 L20 P0 " + cmd;
+    const command = `G10 L20 P0 ${cmd}`;
     SendPrinterCommand(command, true, get_Position);
 }
 
@@ -211,30 +212,31 @@ function SendJogcommand(cmd, feedrate) {
     if (getChecked('lock_UI') !== "false") {
         return;
     }
-    var feedratevalue = "";
-    var command = "";
-    if (feedrate == "XYfeedrate") {
-        feedratevalue = parseInt(id('controlpanel_xy_feedrate').value);
-        if (feedratevalue < 1 || isNaN(feedratevalue) || (feedratevalue === null)) {
+    let feedratevalue = "";
+    let command = "";
+    const common = new Common();
+    if (feedrate === "XYfeedrate") {
+        feedratevalue = Number.parseInt(id('controlpanel_xy_feedrate').value);
+        if (feedratevalue < 1 || Number.isNaN(feedratevalue) || (feedratevalue === null)) {
             alertdlg(translate_text_item("Out of range"), translate_text_item("XY Feedrate value must be at least 1 mm/min!"));
             id('controlpanel_xy_feedrate').value = getPrefValue("xy_feedrate");
             return;
         }
     } else {
-        feedratevalue = parseInt(id('controlpanel_z_feedrate').value);
-        if (feedratevalue < 1 || isNaN(feedratevalue) || (feedratevalue === null)) {
-            var letter = "Z";
-            if (grblaxis() > 3) letter = "Axis";
-            alertdlg(translate_text_item("Out of range"), translate_text_item(letter + " Feedrate value must be at least 1 mm/min!"));
+        feedratevalue = Number.parseInt(id('controlpanel_z_feedrate').value);
+        if (feedratevalue < 1 || Number.isNaN(feedratevalue) || (feedratevalue === null)) {
+            let letter = "Z";
+            if (common.grblaxis > 3) letter = "Axis";
+            alertdlg(translate_text_item("Out of range"), translate_text_item(`${letter} Feedrate value must be at least 1 mm/min!`));
             id('controlpanel_z_feedrate').value = getPrefValue("z_feedrate");
             return;
         }
     }
-    if (grblaxis() > 3) {
-        var letter = id('control_select_axis').value;
+    if (common.grblaxis > 3) {
+        const letter = id('control_select_axis').value;
         cmd = cmd.replace("Z", letter);
     }
-    command = "$J=G91 G21 F" + feedratevalue + " " + cmd;
+    command = `$J=G91 G21 F${feedratevalue} ${cmd}`;
     console.log(command);
     SendPrinterCommand(command, true, get_Position);
 }

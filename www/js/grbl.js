@@ -1,5 +1,6 @@
 import { alertdlg } from "./alertdlg.js";
 import { CALIBRATION_EVENT_NAME, findMaxFitness } from "./calculatesCalibrationStuff.js";
+import { Common } from "./common.js";
 import { get_icon_svg } from "./icons.js";
 import { sendCommand } from "./maslow.js";
 import { SendPrinterCommand } from "./printercmd.js";
@@ -30,53 +31,10 @@ const WPOS = (value) => {
   return wpos;
 }
 
-let grbl_zerocmd = 'X0 Y0 Z0';
-const grblzerocmd = (value) => {
-  if (typeof value === "string") {
-    grbl_zerocmd += value;
-  }
-  return grbl_zerocmd;
-}
-
 var feedrate = [0, 0, 0, 0, 0, 0]
 var last_axis_letter = 'Z'
 
 var axisNames = ['x', 'y', 'z', 'a', 'b', 'c']
-
-let Modal = { modes: '', plane: 'G17', units: 'G21', wcs: 'G54', distance: 'G90' };
-/** Work with the gCode 'modal' values
- * If `fieldName` is undefined, or `value` is undefined (and fieldName is not in the values), then return the values we have.
- * If `value` is undefined, but `fieldname` exists, just return the value for `fieldname`
- * Otherwise set `fieldname` to the `value` and return it
- */
-const modal = (fieldName, value) => {
-  if (typeof fieldName === "undefined") {
-    return Modal;
-  }
-  if (typeof value === "undefined") {
-    return !(fieldName in Modal) ? Modal : Modal[fieldName];
-  }
-  Modal[fieldName] = value;
-  return Modal[fieldName];
-};
-
-let calibration_results = {};
-const calibrationResults = (value) => {
-  if (typeof value !== "undefined") {
-    calibration_results = value;
-  }
-
-  return calibration_results;
-};
-
-let grblAxisCount = 3;
-const grblaxis = (value) => {
-  const axisCount = parseInt(value || "");
-  if (!isNaN(axisCount)) {
-    grblAxisCount = axisCount;
-  }
-  return grblAxisCount;
-};
 
 function setClickability(element, visible) {
   setDisplay(element, visible ? 'table-row' : 'none')
@@ -91,12 +49,13 @@ function setAutocheck(flag) {
 }
 
 function build_axis_selection() {
-  if (grblaxis() <= 3) {
+  const common = new Common();
+  if (common.grblaxis <= 3) {
     return;
   }
 
   var html = "<select class='form-control wauto' id='control_select_axis'>"
-  for (var i = 3; i <= grblaxis(); i++) {
+  for (var i = 3; i <= common.grblaxis; i++) {
     var letter
     let sel = "";
     if (i == 3) {
@@ -327,7 +286,7 @@ function get_status() {
 }
 
 function parseGrblStatus(response) {
-  var grbl = {
+  const grbl = {
     stateName: '',
     message: '',
     wco: undefined,
@@ -659,9 +618,10 @@ var collectedSettings = null
 async function handleCalibrationData(measurements) {
   document.body.addEventListener(CALIBRATION_EVENT_NAME, (event) => {
     const calData = event.detail.dataToSend;
+    const common = new Common();
     console.info(`Received calibration results that were ${calData.good ? "good" : "not good"} and ${calData.final ? "final" : "not final"}`);
     if (calData.good && calData.final) {
-      calibrationResults(calData.bestGuess);
+      common.calibrationResults = calData.bestGuess;
     }
   })
 
@@ -804,7 +764,7 @@ const StartProbeProcess = () => {
   console.log(cmd)
   probe_progress_status = 1
   var restoreReport = false
-  if (reportType == 'none') {
+  if (reportType === 'none') {
     tryAutoReport() // will fall back to polled if autoreport fails
     restoreReport = true
   }
@@ -819,22 +779,16 @@ const StartProbeProcess = () => {
 }
 
 let spindleSpeedSetTimeout;
-let spindleSpeed = 1;
-const spindleTabSpindleSpeed = (value) => {
-  if (typeof value === "number") {
-    spindleSpeed = value;
-  }
-  return spindleSpeed;
-}
 
 function setSpindleSpeed(speed) {
+  const common = new Common();
   if (spindleSpeedSetTimeout) {
     clearTimeout(spindleSpeedSetTimeout);
   }
   if (speed >= 1) {
-    spindleTabSpindleSpeed(speed);
+    common.spindleTabSpindleSpeed = speed;
     spindleSpeedSetTimeout = setTimeout(
-      () => SendPrinterCommand(`S${spindleTabSpindleSpeed()}`, false, null, null, 1, 1),
+      () => SendPrinterCommand(`S${common.spindleTabSpindleSpeed}`, false, null, null, 1, 1),
       500
     );
   }
@@ -842,17 +796,13 @@ function setSpindleSpeed(speed) {
 
 export {
   build_axis_selection,
-  calibrationResults,
-  grblaxis,
   grblHandleMessage,
-  grblzerocmd,
   grbl_reset,
   modal,
   onAutoReportIntervalChange, onstatusIntervalChange,
   onprobemaxtravelChange, onprobefeedrateChange, onproberetractChange, onprobetouchplatethicknessChange,
   reportNone, tryAutoReport, reportPolled,
   SendRealtimeCmd,
-  spindleTabSpindleSpeed,
   StartProbeProcess,
   MPOS, WPOS
 };
