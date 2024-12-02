@@ -1,9 +1,10 @@
 import { alertdlg } from "./alertdlg.js";
+import { Common } from "./common.js";
 import { confirmdlg } from "./confirmdlg.js";
 import { M } from "./constants.js";
 import { init_files_panel } from "./files.js";
 import { calibrationResults } from "./grbl.js";
-import { http_communication_locked, SendGetHttp } from "./http.js";
+import { SendGetHttp } from "./http.js";
 import { get_icon_svg } from "./icons.js";
 import { restartdlg } from "./restartdlg.js";
 import { translate_text_item } from "./translate.js";
@@ -53,11 +54,12 @@ const CONFIG_TOOLTIPS = {
 }
 
 const refreshSettings = (hide_setting_list) => {
-  if (http_communication_locked()) {
+  const common = new Common();
+  if (common.http_communication_locked) {
     setHTML('config_status', translate_text_item('Communication locked by another process, retry later.'));
     return;
   }
-  do_not_build_settings = typeof hide_setting_list == 'undefined' ? false : !hide_setting_list
+  do_not_build_settings = typeof hide_setting_list === 'undefined' ? false : !hide_setting_list
 
   displayBlock('settings_loader')
   displayNone('settings_list_content')
@@ -65,7 +67,7 @@ const refreshSettings = (hide_setting_list) => {
   displayNone('settings_refresh_btn')
 
   scl = []
-  var url = '/command?plain=' + encodeURIComponent('[ESP400]')
+  const url = `/command?plain=${encodeURIComponent('[ESP400]')}`
   SendGetHttp(url, getESPsettingsSuccess, getESPsettingsfailed)
 }
 

@@ -1,3 +1,4 @@
+import { Common } from "./common.js";
 import { logindlg } from "./logindlg.js";
 import { translate_text_item } from "./translate.js";
 import { setHTML } from "./util.js";
@@ -12,12 +13,6 @@ var max_cmd = 20;
 const clear_cmd_list = () => {
     http_cmd_list = [];
     processing_cmd = false;
-}
-
-let httpCommunicationLocked = false;
-const http_communication_locked = (value) => {
-    httpCommunicationLocked = (typeof value !== "undefined") ? !!value : httpCommunicationLocked;
-    return httpCommunicationLocked;
 }
 
 function http_resultfn(response_text) {
@@ -146,26 +141,27 @@ const SendGetHttp = (url, result_fn, error_fn, id, max_id) => {
 }
 
 function ProcessGetHttp(url, resultfn, errorfn) {
-    if (http_communication_locked()) {
+    const common = new Common();
+    if (common.http_communication_locked) {
         errorfn(503, translate_text_item("Communication locked!"));
         console.log("locked");
         return;
     }
-    var xmlhttp = new XMLHttpRequest();
-    xmlhttp.onreadystatechange = function() {
-        if (xmlhttp.readyState == 4) {
-            if (xmlhttp.status == 200) {
+    const xmlhttp = new XMLHttpRequest();
+    xmlhttp.onreadystatechange = () => {
+        if (xmlhttp.readyState === 4) {
+            if (xmlhttp.status === 200) {
                 //console.log("*** " + url + " done");
-                if (typeof resultfn != 'undefined' && resultfn != null) resultfn(xmlhttp.responseText);
+                if (typeof resultfn !== 'undefined' && resultfn != null) resultfn(xmlhttp.responseText);
             } else {
-                if (xmlhttp.status == 401) GetIdentificationStatus();
-                if (typeof errorfn != 'undefined' && errorfn != null) errorfn(xmlhttp.status, xmlhttp.responseText);
+                if (xmlhttp.status === 401) GetIdentificationStatus();
+                if (typeof errorfn !== 'undefined' && errorfn != null) errorfn(xmlhttp.status, xmlhttp.responseText);
             }
         }
     }
 
     if (url.startsWith("/command")) {
-        url += (url.indexOf("?") == -1) ? "?" : "&";
+        url += (url.indexOf("?") === -1) ? "?" : "&";
         url += "PAGEID=" + page_id;
     }
     //console.log("GET:" + url);
@@ -205,18 +201,19 @@ function SendPostHttp(url, postdata, result_fn, error_fn, id, max_id) {
 }
 
 function ProcessPostHttp(url, postdata, resultfn, errorfn) {
-    if ((http_communication_locked())) {
+    const common = new Common();
+    if (common.http_communication_locked()) {
         errorfn(503, translate_text_item("Communication locked!"));
         return;
     }
-    var xmlhttp = new XMLHttpRequest();
-    xmlhttp.onreadystatechange = function() {
-        if (xmlhttp.readyState == 4) {
-            if (xmlhttp.status == 200) {
-                if (typeof resultfn != 'undefined' && resultfn != null) resultfn(xmlhttp.responseText);
+    const xmlhttp = new XMLHttpRequest();
+    xmlhttp.onreadystatechange = () => {
+        if (xmlhttp.readyState === 4) {
+            if (xmlhttp.status === 200) {
+                if (typeof resultfn !== 'undefined' && resultfn != null) resultfn(xmlhttp.responseText);
             } else {
-                if (xmlhttp.status == 401) GetIdentificationStatus();
-                if (typeof errorfn != 'undefined' && errorfn != null) errorfn(xmlhttp.status, xmlhttp.responseText);
+                if (xmlhttp.status === 401) GetIdentificationStatus();
+                if (typeof errorfn !== 'undefined' && errorfn != null) errorfn(xmlhttp.status, xmlhttp.responseText);
             }
         }
     }
@@ -228,12 +225,12 @@ function ProcessPostHttp(url, postdata, resultfn, errorfn) {
 }
 
 function SendFileHttp(url, postdata, progress_fn, result_fn, error_fn) {
-    if ((http_cmd_list.length > max_cmd) && (max_cmd != -1)) {
+    if ((http_cmd_list.length > max_cmd) && (max_cmd !== -1)) {
         error_fn(999, translate_text_item("Server not responding"));
         return;
     }
-    if (http_cmd_list.length != 0) process = false;
-    var cmd = {
+    if (http_cmd_list.length !== 0) process = false;
+    const cmd = {
         cmd: url,
         type: "POST",
         isupload: true,
@@ -248,27 +245,28 @@ function SendFileHttp(url, postdata, progress_fn, result_fn, error_fn) {
 }
 
 function ProcessFileHttp(url, postdata, progressfn, resultfn, errorfn) {
-    if (http_communication_locked()) {
+    const common = new Common();
+    if (common.http_communication_locked) {
         errorfn(503, translate_text_item("Communication locked!"));
         return;
     }
-    http_communication_locked(true);
+    common.http_communication_locked = true;
     xmlhttpupload = new XMLHttpRequest();
-    xmlhttpupload.onreadystatechange = function() {
-        if (xmlhttpupload.readyState == 4) {
-            http_communication_locked(false);
-            if (xmlhttpupload.status == 200) {
-                if (typeof resultfn != 'undefined' && resultfn != null) resultfn(xmlhttpupload.responseText);
+    xmlhttpupload.onreadystatechange = () => {
+        if (xmlhttpupload.readyState === 4) {
+            common.http_communication_locked = false;
+            if (xmlhttpupload.status === 200) {
+                if (typeof resultfn !== 'undefined' && resultfn != null) resultfn(xmlhttpupload.responseText);
             } else {
-                if (xmlhttpupload.status == 401) GetIdentificationStatus();
-                if (typeof errorfn != 'undefined' && errorfn != null) errorfn(xmlhttpupload.status, xmlhttpupload.responseText);
+                if (xmlhttpupload.status === 401) GetIdentificationStatus();
+                if (typeof errorfn !== 'undefined' && errorfn != null) errorfn(xmlhttpupload.status, xmlhttpupload.responseText);
             }
         }
     }
     //console.log(url);
     xmlhttpupload.open("POST", url, true);
-    if (typeof progressfn != 'undefined' && progressfn != null) xmlhttpupload.upload.addEventListener("progress", progressfn, false);
+    if (typeof progressfn !== 'undefined' && progressfn != null) xmlhttpupload.upload.addEventListener("progress", progressfn, false);
     xmlhttpupload.send(postdata);
 }
 
-export { clear_cmd_list, http_communication_locked, SendFileHttp, SendGetHttp };
+export { clear_cmd_list, SendFileHttp, SendGetHttp };

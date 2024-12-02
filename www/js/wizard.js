@@ -1,18 +1,12 @@
+import { Common } from "./common.js";
 import { classes, displayBlock } from "./util.js";
-
-let canRevertWizard = false;
-const can_revert_wizard = (value) => {
-    if (typeof value !== "undefined") {
-        canRevertWizard = !!value;
-    }
-    return canRevertWizard;
-}
 
 const openstep = (evt, stepname) => {
     let i;
     let stepcontent;
     let steplinks;
-    if (evt.currentTarget.className.indexOf("wizard_done") > -1 && !can_revert_wizard()) {
+    const common = new Common();
+    if (evt.currentTarget.className.indexOf("wizard_done") > -1 && !common.can_revert_wizard) {
         return;
     }
 
@@ -28,4 +22,4 @@ const openstep = (evt, stepname) => {
     evt.currentTarget.className += " active";
 }
 
-export { can_revert_wizard, openstep };
+export { openstep };

@@ -1,9 +1,9 @@
 import { alertdlg } from "./alertdlg.js";
 import { Monitor_output_Update } from "./commands.js";
+import { Common } from "./common.js";
 import { confirmdlg } from "./confirmdlg.js";
-import { esp_error_code, esp_error_message } from "./esp_error.js";
 import { tryAutoReport } from "./grbl.js";
-import { http_communication_locked, SendFileHttp, SendGetHttp } from "./http.js";
+import { SendFileHttp, SendGetHttp } from "./http.js";
 import { get_icon_svg } from "./icons.js";
 import { inputdlg } from "./inputdlg.js";
 import { SendPrinterCommand } from "./printercmd.js";
@@ -558,13 +558,15 @@ const files_list_success = (response_text) => {
 
 /** Shows an alert dialog for the ESP error, and then clears the ESP error_code */
 const alertEspError = () => {
-    alertdlg(translate_text_item("Error"), stdErrMsg(`(${esp_error_code()})`, esp_error_message()));
-    esp_error_code(0);
+    const common = new Common();
+    alertdlg(translate_text_item("Error"), stdErrMsg(`(${common.esp_error_code})`, common.esp_error_message));
+    common.esp_error_code = 0;
 }
 
 function files_list_failed(error_code, response) {
     displayBlock('files_navigation_buttons');
-    if (esp_error_code() !== 0) {
+    const common = new Common();
+    if (common.esp_error_code !== 0) {
         alertEspError();
     } else {
         alertdlg(translate_text_item("Error"), translate_text_item("No connection"));
@@ -573,7 +575,8 @@ function files_list_failed(error_code, response) {
 }
 
 function files_directSD_upload_failed(error_code, response) {
-    if (esp_error_code() !== 0) {
+    const common = new Common();
+    if (common.esp_error_code !== 0) {
         alertEspError();
     } else {
         alertdlg(translate_text_item("Error"), translate_text_item("Upload failed"));
@@ -583,7 +586,7 @@ function files_directSD_upload_failed(error_code, response) {
 }
 
 function need_up_level() {
-    return files_currentPath != "/";
+    return files_currentPath !== "/";
 }
 
 function files_go_levelup() {
@@ -706,7 +709,8 @@ function process_check_sd_presence(answer) {
 }
 
 function files_start_upload() {
-    if (http_communication_locked()) {
+    const common = new Common();
+    if (common.http_communication_locked) {
         alertdlg(translate_text_item("Busy..."), translate_text_item("Communications are currently locked, please wait and retry."));
         console.log("communication locked");
         return;

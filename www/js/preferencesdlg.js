@@ -1,12 +1,13 @@
 import { alertdlg } from "./alertdlg.js";
 import { camera_GetAddress } from "./camera.js";
 import { Monitor_check_autoscroll, Monitor_check_verbose_mode } from "./commands.js";
+import { Common } from "./common.js";
 import { confirmdlg } from "./confirmdlg.js";
 import { clear_drop_menu } from "./dropmenu.js";
 import { build_file_filter_list } from "./files.js";
 import { onAutoReportIntervalChange, reportNone } from "./grbl.js";
 import { grblpanel } from "./grblpanel.js";
-import { http_communication_locked, SendFileHttp, SendGetHttp } from "./http.js";
+import { SendFileHttp, SendGetHttp } from "./http.js";
 import { get_icon_svg } from "./icons.js";
 import { build_language_list } from "./languages.js";
 import { closeModal, setactiveModal, showModal } from "./modaldlg.js";
@@ -18,12 +19,10 @@ import { translate_text, translate_text_item } from "./translate.js";
 import {
     conErr,
     displayBlock, displayFlex, displayNone,
-    last_ping,
     getChecked, getValue,
     id,
     setChecked, setValue, setHTML,
-    stdErrMsg,
-    HTMLEncode, HTMLDecode
+    stdErrMsg
 } from "./util.js";
 
 //Preferences dialog
@@ -476,7 +475,8 @@ const handlePing = () => {
         if (interval_ping) {
             clearInterval(interval_ping);
         }
-        last_ping(Date.now());
+        const common = new Common();
+        common.last_ping = Date.now();
         interval_ping = setInterval(() => check_ping(), 10 * 1000);
         console.log('enable ping');
     } else {
@@ -607,7 +607,8 @@ function process_preferencesCloseDialog(answer) {
 }
 
 const SavePreferences = (save_current_preferences = false) => {
-    if (http_communication_locked()) {
+    const common = new Common();
+    if (common.http_communication_locked) {
         alertdlg(translate_text_item("Busy..."), translate_text_item("Communications are currently locked, please wait and retry."));
         return;
     }

@@ -1,7 +1,7 @@
 import { alertdlg } from "./alertdlg.js";
+import { Common } from "./common.js";
 import { confirmdlg } from "./confirmdlg.js";
-import { esp_error_code, esp_error_message } from "./esp_error.js";
-import { http_communication_locked, SendFileHttp, SendGetHttp } from "./http.js";
+import { SendFileHttp, SendGetHttp } from "./http.js";
 import { closeModal, setactiveModal, showModal } from "./modaldlg.js";
 import { translate_text_item } from "./translate.js";
 import { conErr, stdErrMsg, id, displayBlock, displayNone, setValue, setHTML } from "./util.js";
@@ -76,8 +76,9 @@ function UploadUpdatefile() {
 }
 
 function StartUploadUpdatefile(response) {
-    if (response != "yes") return;
-    if (http_communication_locked()) {
+    if (response !== "yes") return;
+    const common = new Common();
+    if (common.http_communication_locked) {
         alertdlg(translate_text_item("Busy..."), translate_text_item("Communications are currently locked, please wait and retry."));
         return;
     }
@@ -89,14 +90,14 @@ function StartUploadUpdatefile(response) {
         var arg = "/" + file.name + "S";
         //append file size first to check updload is complete
         formData.append(arg, file.size);
-        formData.append('myfile[]', file, "/" + file.name);
+        formData.append('myfile[]', file, `/${file.name}`);
     }
     displayNone('fw-select_form');
     displayNone('uploadfw-button');
     update_ongoing = true;
     displayBlock('updatemsg');
     displayBlock('prgfw');
-    if (files.length == 1) current_update_filename = files[0].name;
+    if (files.length === 1) current_update_filename = files[0].name;
     else current_update_filename = "";
     setHTML('updatemsg', `${translate_text_item("Uploading")} ${current_update_filename}`);
     SendFileHttp(url, formData, UpdateProgressDisplay, updatesuccess, updatefailed)
@@ -130,10 +131,11 @@ function updatefailed(error_code, response) {
     displayNone('uploadfw-button');
     //setHTML('updatemsg', "");
     id('fw-select').value = "";
-    if (esp_error_code() !== 0) {
-        alertdlg(translate_text_item("Error"), stdErrMsg(`(${esp_error_code()})`, esp_error_message()));
-        setHTML('updatemsg', translate_text_item("Upload failed : ") + esp_error_message());
-        esp_error_code(0);
+    const common = new Common();
+    if (common.esp_error_code !== 0) {
+        alertdlg(translate_text_item("Error"), stdErrMsg(`(${common.esp_error_code})`, common.esp_error_message));
+        setHTML('updatemsg', translate_text_item("Upload failed : ") + common.esp_error_message);
+        common.esp_error_code = 0;
     } else {
         alertdlg(translate_text_item("Error"), stdErrMsg(error_code, response));
         setHTML('updatemsg', stdErrMsg(error_code, response, translate_text_item("Upload failed")));

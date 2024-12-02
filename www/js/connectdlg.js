@@ -1,8 +1,9 @@
+import { Common } from "./common.js";
 import { grblaxis } from "./grbl.js";
 import { SendGetHttp } from "./http.js";
 import { logindlg } from "./logindlg.js";
 import { closeModal, setactiveModal, showModal } from "./modaldlg.js";
-import { async_webcommunication, EventListenerSetup, startSocket } from "./socket.js";
+import { EventListenerSetup, startSocket } from "./socket.js";
 import { conErr, displayBlock, displayInline, displayNone, id } from "./util.js";
 
 /** Connect Dialog */
@@ -42,39 +43,41 @@ const getFWdata = (response) => {
     target_firmware = sublist[1].toLowerCase().trim();
     //FW HW
     sublist = tlist[2].split(":");
-    if (sublist.length != 2) {
+    if (sublist.length !== 2) {
         return false;
     }
     var sddirect = sublist[1].toLowerCase().trim();
-    if (sddirect == "direct sd") direct_sd = true;
+    if (sddirect === "direct sd") direct_sd = true;
     else direct_sd = false;
     //primary sd
     sublist = tlist[3].split(":");
-    if (sublist.length != 2) {
+    if (sublist.length !== 2) {
         return false;
     }
     primary_sd = sublist[1].toLowerCase().trim();
 
     //secondary sd
     sublist = tlist[4].split(":");
-    if (sublist.length != 2) {
+    if (sublist.length !== 2) {
         return false;
     }
     secondary_sd = sublist[1].toLowerCase().trim();
 
     //authentication
     sublist = tlist[5].split(":");
-    if (sublist.length != 2) {
+    if (sublist.length !== 2) {
         return false;
     }
-    if ((sublist[0].trim() == "authentication") && (sublist[1].trim() == "yes")) ESP3D_authentication = true;
+    if ((sublist[0].trim() === "authentication") && (sublist[1].trim() === "yes")) ESP3D_authentication = true;
     else ESP3D_authentication = false;
     //async communications
     if (tlist.length > 6) {
         sublist = tlist[6].split(":");
-        if ((sublist[0].trim() == "webcommunication") && (sublist[1].trim() == "Async")) async_webcommunication(true);
-        else {
-            async_webcommunication(false);
+        const common = new Common();
+        if ((sublist[0].trim() === "webcommunication") && (sublist[1].trim() === "Async")) {
+            common.async_webcommunication = true;
+        } else {
+            common.async_webcommunication = false;
             websocket_port = sublist[2].trim();
             if (sublist.length > 3) {
                 websocket_ip = sublist[3].trim();

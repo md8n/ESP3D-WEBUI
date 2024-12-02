@@ -1,8 +1,8 @@
 import { alertdlg } from "./alertdlg.js";
+import { Common } from "./common.js";
 import { confirmdlg } from "./confirmdlg.js";
-import { control_macrolist } from "./controls.js";
 import { clear_drop_menu, showhide_drop_menu } from "./dropmenu.js";
-import { http_communication_locked, SendFileHttp } from "./http.js";
+import { SendFileHttp } from "./http.js";
 import { get_icon_svg } from "./icons.js";
 import { closeModal, setactiveModal, showModal } from "./modaldlg.js";
 import { translate_text_item } from "./translate.js";
@@ -187,16 +187,17 @@ function on_macro_name(event, index) {
 }
 
 function build_dlg_macrolist_ui() {
-    var content = "";
+    const common = new Common();
+    let content = "";
     macrodlg_macrolist = [];
-    for (var i = 0; i < 9; i++) {
-        macrodlg_macrolist.push(control_macrolist()[i]);
-        content += "<tr style='vertical-align:middle' id='macro_line_" + i + "'>";
+    for (let i = 0; i < 9; i++) {
+        macrodlg_macrolist.push(common.control_macrolist[i]);
+        content += `<tr style='vertical-align:middle' id='macro_line_${i}'>`;
         content += "</tr>";
     }
 
     setHTML('dlg_macro_list', content);
-    for (var i = 0; i < 9; i++) {
+    for (let i = 0; i < 9; i++) {
         build_dlg_macrolist_line(i);
     }
 }
@@ -241,11 +242,12 @@ function macro_select_glyph(event, glyph, index) {
 }
 
 const closeMacroDialog = () => {
+    const common = new Common();
     let modified = false;
     const fieldsTest = ["filename", "name", "glyph", "class", "target"];
     for (let i = 0; i < 9; i++) {
-        let macEntry = macrodlg_macrolist[i];
-        let conEntry = control_macrolist()[i];
+        const macEntry = macrodlg_macrolist[i];
+        const conEntry = common.control_macrolist[i];
         if (fieldsTest.some((fieldName) => macEntry[fieldName] !== conEntry[fieldName])) {
             modified =true;
             break;
@@ -259,7 +261,7 @@ const closeMacroDialog = () => {
 }
 
 function process_macroCloseDialog(answer) {
-    if (answer == 'no') {
+    if (answer === 'no') {
         //console.log("Answer is no so exit");
         closeModal('cancel');
     } else {
@@ -269,21 +271,22 @@ function process_macroCloseDialog(answer) {
 }
 
 function SaveNewMacroList() {
-    if (http_communication_locked()) {
+    const common = new Common();
+    if (common.http_communication_locked) {
         alertdlg(translate_text_item("Busy..."), translate_text_item("Communications are currently locked, please wait and retry."));
         return;
     }
-    for (var i = 0; i < 9; i++) {
-        if (macrodlg_macrolist[i].filename.length == 0 && macrodlg_macrolist[i].class != "") {
+    for (let i = 0; i < 9; i++) {
+        if (macrodlg_macrolist[i].filename.length === 0 && macrodlg_macrolist[i].class !== "") {
             alertdlg(translate_text_item("Out of range"), translate_text_item("File name cannot be empty!"));
             return;
         }
     }
 
-    var blob = new Blob([JSON.stringify(macrodlg_macrolist, null, " ")], {
+    const blob = new Blob([JSON.stringify(macrodlg_macrolist, null, " ")], {
         type: 'application/json'
     });
-    var file;
+    let file;
     if (browser_is("IE") || browser_is("Edge")) {
         file = blob;
         file.name = '/macrocfg.json';
@@ -308,10 +311,11 @@ function macrodlgUploadProgressDisplay(oEvent) {
 }
 
 function macroUploadsuccess(response) {
-    control_macrolist([]);
-    for (var i = 0; i < 9; i++) {
-        var entry;
-        if ((macrodlg_macrolist.length != 0)) {
+    const common = new Common();
+    common.control_macrolist = [];
+    for (let i = 0; i < 9; i++) {
+        let entry;
+        if ((macrodlg_macrolist.length !== 0)) {
             entry = {
                 name: macrodlg_macrolist[i].name,
                 glyph: macrodlg_macrolist[i].glyph,
@@ -330,7 +334,7 @@ function macroUploadsuccess(response) {
                 index: i
             };
         }
-        control_macrolist(entry);
+        common.control_macrolist.push(entry);
     }
     displayNone('macrodlg_upload_msg');
     closeModal('ok');

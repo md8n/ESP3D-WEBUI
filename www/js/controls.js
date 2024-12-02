@@ -1,4 +1,5 @@
 import { alertdlg } from "./alertdlg.js";
+import { Common } from "./common.js";
 import { grblaxis, grblzerocmd } from "./grbl.js";
 import { SendGetHttp } from "./http.js";
 import { get_icon_svg } from "./icons.js";
@@ -8,23 +9,6 @@ import { translate_text_item } from "./translate.js";
 import { conErr, displayBlock, displayInline, displayNone, getChecked, id, setChecked, setHTML } from "./util.js";
 
 let interval_position = -1;
-
-let controlMacroList = [];
-/** Handle the array of control macros.
- * If a new array is provided this will overwrite any existing macro list. 
- * If a single value is provided this will be pushed to the end of the existing macro list. 
- * The current macro list is always returned */
-const control_macrolist = (value) => {
-    if (typeof value === "undefined") {
-        return controlMacroList;
-    }
-    if (Array.isArray(value)) {
-        controlMacroList = value;
-    } else {
-        controlMacroList.push(value);
-    }
-    return controlMacroList;
-}
 
 /** Set up the macro list for the Controls Panel */
 const init_controls_panel = () => {
@@ -70,8 +54,9 @@ function showAxiscontrols() {
 }
 
 function loadmacrolist() {
-    control_macrolist([]);
-    var url = "/macrocfg.json";
+    const common = new Common();
+    common.control_macrolist = [];
+    const url = "/macrocfg.json";
     SendGetHttp(url, processMacroGetSuccess, processMacroGetFailed);
 }
 
@@ -84,9 +69,10 @@ function Macro_build_list(response_text) {
     } catch (e) {
         console.error("Parsing error:", e);
     }
-    for (var i = 0; i < 9; i++) {
-        var entry;
-        if ((response.length != 0) && (typeof (response[i].name) !== 'undefined' && typeof (response[i].glyph) !== 'undefined' && typeof (response[i].filename) !== 'undefined' && typeof (response[i].target) !== 'undefined' && typeof (response[i].class) !== 'undefined' && typeof (response[i].index) !== 'undefined')) {
+    const common = new Common();
+    for (let i = 0; i < 9; i++) {
+        let entry;
+        if ((response.length !== 0) && (typeof (response[i].name) !== 'undefined' && typeof (response[i].glyph) !== 'undefined' && typeof (response[i].filename) !== 'undefined' && typeof (response[i].target) !== 'undefined' && typeof (response[i].class) !== 'undefined' && typeof (response[i].index) !== 'undefined')) {
             entry = {
                 name: response[i].name,
                 glyph: response[i].glyph,
@@ -105,7 +91,7 @@ function Macro_build_list(response_text) {
                 index: i
             };
         }
-        control_macrolist(entry);
+        common.control_macrolist.push(entry);
     }
     control_build_macro_ui();
 }
@@ -288,6 +274,7 @@ function control_build_macro_button(index, entry) {
 
 function control_build_macro_ui() {
     const actions = [];
+    const common = new Common();
     var content = "<div class='tooltip'>";
     content += "<span class='tooltip-text'>Manage macros</span>"
     content += "<button id='control_btn_show_macro_dlg' class='btn btn-primary'>";
@@ -306,15 +293,15 @@ function control_build_macro_ui() {
     content += "</span>";
     content += "</button>";
     content += "</div>";
-    for (var i = 0; i < 9; i++) {
-        let entry = control_macrolist()[i];
+    for (let i = 0; i < 9; i++) {
+        const entry = common.control_macrolist[i];
         content += control_build_macro_button(i, entry);
         actions.push({id: `control_macro_${i}`, type: "click", method: macro_command(entry.target, entry.filename)});
     }
     setHTML('Macro_list', content);
-    actions.forEach((action) => {
+    for (const action in actions) {
         id(action.id).addEventListener(action.type, (event) => action.method);
-    });
+    }
 }
 
 function macro_command(target, filename) {
@@ -330,4 +317,4 @@ function macro_command(target, filename) {
     SendPrinterCommand(cmd);
 }
 
-export { ControlsPanel, control_macrolist,  get_Position, init_controls_panel, on_autocheck_position };
+export { ControlsPanel, get_Position, init_controls_panel, on_autocheck_position };

@@ -1,5 +1,6 @@
 import { alertdlg } from "./alertdlg.js";
-import { http_communication_locked, SendGetHttp } from "./http.js";
+import { Common } from "./common.js";
+import { SendGetHttp } from "./http.js";
 import { get_icon_svg } from "./icons.js";
 import { translate_text_item } from "./translate.js";
 import { conErr, stdErrMsg, displayBlock, displayNone, id, setChecked, setHTML } from "./util.js";
@@ -14,7 +15,8 @@ var is_override_config = false;
 var config_file_name = "/sd/config";
 
 const refreshconfig = (is_override) => {
-    if (http_communication_locked()) {
+    const common = new Common();
+    if (common.http_communication_locked) {
         setHTML('config_status', translate_text_item("Communication locked by another process, retry later."));
         return;
     }

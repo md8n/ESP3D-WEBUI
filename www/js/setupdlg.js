@@ -9,9 +9,10 @@ import {
     define_esp_role, define_esp_role_from_pos,
     setup_is_done
 } from "./settings.js";
-import { can_revert_wizard, openstep } from "./wizard.js";
+import { openstep } from "./wizard.js";
 import { translate_text, translate_text_item } from "./translate.js";
 import { displayBlock, displayNone, id, setHTML } from "./util.js";
+import { Common } from "./common.js";
 
 //setup dialog
 
@@ -46,9 +47,10 @@ function openStep(wizard, step) {
     id(step).className = id(step).className.replace(" disabled", "");
 }
 function closeStep(step) {
-    if (id(step).className.indexOf(" wizard_done") == -1) {
+    if (id(step).className.indexOf(" wizard_done") === -1) {
         id(step).className += " wizard_done";
-        if (!can_revert_wizard()) {
+        const common = Common();
+        if (!common.can_revert_wizard) {
             id(step).className += " no_revert_wizard";
         }
     }
@@ -57,7 +59,7 @@ function spacer() {
     return "<hr>\n";
 }
 function div(name) {
-    return "<div id='" + name + "'>";
+    return `<div id='${name}'>`;
 }
 function endDiv() {
     return "</div>";

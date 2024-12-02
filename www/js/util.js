@@ -114,14 +114,6 @@ const conErr = (error_code, response, error_prefix = "Error") => {
   console.error(errMsg);
 }
 
-let lastPing = 0;
-const last_ping = (value) => {
-  if (typeof value === "number") {
-    lastPing = value;
-  }
-  return lastPing;
-}
-
 /** HTML encode the supplied string */
 const HTMLEncode = (value) => {
   const valChars = [...value];
@@ -141,7 +133,7 @@ const HTMLEncode = (value) => {
 
 /** Decode an HTML encoded string */
 const HTMLDecode = (value) => {
-  var tmpelement = document.createElement('div');
+  const tmpelement = document.createElement('div');
   tmpelement.innerHTML = value;
   value = tmpelement.textContent;
   tmpelement.textContent = '';
@@ -154,7 +146,6 @@ export {
   stdErrMsg,
   disable_items,
   displayBlock, displayFlex, displayInline, displayNone,
-  last_ping,
   getChecked, setChecked,
   getValue, setValue,
   setHTML,
