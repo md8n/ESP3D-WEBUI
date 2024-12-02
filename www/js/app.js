@@ -8,12 +8,7 @@ import { grblpanel } from "./grblpanel.js";
 import { closeModal } from "./modaldlg.js";
 import { navbar } from "./navbar.js";
 import { getpreferenceslist, initpreferences } from "./preferencesdlg.js";
-import {
-	build_HTML_setting_list,
-	current_setting_filter,
-	refreshSettings,
-	setup_is_done,
-} from "./settings.js";
+import { build_HTML_setting_list, refreshSettings } from "./settings.js";
 import { setupdlg } from "./setupdlg.js";
 import { tabletInit } from "./tablet.js";
 import { displayBlock, displayFlex, displayNone, id, setHTML } from "./util.js";
@@ -289,10 +284,11 @@ function initUI_4() {
 		setupdlg();
 	} else {
 		//wizard is done UI can be updated
-		setup_is_done(true);
+		const common = new Common();
+		common.setup_is_done = true;
 		do_not_build_settings = false;
 		AddCmd(display_boot_progress);
-		build_HTML_setting_list(current_setting_filter());
+		build_HTML_setting_list(common.current_setting_filter);
 		AddCmd(closeModal);
 		AddCmd(show_main_UI);
 	}

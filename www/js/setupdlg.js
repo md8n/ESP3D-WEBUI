@@ -7,7 +7,6 @@ import {
     build_HTML_setting_list,
     current_setting_filter,
     define_esp_role, define_esp_role_from_pos,
-    setup_is_done
 } from "./settings.js";
 import { openstep } from "./wizard.js";
 import { translate_text, translate_text_item } from "./translate.js";
@@ -66,7 +65,8 @@ function endDiv() {
 }
 
 const setupdlg = () => {
-    setup_is_done(false);
+    const common = new Common();
+    common.setup_is_done = false;
     displayNone('main_ui');
     // From settingstab
     const settingstab_list_elem = id('settings_list_data');
@@ -109,7 +109,8 @@ const setupdlg = () => {
 
 
 function setupdone(response) {
-    setup_is_done(true);
+    const common = new Common();
+    common.setup_is_done = true;
     do_not_build_settings = false;
     build_HTML_setting_list(current_setting_filter());
     translate_text(getPrefValue("language_list"));

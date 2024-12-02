@@ -1,7 +1,8 @@
+import { Common } from "./common.js";
 import { M } from "./constants.js";
 import { get_Position } from "./controls.js";
 import { SendPrinterCommand } from "./printercmd.js";
-import { current_setting_filter, refreshSettings, saveMaslowYaml } from "./settings.js";
+import { refreshSettings, saveMaslowYaml } from "./settings.js";
 import { hideModal, loadedValues } from "./tablet.js";
 
 /** Maslow Status */
@@ -178,22 +179,22 @@ const saveConfigValues = () => {
         return;
     }
 
-    if (gridWidth != loadedValues('gridWidth')) {
+    if (gridWidth !== loadedValues('gridWidth')) {
         sendCommand(`$/${M}_calibration_grid_width_mm_X=${gridWidth}`);
     }
-    if (gridHeight != loadedValues('gridHeight')) {
+    if (gridHeight !== loadedValues('gridHeight')) {
         sendCommand(`$/${M}_calibration_grid_height_mm_Y=${gridHeight}`);
     }
-    if (gridSize != loadedValues('gridSize')) {
+    if (gridSize !== loadedValues('gridSize')) {
         sendCommand(`$/${M}_calibration_grid_size=${gridSize}`);
     }
-    if (retractionForce != loadedValues('retractionForce')) {
+    if (retractionForce !== loadedValues('retractionForce')) {
         sendCommand(`$/${M}_Retract_Current_Threshold=${retractionForce}`);
     }
-    if (machineOrientation != loadedValues('machineOrientation')) {
+    if (machineOrientation !== loadedValues('machineOrientation')) {
         sendCommand(`$/${M}_vertical=${machineOrientation === 'horizontal' ? 'false' : 'true'}`);
     }
-    if (machineWidth != loadedValues('machineWidth') || machineHeight != loadedValues('machineHeight')) {
+    if (machineWidth !== loadedValues('machineWidth') || machineHeight != loadedValues('machineHeight')) {
         sendCommand(`$/${M}_tlX=0`);
         sendCommand(`$/${M}_tlY=${machineHeight}`);
         sendCommand(`$/${M}_trX=${machineWidth}`);
@@ -201,7 +202,8 @@ const saveConfigValues = () => {
         sendCommand(`$/${M}_brX=${machineWidth}`);
     }
 
-    refreshSettings(current_setting_filter());
+    const common = new Common();
+    refreshSettings(common.current_setting_filter);
     saveMaslowYaml();
     loadCornerValues();
 

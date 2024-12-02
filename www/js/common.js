@@ -21,6 +21,10 @@ class Common {
         /** See http.js */
         this.http_communication_locked = false;
 
+        /** See settings.js */
+        this.current_setting_filter = 'nvs';
+        this.setup_is_done = false;
+
         /** See socket.js */
         this.async_webcommunication = false;
 

@@ -15,18 +15,6 @@ var setting_error_msg = ''
 var setting_lasti = -1
 var setting_lastj = -1
 
-let currentSettingFilter = 'nvs';
-const current_setting_filter = (value) => {
-  currentSettingFilter = (typeof value === "string") ? value : currentSettingFilter || "nvs";
-  return currentSettingFilter;
-}
-
-let setupIsDone = false;
-const setup_is_done = (value) => {
-  setupIsDone = (typeof value === "boolean") ? value : setupIsDone || false;
-  return setupIsDone;
-}
-
 var do_not_build_settings = false
 const CONFIG_TOOLTIPS = {
   Maslow_vertical: `If the ${M} is oriented horizontally, set this to false`,
@@ -245,8 +233,9 @@ const build_HTML_setting_list = (filter) => {
     </tr>`;
     actions.push({id: btnId, type: "click", method: saveMaslowYaml()});
   }
-  current_setting_filter(filter);
-  setChecked(`${current_setting_filter()}_setting_filter`, true);
+  const common = new Common();
+  common.current_setting_filter = filter;
+  setChecked(`${common.current_setting_filter}_setting_filter`, true);
 
   for (let i = 0; i < scl.length; i++) {
     fname = scl[i].F.trim().toLowerCase();
@@ -274,7 +263,6 @@ const build_HTML_setting_list = (filter) => {
     document.querySelector('#setting_32_0').value = result;
   }
   // set calibration values if exists
-  const common = new Common();
   const calRes = common.calibrationResults;
   if (Object.keys(calRes).length) {
     document.querySelector('#setting_153_0').value = calRes.br.x;
@@ -335,22 +323,23 @@ function setting_check_value(value, i) {
 }
 
 function process_settings_answer(response_text) {
-  var result = true
+  let result = true
   try {
-    var response = JSON.parse(response_text)
+    const response = JSON.parse(response_text)
     if (typeof response.EEPROM == 'undefined') {
       result = false
       console.log('No EEPROM')
     } else {
       //console.log("EEPROM has " + response.EEPROM.length + " entries");
       if (response.EEPROM.length > 0) {
-        var vi = 0
-        for (var i = 0; i < response.EEPROM.length; i++) {
+        let vi = 0
+        for (let i = 0; i < response.EEPROM.length; i++) {
           vi = create_setting_entry(response.EEPROM[i], vi)
         }
         if (vi > 0) {
-          if (setup_is_done) {
-            build_HTML_setting_list(current_setting_filter())
+          const common = new Common();
+          if (common.setup_is_done) {
+            build_HTML_setting_list(common.current_setting_filter)
           }
           update_UI_setting()
         } else result = false
@@ -526,7 +515,7 @@ function setting_checkchange(i, j) {
   }
   //console.log("value: " + val);
   //console.log("default value: " + defval(i));
-  if (defval(i) == val) {
+  if (defval(i) === val) {
     console.log('values are identical')
     setBtn(i, j, 'btn-default')
     setIcon(i, j, '')
@@ -627,11 +616,9 @@ const define_esp_role_from_pos = (pos) => define_esp_role(get_index_from_eeprom_
 export {
   build_control_from_pos,
   build_HTML_setting_list,
-  current_setting_filter,
   define_esp_role,
   define_esp_role_from_pos,
   refreshSettings,
   restart_esp,
-  saveMaslowYaml,
-  setup_is_done
+  saveMaslowYaml
 };

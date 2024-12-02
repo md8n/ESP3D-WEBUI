@@ -1,6 +1,7 @@
+import { Common } from "./common.js";
 import { M } from "./constants.js";
 import { sendCommand } from "./maslow.js";
-import { current_setting_filter, refreshSettings, saveMaslowYaml } from "./settings.js";
+import { refreshSettings, saveMaslowYaml } from "./settings.js";
 import { onCalibrationButtonsClick } from "./tablet.js";
 
 var tlZ = 100
@@ -594,7 +595,8 @@ const findMaxFitness = (measurements) => {
           final: true,
           bestGuess: bestGuess
         }, true);
-        refreshSettings(current_setting_filter());
+        const common = new Common();
+        refreshSettings(common.current_setting_filter);
         saveMaslowYaml();
 
         messagesBox.textContent += '\nA command to save these values has been successfully sent for you. Please check for any error messages.';

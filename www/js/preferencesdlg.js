@@ -13,7 +13,7 @@ import { build_language_list } from "./languages.js";
 import { closeModal, setactiveModal, showModal } from "./modaldlg.js";
 import { ontoggleLock } from "./navbar.js";
 import { buildFieldId, buildPrefsFromDefs, getPrefDefPath, prefDefs } from "./prefDefs.js";
-import { build_HTML_setting_list, current_setting_filter } from "./settings.js";
+import { build_HTML_setting_list } from "./settings.js";
 import { check_ping } from "./socket.js";
 import { translate_text, translate_text_item } from "./translate.js";
 import {
@@ -50,7 +50,7 @@ const buildTdInp = (inpFld, key, value) => `<td><div class="input-group has-cont
 const buildSpnErrFld = (key, value) => `<span id="${buildFieldId(key, value)}_icon" class="form-control-feedback ico_feedback"></span>`;
 
 const buildFieldIdAttr = (key, value) => `id="${buildFieldId(key, value)}"`;
-const buildMinMaxAttr = (value) => `${typeof value.min !== "undefined" ? ' min="' + value.min + '"' : ''}${typeof value.max !== "undefined" ? ' max="' + value.max + '"' : ''}`;
+const buildMinMaxAttr = (value) => `${typeof value.min !== "undefined" ? ` min="${value.min}"` : ''}${typeof value.max !== "undefined" ? ` max="${value.max}"` : ''}`;
 const buildPlaceholderAttr = (value) => value.placeholder ? `placeholder="${value.placeholder}" translateph` : "";
 
 const setGroupId = (elem, fId) => elem.setAttribute("id", `${fId}_group`);
@@ -207,7 +207,8 @@ const setDialog = (prefs) => {
                 if (fElem) {
                     fElem.value = value.value;
                 }
-                default:
+                break;
+            default:
                 console.log(`${key}: ${JSON.stringify(value)}`);
                 break;
         }
@@ -554,13 +555,14 @@ function Preferences_build_list(response_text) {
 
 function applypreferenceslist() {
     //Assign each control state
-    build_HTML_setting_list(current_setting_filter());
+    const common = new Common();
+    build_HTML_setting_list(common.current_setting_filter);
 
     handlePing();
 }
 
 const showpreferencesdlg = () => {
-    var modal = setactiveModal('preferencesdlg.html');
+    const modal = setactiveModal('preferencesdlg.html');
     if (modal == null) {
         return;
     }

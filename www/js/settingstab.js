@@ -1,5 +1,6 @@
 
-import { current_setting_filter, refreshSettings, restart_esp } from "./settings.js";
+import { Common } from "./common.js";
+import { refreshSettings, restart_esp } from "./settings.js";
 import { SPIFFSdlg } from "./SPIFFSdlg.js";
 import { statusdlg } from "./statusdlg.js";
 import { updatedlg } from "./updatedlg.js";
@@ -14,7 +15,9 @@ const settingstab = () => {
     id("settings_SPIFFS_btn").addEventListener("click", (event) => SPIFFSdlg('/'));
     id("settings_update_fw_btn").addEventListener("click", (event) => updatedlg());
     id("settings_restart_btn").addEventListener("click", (event) => restart_esp());
-    id("settings_refresh_btn").addEventListener("click", (event) => refreshSettings(current_setting_filter()));
+
+    const common = new Common();
+    id("settings_refresh_btn").addEventListener("click", (event) => refreshSettings(common.current_setting_filter));
 }
 
 export { settingstab };
