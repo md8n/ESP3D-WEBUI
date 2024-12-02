@@ -44,7 +44,7 @@ const enableItem = (itemName) => {
 }
 
 const ontoggleLock = (forcevalue) => {
-    if (typeof forcevalue != 'undefined') {
+    if (typeof forcevalue !== 'undefined') {
         setChecked('lock_UI', forcevalue);
     }
 

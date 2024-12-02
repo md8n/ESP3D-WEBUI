@@ -36,8 +36,8 @@ function update_btn_status(forcevalue) {
     if (typeof forcevalue !== 'undefined') {
         statuspage = forcevalue;
     }
-    setHTML('next_status_btn', get_icon_svg((statuspage == 0) ? "triangle-right" : "triangle-left", "1em", "1em"));
-    statuspage = (statuspage == 0) ? 1 : 0;
+    setHTML('next_status_btn', get_icon_svg((statuspage === 0) ? "triangle-right" : "triangle-left", "1em", "1em"));
+    statuspage = (statuspage === 0) ? 1 : 0;
 }
 
 function statussuccess(response) {

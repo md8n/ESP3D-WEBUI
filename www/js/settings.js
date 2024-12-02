@@ -449,13 +449,10 @@ function setIconHTML(i, j, value) {
   setHTML(sId(i, j, 'icon_'), value);
 }
 
-function setting_revert_to_default(i, j) {
-  if (typeof j == 'undefined') {
-    j = 0;
-  }
-  if (scl[i].type == 'F') {
-    const tst = parseInt(defval(i));
-    setting(i, j).value = (tst == (tst | getFlag(i, j))) ? '1' : '0';
+function setting_revert_to_default(i, j = 0) {
+  if (scl[i].type === 'F') {
+    const tst = Number.parseInt(defval(i));
+    setting(i, j).value = (tst === (tst | getFlag(i, j))) ? '1' : '0';
   } else {
     setting(i, j).value = defval(i);
   }
@@ -464,30 +461,29 @@ function setting_revert_to_default(i, j) {
   setIconHTML(i, j, '');
 }
 
-function settingsetvalue(i, j) {
-  if (typeof j == 'undefined') j = 0
+function settingsetvalue(i, j = 0) {
   //remove possible spaces
   value = setting(i, j).value.trim()
   //Apply flag here
-  if (scl[i].type == 'F') {
-    var tmp = defval(i)
-    if (value == '1') {
+  if (scl[i].type === 'F') {
+    let tmp = defval(i)
+    if (value === '1') {
       tmp |= getFlag(i, j)
     } else {
       tmp &= ~getFlag(i, j)
     }
     value = tmp
   }
-  if (value == defval(i)) return
+  if (value === defval(i)) return
   //check validity of value
-  var isvalid = setting_check_value(value, i)
+  const isvalid = setting_check_value(value, i)
   //if not valid show error
   if (!isvalid) {
     setsettingerror(i)
-    alertdlg(translate_text_item('Out of range'), translate_text_item('Value must be ') + setting_error_msg + ' !')
+    alertdlg(translate_text_item('Out of range'), `${translate_text_item('Value must be ') + setting_error_msg} !`)
   } else {
     //value is ok save it
-    var cmd = scl[i].cmd + value
+    const cmd = scl[i].cmd + value
     setting_lasti = i
     setting_lastj = j
     scl[i].defaultvalue = value
@@ -495,7 +491,7 @@ function settingsetvalue(i, j) {
     setIcon(i, j, 'has-success ico_feedback')
     setIconHTML(i, j, get_icon_svg('ok'))
     setStatus(i, j, 'has-feedback has-success')
-    var url = '/command?plain=' + encodeURIComponent(cmd)
+    const url = `/command?plain=${encodeURIComponent(cmd)}`
     SendGetHttp(url, setESPsettingsSuccess, setESPsettingsfailed)
   }
 }

@@ -437,14 +437,6 @@ function files_is_filename(file_name) {
     return answer;
 }
 
-let gCodeFile = '';
-const gCodeFilename = (newName) => {
-    if (typeof newName !== "undefined") {
-        gCodeFile = newName;
-    }
-    return gCodeFile;
-}
-
 function addOption(selector, name, value, isDisabled, isSelected) {
     var opt = document.createElement('option')
     opt.appendChild(document.createTextNode(name))
@@ -455,6 +447,7 @@ function addOption(selector, name, value, isDisabled, isSelected) {
 }
 
 const populateTabletFileSelector = (files, path) => {
+    const common = new Common();
     const selector = id('filelist');
     if (!selector) {
         return;
@@ -462,23 +455,23 @@ const populateTabletFileSelector = (files, path) => {
 
     selector.length = 0;
     selector.selectedIndex = 0;
-    let selectedFile = gCodeFilename().split('/').slice(-1)[0];
+    const selectedFile = common.gCodeFilename.split('/').slice(-1)[0];
 
     if (!files.length) {
         addOption(selector, 'No files found', -3, true, selectedFile == '');
         return;
     }
-    var inRoot = path === '/';
-    var legend = 'Load GCode File from /SD' + path;
+    const inRoot = path === '/';
+    const legend = `Load GCode File from /SD${path}`;
     addOption(selector, legend, -2, true, true); // A different one might be selected later
 
     if (!inRoot) {
         addOption(selector, '..', -1, false, false);
     }
-    var gCodeFileFound = false;
-    files.forEach(function (file, index) {
+    let gCodeFileFound = false;
+    files.forEach((file, index) => {
         if (file.isprintable) {
-            var found = file.name == selectedFile;
+            const found = file.name === selectedFile;
             if (found) {
                 gCodeFileFound = true;
             }
@@ -486,14 +479,14 @@ const populateTabletFileSelector = (files, path) => {
         }
     })
     if (!gCodeFileFound) {
-        gCodeFilename("");
+        common.gCodeFilename = "";
         gCodeDisplayable = false;
         showGCode('');
     }
 
-    files.forEach(function (file, index) {
+    files.forEach((file, index) => {
         if (file.isdir) {
-            addOption(selector, file.name + '/', index, false, false);
+            addOption(selector, `${file.name}/`, index, false, false);
         }
     })
 }
@@ -749,7 +742,7 @@ function files_start_upload() {
 
 function FilesUploadProgressDisplay(oEvent) {
     if (oEvent.lengthComputable) {
-        var percentComplete = (oEvent.loaded / oEvent.total) * 100;
+        const percentComplete = (oEvent.loaded / oEvent.total) * 100;
         id('files_prg').value = percentComplete;
         setHTML('files_percent_upload', percentComplete.toFixed(0));
     } else {
@@ -757,4 +750,4 @@ function FilesUploadProgressDisplay(oEvent) {
     }
 }
 
-export { build_file_filter_list, files_list_success, files_select_upload, gCodeFilename, init_files_panel };
+export { build_file_filter_list, files_list_success, files_select_upload, init_files_panel };

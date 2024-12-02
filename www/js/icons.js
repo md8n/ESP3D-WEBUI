@@ -37,11 +37,8 @@ var list_icon = {
     'M335 635l494 494q29 29 50 20.5t21 -49.5v-1000q0 -41 -21 -49.5t-50 20.5l-494 494q-14 14 -14 35t14 35z',
 }
 
-const get_icon_svg = (name, w, h, color) => {
+const get_icon_svg = (name, w = '1.3em', h= '1.2em', color = 'currentColor') => {
   var content = ''
-  if (typeof w == 'undefined') w = '1.3em'
-  if (typeof h == 'undefined') h = '1.2em'
-  if (typeof color == 'undefined') color = 'currentColor'
   var has_error = false
   try {
     content = list_icon[name]

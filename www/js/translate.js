@@ -102,10 +102,10 @@ const translate_text = (lang) => {
 const translate_text_item = (item_text, withtag) => {
     var currenttrans = {};
     var translated_content;
-    const with_tag = (typeof withtag != "undefined") ? !!withtag : false;
+    const with_tag = (typeof withtag !== "undefined") ? !!withtag : false;
 
-    for (var lang_i = 0; lang_i < language_list.length; lang_i++) {
-        if (language_list[lang_i][0] == getPrefValue("language_list")) {
+    for (let lang_i = 0; lang_i < language_list.length; lang_i++) {
+        if (language_list[lang_i][0] === getPrefValue("language_list")) {
             currenttrans = eval(language_list[lang_i][2]);
         }
     }
@@ -113,7 +113,7 @@ const translate_text_item = (item_text, withtag) => {
     translated_content = currenttrans[item_text];
     if (typeof translated_content === 'undefined') translated_content = item_text;
     if (with_tag) {
-        var translated_content_tmp = `<span english_content="${item_text}" translate>${translated_content}</span>`;
+        const translated_content_tmp = `<span english_content="${item_text}" translate>${translated_content}</span>`;
         translated_content = translated_content_tmp;
     }
 

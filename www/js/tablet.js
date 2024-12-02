@@ -1,9 +1,5 @@
 import { Common } from "./common.js";
-import {
-	files_list_success,
-	files_select_upload,
-	gCodeFilename,
-} from "./files.js";
+import { files_list_success, files_select_upload } from "./files.js";
 import { SendRealtimeCmd, MPOS, WPOS } from "./grbl.js";
 import { SendGetHttp } from "./http.js";
 import {
@@ -416,7 +412,7 @@ const loadedValues = (fieldName, value) => {
 function tabletShowMessage(msg, collecting) {
 	if (
 		collecting ||
-		msg == "" ||
+		msg === "" ||
 		msg.startsWith("<") ||
 		msg.startsWith("ok") ||
 		msg.startsWith("\n") ||
@@ -779,7 +775,8 @@ var filename = "TEST.NC";
 var watchPath = "";
 
 function tabletGetFileList(path) {
-	gCodeFilename("");
+	const common = new Common();
+	common.gCodeFilename = "";
 	SendGetHttp(`/upload?path=${encodeURI(path)}`, files_list_success);
 }
 
@@ -978,7 +975,8 @@ function scrollToLine(lineNumber) {
 }
 
 function runGCode() {
-	gCodeFilename() && sendCommand(`$sd/run=${gCodeFilename()}`);
+	const common = new Common();
+	common.gCodeFilename && sendCommand(`$sd/run=${common.gCodeFilename}`);
 	setTimeout(() => {
 		SendRealtimeCmd(0x7e);
 	}, 1500);
@@ -992,14 +990,15 @@ function tabletSelectGCodeFile(filename) {
 	option.selected = true;
 }
 function tabletLoadGCodeFile(path, size) {
-	gCodeFilename(path);
-	if ((isNaN(size) && size.endsWith("GB")) || size > 10000000) {
+	const common = new Common();
+	common.gCodeFilename = path;
+	if ((Number.isNaN(size) && size.endsWith("GB")) || size > 10000000) {
 		showGCode("GCode file too large to display (> 1MB)");
 		gCodeDisplayable = false;
 		displayer.clear();
 	} else {
 		gCodeDisplayable = true;
-		fetch(encodeURIComponent("SD" + gCodeFilename()))
+		fetch(encodeURIComponent(`SD${common.gCodeFilename}`))
 			.then((response) => response.text())
 			.then((gcode) => showGCode(gcode));
 	}
@@ -1007,8 +1006,8 @@ function tabletLoadGCodeFile(path, size) {
 
 function selectFile() {
 	tabletClick();
-	var filelist = id("filelist");
-	var index = Number(filelist.options[filelist.selectedIndex].value);
+	const filelist = id("filelist");
+	const index = Number(filelist.options[filelist.selectedIndex].value);
 	if (index === -3) {
 		// No files
 		return;
@@ -1019,14 +1018,16 @@ function selectFile() {
 	}
 	if (index === -1) {
 		// Go up
-		gCodeFilename("");
+		const common = new Common();
+		common.gCodeFilename = "";
 		files_go_levelup();
 		return;
 	}
-	var file = files_file_list[index];
-	var filename = file.name;
+	const file = files_file_list[index];
+	const filename = file.name;
 	if (file.isdir) {
-		gCodeFilename("");
+		const common = new Common();
+		common.gCodeFilename = "";
 		files_enter_dir(filename);
 	} else {
 		tabletLoadGCodeFile(files_currentPath + filename, file.size);
