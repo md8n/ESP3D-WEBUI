@@ -1,14 +1,14 @@
-import { SendGetHttp } from "./http";
-import { get_icon_svg } from "./icons";
-import { closeModal, getactiveModal, setactiveModal, showModal } from "./modaldlg";
-import { translate_text_item } from "./translate";
-import { conErr, stdErrMsg, displayBlock, displayNone, id, setHTML } from "./util";
+import { SendGetHttp } from "./http.js";
+import { get_icon_svg } from "./icons.js";
+import { closeModal, getactiveModal, setactiveModal, showModal } from "./modaldlg.js";
+import { translate_text_item } from "./translate.js";
+import { conErr, stdErrMsg, displayBlock, displayNone, id, setHTML } from "./util.js";
 
 var statuspage = 0;
 var statuscontent = "";
 //status dialog
 const statusdlg = () => {
-    var modal = setactiveModal('statusdlg.html');
+    const modal = setactiveModal('statusdlg.html');
     if (modal == null) {
         return;
     }
@@ -24,11 +24,11 @@ const statusdlg = () => {
 }
 
 function next_status() {
-    var modal = getactiveModal();
-    var text = modal.element.getElementsByClassName("modal-text")[0];
-    text.innerHTML = (statuspage == 0)
+    const modal = getactiveModal();
+    const text = modal.element.getElementsByClassName("modal-text")[0];
+    text.innerHTML = (statuspage === 0)
         ? statuscontent
-        : "<table><tr><td width='auto' style='vertical-align:top;'><label translate>Browser:</label></td><td>&nbsp;</td><td width='100%'><span class='text-info'><strong>" + navigator.userAgent + "</strong></span></td></tr></table>";
+        : `<table><tr><td width='auto' style='vertical-align:top;'><label translate>Browser:</label></td><td>&nbsp;</td><td width='100%'><span class='text-info'><strong>${navigator.userAgent}</strong></span></td></tr></table>`;
     update_btn_status();
 }
 

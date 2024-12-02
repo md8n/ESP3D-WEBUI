@@ -1,9 +1,9 @@
 
-import { current_setting_filter, refreshSettings, restart_esp } from "./settings";
-import { SPIFFSdlg } from "./SPIFFSdlg";
-import { statusdlg } from "./statusdlg";
-import { updatedlg } from "./updatedlg";
-import { id } from "./util";
+import { current_setting_filter, refreshSettings, restart_esp } from "./settings.js";
+import { SPIFFSdlg } from "./SPIFFSdlg.js";
+import { statusdlg } from "./statusdlg.js";
+import { updatedlg } from "./updatedlg.js";
+import { id } from "./util.js";
 
 /** Set up the event handlers for the settings tab */
 const settingstab = () => {

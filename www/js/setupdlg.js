@@ -1,17 +1,17 @@
-import { get_icon_svg } from "./icons";
-import { add_language_list_event_handler, build_language_list } from "./languages";
-import { closeModal, setactiveModal, showModal } from "./modaldlg";
-import { setPrefValue, SavePreferences, getPrefValue } from "./preferencesdlg";
+import { get_icon_svg } from "./icons.js";
+import { add_language_list_event_handler, build_language_list } from "./languages.js";
+import { closeModal, setactiveModal, showModal } from "./modaldlg.js";
+import { setPrefValue, SavePreferences, getPrefValue } from "./preferencesdlg.js";
 import {
     build_control_from_pos,
     build_HTML_setting_list,
     current_setting_filter,
     define_esp_role, define_esp_role_from_pos,
     setup_is_done
-} from "./settings";
-import { can_revert_wizard, openstep } from "./wizard";
-import { translate_text, translate_text_item } from "./translate";
-import { displayBlock, displayNone, id, setHTML } from "./util";
+} from "./settings.js";
+import { can_revert_wizard, openstep } from "./wizard.js";
+import { translate_text, translate_text_item } from "./translate.js";
+import { displayBlock, displayNone, id, setHTML } from "./util.js";
 
 //setup dialog
 
@@ -23,10 +23,10 @@ var EP_HOSTNAME = 'Hostname';
 const td = (content) => `<td>${content}</td>`;
 
 function table(value) {
-    return "<table><tr>" + value + "</tr></table>";
+    return `<table><tr>${value}</tr></table>`;
 }
 function heading(label) {
-    return "<h4>" + translate_text_item(label) + "</h4><hr>";
+    return `<h4>${translate_text_item(label)}</h4><hr>`;
 }
 function buildControlItem(label, pos, actions, extra) {
     return translate_text_item(label) + table(build_control_from_pos(pos, actions, extra));

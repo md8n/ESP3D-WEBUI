@@ -1,9 +1,9 @@
-import { closeModal, setactiveModal, showModal } from "./modaldlg";
-import { id } from "./util";
+import { closeModal, setactiveModal, showModal } from "./modaldlg.js";
+import { id } from "./util.js";
 
 //input dialog
 const inputdlg = (titledlg, textdlg, closefunc, preset) => {
-    var modal = setactiveModal('inputdlg.html', closefunc);
+    const modal = setactiveModal('inputdlg.html', closefunc);
     if (modal == null) {
         return;
     }
@@ -12,8 +12,8 @@ const inputdlg = (titledlg, textdlg, closefunc, preset) => {
     id("inputdlg_cancel").addEventListener("click", (event) => closeInputModal('cancel'));
     id("inputdlg_ok").addEventListener("click", (event) => closeInputModal('ok'));
 
-    var title = modal.element.getElementsByClassName("modal-title")[0];
-    var body = modal.element.getElementsByClassName("modal-text")[0];
+    const title = modal.element.getElementsByClassName("modal-title")[0];
+    const body = modal.element.getElementsByClassName("modal-text")[0];
     title.innerHTML = titledlg;
     body.innerHTML = textdlg;
     id('inputldg_text').value = (typeof preset !== 'undefined') ? preset : "";
@@ -22,9 +22,9 @@ const inputdlg = (titledlg, textdlg, closefunc, preset) => {
 }
 
 function closeInputModal(response) {
-    var answer = "";
-    if (response == "ok") {
-        var input = id('inputldg_text').value;
+    let answer = "";
+    if (response === "ok") {
+        const input = id('inputldg_text').value;
         answer = input.trim();
     }
     closeModal(answer);

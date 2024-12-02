@@ -1,9 +1,9 @@
-import { closeModal, setactiveModal, showModal } from "./modaldlg";
-import { id } from "./util";
+import { closeModal, setactiveModal, showModal } from "./modaldlg.js";
+import { id } from "./util.js";
 
 //Credits dialog
 const creditsdlg = () => {
-    var modal = setactiveModal('creditsdlg.html');
+    const modal = setactiveModal('creditsdlg.html');
     if (modal == null) {
         return;
     }

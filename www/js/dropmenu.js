@@ -1,8 +1,8 @@
-import { classes } from "./util";
+import { classes } from "./util.js";
 
 const clear_drop_menu = (event) => {
     const item = get_parent_by_class(event.target, "dropdownselect");
-    let ignore_id = item?.id || "-1";
+    const ignore_id = item?.id || "-1";
     const list = classes("dropmenu-content");
     for (let index = 0; index < list.length; index++) {
         const item2 = get_parent_by_class(list[index], "dropdownselect");
@@ -23,18 +23,18 @@ function get_parent_by_class(item, classname) {
 }
 
 function hide_drop_menu(event) {
-    var item = get_parent_by_class(event.target, "dropmenu-content");
+    const item = get_parent_by_class(event.target, "dropmenu-content");
     if (typeof item !== 'undefined' && item.classList.contains('show')) {
         item.classList.remove('show');
     }
 }
 
 const showhide_drop_menu = (event) => {
-    var item = get_parent_by_class(event.target, "dropdownselect");
+    const item = get_parent_by_class(event.target, "dropdownselect");
     if (item === null) {
         return;
     }
-    var menu = item.getElementsByClassName("dropmenu-content")[0];
+    const menu = item.getElementsByClassName("dropmenu-content")[0];
     if (typeof menu !== 'undefined'){
         menu.classList.toggle("show");
     }

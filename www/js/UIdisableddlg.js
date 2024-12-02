@@ -1,11 +1,11 @@
-import { setactiveModal, showModal } from "./modaldlg";
-import { saveSerialMessages } from "./tablet";
-import { translate_text_item } from "./translate";
-import { id, setHTML } from "./util";
+import { setactiveModal, showModal } from "./modaldlg.js";
+import { saveSerialMessages } from "./tablet.js";
+import { translate_text_item } from "./translate.js";
+import { id, setHTML } from "./util.js";
 
 //UIdisabled dialog
 export const UIdisableddlg = (lostcon) => {
-    var modal = setactiveModal('UIdisableddlg.html');
+    const modal = setactiveModal('UIdisableddlg.html');
     if (modal == null) {
         return;
     }

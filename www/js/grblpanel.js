@@ -6,10 +6,10 @@ import {
     SendRealtimeCmd,
     spindleTabSpindleSpeed,
     StartProbeProcess
-} from "./grbl";
-import { SendPrinterCommand } from "./printercmd";
-import { opentab } from "./tabs";
-import { id } from "./util";
+} from "./grbl.js";
+import { SendPrinterCommand } from "./printercmd.js";
+import { opentab } from "./tabs.js";
+import { id } from "./util.js";
 
 /** Set up the event handlers for the grblpanel */
 export const grblpanel = () => {

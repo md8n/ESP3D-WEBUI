@@ -1,5 +1,5 @@
-import { translate_text_item } from "./translate";
-import { HTMLDecode } from "./util";
+import { translate_text_item } from "./translate.js";
+import { HTMLDecode } from "./util.js";
 
 /** Definitions for all the preferences */
 const prefDefs = {
@@ -106,8 +106,8 @@ const prefDefs = {
                 "min": 0,
                 "max": 30000,
                 valFunc: (value) => {
-                    const vInt = parseInt(value);
-                    return !isNaN(vInt) && (vInt == 0 || (vInt >= 50 && vInt <= 30000))
+                    const vInt = Number.parseInt(value);
+                    return !Number.isNaN(vInt) && (vInt === 0 || (vInt >= 50 && vInt <= 30000))
                         ? ""
                         : translate_text_item("Value of auto-report must be 0 or between 50ms and 30000ms !!");
                 },

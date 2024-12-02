@@ -1,12 +1,12 @@
-import { alertdlg } from "./alertdlg";
-import { confirmdlg } from "./confirmdlg";
-import { esp_error_code, esp_error_message } from "./esp_error";
-import { http_communication_locked, SendFileHttp, SendGetHttp } from "./http";
-import { get_icon_svg } from "./icons";
-import { inputdlg } from "./inputdlg";
-import { closeModal, setactiveModal, showModal } from "./modaldlg";
-import { translate_text_item } from "./translate";
-import { conErr, stdErrMsg, displayBlock, displayNone, id, setValue, setHTML } from "./util";
+import { alertdlg } from "./alertdlg.js";
+import { confirmdlg } from "./confirmdlg.js";
+import { esp_error_code, esp_error_message } from "./esp_error.js";
+import { http_communication_locked, SendFileHttp, SendGetHttp } from "./http.js";
+import { get_icon_svg } from "./icons.js";
+import { inputdlg } from "./inputdlg.js";
+import { closeModal, setactiveModal, showModal } from "./modaldlg.js";
+import { translate_text_item } from "./translate.js";
+import { conErr, stdErrMsg, displayBlock, displayNone, id, setValue, setHTML } from "./util.js";
 
 //SPIFFS dialog
 let sCurrPath = "/";
@@ -21,7 +21,7 @@ var SPIFFS_currentfile = "";
 var SPIFFS_upload_ongoing = false;
 
 const SPIFFSdlg = (root) => {
-    var modal = setactiveModal('SPIFFSdlg.html');
+    const modal = setactiveModal('SPIFFSdlg.html');
     if (modal == null) {
         return;
     }

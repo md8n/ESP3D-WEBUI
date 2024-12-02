@@ -1,7 +1,7 @@
-import { M } from "./constants";
-import { sendCommand } from "./maslow";
-import { current_setting_filter, refreshSettings, saveMaslowYaml } from "./settings";
-import { onCalibrationButtonsClick } from "./tablet";
+import { M } from "./constants.js";
+import { sendCommand } from "./maslow.js";
+import { current_setting_filter, refreshSettings, saveMaslowYaml } from "./settings.js";
+import { onCalibrationButtonsClick } from "./tablet.js";
 
 var tlZ = 100
 var trZ = 56

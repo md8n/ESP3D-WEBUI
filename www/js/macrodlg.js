@@ -1,18 +1,18 @@
-import { alertdlg } from "./alertdlg";
-import { confirmdlg } from "./confirmdlg";
-import { control_macrolist } from "./controls";
-import { clear_drop_menu, showhide_drop_menu } from "./dropmenu";
-import { http_communication_locked, SendFileHttp } from "./http";
-import { get_icon_svg } from "./icons";
-import { closeModal, setactiveModal, showModal } from "./modaldlg";
-import { translate_text_item } from "./translate";
-import { displayBlock, displayNone, id, setHTML } from "./util";
+import { alertdlg } from "./alertdlg.js";
+import { confirmdlg } from "./confirmdlg.js";
+import { control_macrolist } from "./controls.js";
+import { clear_drop_menu, showhide_drop_menu } from "./dropmenu.js";
+import { http_communication_locked, SendFileHttp } from "./http.js";
+import { get_icon_svg } from "./icons.js";
+import { closeModal, setactiveModal, showModal } from "./modaldlg.js";
+import { translate_text_item } from "./translate.js";
+import { displayBlock, displayNone, id, setHTML } from "./util.js";
 
 //Macro dialog
-var macrodlg_macrolist = [];
+let macrodlg_macrolist = [];
 
 function showmacrodlg(closefn) {
-    var modal = setactiveModal('macrodlg.html', closefn);
+    const modal = setactiveModal('macrodlg.html', closefn);
     if (modal == null) {
         return;
     }

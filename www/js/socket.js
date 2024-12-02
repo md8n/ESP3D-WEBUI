@@ -1,11 +1,11 @@
-import { Monitor_output_Update } from "./commands";
-import { on_autocheck_position } from "./controls";
-import { grblHandleMessage, reportNone } from "./grbl";
-import { clear_cmd_list, http_communication_locked } from "./http";
-import { enable_ping } from "./preferencesdlg";
-import { translate_text_item } from "./translate";
-import { UIdisableddlg } from "./UIdisableddlg";
-import { id, HTMLDecode, last_ping, setHTML } from "./util";
+import { Monitor_output_Update } from "./commands.js";
+import { on_autocheck_position } from "./controls.js";
+import { grblHandleMessage, reportNone } from "./grbl.js";
+import { clear_cmd_list, http_communication_locked } from "./http.js";
+import { enable_ping } from "./preferencesdlg.js";
+import { translate_text_item } from "./translate.js";
+import { UIdisableddlg } from "./UIdisableddlg.js";
+import { id, HTMLDecode, last_ping, setHTML } from "./util.js";
 
 let asyncWebComm = false;
 let convertDHT2Fahrenheit = false;

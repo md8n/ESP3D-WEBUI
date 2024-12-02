@@ -5,7 +5,7 @@
 
 // and then the imports and exports were added back in, because using globals everywhere is a @#$%#$%#$% recipe for complete disaster
 
-import { Interpreter } from "./simple-interpreter";
+import { Interpreter } from "./simple-interpreter.js";
 
 'use strict';
 

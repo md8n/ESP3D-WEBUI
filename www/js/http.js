@@ -1,6 +1,6 @@
-import { logindlg } from "./logindlg";
-import { translate_text_item } from "./translate";
-import { setHTML } from "./util";
+import { logindlg } from "./logindlg.js";
+import { translate_text_item } from "./translate.js";
+import { setHTML } from "./util.js";
 
 var http_cmd_list = [];
 var processing_cmd = false;

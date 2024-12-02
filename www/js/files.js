@@ -1,14 +1,14 @@
-import { alertdlg } from "./alertdlg";
-import { Monitor_output_Update } from "./commands";
-import { confirmdlg } from "./confirmdlg";
-import { esp_error_code, esp_error_message } from "./esp_error";
-import { tryAutoReport } from "./grbl";
-import { http_communication_locked, SendFileHttp, SendGetHttp } from "./http";
-import { get_icon_svg } from "./icons";
-import { inputdlg } from "./inputdlg";
-import { SendPrinterCommand } from "./printercmd";
-import { translate_text_item } from "./translate";
-import { displayBlock, displayInline, displayNone, id, stdErrMsg, setHTML } from "./util";
+import { alertdlg } from "./alertdlg.js";
+import { Monitor_output_Update } from "./commands.js";
+import { confirmdlg } from "./confirmdlg.js";
+import { esp_error_code, esp_error_message } from "./esp_error.js";
+import { tryAutoReport } from "./grbl.js";
+import { http_communication_locked, SendFileHttp, SendGetHttp } from "./http.js";
+import { get_icon_svg } from "./icons.js";
+import { inputdlg } from "./inputdlg.js";
+import { SendPrinterCommand } from "./printercmd.js";
+import { translate_text_item } from "./translate.js";
+import { displayBlock, displayInline, displayNone, id, stdErrMsg, setHTML } from "./util.js";
 
 var files_currentPath = "/";
 var files_filter_sd_list = false;

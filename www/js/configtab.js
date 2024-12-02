@@ -1,6 +1,6 @@
 
-import { Apply_config_override, Delete_config_override, refreshconfig } from "./config";
-import { id } from "./util";
+import { Apply_config_override, Delete_config_override, refreshconfig } from "./config.js";
+import { id } from "./util.js";
 
 /** Set up the event handlers for the config tab */
 const configtab = () => {

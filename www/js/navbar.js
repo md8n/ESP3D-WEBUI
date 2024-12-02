@@ -1,14 +1,14 @@
-import { cameratab } from "./camera";
-import { configtab } from "./configtab";
-import { creditsdlg } from "./creditsdlg";
-import { DisconnectLogin } from "./logindlg";
-import { changepassworddlg } from "./passworddlg";
-import { showpreferencesdlg } from "./preferencesdlg";
-import { settingstab } from "./settingstab";
-import { setupdlg } from "./setupdlg";
-import { opentab } from "./tabs";
-import { translate_text_item } from "./translate";
-import { disable_items, displayNone, getChecked, id, setChecked, setHTML } from "./util";
+import { cameratab } from "./camera.js";
+import { configtab } from "./configtab.js";
+import { creditsdlg } from "./creditsdlg.js";
+import { DisconnectLogin } from "./logindlg.js";
+import { changepassworddlg } from "./passworddlg.js";
+import { showpreferencesdlg } from "./preferencesdlg.js";
+import { settingstab } from "./settingstab.js";
+import { setupdlg } from "./setupdlg.js";
+import { opentab } from "./tabs.js";
+import { translate_text_item } from "./translate.js";
+import { disable_items, displayNone, getChecked, id, setChecked, setHTML } from "./util.js";
 
 /** Set up the event handlers for the navbar */
 const navbar = () => {

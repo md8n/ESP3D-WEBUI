@@ -1,17 +1,17 @@
 // Display the XY-plane projection of a GCode toolpath on a 2D canvas
-import { modal, MPOS, WPOS } from "./grbl";
-import { Toolpath } from "./simple-toolpath";
-import { getValue, id } from "./util";
+import { modal, MPOS, WPOS } from "./grbl.js";
+import { Toolpath } from "./simple-toolpath.js";
+import { getValue, id } from "./util.js";
 
-var root = window;
-
-const tp_canvas = id("small-toolpath");
 const scale = window.devicePixelRatio;
 const width = window.innerWidth;
-tp_canvas.width = width * scale;
-tp_canvas.height = (width / 2) * scale;
-var tp = tp_canvas.getContext("2d", { willReadFrequently: true });
-var tpRect;
+const tp_canvas = id("small-toolpath");
+if (tp_canvas) {
+    tp_canvas.width = width * scale;
+    tp_canvas.height = (width / 2) * scale;
+}
+const tp = tp_canvas.getContext("2d", { willReadFrequently: true });
+let tpRect;
 
 tp.lineWidth = 0.1;
 tp.lineCap = 'round';
@@ -294,23 +294,23 @@ stopC.stroke();
 
 var tpUnits = 'G21';
 
-var tpBbox = {
+const tpBbox = {
     min: {
-        x: Infinity,
-        y: Infinity
+        x: Number.POSITIVE_INFINITY,
+        y: Number.POSITIVE_INFINITY
     },
     max: {
-        x: -Infinity,
-        y: -Infinity
+        x: Number.NEGATIVE_INFINITY,
+        y: Number.NEGATIVE_INFINITY
     }
 };
 var bboxIsSet = false;
 
-var resetBbox = function () {
-    tpBbox.min.x = Infinity;
-    tpBbox.min.y = Infinity;
-    tpBbox.max.x = -Infinity;
-    tpBbox.max.y = -Infinity;
+const resetBbox = () => {
+    tpBbox.min.x = Number.POSITIVE_INFINITY;
+    tpBbox.min.y = Number.POSITIVE_INFINITY;
+    tpBbox.max.x = Number.NEGATIVE_INFINITY;
+    tpBbox.max.y = Number.NEGATIVE_INFINITY;
     bboxIsSet = false;
 }
 
@@ -323,7 +323,7 @@ var xz = 0.0;
 var yx = -0.707 / 2;
 var yy = 0.707 / 2;
 var yz = 1.0;
-var isoView = function () {
+const isoView = function () {
     xx = 0.707;
     xy = 0.707;
     xz = 0.0;
@@ -331,7 +331,7 @@ var isoView = function () {
     yy = 0.707;
     yz = 1.0;
 }
-var obliqueView = function () {
+const obliqueView = function () {
     xx = 0.707;
     xy = 0.707;
     xz = 0.0;
@@ -339,7 +339,7 @@ var obliqueView = function () {
     yy = 0.707 / 2;
     yz = 1.0;
 }
-var topView = function () {
+const topView = function () {
     xx = 1.0;
     xy = 0.0;
     xz = 0.0;
@@ -347,14 +347,14 @@ var topView = function () {
     yy = 1.0;
     yz = 0.0;
 }
-var projection = function (wpos) {
+const projection = function (wpos) {
     outpoint = {}
     outpoint.x = wpos.x * xx + wpos.y * xy + wpos.z * xz;
     outpoint.y = wpos.x * yx + wpos.y * yy + wpos.z * yz;
     return outpoint;
 }
 
-var formatLimit = function (mm) {
+const formatLimit = function (mm) {
     return (tpUnits == 'G20') ? (mm / 25.4).toFixed(3) + '"' : mm.toFixed(2) + 'mm';
 }
 
@@ -364,7 +364,7 @@ var toolSave = null;
 var toolRadius = 6;
 var toolRectWH = toolRadius * 2 + 4;  // Slop to encompass the entire image area
 
-var drawTool = function (dpos) {
+const drawTool = function (dpos) {
     pp = projection(dpos)
     toolX = xToPixel(pp.x) - toolRadius - 2;
     toolY = yToPixel(pp.y) - toolRadius - 2;

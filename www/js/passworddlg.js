@@ -1,11 +1,11 @@
-import { SendGetHttp } from "./http";
-import { closeModal, setactiveModal, showModal } from "./modaldlg";
-import { translate_text_item } from "./translate";
-import { conErr, displayBlock, displayNone, id, setHTML } from "./util";
+import { SendGetHttp } from "./http.js";
+import { closeModal, setactiveModal, showModal } from "./modaldlg.js";
+import { translate_text_item } from "./translate.js";
+import { conErr, displayBlock, displayNone, id, setHTML } from "./util.js";
 
 /** Change Password dialog */
 const changepassworddlg = () => {
-    var modal = setactiveModal('passworddlg.html');
+    const modal = setactiveModal('passworddlg.html');
     if (modal == null) {
         return;
     }
@@ -27,12 +27,11 @@ const changepassworddlg = () => {
 }
 
 function checkpassword() {
-    var pwd = id('password_password_text').value.trim();
-    var pwd1 = id('password_password_text1').value.trim();
-    var pwd2 = id('password_password_text2').value.trim();
+    const pwd1 = id('password_password_text1').value.trim();
+    const pwd2 = id('password_password_text2').value.trim();
     setHTML('password_content', "");
     displayNone('change_password_btn');
-    if (pwd1 != pwd2) {
+    if (pwd1 !== pwd2) {
         setHTML('password_content', translate_text_item("Passwords do not matches!"));
     } else if (pwd1.length < 1 || pwd1.length > 16 || pwd1.indexOf(" ") > -1) {
         setHTML('password_content', translate_text_item("Password must be >1 and <16 without space!"));
@@ -43,7 +42,7 @@ function checkpassword() {
 
 
 function ChangePasswordfailed(error_code, response_text) {
-    var response = JSON.parse(response_text);
+    const response = JSON.parse(response_text);
     if (typeof(response.status) !== 'undefined') {
         setHTML('password_content', translate_text_item(response.status));
     }

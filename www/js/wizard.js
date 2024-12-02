@@ -1,4 +1,4 @@
-import { classes, displayBlock } from "./util";
+import { classes, displayBlock } from "./util.js";
 
 let canRevertWizard = false;
 const can_revert_wizard = (value) => {
@@ -9,7 +9,9 @@ const can_revert_wizard = (value) => {
 }
 
 const openstep = (evt, stepname) => {
-    var i, stepcontent, steplinks;
+    let i;
+    let stepcontent;
+    let steplinks;
     if (evt.currentTarget.className.indexOf("wizard_done") > -1 && !can_revert_wizard()) {
         return;
     }

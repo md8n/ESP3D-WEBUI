@@ -1,10 +1,10 @@
-import { alertdlg } from "./alertdlg";
-import { CALIBRATION_EVENT_NAME, findMaxFitness } from "./calculatesCalibrationStuff";
-import { get_icon_svg } from "./icons";
-import { sendCommand } from "./maslow";
-import { SendPrinterCommand } from "./printercmd";
-import { translate_text_item } from "./translate";
-import { getChecked, getValue, setValue, id, setChecked, setHTML } from "./util";
+import { alertdlg } from "./alertdlg.js";
+import { CALIBRATION_EVENT_NAME, findMaxFitness } from "./calculatesCalibrationStuff.js";
+import { get_icon_svg } from "./icons.js";
+import { sendCommand } from "./maslow.js";
+import { SendPrinterCommand } from "./printercmd.js";
+import { translate_text_item } from "./translate.js";
+import { getChecked, getValue, setValue, id, setChecked, setHTML } from "./util.js";
 
 
 /** interval timer ID */

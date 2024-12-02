@@ -1,12 +1,12 @@
-import { SendGetHttp } from "./http";
-import { closeModal, setactiveModal, showModal } from "./modaldlg";
-import { translate_text_item } from "./translate";
-import { conErr, displayBlock, displayNone, id, setHTML } from "./util";
+import { SendGetHttp } from "./http.js";
+import { closeModal, setactiveModal, showModal } from "./modaldlg.js";
+import { translate_text_item } from "./translate.js";
+import { conErr, displayBlock, displayNone, id, setHTML } from "./util.js";
 
 /** login dialog */
 const logindlg = (closefunc, check_first) => {
-    var modal = setactiveModal('logindlg.html', closefunc);
-    var need_query_auth = false;
+    const modal = setactiveModal('logindlg.html', closefunc);
+    let need_query_auth = false;
     if (modal == null) {
         return;
     }
@@ -22,7 +22,7 @@ const logindlg = (closefunc, check_first) => {
         need_query_auth = check_first;
     }
     if (need_query_auth) {
-        var url = "/login";
+        const url = "/login";
         SendGetHttp(url, checkloginsuccess);
     } else {
         showModal();
@@ -30,7 +30,7 @@ const logindlg = (closefunc, check_first) => {
 }
 
 function checkloginsuccess(response_text) {
-    var response = JSON.parse(response_text);
+    const response = JSON.parse(response_text);
     if (typeof(response.authentication_lvl) !== 'undefined') {
         if (response.authentication_lvl != "guest") {
             if (typeof(response.authentication_lvl) !== 'undefined') {

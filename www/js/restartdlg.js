@@ -1,13 +1,13 @@
-import { http_communication_locked } from "./http";
-import { closeModal, setactiveModal, showModal } from "./modaldlg";
-import { SendPrinterCommand } from "./printercmd";
-import { translate_text_item } from "./translate";
-import { conErr, stdErrMsg, displayBlock, displayNone, id, last_ping, setHTML } from "./util";
+import { http_communication_locked } from "./http.js";
+import { closeModal, setactiveModal, showModal } from "./modaldlg.js";
+import { SendPrinterCommand } from "./printercmd.js";
+import { translate_text_item } from "./translate.js";
+import { conErr, stdErrMsg, displayBlock, displayNone, id, last_ping, setHTML } from "./util.js";
 
 /** Restart dialog */
 const restartdlg = () => {
     console.log("show restart");
-    var modal = setactiveModal('restartdlg.html');
+    const modal = setactiveModal('restartdlg.html');
     if (modal == null) {
         return;
     }
@@ -24,10 +24,10 @@ function restart_esp_success(response) {
     var x = id("prgrestart");
     http_communication_locked(true);
     x.max = 10;
-    interval = setInterval(function() {
+    interval = setInterval(() => {
         last_ping(Date.now());
         i = i + 1;
-        var x = id("prgrestart");
+        const x = id("prgrestart");
         x.value = i;
         setHTML('restartmsg', `${translate_text_item("Restarting, please wait....")} ${(x.max + 1 - i)} ${translate_text_item("seconds")}`);
         if (i > x.max) {

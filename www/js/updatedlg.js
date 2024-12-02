@@ -1,16 +1,16 @@
-import { alertdlg } from "./alertdlg";
-import { confirmdlg } from "./confirmdlg";
-import { esp_error_code, esp_error_message } from "./esp_error";
-import { http_communication_locked, SendFileHttp, SendGetHttp } from "./http";
-import { closeModal, setactiveModal, showModal } from "./modaldlg";
-import { translate_text_item } from "./translate";
-import { conErr, stdErrMsg, id, displayBlock, displayNone, setValue, setHTML } from "./util";
+import { alertdlg } from "./alertdlg.js";
+import { confirmdlg } from "./confirmdlg.js";
+import { esp_error_code, esp_error_message } from "./esp_error.js";
+import { http_communication_locked, SendFileHttp, SendGetHttp } from "./http.js";
+import { closeModal, setactiveModal, showModal } from "./modaldlg.js";
+import { translate_text_item } from "./translate.js";
+import { conErr, stdErrMsg, id, displayBlock, displayNone, setValue, setHTML } from "./util.js";
 
 var update_ongoing = false;
 var current_update_filename = "";
 //update dialog
 const updatedlg = () => {
-    var modal = setactiveModal('updatedlg.html');
+    const modal = setactiveModal('updatedlg.html');
     if (modal == null) {
         return;
     }

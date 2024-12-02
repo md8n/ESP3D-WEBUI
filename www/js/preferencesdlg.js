@@ -1,21 +1,30 @@
-import { alertdlg } from "./alertdlg";
-import { camera_GetAddress } from "./camera";
-import { Monitor_check_autoscroll, Monitor_check_verbose_mode } from "./commands";
-import { confirmdlg } from "./confirmdlg";
-import { clear_drop_menu } from "./dropmenu";
-import { build_file_filter_list } from "./files";
-import { onAutoReportIntervalChange, reportNone } from "./grbl";
-import { grblpanel } from "./grblpanel";
-import { http_communication_locked, SendFileHttp, SendGetHttp } from "./http";
-import { get_icon_svg } from "./icons";
-import { build_language_list } from "./languages";
-import { closeModal, setactiveModal, showModal } from "./modaldlg";
-import { ontoggleLock } from "./navbar";
-import { buildFieldId, buildPrefsFromDefs, getPrefDefPath, prefDefs } from "./prefDefs";
-import { build_HTML_setting_list, current_setting_filter } from "./settings";
-import { check_ping } from "./socket";
-import { translate_text, translate_text_item } from "./translate";
-import { conErr, displayBlock, displayFlex, displayNone, last_ping, getChecked, getValue, id, setChecked, setValue, setHTML, stdErrMsg, HTMLEncode, HTMLDecode } from "./util";
+import { alertdlg } from "./alertdlg.js";
+import { camera_GetAddress } from "./camera.js";
+import { Monitor_check_autoscroll, Monitor_check_verbose_mode } from "./commands.js";
+import { confirmdlg } from "./confirmdlg.js";
+import { clear_drop_menu } from "./dropmenu.js";
+import { build_file_filter_list } from "./files.js";
+import { onAutoReportIntervalChange, reportNone } from "./grbl.js";
+import { grblpanel } from "./grblpanel.js";
+import { http_communication_locked, SendFileHttp, SendGetHttp } from "./http.js";
+import { get_icon_svg } from "./icons.js";
+import { build_language_list } from "./languages.js";
+import { closeModal, setactiveModal, showModal } from "./modaldlg.js";
+import { ontoggleLock } from "./navbar.js";
+import { buildFieldId, buildPrefsFromDefs, getPrefDefPath, prefDefs } from "./prefDefs.js";
+import { build_HTML_setting_list, current_setting_filter } from "./settings.js";
+import { check_ping } from "./socket.js";
+import { translate_text, translate_text_item } from "./translate.js";
+import {
+    conErr,
+    displayBlock, displayFlex, displayNone,
+    last_ping,
+    getChecked, getValue,
+    id,
+    setChecked, setValue, setHTML,
+    stdErrMsg,
+    HTMLEncode, HTMLDecode
+} from "./util.js";
 
 //Preferences dialog
 
@@ -436,7 +445,7 @@ const getPref = (prefName) => {
 
 /** Get the named preference value */
 const getPrefValue = (prefName) => {
-    let pref = getPref(prefName);
+    const pref = getPref(prefName);
     if (!pref) {
         return undefined;
     }
@@ -447,7 +456,7 @@ const getPrefValue = (prefName) => {
  * Returns true for success, false for failure - usually because the preference item does not exist
   */
 const setPrefValue = (prefName, value) => {
-    let pref = getPrefDefPath(prefName);
+    const pref = getPrefDefPath(prefName);
     if (typeof pref === "undefined") {
         return false;
     }
@@ -587,9 +596,9 @@ function closePreferencesDialog() {
 }
 
 function process_preferencesCloseDialog(answer) {
-    if (answer == 'no') {
+    if (answer === 'no') {
         //console.log("Answer is no so exit");
-        translate_text(language_save);
+        translate_text(getPrefValue("language_list"));
         closeModal('cancel');
     } else {
         // console.log("Answer is yes so let's save");

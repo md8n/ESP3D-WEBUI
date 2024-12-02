@@ -1,4 +1,4 @@
-import { id } from "./util";
+import { id } from "./util.js";
 
 /** A list of currently opened modals */
 const listmodal = [];

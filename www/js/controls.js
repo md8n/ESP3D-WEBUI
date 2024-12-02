@@ -1,13 +1,13 @@
-import { alertdlg } from "./alertdlg";
-import { grblaxis, grblzerocmd } from "./grbl";
-import { SendGetHttp } from "./http";
-import { get_icon_svg } from "./icons";
-import { getPrefValue } from "./preferencesdlg";
-import { SendPrinterCommand } from "./printercmd";
-import { translate_text_item } from "./translate";
-import { conErr, displayBlock, displayInline, displayNone, getChecked, id, setChecked, setHTML } from "./util";
+import { alertdlg } from "./alertdlg.js";
+import { grblaxis, grblzerocmd } from "./grbl.js";
+import { SendGetHttp } from "./http.js";
+import { get_icon_svg } from "./icons.js";
+import { getPrefValue } from "./preferencesdlg.js";
+import { SendPrinterCommand } from "./printercmd.js";
+import { translate_text_item } from "./translate.js";
+import { conErr, displayBlock, displayInline, displayNone, getChecked, id, setChecked, setHTML } from "./util.js";
 
-var interval_position = -1;
+let interval_position = -1;
 
 let controlMacroList = [];
 /** Handle the array of control macros.

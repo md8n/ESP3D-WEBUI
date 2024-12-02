@@ -1,13 +1,13 @@
-import { alertdlg } from "./alertdlg";
-import { confirmdlg } from "./confirmdlg";
-import { M } from "./constants";
-import { init_files_panel } from "./files";
-import { calibrationResults } from "./grbl";
-import { http_communication_locked, SendGetHttp } from "./http";
-import { get_icon_svg } from "./icons";
-import { restartdlg } from "./restartdlg";
-import { translate_text_item } from "./translate";
-import { conErr, stdErrMsg, displayBlock, displayNone, id, setChecked, setHTML } from "./util";
+import { alertdlg } from "./alertdlg.js";
+import { confirmdlg } from "./confirmdlg.js";
+import { M } from "./constants.js";
+import { init_files_panel } from "./files.js";
+import { calibrationResults } from "./grbl.js";
+import { http_communication_locked, SendGetHttp } from "./http.js";
+import { get_icon_svg } from "./icons.js";
+import { restartdlg } from "./restartdlg.js";
+import { translate_text_item } from "./translate.js";
+import { conErr, stdErrMsg, displayBlock, displayNone, id, setChecked, setHTML } from "./util.js";
 
 /** setting_configList */
 let scl = [];

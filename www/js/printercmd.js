@@ -1,7 +1,7 @@
-import { Monitor_output_Update } from "./commands";
-import { SendGetHttp } from "./http";
-import { translate_text_item } from "./translate";
-import { conErr, HTMLDecode, stdErrMsg } from "./util";
+import { Monitor_output_Update } from "./commands.js";
+import { SendGetHttp } from "./http.js";
+import { translate_text_item } from "./translate.js";
+import { conErr, HTMLDecode, stdErrMsg } from "./util.js";
 
 var grbl_processfn = null;
 var grbl_errorfn = null;
@@ -43,8 +43,8 @@ export const SendPrinterCommand = (cmd, echo_on, processfn, errorfn, id, max_id,
 }
 
 function SendPrinterSilentCommand(cmd, processfn, errorfn, id, max_id) {
-    var url = "/command_silent?commandText=";
-    if (cmd.length == 0) {
+    const url = "/command_silent?commandText=";
+    if (cmd.length === 0) {
         return;
     }
     //removeIf(production)

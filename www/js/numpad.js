@@ -1,4 +1,4 @@
-import { id } from "./util";
+import { id } from "./util.js";
 
 export const numpad = {
   // (A) CREATE NUMPAD HTML
@@ -7,7 +7,7 @@ export const numpad = {
   hdisplay: null, // number display
   hbwrap: null, // buttons wrapper
   hbuttons: {}, // individual buttons
-  init: function () {
+  init: () => {
     if (id("numWrap")) {
       // Singleton - test if numWrap already exists
       return;

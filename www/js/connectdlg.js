@@ -1,13 +1,13 @@
-import { grblaxis } from "./grbl";
-import { SendGetHttp } from "./http";
-import { logindlg } from "./logindlg";
-import { closeModal, setactiveModal, showModal } from "./modaldlg";
-import { async_webcommunication, EventListenerSetup, startSocket } from "./socket";
-import { conErr, displayBlock, displayInline, displayNone, id } from "./util";
+import { grblaxis } from "./grbl.js";
+import { SendGetHttp } from "./http.js";
+import { logindlg } from "./logindlg.js";
+import { closeModal, setactiveModal, showModal } from "./modaldlg.js";
+import { async_webcommunication, EventListenerSetup, startSocket } from "./socket.js";
+import { conErr, displayBlock, displayInline, displayNone, id } from "./util.js";
 
 /** Connect Dialog */
 const connectdlg = (getFw) => {
-    var modal = setactiveModal('connectdlg.html');
+    const modal = setactiveModal('connectdlg.html');
     if (modal == null) {
         return;
     }
@@ -17,21 +17,20 @@ const connectdlg = (getFw) => {
 
     showModal();
 
-    let get_FW = (typeof getFw != 'undefined') ? getFw : true;
-    if (get_FW) {
+    if ((typeof getFw !== 'undefined') ? getFw : true) {
         retryconnect();
     }
 }
 
 const getFWdata = (response) => {
-    var tlist = response.split("#");
+    const tlist = response.split("#");
     //FW version:0.9.200 # FW target:smoothieware # FW HW:Direct SD # primary sd:/ext/ # secondary sd:/sd/ # authentication: yes
     if (tlist.length < 3) {
         return false;
     }
     //FW version
-    var sublist = tlist[0].split(":");
-    if (sublist.length != 2) {
+    let sublist = tlist[0].split(":");
+    if (sublist.length !== 2) {
         return false;
     }
     fw_version = sublist[1].toLowerCase().trim();

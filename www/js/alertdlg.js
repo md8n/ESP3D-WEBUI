@@ -1,9 +1,9 @@
-import { closeModal, setactiveModal, showModal } from "./modaldlg";
-import { id } from "./util";
+import { closeModal, setactiveModal, showModal } from "./modaldlg.js";
+import { id } from "./util.js";
 
 /** alert dialog */
 export const alertdlg = (titledlg, textdlg, closefunc) => {
-    var modal = setactiveModal('alertdlg.html', closefunc);
+    const modal = setactiveModal('alertdlg.html', closefunc);
     if (modal == null) {
         return;
     }
@@ -11,8 +11,8 @@ export const alertdlg = (titledlg, textdlg, closefunc) => {
     id("cancelAlertDlg").addEventListener("click", (event) => closeModal('cancel'));
     id("closeAlertDlg").addEventListener("click", (event) => closeModal('Ok'));
 
-    var title = modal.element.getElementsByClassName("modal-title")[0];
-    var body = modal.element.getElementsByClassName("modal-text")[0];
+    const title = modal.element.getElementsByClassName("modal-title")[0];
+    const body = modal.element.getElementsByClassName("modal-text")[0];
     title.innerHTML = titledlg;
     body.innerHTML = textdlg;
     showModal();

@@ -1,5 +1,5 @@
-import { closeModal, setactiveModal, showModal } from "./modaldlg";
-import { id } from "./util";
+import { closeModal, setactiveModal, showModal } from "./modaldlg.js";
+import { id } from "./util.js";
 
 /** confirm dialog */
 const confirmdlg = (titledlg, textdlg, closefunc) => {

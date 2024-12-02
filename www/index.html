@@ -16,13 +16,7 @@
     var primary_sd = "/ext/";
     var secondary_sd = "/sd/";
   </script>
-  <script>
-    /** Load up the HTML from an iframe at the current location */
-    const loadHTML = (self) => {
-      self.before(...(self.contentWindow.document.body || self.contentWindow.document).children);
-      self.remove();
-    }
-  </script>
+  <script type="module" src="./js/loadHTML.js"></script>
   <!--removeIf(cleanheader)-->
   <link href="./css/bootstrap.css" rel="stylesheet" />
   <link href="./css/menu.css" rel="stylesheet" />
@@ -48,37 +42,36 @@
   <!-- <div id="main_ui" class="container-fluid hide_it"> -->
   <div id="main_ui" class="hide_it"></div>
   <!-- topnavbar -->
-  <iframe src="./sub/navbar.html" onload="loadHTML(this)"></iframe>
+  <div id="./sub/navbar.html" class="hide_it loadhtml"></div>
   <!-- /topnavbar -->
   <!-- content -->
   <div id="mainuitabscontent">
     <!-- dashtab is actually maintab -->
-    <iframe src="./sub/dashtab.html" onload="loadHTML(this)"></iframe>
-    <iframe src="./sub/cameratab.html" onload="loadHTML(this)"></iframe>
-    <iframe src="./sub/configtab.html" onload="loadHTML(this)"></iframe>
-    <iframe src="./sub/settingstab.html" onload="loadHTML(this)"></iframe>
-    <iframe src="./sub/tablettab.html" onload="loadHTML(this)"></iframe>
+    <div id="./sub/dashtab.html" class="hide_it loadhtml"></div>
+    <div id="./sub/cameratab.html" class="hide_it loadhtml"></div>
+    <div id="./sub/configtab.html" class="hide_it loadhtml"></div>
+    <div id="./sub/settingstab.html" class="hide_it loadhtml"></div>
+    <div id="./sub/tablettab.html" class="hide_it loadhtml"></div>
   </div>
   <!-- / content -->
   </div>
   <!-- template -->
-  <iframe src="./sub/connectdlg.html" onload="loadHTML(this)"></iframe>
-  <iframe src="./sub/alertdlg.html" onload="loadHTML(this)"></iframe>
-  <iframe src="./sub/passworddlg.html" onload="loadHTML(this)"></iframe>
-  <iframe src="./sub/confirmdlg.html" onload="loadHTML(this)"></iframe>
-  <iframe src="./sub/logindlg.html" onload="loadHTML(this)"></iframe>
-  <iframe src="./sub/inputdlg.html" onload="loadHTML(this)"></iframe>
-  <iframe src="./sub/creditsdlg.html" onload="loadHTML(this)"></iframe>
-  <iframe src="./sub/scanwifidlg.html" onload="loadHTML(this)"></iframe>
-  <iframe src="./sub/SPIFFSdlg.html" onload="loadHTML(this)"></iframe>
-  <iframe src="./sub/statusdlg.html" onload="loadHTML(this)"></iframe>
-  <iframe src="./sub/updatedlg.html" onload="loadHTML(this)"></iframe>
-  <iframe src="./sub/setupdlg.html" onload="loadHTML(this)"></iframe>
-  <iframe src="./sub/macrodlg.html" onload="loadHTML(this)"></iframe>
-  <iframe src="./sub/preferencesdlg.html" onload="loadHTML(this)"></iframe>
-  <iframe src="./sub/restartdlg.html" onload="loadHTML(this)"></iframe>
-  <iframe src="./sub/UIdisableddlg.html" onload="loadHTML(this)"></iframe>
-
+  <div id="./sub/connectdlg.html" class="hide_it loadhtml"></div>
+  <div id="./sub/alertdlg.html" class="hide_it loadhtml"></div>
+  <div id="./sub/passworddlg.html" class="hide_it loadhtml"></div>
+  <div id="./sub/confirmdlg.html" class="hide_it loadhtml"></div>
+  <div id="./sub/logindlg.html" class="hide_it loadhtml"></div>
+  <div id="./sub/inputdlg.html" class="hide_it loadhtml"></div>
+  <div id="./sub/creditsdlg.html" class="hide_it loadhtml"></div>
+  <div id="./sub/scanwifidlg.html" class="hide_it loadhtml"></div>
+  <div id="./sub/SPIFFSdlg.html" class="hide_it loadhtml"></div>
+  <div id="./sub/statusdlg.html" class="hide_it loadhtml"></div>
+  <div id="./sub/updatedlg.html" class="hide_it loadhtml"></div>
+  <div id="./sub/setupdlg.html" class="hide_it loadhtml"></div>
+  <div id="./sub/macrodlg.html" class="hide_it loadhtml"></div>
+  <div id="./sub/preferencesdlg.html" class="hide_it loadhtml"></div>
+  <div id="./sub/restartdlg.html" class="hide_it loadhtml"></div>
+  <div id="./sub/UIdisableddlg.html" class="hide_it loadhtml"></div>
   <!-- / template -->
   <div id="loading-overlay" class="loading-overlay">
     <div class="spinner"></div>

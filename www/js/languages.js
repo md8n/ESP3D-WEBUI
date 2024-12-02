@@ -1,6 +1,6 @@
-import { getPrefValue } from "./preferencesdlg";
-import { translate_text } from "./translate";
-import { id } from "./util";
+import { getPrefValue } from "./preferencesdlg.js";
+import { translate_text } from "./translate.js";
+import { id } from "./util.js";
 
 const language_list = [
 //removeIf(de_lang_disabled)
@@ -45,9 +45,9 @@ const language_list = [
 ];
 
 const build_language_list = (id_item) => {
-    let content = [`<select class='form-control' id='${id_item}'>`];
+    const content = [`<select class='form-control' id='${id_item}'>`];
     for (let lang_i = 0; lang_i < language_list.length; lang_i++) {
-        const isSelected = (language_list[lang_i][0] == getPrefValue("language_list")) ? "selected" : "";
+        const isSelected = (language_list[lang_i][0] === getPrefValue("language_list")) ? "selected" : "";
         content.push(`<option value='${language_list[lang_i][0]}' ${isSelected}>${language_list[lang_i][1]}</option>`);
     }
     content.push("</select>");

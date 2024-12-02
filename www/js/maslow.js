@@ -1,8 +1,8 @@
-import { M } from "./constants";
-import { get_Position } from "./controls";
-import { SendPrinterCommand } from "./printercmd";
-import { current_setting_filter, refreshSettings, saveMaslowYaml } from "./settings";
-import { hideModal, loadedValues } from "./tablet";
+import { M } from "./constants.js";
+import { get_Position } from "./controls.js";
+import { SendPrinterCommand } from "./printercmd.js";
+import { current_setting_filter, refreshSettings, saveMaslowYaml } from "./settings.js";
+import { hideModal, loadedValues } from "./tablet.js";
 
 /** Maslow Status */
 let maslowStatus = { homed: false, extended: false };

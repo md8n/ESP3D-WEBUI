@@ -1,8 +1,8 @@
-import { alertdlg } from "./alertdlg";
-import { http_communication_locked, SendGetHttp } from "./http";
-import { get_icon_svg } from "./icons";
-import { translate_text_item } from "./translate";
-import { conErr, stdErrMsg, displayBlock, displayNone, id, setChecked, setHTML } from "./util";
+import { alertdlg } from "./alertdlg.js";
+import { http_communication_locked, SendGetHttp } from "./http.js";
+import { get_icon_svg } from "./icons.js";
+import { translate_text_item } from "./translate.js";
+import { conErr, stdErrMsg, displayBlock, displayNone, id, setChecked, setHTML } from "./util.js";
 
 var config_configList = [];
 var config_override_List = [];
@@ -19,7 +19,7 @@ const refreshconfig = (is_override) => {
         return;
     }
     is_override_config = false;
-    if ((typeof is_override != 'undefined') && is_override) {
+    if ((typeof is_override !== 'undefined') && is_override) {
         is_override_config = is_override;
     }
     config_display_override(is_override_config);
