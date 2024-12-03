@@ -10,8 +10,8 @@ import {
 	reportNone,
 	clear_cmd_list,
 	translate_text_item,
+	UIdisableddlg,
 } from "./common.js";
-import { UIdisableddlg } from "./UIdisableddlg.js";
 
 let convertDHT2Fahrenheit = false;
 let event_source;

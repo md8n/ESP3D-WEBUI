@@ -18,8 +18,8 @@ import {
 	build_HTML_setting_list,
 	define_esp_role,
 	define_esp_role_from_pos,
+	translate_text,
 } from "./common.js";
-import { translate_text } from "./translate.js";
 
 //setup dialog
 

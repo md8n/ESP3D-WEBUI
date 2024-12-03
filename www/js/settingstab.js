@@ -5,8 +5,8 @@ import {
 	restart_esp,
 	SPIFFSdlg,
 	statusdlg,
+	updatedlg,
 } from "./common.js";
-import { updatedlg } from "./updatedlg.js";
 
 /** Set up the event handlers for the settings tab */
 const settingstab = () => {

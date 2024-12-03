@@ -20,8 +20,8 @@ import {
 	refreshSettings,
 	navbar,
 	setupdlg,
+	tabletInit,
 } from "./common.js";
-import { tabletInit } from "./tablet.js";
 
 var ESP3D_authentication = false;
 

@@ -79,7 +79,48 @@ import { grblpanel } from "./grblpanel.js";
 import { clear_cmd_list, SendFileHttp, SendGetHttp } from "./http.js";
 import { get_icon_svg } from "./icons.js";
 import { inputdlg } from "./inputdlg.js";
-import { language_list } from "./languages.js";
+import {
+	language_list,
+	//removeIf(de_lang_disabled)
+	germantrans,
+	//endRemoveIf(de_lang_disabled)
+	//removeIf(en_lang_disabled)
+	englishtrans,
+	//endRemoveIf(en_lang_disabled)
+	//removeIf(es_lang_disabled)
+	spanishtrans,
+	//endRemoveIf(es_lang_disabled)
+	//removeIf(fr_lang_disabled)
+	frenchtrans,
+	//endRemoveIf(fr_lang_disabled)
+	//removeIf(it_lang_disabled)
+	italiantrans,
+	//endRemoveIf(it_lang_disabled)
+	//removeIf(ja_lang_disabled)
+	japanesetrans,
+	//endRemoveIf(ja_lang_disabled)
+	//removeIf(hu_lang_disabled)
+	hungariantrans,
+	//endRemoveIf(hu_lang_disabled)
+	//removeIf(pl_lang_disabled)
+	polishtrans,
+	//endRemoveIf(pl_lang_disabled)
+	//removeIf(ptbr_lang_disabled)
+	ptbrtrans,
+	//endRemoveIf(ptbr_lang_disabled)
+	//removeIf(ru_lang_disabled)
+	russiantrans,
+	//endRemoveIf(ru_lang_disabled)
+	//removeIf(tr_lang_disabled)
+	turkishtrans,
+	//endRemoveIf(tr_lang_disabled)
+	//removeIf(uk_lang_disabled)
+	ukrtrans,
+	//endRemoveIf(uk_lang_disabled)
+	//removeIf(zh_cn_lang_disabled)
+	zh_CN_trans,
+	//endRemoveIf(zh_cn_lang_disabled)
+} from "./languages.js";
 import { build_language_list, translate_text_item } from "./langUtils.js";
 import { DisconnectLogin, logindlg } from "./logindlg.js";
 import { showmacrodlg } from "./macrodlg.js";
@@ -136,6 +177,7 @@ import {
 } from "./settings.js";
 import { settingstab } from "./settingstab.js";
 import { setupdlg } from "./setupdlg.js";
+import { Toolpath } from "./simple-toolpath.js";
 import {
 	CancelCurrentUpload,
 	handlePing,
@@ -146,6 +188,17 @@ import {
 import { SPIFFSdlg } from "./SPIFFSdlg.js";
 import { statusdlg } from "./statusdlg.js";
 import { opentab } from "./tabs.js";
+import {
+	loadedValues,
+	openModal,
+	hideModal,
+	onCalibrationButtonsClick,
+	saveSerialMessages,
+	tabletInit,
+} from "./tablet.js";
+import { translate_text } from "./translate.js";
+import { UIdisableddlg } from "./UIdisableddlg.js";
+import { updatedlg } from "./updatedlg.js";
 import { openstep } from "./wizard.js";
 
 /** Selected values that were globals, now set up as members of a singleton */
@@ -276,6 +329,45 @@ export {
 	inputdlg,
 	// from languages.js
 	language_list,
+	//removeIf(de_lang_disabled)
+	germantrans,
+	//endRemoveIf(de_lang_disabled)
+	//removeIf(en_lang_disabled)
+	englishtrans,
+	//endRemoveIf(en_lang_disabled)
+	//removeIf(es_lang_disabled)
+	spanishtrans,
+	//endRemoveIf(es_lang_disabled)
+	//removeIf(fr_lang_disabled)
+	frenchtrans,
+	//endRemoveIf(fr_lang_disabled)
+	//removeIf(it_lang_disabled)
+	italiantrans,
+	//endRemoveIf(it_lang_disabled)
+	//removeIf(ja_lang_disabled)
+	japanesetrans,
+	//endRemoveIf(ja_lang_disabled)
+	//removeIf(hu_lang_disabled)
+	hungariantrans,
+	//endRemoveIf(hu_lang_disabled)
+	//removeIf(pl_lang_disabled)
+	polishtrans,
+	//endRemoveIf(pl_lang_disabled)
+	//removeIf(ptbr_lang_disabled)
+	ptbrtrans,
+	//endRemoveIf(ptbr_lang_disabled)
+	//removeIf(ru_lang_disabled)
+	russiantrans,
+	//endRemoveIf(ru_lang_disabled)
+	//removeIf(tr_lang_disabled)
+	turkishtrans,
+	//endRemoveIf(tr_lang_disabled)
+	//removeIf(uk_lang_disabled)
+	ukrtrans,
+	//endRemoveIf(uk_lang_disabled)
+	//removeIf(zh_cn_lang_disabled)
+	zh_CN_trans,
+	//endRemoveIf(zh_cn_lang_disabled)
 	// from langUtils.js
 	build_language_list,
 	translate_text_item,
@@ -343,6 +435,8 @@ export {
 	setupdlg,
 	// from settingstab.js
 	settingstab,
+	// from simple-toolpath.js
+	Toolpath,
 	// from socket.js
 	CancelCurrentUpload,
 	handlePing,
@@ -355,6 +449,19 @@ export {
 	statusdlg,
 	// from tabs.js
 	opentab,
+	// from tablet.js
+	loadedValues,
+	openModal,
+	hideModal,
+	onCalibrationButtonsClick,
+	saveSerialMessages,
+	tabletInit,
+	// from translate.js
+	translate_text,
+	// from UIdisableddlg.js
+	UIdisableddlg,
+	// from updatedlg.js
+	updatedlg,
 	// from util.js
 	classes,
 	conErr,

@@ -1,10 +1,10 @@
-import { saveSerialMessages } from "./tablet.js";
 import {
 	translate_text_item,
 	id,
 	setHTML,
 	setactiveModal,
 	showModal,
+	saveSerialMessages,
 } from "./common.js";
 
 //UIdisabled dialog

@@ -5,8 +5,9 @@ import {
 	SendPrinterCommand,
 	refreshSettings,
 	saveMaslowYaml,
+	hideModal,
+	loadedValues,
 } from "./common.js";
-import { hideModal, loadedValues } from "./tablet.js";
 
 /** Maslow Status */
 let maslowStatus = { homed: false, extended: false };

@@ -37,8 +37,8 @@ import {
 	translate_text_item,
 	build_HTML_setting_list,
 	handlePing,
+	translate_text,
 } from "./common.js";
-import { translate_text } from "./translate.js";
 
 //Preferences dialog
 

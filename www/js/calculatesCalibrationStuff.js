@@ -4,8 +4,8 @@ import {
 	sendCommand,
 	refreshSettings,
 	saveMaslowYaml,
+	onCalibrationButtonsClick,
 } from "./common.js";
-import { onCalibrationButtonsClick } from "./tablet.js";
 
 var tlZ = 100;
 var trZ = 56;

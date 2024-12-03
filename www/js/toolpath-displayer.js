@@ -1,6 +1,5 @@
 // Display the XY-plane projection of a GCode toolpath on a 2D canvas
-import { Common, getValue, id, MPOS, WPOS } from "./common.js";
-import { Toolpath } from "./simple-toolpath.js";
+import { Common, getValue, id, MPOS, WPOS, Toolpath } from "./common.js";
 
 const scale = window.devicePixelRatio;
 const width = window.innerWidth;

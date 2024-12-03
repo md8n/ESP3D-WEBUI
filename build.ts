@@ -51,10 +51,6 @@ const build = async () => {
 		entrypoints: [
 			"./www/index.html",
 			"./js/common.js",
-			"./js/updatedlg.js",
-			"./js/translate.js",
-			"./js/UIdisableddlg.js",
-			"./js/tablet.js",
 			"./js/app.js",
 		],
 		outdir: "./dist",
