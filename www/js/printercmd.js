@@ -7,7 +7,7 @@ var grbl_processfn = null;
 var grbl_errorfn = null;
 
 function noop() {}
-export const SendPrinterCommand = (cmd, echo_on, processfn, errorfn, id, max_id, extra_arg) => {
+const SendPrinterCommand = (cmd, echo_on, processfn, errorfn, id, max_id, extra_arg) => {
     if (cmd.length == 0) {
         return;
     }
@@ -76,3 +76,5 @@ function SendPrinterCommandFailed(error_code, response) {
 
     conErr(error_code, HTMLDecode(response), "printer cmd Error");
 }
+
+export { SendPrinterCommand };

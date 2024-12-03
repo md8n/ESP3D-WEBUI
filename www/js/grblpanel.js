@@ -12,7 +12,7 @@ import { opentab } from "./tabs.js";
 import { id } from "./util.js";
 
 /** Set up the event handlers for the grblpanel */
-export const grblpanel = () => {
+const grblpanel = () => {
     // GRBL reporting
     const common = new Common();
 
@@ -70,3 +70,5 @@ const onReportType = (e) => {
         case 'poll': reportPolled(); break;
     }
 }
+
+export { grblpanel };

@@ -1,6 +1,6 @@
 import { id } from "./util.js";
 
-export const numpad = {
+const numpad = {
   // (A) CREATE NUMPAD HTML
   hwrap: null, // numpad wrapper container
   hpad: null, // numpad itself
@@ -251,3 +251,5 @@ export const numpad = {
 };
 
 window.addEventListener("DOMContentLoaded", numpad.init);
+
+export { numpad };

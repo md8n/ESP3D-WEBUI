@@ -1,6 +1,6 @@
 import { classes, displayBlock, id } from "./util.js";
 
-export const opentab = (evt, tabname, tabcontentid, tablinkid) => {
+const opentab = (evt, tabname, tabcontentid, tablinkid) => {
     let i;
     let tablinks;
     const tabcontent = classes("tabcontent");
@@ -23,3 +23,5 @@ export const opentab = (evt, tabname, tabcontentid, tablinkid) => {
     displayBlock(tabname);
     evt.currentTarget.className += " active";
 }
+
+export { opentab };

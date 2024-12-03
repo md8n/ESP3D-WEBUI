@@ -39,7 +39,6 @@ const loadAndReplaceHTML = async (fileContents: string) => {
 		fcReplLoad = fcReplLoad.replace(lhr[0], hText);
 
 		if (hText.includes("loadhtml")) {
-			console.log("Life is more fun with recursion");
 			fcReplLoad = await loadAndReplaceHTML(fcReplLoad);
 		}
 	}
@@ -52,7 +51,7 @@ const build = async () => {
 		entrypoints: ["./www/index.html"],
 		outdir: "./dist",
 		naming: "[dir]/[name].[ext]",
-		minify: true,
+		minify: false,
 		plugins: [
 			html({
 				inline: true,

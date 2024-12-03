@@ -33,7 +33,7 @@ function Monitor_output_Clear() {
     Monitor_output_Update();
 }
 
-export const Monitor_output_Update = (message) => {
+const Monitor_output_Update = (message) => {
     if (message) {
         if (typeof message === 'string' || message instanceof String) {
             Monitor_output = Monitor_output.concat(message);
@@ -153,4 +153,4 @@ function SendCustomCommandFailed(error_code, response) {
     conErr(error_code, HTMLDecode(response), "cmd Error");
 }
 
-export { init_command_panel, Monitor_check_autoscroll, Monitor_check_verbose_mode };
+export { init_command_panel, Monitor_check_autoscroll, Monitor_check_verbose_mode, Monitor_output_Update };

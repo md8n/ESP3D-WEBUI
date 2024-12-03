@@ -2,7 +2,7 @@ import { closeModal, setactiveModal, showModal } from "./modaldlg.js";
 import { id } from "./util.js";
 
 /** alert dialog */
-export const alertdlg = (titledlg, textdlg, closefunc) => {
+const alertdlg = (titledlg, textdlg, closefunc) => {
     const modal = setactiveModal('alertdlg.html', closefunc);
     if (modal == null) {
         return;
@@ -17,3 +17,5 @@ export const alertdlg = (titledlg, textdlg, closefunc) => {
     body.innerHTML = textdlg;
     showModal();
 }
+
+export { alertdlg };

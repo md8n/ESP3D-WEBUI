@@ -4,7 +4,7 @@ import { translate_text_item } from "./translate.js";
 import { id, setHTML } from "./util.js";
 
 //UIdisabled dialog
-export const UIdisableddlg = (lostcon) => {
+const UIdisableddlg = (lostcon) => {
     const modal = setactiveModal('UIdisableddlg.html');
     if (modal == null) {
         return;
@@ -18,3 +18,5 @@ export const UIdisableddlg = (lostcon) => {
     }
     showModal();
 }
+
+export { UIdisableddlg };
