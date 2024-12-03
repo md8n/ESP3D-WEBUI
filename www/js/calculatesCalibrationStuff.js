@@ -1,5 +1,10 @@
-import { Common, M, sendCommand } from "./common.js";
-import { refreshSettings, saveMaslowYaml } from "./settings.js";
+import {
+	Common,
+	M,
+	sendCommand,
+	refreshSettings,
+	saveMaslowYaml,
+} from "./common.js";
 import { onCalibrationButtonsClick } from "./tablet.js";
 
 var tlZ = 100;

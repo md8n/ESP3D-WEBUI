@@ -10,8 +10,9 @@ import {
 	showModal,
 	SendGetHttp,
 	logindlg,
+	EventListenerSetup,
+	startSocket,
 } from "./common.js";
-import { EventListenerSetup, startSocket } from "./socket.js";
 
 /** Connect Dialog */
 const connectdlg = (getFw) => {

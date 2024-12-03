@@ -51,12 +51,7 @@ const build = async () => {
 		entrypoints: [
 			"./www/index.html",
 			"./js/common.js",
-			"./js/settings.js",
-			"./js/scanwifidlg.js",
-			"./js/SPIFFSdlg.js",
-			"./js/statusdlg.js",
 			"./js/updatedlg.js",
-			"./js/setupdlg.js",
 			"./js/translate.js",
 			"./js/UIdisableddlg.js",
 			"./js/tablet.js",

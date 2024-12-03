@@ -105,6 +105,7 @@ import {
 	setactiveModal,
 	showModal,
 } from "./modaldlg.js";
+import { navbar, ontoggleLock } from "./navbar.js";
 import { changepassworddlg } from "./passworddlg.js";
 import { prefDefs } from "./prefDefs.js";
 import {
@@ -123,6 +124,27 @@ import {
 } from "./preferencesdlg.js";
 import { SendPrinterCommand } from "./printercmd.js";
 import { restartdlg } from "./restartdlg.js";
+import { scanwifidlg } from "./scanwifidlg.js";
+import {
+	build_control_from_pos,
+	build_HTML_setting_list,
+	define_esp_role,
+	define_esp_role_from_pos,
+	refreshSettings,
+	restart_esp,
+	saveMaslowYaml,
+} from "./settings.js";
+import { settingstab } from "./settingstab.js";
+import { setupdlg } from "./setupdlg.js";
+import {
+	CancelCurrentUpload,
+	handlePing,
+	EventListenerSetup,
+	process_socket_response,
+	startSocket,
+} from "./socket.js";
+import { SPIFFSdlg } from "./SPIFFSdlg.js";
+import { statusdlg } from "./statusdlg.js";
 import { opentab } from "./tabs.js";
 import { openstep } from "./wizard.js";
 
@@ -282,6 +304,9 @@ export {
 	getactiveModal,
 	setactiveModal,
 	showModal,
+	// from navbar.js
+	navbar,
+	ontoggleLock,
 	// from numpad.js
 	numpad,
 	// from passworddlg.js
@@ -304,6 +329,30 @@ export {
 	SendPrinterCommand,
 	// from restartdlg.js
 	restartdlg,
+	// from scanwifidlg.js
+	scanwifidlg,
+	// from settings.js
+	build_control_from_pos,
+	build_HTML_setting_list,
+	define_esp_role,
+	define_esp_role_from_pos,
+	refreshSettings,
+	restart_esp,
+	saveMaslowYaml,
+	// from setupdlg.js
+	setupdlg,
+	// from settingstab.js
+	settingstab,
+	// from socket.js
+	CancelCurrentUpload,
+	handlePing,
+	EventListenerSetup,
+	process_socket_response,
+	startSocket,
+	// from SPIFFSdlg.js
+	SPIFFSdlg,
+	// from statusdlg.js
+	statusdlg,
 	// from tabs.js
 	opentab,
 	// from util.js

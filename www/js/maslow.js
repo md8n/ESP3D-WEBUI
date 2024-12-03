@@ -1,5 +1,11 @@
-import { Common, M, get_Position, SendPrinterCommand } from "./common.js";
-import { refreshSettings, saveMaslowYaml } from "./settings.js";
+import {
+	Common,
+	M,
+	get_Position,
+	SendPrinterCommand,
+	refreshSettings,
+	saveMaslowYaml,
+} from "./common.js";
 import { hideModal, loadedValues } from "./tablet.js";
 
 /** Maslow Status */

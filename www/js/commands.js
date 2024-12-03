@@ -1,4 +1,3 @@
-import { process_socket_response } from "./socket.js";
 import {
 	conErr,
 	stdErrMsg,
@@ -7,6 +6,7 @@ import {
 	HTMLDecode,
 	SendGetHttp,
 	translate_text_item,
+	process_socket_response,
 } from "./common.js";
 
 var CustomCommand_history = [];

@@ -16,10 +16,11 @@ import {
 	build_axis_selection,
 	tryAutoReport,
 	grblpanel,
+	build_HTML_setting_list,
+	refreshSettings,
+	navbar,
+	setupdlg,
 } from "./common.js";
-import { navbar } from "./navbar.js";
-import { build_HTML_setting_list, refreshSettings } from "./settings.js";
-import { setupdlg } from "./setupdlg.js";
 import { tabletInit } from "./tablet.js";
 
 var ESP3D_authentication = false;

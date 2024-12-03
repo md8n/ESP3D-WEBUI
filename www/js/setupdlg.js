@@ -14,13 +14,11 @@ import {
 	SavePreferences,
 	build_language_list,
 	translate_text_item,
-} from "./common.js";
-import {
 	build_control_from_pos,
 	build_HTML_setting_list,
 	define_esp_role,
 	define_esp_role_from_pos,
-} from "./settings.js";
+} from "./common.js";
 import { translate_text } from "./translate.js";
 
 //setup dialog

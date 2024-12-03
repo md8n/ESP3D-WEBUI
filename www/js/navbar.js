@@ -1,5 +1,3 @@
-import { settingstab } from "./settingstab.js";
-import { setupdlg } from "./setupdlg.js";
 import {
 	disable_items,
 	displayNone,
@@ -15,6 +13,8 @@ import {
 	showpreferencesdlg,
 	translate_text_item,
 	DisconnectLogin,
+	setupdlg,
+	settingstab,
 } from "./common.js";
 
 /** Set up the event handlers for the navbar */

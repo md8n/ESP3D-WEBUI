@@ -33,11 +33,11 @@ import {
 	SendFileHttp,
 	SendGetHttp,
 	build_language_list,
+	ontoggleLock,
 	translate_text_item,
+	build_HTML_setting_list,
+	handlePing,
 } from "./common.js";
-import { ontoggleLock } from "./navbar.js";
-import { build_HTML_setting_list } from "./settings.js";
-import { handlePing } from "./socket.js";
 import { translate_text } from "./translate.js";
 
 //Preferences dialog
