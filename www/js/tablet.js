@@ -391,9 +391,11 @@ function tabletShowMessage(msg, collecting) {
   }
 
   let errMsg = "";
+
   //These are used for populating the configuration popup
   if (msg.startsWith('$/Maslow_') || msg.startsWith('$/maslow_')) {
     errMsg = maslowMsgHandling(msg.substring(9));
+    return; //We don't want to display these messages
   }
 
   const msgWindow = document.getElementById('messages')
