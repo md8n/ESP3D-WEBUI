@@ -161,34 +161,34 @@ function clearlang() {
   if (arg.lang == 'grbl') {
     fl_lang = false
     en_lang = true
-    fr_lang = true
-    es_lang = true
-    de_lang = true
-    it_lang = true
+    fr_lang = false
+    es_lang = false
+    de_lang = false
+    it_lang = false
     ja_lang = false
     hu_lang = false
-    pl_lang = true
-    ptbr_lang = true
-    ru_lang = true
+    pl_lang = false
+    ptbr_lang = false
+    ru_lang = false
     tr_lang = false
-    uk_lang = true
+    uk_lang = false
     zh_cn_lang = false
   }
   if (typeof arg.lang == 'undefined' || arg.lang == 'all') {
     fl_lang = false
     en_lang = true
-    fr_lang = true
-    es_lang = true
-    de_lang = true
-    it_lang = true
-    ja_lang = true
-    hu_lang = true
-    pl_lang = true
-    ptbr_lang = true
-    ru_lang = true
-    tr_lang = true
-    uk_lang = true
-    zh_cn_lang = true
+    fr_lang = false
+    es_lang = false
+    de_lang = false
+    it_lang = false
+    ja_lang = false
+    hu_lang = false
+    pl_lang = false
+    ptbr_lang = false
+    ru_lang = false
+    tr_lang = false
+    uk_lang = false
+    zh_cn_lang = false
   }
   if (arg.lang == 'en') {
     fl_lang = false
