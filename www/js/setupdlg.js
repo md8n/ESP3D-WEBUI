@@ -5,7 +5,6 @@ import { setPrefValue, SavePreferences, getPrefValue } from "./preferencesdlg.js
 import {
     build_control_from_pos,
     build_HTML_setting_list,
-    current_setting_filter,
     define_esp_role, define_esp_role_from_pos,
 } from "./settings.js";
 import { openstep } from "./wizard.js";
@@ -112,7 +111,7 @@ function setupdone(response) {
     const common = new Common();
     common.setup_is_done = true;
     do_not_build_settings = false;
-    build_HTML_setting_list(current_setting_filter());
+    build_HTML_setting_list(common.current_setting_filter);
     translate_text(getPrefValue("language_list"));
     displayUndoNone('main_ui');
     closeModal("setup done");

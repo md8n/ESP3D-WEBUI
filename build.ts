@@ -69,13 +69,20 @@ const build = async () => {
 						if (file.extension === ".html") {
 							const fc = await file.content;
 
-							processor.writeFile(file.path, await loadAndReplaceHTML(fc))
+							processor.writeFile(file.path, await loadAndReplaceHTML(fc));
 						}
 					}
 				},
 			}),
 		],
 	});
+};
+
+const compress = async () => {
+	const indexFile = Bun.file("./dist/index.html");
+	const data = await indexFile.arrayBuffer();
+	const compressed = Bun.gzipSync(data, { level: 9 });
+	Bun.write("./dist/index.html.gz", compressed);
 };
 
 // A collection of various functions as per the old gulp package build functionality
@@ -99,3 +106,4 @@ console.log("Running the build");
 cleanDist();
 // await lint();
 await build();
+await compress();

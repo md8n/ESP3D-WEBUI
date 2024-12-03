@@ -535,14 +535,13 @@ const grbl_reset = () => {
 }
 
 function grblGetProbeResult(response) {
-  var tab1 = response.split(':')
+  const tab1 = response.split(':')
   if (tab1.length > 2) {
-    var status = tab1[2].replace(']', '')
-    if (parseInt(status.trim()) == 1) {
-      if (probe_progress_status != 0) {
-        var cmd =
-          '$J=G90 G21 F1000 Z' +
-          (parseFloat(getValue('grblpanel_probetouchplatethickness')) + parseFloat(getValue('grblpanel_proberetract')))
+    const status = tab1[2].replace(']', '')
+    if (Number.parseInt(status.trim()) === 1) {
+      if (probe_progress_status !== 0) {
+        const cmd =
+          `$J=G90 G21 F1000 Z${Number.parseFloat(getValue('grblpanel_probetouchplatethickness')) + Number.parseFloat(getValue('grblpanel_proberetract'))}`
         SendPrinterCommand(cmd, true, null, null, 0, 1)
         finalize_probing()
       }
@@ -557,7 +556,7 @@ function probe_failed_notification() {
   alertdlg(translate_text_item('Error'), translate_text_item('Probe failed !'))
   beep(3, 140, 261)
 }
-var modalModes = [
+const modalModes = [
   { name: 'motion', values: ['G80', 'G0', 'G1', 'G2', 'G3', 'G38.1', 'G38.2', 'G38.3', 'G38.4'] },
   { name: 'wcs', values: ['G54', 'G55', 'G56', 'G57', 'G58', 'G59'] },
   { name: 'plane', values: ['G17', 'G18', 'G19'] },
@@ -574,7 +573,7 @@ var modalModes = [
 
 function grblGetModal(msg) {
   modal("modes", msg.replace('[GC:', '').replace(']', ''));
-  var modes = modal("modes").split(' ');
+  const modes = modal("modes").split(' ');
   Modal.parking = undefined; // Otherwise there is no way to turn it off
   modal("program", ''); // Otherwise there is no way to turn it off
   modes().forEach((mode) => {
@@ -589,8 +588,8 @@ function grblGetModal(msg) {
       } else if (mode.charAt(0) === 'S') {
         modal("spindle", mode.substring(1));
       } else {
-        modalModes.forEach(function (modeType) {
-          modeType.values.forEach(function (s) {
+        modalModes.forEach((modeType) => {
+          modeType.values.forEach((s) => {
             if (mode == s) {
               modal(modeType.name, mode);
             }
@@ -643,7 +642,7 @@ const grblHandleMessage = (msg) => {
       .replace(/(\b(?:bl|br|tr|tl)\b):/g, '"$1":')
       .replace('CLBM:', '')
       .replace(/,]$/, ']')
-    let measurements = JSON.parse(validJsonMSG)
+    const measurements = JSON.parse(validJsonMSG)
     handleCalibrationData(measurements)
   }
   if (msg.startsWith('<')) {
@@ -746,7 +745,7 @@ const StartProbeProcess = () => {
   // are always G21 units, i.e. mm in the usual case, and distance is
   // always incremental.  This avoids problems with probing when in G20
   // inches mode and undoing a preexisting G91 incremental mode
-  var cmd = 'G38.2 Z-'
+  let cmd = 'G38.2 Z-'
   if (
     !onprobemaxtravelChange() ||
     !onprobefeedrateChange() ||
@@ -756,14 +755,10 @@ const StartProbeProcess = () => {
     return
   }
   cmd +=
-    parseFloat(getValue('grblpanel_probemaxtravel')) +
-    ' F' +
-    parseInt(getValue('grblpanel_probefeedrate')) +
-    ' P' +
-    getValue('grblpanel_probetouchplatethickness')
+    `${Number.parseFloat(getValue('grblpanel_probemaxtravel'))} F${Number.parseInt(getValue('grblpanel_probefeedrate'))} P${getValue('grblpanel_probetouchplatethickness')}`
   console.log(cmd)
   probe_progress_status = 1
-  var restoreReport = false
+  let restoreReport = false
   if (reportType === 'none') {
     tryAutoReport() // will fall back to polled if autoreport fails
     restoreReport = true
@@ -798,7 +793,6 @@ export {
   build_axis_selection,
   grblHandleMessage,
   grbl_reset,
-  modal,
   onAutoReportIntervalChange, onstatusIntervalChange,
   onprobemaxtravelChange, onprobefeedrateChange, onproberetractChange, onprobetouchplatethicknessChange,
   reportNone, tryAutoReport, reportPolled,

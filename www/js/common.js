@@ -1,5 +1,4 @@
-// Selected values that were globals, now set up as members of a singleton
-
+/** Selected values that were globals, now set up as members of a singleton */
 class Common {
 	constructor() {
 		if (Common.instance instanceof Common) {
