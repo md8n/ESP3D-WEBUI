@@ -1,6 +1,5 @@
-import { SendGetHttp } from "./http.js";
-import { translate_text_item } from "./langUtils.js";
 import {
+	translate_text_item,
 	conErr,
 	displayBlock,
 	displayNone,
@@ -9,6 +8,7 @@ import {
 	closeModal,
 	setactiveModal,
 	showModal,
+	SendGetHttp,
 } from "./common.js";
 
 /** login dialog */

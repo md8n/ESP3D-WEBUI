@@ -1,8 +1,6 @@
 import {
 	CALIBRATION_EVENT_NAME,
 	findMaxFitness,
-} from "./calculatesCalibrationStuff.js";
-import {
 	Common,
 	get_icon_svg,
 	getChecked,
@@ -12,10 +10,10 @@ import {
 	setChecked,
 	setHTML,
 	alertdlg,
+	SendPrinterCommand,
+	translate_text_item,
+	sendCommand,
 } from "./common.js";
-import { sendCommand } from "./maslow.js";
-import { SendPrinterCommand } from "./printercmd.js";
-import { translate_text_item } from "./langUtils.js";
 
 /** interval timer ID */
 var interval_status = -1;

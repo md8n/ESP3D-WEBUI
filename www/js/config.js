@@ -9,9 +9,9 @@ import {
 	setChecked,
 	setHTML,
 	alertdlg,
+	SendGetHttp,
+	translate_text_item,
 } from "./common.js";
-import { SendGetHttp } from "./http.js";
-import { translate_text_item } from "./langUtils.js";
 
 var config_configList = [];
 var config_override_List = [];

@@ -1,6 +1,11 @@
 import { saveSerialMessages } from "./tablet.js";
-import { translate_text_item } from "./langUtils.js";
-import { id, setHTML, setactiveModal, showModal } from "./common.js";
+import {
+	translate_text_item,
+	id,
+	setHTML,
+	setactiveModal,
+	showModal,
+} from "./common.js";
 
 //UIdisabled dialog
 const UIdisableddlg = (lostcon) => {

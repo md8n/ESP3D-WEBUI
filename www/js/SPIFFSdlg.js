@@ -14,9 +14,10 @@ import {
 	alertdlg,
 	confirmdlg,
 	inputdlg,
+	SendFileHttp,
+	SendGetHttp,
+	translate_text_item,
 } from "./common.js";
-import { SendFileHttp, SendGetHttp } from "./http.js";
-import { translate_text_item } from "./langUtils.js";
 
 //SPIFFS dialog
 

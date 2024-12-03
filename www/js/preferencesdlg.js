@@ -1,9 +1,6 @@
-import { camera_GetAddress } from "./camera.js";
 import {
 	Monitor_check_autoscroll,
 	Monitor_check_verbose_mode,
-} from "./commands.js";
-import {
 	Common,
 	get_icon_svg,
 	prefDefs,
@@ -24,19 +21,21 @@ import {
 	showModal,
 	alertdlg,
 	confirmdlg,
-} from "./common.js";
-import { build_file_filter_list } from "./files.js";
-import { onAutoReportIntervalChange, reportNone } from "./grbl.js";
-import { grblpanel } from "./grblpanel.js";
-import { SendFileHttp, SendGetHttp } from "./http.js";
-import { build_language_list, translate_text_item } from "./langUtils.js";
-import { ontoggleLock } from "./navbar.js";
-import {
+	camera_GetAddress,
 	buildFieldId,
 	getPref,
 	getPrefValue,
 	preferences,
-} from "./prefUtils.js";
+	build_file_filter_list,
+	onAutoReportIntervalChange,
+	reportNone,
+	grblpanel,
+	SendFileHttp,
+	SendGetHttp,
+	build_language_list,
+	translate_text_item,
+} from "./common.js";
+import { ontoggleLock } from "./navbar.js";
 import { build_HTML_setting_list } from "./settings.js";
 import { handlePing } from "./socket.js";
 import { translate_text } from "./translate.js";

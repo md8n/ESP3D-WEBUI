@@ -11,11 +11,11 @@ import {
 	setHTML,
 	alertdlg,
 	confirmdlg,
+	init_files_panel,
+	SendGetHttp,
+	translate_text_item,
+	restartdlg,
 } from "./common.js";
-import { init_files_panel } from "./files.js";
-import { SendGetHttp } from "./http.js";
-import { restartdlg } from "./restartdlg.js";
-import { translate_text_item } from "./langUtils.js";
 
 /** setting_configList */
 let scl = [];

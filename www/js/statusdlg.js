@@ -1,4 +1,3 @@
-import { SendGetHttp } from "./http.js";
 import {
 	get_icon_svg,
 	conErr,
@@ -11,8 +10,9 @@ import {
 	getactiveModal,
 	setactiveModal,
 	showModal,
+	SendGetHttp,
+	translate_text_item,
 } from "./common.js";
-import { translate_text_item } from "./langUtils.js";
 
 var statuspage = 0;
 var statuscontent = "";

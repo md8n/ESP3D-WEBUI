@@ -1,4 +1,3 @@
-import { SendGetHttp } from "./http.js";
 import {
 	get_icon_svg,
 	conErr,
@@ -12,8 +11,9 @@ import {
 	closeModal,
 	setactiveModal,
 	showModal,
+	SendGetHttp,
+	translate_text_item,
 } from "./common.js";
-import { translate_text_item } from "./langUtils.js";
 
 var ssid_item_scanwifi = -1;
 var ssid_subitem_scanwifi = -1;

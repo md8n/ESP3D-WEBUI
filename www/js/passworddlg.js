@@ -1,5 +1,3 @@
-import { SendGetHttp } from "./http.js";
-import { translate_text_item } from "./langUtils.js";
 import {
 	conErr,
 	displayBlock,
@@ -9,6 +7,8 @@ import {
 	closeModal,
 	setactiveModal,
 	showModal,
+	SendGetHttp,
+	translate_text_item,
 } from "./common.js";
 
 /** Change Password dialog */

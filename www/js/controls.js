@@ -10,12 +10,12 @@ import {
 	setChecked,
 	setHTML,
 	alertdlg,
+	getPrefValue,
+	SendPrinterCommand,
+	SendGetHttp,
+	translate_text_item,
+	showmacrodlg,
 } from "./common.js";
-import { SendGetHttp } from "./http.js";
-import { showmacrodlg } from "./macrodlg.js";
-import { getPrefValue } from "./prefUtils.js";
-import { SendPrinterCommand } from "./printercmd.js";
-import { translate_text_item } from "./langUtils.js";
 
 let interval_position = -1;
 
@@ -96,10 +96,10 @@ function Macro_build_list(response_text) {
 		if (
 			response.length !== 0 &&
 			typeof response[i].name !== "undefined" &&
-				typeof response[i].glyph !== "undefined" &&
-				typeof response[i].filename !== "undefined" &&
-				typeof response[i].target !== "undefined" &&
-				typeof response[i].class !== "undefined" &&
+			typeof response[i].glyph !== "undefined" &&
+			typeof response[i].filename !== "undefined" &&
+			typeof response[i].target !== "undefined" &&
+			typeof response[i].class !== "undefined" &&
 			typeof response[i].index !== "undefined"
 		) {
 			entry = {

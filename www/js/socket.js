@@ -1,10 +1,16 @@
-import { Monitor_output_Update } from "./commands.js";
-import { Common, id, HTMLDecode, setHTML } from "./common.js";
-import { on_autocheck_position } from "./controls.js";
-import { grblHandleMessage, reportNone } from "./grbl.js";
-import { clear_cmd_list } from "./http.js";
-import { enable_ping } from "./prefUtils.js";
-import { translate_text_item } from "./langUtils.js";
+import {
+	Monitor_output_Update,
+	Common,
+	id,
+	HTMLDecode,
+	setHTML,
+	on_autocheck_position,
+	enable_ping,
+	grblHandleMessage,
+	reportNone,
+	clear_cmd_list,
+	translate_text_item,
+} from "./common.js";
 import { UIdisableddlg } from "./UIdisableddlg.js";
 
 let convertDHT2Fahrenheit = false;

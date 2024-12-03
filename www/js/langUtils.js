@@ -1,5 +1,4 @@
-import { language_list } from "./common.js";
-import { getPrefValue } from "./prefUtils.js";
+import { language_list, getPrefValue} from "./common.js";
 
 /** Build a language list select element */
 const build_language_list = (id_item) => {

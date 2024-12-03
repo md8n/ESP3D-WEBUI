@@ -6,7 +6,7 @@ import {
   MaslowErrMsgKeyValueCantUse,
   MaslowErrMsgKeyValueSuffix,
   maslowMsgHandling
-} from "../maslow.js";
+} from "../common.js";
 import { loadedValues } from "../tablet.js";
 
 describe('maslowMsgHandling', () => {

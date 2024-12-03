@@ -1,6 +1,11 @@
-import { getPrefValue, setPrefValue } from "./prefUtils.js";
-import { SavePreferences } from "./preferencesdlg.js";
-import { displayBlock, displayNone, id } from "./common.js";
+import {
+	displayBlock,
+	displayNone,
+	id,
+	getPrefValue,
+	setPrefValue,
+	SavePreferences,
+} from "./common.js";
 
 /** Set up the event handlers for the camera tab */
 const cameratab = () => {

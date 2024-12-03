@@ -1,5 +1,5 @@
-import { Monitor_output_Update } from "./commands.js";
 import {
+	Monitor_output_Update,
 	Common,
 	get_icon_svg,
 	displayBlock,
@@ -11,11 +11,12 @@ import {
 	alertdlg,
 	confirmdlg,
 	inputdlg,
+	SendPrinterCommand,
+	tryAutoReport,
+	SendFileHttp,
+	SendGetHttp,
+	translate_text_item,
 } from "./common.js";
-import { tryAutoReport } from "./grbl.js";
-import { SendFileHttp, SendGetHttp } from "./http.js";
-import { SendPrinterCommand } from "./printercmd.js";
-import { translate_text_item } from "./langUtils.js";
 
 var files_currentPath = "/";
 var files_filter_sd_list = false;

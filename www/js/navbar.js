@@ -1,11 +1,5 @@
-import { cameratab } from "./camera.js";
-import { configtab } from "./configtab.js";
-import { DisconnectLogin } from "./logindlg.js";
-import { changepassworddlg } from "./passworddlg.js";
-import { showpreferencesdlg } from "./preferencesdlg.js";
 import { settingstab } from "./settingstab.js";
 import { setupdlg } from "./setupdlg.js";
-import { translate_text_item } from "./langUtils.js";
 import {
 	disable_items,
 	displayNone,
@@ -15,6 +9,12 @@ import {
 	setHTML,
 	opentab,
 	creditsdlg,
+	cameratab,
+	configtab,
+	changepassworddlg,
+	showpreferencesdlg,
+	translate_text_item,
+	DisconnectLogin,
 } from "./common.js";
 
 /** Set up the event handlers for the navbar */

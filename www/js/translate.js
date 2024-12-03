@@ -1,5 +1,4 @@
-import { translate_text_item } from "./langUtils.js";
-import { HTMLDecode } from "./common.js";
+import { translate_text_item, HTMLDecode } from "./common.js";
 
 //removeIf(production)
 var translated_list = [];

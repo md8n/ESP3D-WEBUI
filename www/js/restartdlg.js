@@ -9,9 +9,9 @@ import {
 	closeModal,
 	setactiveModal,
 	showModal,
+	SendPrinterCommand,
+	translate_text_item,
 } from "./common.js";
-import { SendPrinterCommand } from "./printercmd.js";
-import { translate_text_item } from "./langUtils.js";
 
 /** Restart dialog */
 const restartdlg = () => {

@@ -1,6 +1,4 @@
-import { Common, setHTML } from "./common.js";
-import { logindlg } from "./logindlg.js";
-import { translate_text_item } from "./langUtils.js";
+import { Common, setHTML, translate_text_item, logindlg } from "./common.js";
 
 var http_cmd_list = [];
 var processing_cmd = false;

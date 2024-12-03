@@ -1,7 +1,13 @@
-import { SendGetHttp } from "./http.js";
-import { translate_text_item } from "./langUtils.js";
 import { process_socket_response } from "./socket.js";
-import { conErr, stdErrMsg, getChecked, id, HTMLDecode } from "./common.js";
+import {
+	conErr,
+	stdErrMsg,
+	getChecked,
+	id,
+	HTMLDecode,
+	SendGetHttp,
+	translate_text_item,
+} from "./common.js";
 
 var CustomCommand_history = [];
 var CustomCommand_history_index = -1;

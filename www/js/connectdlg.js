@@ -8,9 +8,9 @@ import {
 	closeModal,
 	setactiveModal,
 	showModal,
+	SendGetHttp,
+	logindlg,
 } from "./common.js";
-import { SendGetHttp } from "./http.js";
-import { logindlg } from "./logindlg.js";
 import { EventListenerSetup, startSocket } from "./socket.js";
 
 /** Connect Dialog */

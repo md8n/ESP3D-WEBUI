@@ -12,9 +12,9 @@ import {
 	showModal,
 	alertdlg,
 	confirmdlg,
+	SendFileHttp,
+	translate_text_item,
 } from "./common.js";
-import { SendFileHttp } from "./http.js";
-import { translate_text_item } from "./langUtils.js";
 
 //Macro dialog
 let macrodlg_macrolist = [];

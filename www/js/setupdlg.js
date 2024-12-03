@@ -9,10 +9,12 @@ import {
 	setactiveModal,
 	showModal,
 	openstep,
+	getPrefValue,
+	setPrefValue,
+	SavePreferences,
+	build_language_list,
+	translate_text_item,
 } from "./common.js";
-import { build_language_list, translate_text_item } from "./langUtils.js";
-import { SavePreferences } from "./preferencesdlg.js";
-import { getPrefValue, setPrefValue } from "./prefUtils.js";
 import {
 	build_control_from_pos,
 	build_HTML_setting_list,

@@ -1,5 +1,8 @@
-import { Common, id, opentab } from "./common.js";
 import {
+	Common,
+	id,
+	opentab,
+	SendPrinterCommand,
 	grbl_reset,
 	reportNone,
 	tryAutoReport,
@@ -12,8 +15,7 @@ import {
 	onprobetouchplatethicknessChange,
 	SendRealtimeCmd,
 	StartProbeProcess,
-} from "./grbl.js";
-import { SendPrinterCommand } from "./printercmd.js";
+} from "./common.js";
 
 /** Set up the event handlers for the grblpanel */
 const grblpanel = () => {

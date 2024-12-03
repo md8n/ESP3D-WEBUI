@@ -1,8 +1,16 @@
-import { Common, getValue, id, setValue, numpad } from "./common.js";
-import { files_list_success, files_select_upload } from "./files.js";
-import { SendRealtimeCmd, MPOS, WPOS } from "./grbl.js";
-import { SendGetHttp } from "./http.js";
 import {
+	Common,
+	getValue,
+	id,
+	setValue,
+	numpad,
+	SendPrinterCommand,
+	files_list_success,
+	files_select_upload,
+	SendRealtimeCmd,
+	MPOS,
+	WPOS,
+	SendGetHttp,
 	checkHomed,
 	loadConfigValues,
 	loadCornerValues,
@@ -11,8 +19,7 @@ import {
 	maslowMsgHandling,
 	saveConfigValues,
 	sendCommand,
-} from "./maslow.js";
-import { SendPrinterCommand } from "./printercmd.js";
+} from "./common.js";
 // import { arrayToXYZ, displayer, refreshGcode } from "./toolpath-displayer.js";
 
 var gCodeLoaded = false;

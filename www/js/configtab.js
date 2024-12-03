@@ -2,8 +2,8 @@ import {
 	Apply_config_override,
 	Delete_config_override,
 	refreshconfig,
-} from "./config.js";
-import { id } from "./common.js";
+	id,
+} from "./common.js";
 
 /** Set up the event handlers for the config tab */
 const configtab = () => {

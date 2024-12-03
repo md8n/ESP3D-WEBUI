@@ -1,7 +1,11 @@
-import { Monitor_output_Update } from "./commands.js";
-import { SendGetHttp } from "./http.js";
-import { translate_text_item } from "./langUtils.js";
-import { conErr, HTMLDecode, stdErrMsg } from "./common.js";
+import {
+	conErr,
+	HTMLDecode,
+	stdErrMsg,
+	Monitor_output_Update,
+	SendGetHttp,
+	translate_text_item,
+} from "./common.js";
 
 var grbl_processfn = null;
 var grbl_errorfn = null;

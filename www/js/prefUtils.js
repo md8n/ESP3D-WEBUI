@@ -1,5 +1,4 @@
-import { prefDefs, HTMLDecode } from "./common.js";
-import { translate_text_item } from "./langUtils.js";
+import { prefDefs, HTMLDecode, translate_text_item } from "./common.js";
 
 // Add in the validation function definitions to the prefDefs
 prefDefs.enable_grbl_panel.prefDefs.autoreport_interval.valFunc = (value) => {

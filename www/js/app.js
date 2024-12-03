@@ -1,12 +1,23 @@
-import { init_command_panel } from "./commands.js";
-import { connectdlg } from "./connectdlg.js";
-import { Common, displayBlock, displayFlex, displayNone, id, setHTML, closeModal } from "./common.js";
-import { ControlsPanel, init_controls_panel } from "./controls.js";
-import { init_files_panel } from "./files.js";
-import { build_axis_selection, tryAutoReport } from "./grbl.js";
-import { grblpanel } from "./grblpanel.js";
+import {
+	connectdlg,
+	Common,
+	displayBlock,
+	displayFlex,
+	displayNone,
+	id,
+	setHTML,
+	closeModal,
+	init_command_panel,
+	ControlsPanel,
+	init_controls_panel,
+	getpreferenceslist,
+	initpreferences,
+	init_files_panel,
+	build_axis_selection,
+	tryAutoReport,
+	grblpanel,
+} from "./common.js";
 import { navbar } from "./navbar.js";
-import { getpreferenceslist, initpreferences } from "./preferencesdlg.js";
 import { build_HTML_setting_list, refreshSettings } from "./settings.js";
 import { setupdlg } from "./setupdlg.js";
 import { tabletInit } from "./tablet.js";
@@ -87,7 +98,10 @@ window.onload = () => {
 			connectLoaded = true;
 		}
 
-		if (!controlsLoaded && common.loadedHTML.includes("./sub/controlspanel.html")) {
+		if (
+			!controlsLoaded &&
+			common.loadedHTML.includes("./sub/controlspanel.html")
+		) {
 			ControlsPanel();
 			controlsLoaded = true;
 		}
