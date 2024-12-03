@@ -513,7 +513,7 @@ function scaleMeasurementsBasedOnTension(measurements, guess) {
 
 
 function findMaxFitness(measurements) {
-  ({
+  sendCalibrationEvent({
     initialGuess
   }, true);
 
