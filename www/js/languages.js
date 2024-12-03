@@ -1,63 +1,84 @@
-import { getPrefValue } from "./preferencesdlg.js";
-import { translate_text } from "./translate.js";
-import { id } from "./util.js";
+
+//removeIf(de_lang_disabled)
+import { germantrans } from "./language/de.js";
+//endRemoveIf(de_lang_disabled)
+//removeIf(en_lang_disabled)
+import { englishtrans } from "./language/en.js";
+//endRemoveIf(en_lang_disabled)
+//removeIf(es_lang_disabled)
+import { spanishtrans } from "./language/es.js";
+//endRemoveIf(es_lang_disabled)
+//removeIf(fr_lang_disabled)
+import { frenchtrans } from "./language/fr.js";
+//endRemoveIf(fr_lang_disabled)
+//removeIf(it_lang_disabled)
+import { italiantrans } from "./language/it.js";
+//endRemoveIf(it_lang_disabled)
+//removeIf(ja_lang_disabled)
+import { japanesetrans } from "./language/ja.js";
+//endRemoveIf(ja_lang_disabled)
+//removeIf(hu_lang_disabled)
+import { hungariantrans } from "./language/hu.js";
+//endRemoveIf(hu_lang_disabled)
+//removeIf(pl_lang_disabled)
+import { polishtrans } from "./language/pl.js";
+//endRemoveIf(pl_lang_disabled)
+//removeIf(ptbr_lang_disabled)
+import { ptbrtrans } from "./language/ptbr.js";
+//endRemoveIf(ptbr_lang_disabled)
+//removeIf(ru_lang_disabled)
+import { russiantrans } from "./language/ru.js";
+//endRemoveIf(ru_lang_disabled)
+//removeIf(tr_lang_disabled)
+import { turkishtrans } from "./language/tr.js";
+//endRemoveIf(tr_lang_disabled)
+//removeIf(uk_lang_disabled)
+import { ukrtrans } from "./language/uk.js";
+//endRemoveIf(uk_lang_disabled)
+//removeIf(zh_cn_lang_disabled)
+import { zh_CN_trans } from "./language/zh_CN.js";
+//endRemoveIf(zh_cn_lang_disabled)
 
 const language_list = [
 //removeIf(de_lang_disabled)
-    ['de', 'Deutsch', 'germantrans'],
+    ['de', 'Deutsch', germantrans],
 //endRemoveIf(de_lang_disabled)
 //removeIf(en_lang_disabled)
-    ['en', 'English', 'englishtrans'],
+    ['en', 'English', englishtrans],
 //endRemoveIf(en_lang_disabled)
 //removeIf(es_lang_disabled)
-    ['es', 'Espa&ntilde;ol', 'spanishtrans'],
+    ['es', 'Espa&ntilde;ol', spanishtrans],
 //endRemoveIf(es_lang_disabled)
 //removeIf(fr_lang_disabled)
-    ['fr', 'Fran&ccedil;ais', 'frenchtrans'],
+    ['fr', 'Fran&ccedil;ais', frenchtrans],
 //endRemoveIf(fr_lang_disabled)
 //removeIf(it_lang_disabled)
-    ['it', 'Italiano', 'italiantrans'],
+    ['it', 'Italiano', italiantrans],
 //endRemoveIf(it_lang_disabled)
 //removeIf(ja_lang_disabled)
-    ['ja', '&#26085;&#26412;&#35486;', 'japanesetrans'],
+    ['ja', '&#26085;&#26412;&#35486;', japanesetrans],
 //endRemoveIf(ja_lang_disabled)
 //removeIf(hu_lang_disabled)
-    ['hu', 'Magyar', 'hungariantrans'],
+    ['hu', 'Magyar', hungariantrans],
 //endRemoveIf(hu_lang_disabled)
 //removeIf(pl_lang_disabled)
-    ['pl', 'Polski', 'polishtrans'],
+    ['pl', 'Polski', polishtrans],
 //endRemoveIf(pl_lang_disabled)
 //removeIf(ptbr_lang_disabled)
-    ['ptbr', 'Português-Br', 'ptbrtrans'],
+    ['ptbr', 'Português-Br', ptbrtrans],
 //endRemoveIf(ptbr_lang_disabled)
 //removeIf(ru_lang_disabled)
-    ['ru', 'Русский', 'russiantrans'],
+    ['ru', 'Русский', russiantrans],
 //endRemoveIf(ru_lang_disabled)
 //removeIf(tr_lang_disabled)
-    ['tr', 'T&uuml;rk&ccedil;e', 'turkishtrans'],
+    ['tr', 'T&uuml;rk&ccedil;e', turkishtrans],
 //endRemoveIf(tr_lang_disabled)
 //removeIf(uk_lang_disabled)
-    ['uk', 'Українська', 'ukrtrans'],
+    ['uk', 'Українська', ukrtrans],
 //endRemoveIf(uk_lang_disabled)
 //removeIf(zh_cn_lang_disabled)
-    ['zh_CN', '&#31616;&#20307;&#20013;&#25991;', 'zh_CN_trans'],
+    ['zh_CN', '&#31616;&#20307;&#20013;&#25991;', zh_CN_trans],
 //endRemoveIf(zh_cn_lang_disabled)
 ];
 
-const build_language_list = (id_item) => {
-    const content = [`<select class='form-control' id='${id_item}'>`];
-    for (let lang_i = 0; lang_i < language_list.length; lang_i++) {
-        const isSelected = (language_list[lang_i][0] === getPrefValue("language_list")) ? "selected" : "";
-        content.push(`<option value='${language_list[lang_i][0]}' ${isSelected}>${language_list[lang_i][1]}</option>`);
-    }
-    content.push("</select>");
-    return content.join("\n");
-}
-
-/** Adds the event handler to the select.
- * IMPORTANT only call this after the language_list has been added to the DOM */
-const add_language_list_event_handler = (id_item) => {
-    id(id_item).addEventListener("change", (event) => translate_text(getPrefValue("language_list")));
-}
-
-export { add_language_list_event_handler, build_language_list, language_list };
+export { language_list };

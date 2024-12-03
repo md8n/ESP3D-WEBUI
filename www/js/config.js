@@ -2,7 +2,7 @@ import { alertdlg } from "./alertdlg.js";
 import { Common } from "./common.js";
 import { SendGetHttp } from "./http.js";
 import { get_icon_svg } from "./icons.js";
-import { translate_text_item } from "./translate.js";
+import { translate_text_item } from "./langUtils.js";
 import { conErr, stdErrMsg, displayBlock, displayNone, id, setChecked, setHTML } from "./util.js";
 
 var config_configList = [];
@@ -294,7 +294,7 @@ function configGetvalue(index, is_override) {
         id('icon_config_' + prefix + index).className = "form-control-feedback has-error ico_feedback";
         setHTML('icon_config_' + prefix + index, get_icon_svg("remove"));
         id('status_config_' + prefix + index).className = "form-group has-feedback has-error";
-        alertdlg(translate_text_item("Out of range"), translate_text_item("Value ") + config_error_msg + " !");
+        alertdlg(translate_text_item("Out of range"), `${translate_text_item("Value ") + config_error_msg} !`);
     } else {
         //value is ok save it
         var cmd = item.cmd + value;

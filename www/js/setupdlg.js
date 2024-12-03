@@ -1,14 +1,15 @@
 import { get_icon_svg } from "./icons.js";
-import { add_language_list_event_handler, build_language_list } from "./languages.js";
+import { build_language_list, translate_text_item } from "./langUtils.js";
 import { closeModal, setactiveModal, showModal } from "./modaldlg.js";
-import { setPrefValue, SavePreferences, getPrefValue } from "./preferencesdlg.js";
+import { SavePreferences } from "./preferencesdlg.js";
+import { getPrefValue, setPrefValue } from "./prefUtils.js";
 import {
     build_control_from_pos,
     build_HTML_setting_list,
     define_esp_role, define_esp_role_from_pos,
 } from "./settings.js";
 import { openstep } from "./wizard.js";
-import { translate_text, translate_text_item } from "./translate.js";
+import { translate_text } from "./translate.js";
 import { displayBlock, displayNone, id, setHTML } from "./util.js";
 import { Common } from "./common.js";
 
@@ -96,11 +97,11 @@ const setupdlg = () => {
     displayNone("wizard_line4")
     disableStep("wizard_line4", "endsteplink");
 
-    var content = table(td(get_icon_svg("flag") + "&nbsp;") + td(build_language_list("language_selection")));
+    const content = table(td(`${get_icon_svg("flag")}&nbsp;`) + td(build_language_list("language_selection")));
     setHTML("setup_langage_list", content);
-    add_language_list_event_handler("language_selection");
+    id("language_selection").addEventListener("change", (event) => translate_text(getPrefValue("language_list")));
 
-    var modal = setactiveModal('setupdlg.html', setupdone);
+    const modal = setactiveModal('setupdlg.html', setupdone);
     if (modal == null) return;
     showModal();
     id("startsteplink", true).click();
@@ -175,13 +176,13 @@ function enablestep2() {
     content += heading("WiFi Configuration");
 
     content += buildControlItem("Define ESP role:", EP_WIFI_MODE, actions, define_esp_role);
-    content += translate_text_item("AP define access point / STA allows to join existing network") + "<br>";
+    content += `${translate_text_item("AP define access point / STA allows to join existing network")}<br>`;
     content += spacer();
 
     content += div("setup_STA");
 
     content += buildControlItem("What access point ESP need to be connected to:", EP_STA_SSID, actions);
-    content += translate_text_item("You can use scan button, to list available access points.") + "<br>";
+    content += `${translate_text_item("You can use scan button, to list available access points.")}<br>`;
     content += spacer();
 
     content += buildControlItem("Password to join access point:", EP_STA_PASSWORD, actions);

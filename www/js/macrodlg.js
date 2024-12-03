@@ -5,7 +5,7 @@ import { clear_drop_menu, showhide_drop_menu } from "./dropmenu.js";
 import { SendFileHttp } from "./http.js";
 import { get_icon_svg } from "./icons.js";
 import { closeModal, setactiveModal, showModal } from "./modaldlg.js";
-import { translate_text_item } from "./translate.js";
+import { translate_text_item } from "./langUtils.js";
 import { displayBlock, displayNone, id, setHTML } from "./util.js";
 
 //Macro dialog
@@ -344,3 +344,5 @@ function macroUploadfailed(error_code, response) {
     alertdlg(translate_text_item("Error"), translate_text_item("Save macro list failed!"));
     displayNone('macrodlg_upload_msg');
 }
+
+export { showmacrodlg };

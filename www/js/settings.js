@@ -6,7 +6,7 @@ import { init_files_panel } from "./files.js";
 import { SendGetHttp } from "./http.js";
 import { get_icon_svg } from "./icons.js";
 import { restartdlg } from "./restartdlg.js";
-import { translate_text_item } from "./translate.js";
+import { translate_text_item } from "./langUtils.js";
 import { conErr, stdErrMsg, displayBlock, displayNone, id, setChecked, setHTML } from "./util.js";
 
 /** setting_configList */

@@ -9,13 +9,14 @@ import { onAutoReportIntervalChange, reportNone } from "./grbl.js";
 import { grblpanel } from "./grblpanel.js";
 import { SendFileHttp, SendGetHttp } from "./http.js";
 import { get_icon_svg } from "./icons.js";
-import { build_language_list } from "./languages.js";
+import { build_language_list, translate_text_item } from "./langUtils.js";
 import { closeModal, setactiveModal, showModal } from "./modaldlg.js";
 import { ontoggleLock } from "./navbar.js";
-import { buildFieldId, buildPrefsFromDefs, getPrefDefPath, prefDefs } from "./prefDefs.js";
+import { prefDefs } from "./prefDefs.js";
+import { buildFieldId, getPref, getPrefValue, preferences } from "./prefUtils.js";
 import { build_HTML_setting_list } from "./settings.js";
-import { check_ping } from "./socket.js";
-import { translate_text, translate_text_item } from "./translate.js";
+import { handlePing } from "./socket.js";
+import { translate_text } from "./translate.js";
 import {
     conErr,
     displayBlock, displayFlex, displayNone,
@@ -28,7 +29,6 @@ import {
 //Preferences dialog
 
 const prefFile = "/preferences.json";
-let preferences = buildPrefsFromDefs(prefDefs);
 
 const buildElem = (elem, contents, classVal) => {
     const elemPanel = document.createElement(elem);
@@ -424,69 +424,6 @@ const setupCommandsHandlers = () => {
     id("enable_verbose_mode").addEventListener("change", (event) => commands_verboseMode(getPrefValue("enable_verbose_mode")));
 }
 
-/** Get the named preference object */
-const getPref = (prefName) => {
-    let pref = preferences[prefName];
-    if (!pref) {
-        // try to find it by looking for the fieldId
-        for (const [key, value] of Object.entries(preferences)) {
-            if (value.fieldId === prefName) {
-                pref = value;
-                break;
-            }
-        }
-    }
-    if (!pref) {
-        console.error(stdErrMsg("Unknown Preference", `'${prefName}' not found as a preference key or as the fieldId within a preference value`));
-        return undefined;
-    }
-    return pref;
-}
-
-/** Get the named preference value */
-const getPrefValue = (prefName) => {
-    const pref = getPref(prefName);
-    if (!pref) {
-        return undefined;
-    }
-    return pref.value;
-}
-
-/** Set the preference item to the supplied value.
- * Returns true for success, false for failure - usually because the preference item does not exist
-  */
-const setPrefValue = (prefName, value) => {
-    const pref = getPrefDefPath(prefName);
-    if (typeof pref === "undefined") {
-        return false;
-    }
-    // TODO: test the typeof the value is compatible with the valueType
-    pref.value = value;
-    return true;
-}
-
-/** Helper method to get the `enable_ping` preference value */
-const enable_ping = () => getPrefValue("enable_ping");
-
-let interval_ping = 0;
-/** Turn ping on or off based on its current value */
-const handlePing = () => {
-    if (enable_ping()) {
-        // First clear any existing interval
-        if (interval_ping) {
-            clearInterval(interval_ping);
-        }
-        const common = new Common();
-        common.last_ping = Date.now();
-        interval_ping = setInterval(() => check_ping(), 10 * 1000);
-        console.log('enable ping');
-    } else {
-        clearInterval(interval_ping);
-        interval_ping = 0;
-        console.log('disable ping');
-    }
-}
-
 function getpreferenceslist() {
     var url = prefFile;
     //removeIf(production)
@@ -754,4 +691,4 @@ const CheckValue = (fId, valueDef) => {
     return errorList.length == 0;
 }
 
-export { enable_ping, getpreferenceslist, getPref, getPrefValue, setPrefValue, initpreferences, showpreferencesdlg, SavePreferences };
+export { getpreferenceslist, initpreferences, showpreferencesdlg, SavePreferences };

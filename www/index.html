@@ -75,31 +75,51 @@
     <div class="spinner"></div>
   </div>
   <!--removeIf(cleanheader)-->
+  <!-- scripts with no import dependencies -->
+  <script type="module" src="./js/constants.js"></script>
   <script type="module" src="./js/util.js"></script>
-  <!-- <script type="module" src="./js/loadingOverlay.js"></script> -->
-  <script type="module" src="./js/wizard.js"></script>
-  <script type="module" src="./js/http.js"></script>
+  <script type="module" src="./js/common.js"></script>
   <script type="module" src="./js/icons.js"></script>
-  <script type="module" src="./js/camera.js"></script>
-  <script type="module" src="./js/settings.js"></script>
-  <script type="module" src="./js/config.js"></script>
+  <script type="module" src="./js/languages.js"></script>
+
+  <!-- <script type="module" src="./js/loadingOverlay.js"></script> -->
+  <!-- scripts only with dependencies on those with no import dependencies -->
+  <script type="module" src="./js/wizard.js"></script>
   <script type="module" src="./js/tabs.js"></script>
+  <script type="module" src="./js/modaldlg.js"></script>
+
+  <script type="module" src="./js/prefDefs.js"></script>
+  <script type="module" src="./js/prefUtils.js"></script>
+
   <script type="module" src="./js/alertdlg.js"></script>
   <script type="module" src="./js/confirmdlg.js"></script>
+
+  <script type="module" src="./js/langUtils.js"></script>
+
+
+  <script type="module" src="./js/files.js"></script>
+
+  <script type="module" src="./js/settings.js"></script>
+  <script type="module" src="./js/config.js"></script>
+ 
   <script type="module" src="./js/passworddlg.js"></script>
   <script type="module" src="./js/logindlg.js"></script>
+
+  <script type="module" src="./js/http.js"></script>
+  
   <script type="module" src="./js/inputdlg.js"></script>
   <script type="module" src="./js/creditsdlg.js"></script>
   <script type="module" src="./js/scanwifidlg.js"></script>
   <script type="module" src="./js/connectdlg.js"></script>
   <script type="module" src="./js/restartdlg.js"></script>
-  <script type="module" src="./js/modaldlg.js"></script>
   <script type="module" src="./js/SPIFFSdlg.js"></script>
   <script type="module" src="./js/statusdlg.js"></script>
   <script type="module" src="./js/updatedlg.js"></script>
   <script type="module" src="./js/setupdlg.js"></script>
   <script type="module" src="./js/macrodlg.js"></script>
   <script type="module" src="./js/preferencesdlg.js"></script>
+ 
+  <script type="module" src="./js/camera.js"></script>
   <script type="module" src="./js/translate.js"></script>
   <script type="module" src="./js/commands.js"></script>
   <script type="module" src="./js/printercmd.js"></script>

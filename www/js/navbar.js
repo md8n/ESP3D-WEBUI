@@ -7,7 +7,7 @@ import { showpreferencesdlg } from "./preferencesdlg.js";
 import { settingstab } from "./settingstab.js";
 import { setupdlg } from "./setupdlg.js";
 import { opentab } from "./tabs.js";
-import { translate_text_item } from "./translate.js";
+import { translate_text_item } from "./langUtils.js";
 import { disable_items, displayNone, getChecked, id, setChecked, setHTML } from "./util.js";
 
 /** Set up the event handlers for the navbar */

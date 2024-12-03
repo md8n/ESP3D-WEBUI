@@ -1,7 +1,7 @@
 import { SendGetHttp } from "./http.js";
 import { get_icon_svg } from "./icons.js";
 import { closeModal, setactiveModal, showModal } from "./modaldlg.js";
-import { translate_text_item } from "./translate.js";
+import { translate_text_item } from "./langUtils.js";
 import { conErr, stdErrMsg, displayBlock, displayNone, id, getValue, setValue, setHTML } from "./util.js";
 
 var ssid_item_scanwifi = -1;

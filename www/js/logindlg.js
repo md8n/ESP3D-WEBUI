@@ -1,6 +1,6 @@
 import { SendGetHttp } from "./http.js";
 import { closeModal, setactiveModal, showModal } from "./modaldlg.js";
-import { translate_text_item } from "./translate.js";
+import { translate_text_item } from "./langUtils.js";
 import { conErr, displayBlock, displayNone, id, setHTML } from "./util.js";
 
 /** login dialog */

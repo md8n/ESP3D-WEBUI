@@ -3,7 +3,7 @@ import { Common } from "./common.js";
 import { confirmdlg } from "./confirmdlg.js";
 import { SendFileHttp, SendGetHttp } from "./http.js";
 import { closeModal, setactiveModal, showModal } from "./modaldlg.js";
-import { translate_text_item } from "./translate.js";
+import { translate_text_item } from "./langUtils.js";
 import { conErr, stdErrMsg, id, displayBlock, displayNone, setValue, setHTML } from "./util.js";
 
 var update_ongoing = false;

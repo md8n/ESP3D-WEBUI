@@ -1,8 +1,5 @@
-import { translate_text_item } from "./translate.js";
-import { HTMLDecode } from "./util.js";
-
 /** Definitions for all the preferences */
-const prefDefs = {
+export const prefDefs = {
     "language_list": {
         "defValue": "en",
         "valueType": "select",
@@ -105,12 +102,6 @@ const prefDefs = {
                 "inpClass": "w6",
                 "min": 0,
                 "max": 30000,
-                valFunc: (value) => {
-                    const vInt = Number.parseInt(value);
-                    return !Number.isNaN(vInt) && (vInt === 0 || (vInt >= 50 && vInt <= 30000))
-                        ? ""
-                        : translate_text_item("Value of auto-report must be 0 or between 50ms and 30000ms !!");
-                },
             },
             "interval_status": {
                 "defValue": 3,
@@ -183,12 +174,6 @@ const prefDefs = {
                 "valueType": "text",
                 "label": "File extensions (use ; to separate)",
                 "inpClass": "w25",
-                valFunc: (value) => {
-                    const extPat = /^[a-z0-9;]*$/i;
-                    return value.match(extPat)
-                        ? ""
-                        : translate_text_item("Only alphanumeric chars separated by ; for extensions filters !!");
-                },
             },
         },
     },
@@ -205,58 +190,3 @@ const prefDefs = {
         },
     },
 };
-
-/** Get the part of the prefDefs structure identified by the name supplied.
- * If the name is not found then undefined is returned
- */
-const getPrefDefPath = (prefName) => {
-    const prefPath = prefName.trim().replace(".", ".prefDefs.").replace(".prefDefs.prefDefs.", ".prefDefs.");
-    let pref = prefDefs;
-    for (let ix = 0; ix < prefPath.length; ix++) {
-        if (typeof (pref[prefPath[ix]]) === "undefined") {
-            return undefined;
-        }
-        pref = pref[prefPath[ix]];
-    }
-    return pref;
-}
-
-/** Return the `fieldId`, if defined, otherwise return the `key` */
-const buildFieldId = (key, value) => value.fieldId || key;
-
-/** Build a complete set of preferences from the prefDefs.
- * Useful for initialisation of preferences.json
- * * `defValue` - is the original value as defined in the prefDefs above
- * * `fileValue` - is the value as currently stored in the value (or that soon will be if the preferences are being saved)
- * * `value` - is the value as currently set and in use in the UI
- */
-const buildPrefsFromDefs = (prefLevel = prefDefs) => {
-    const prefs = {};
-    for (const [key, value] of Object.entries(prefLevel)) {
-        prefs[key] = {
-            "valueType": value.valueType,
-            "defValue": value.defValue,
-            "fileValue": value.defValue,
-            "value": value.defValue,
-            "fieldId": buildFieldId(key, value),
-        };
-
-        if (value.valueType === "enctext") {
-            // all values are stored as HTML encoded text
-            prefs[key].defValue = HTMLDecode(prefs[key].defValue);
-            prefs[key].fileValue = HTMLDecode(prefs[key].fileValue);
-            prefs[key].value = HTMLDecode(prefs[key].value);
-        }
-
-        if ("prefDefs" in value) {
-            // Transfer the child level values back to this parent level
-            for (const [cKey, cValue] of Object.entries(buildPrefsFromDefs(value.prefDefs))) {
-                prefs[cKey] = cValue;
-            }
-        }
-    }
-
-    return prefs;
-}
-
-export { buildFieldId, buildPrefsFromDefs, getPrefDefPath, prefDefs };

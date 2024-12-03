@@ -2,9 +2,10 @@ import { alertdlg } from "./alertdlg.js";
 import { Common } from "./common.js";
 import { SendGetHttp } from "./http.js";
 import { get_icon_svg } from "./icons.js";
-import { getPrefValue } from "./preferencesdlg.js";
+import { showmacrodlg } from "./macrodlg.js";
+import { getPrefValue } from "./prefUtils.js";
 import { SendPrinterCommand } from "./printercmd.js";
-import { translate_text_item } from "./translate.js";
+import { translate_text_item } from "./langUtils.js";
 import { conErr, displayBlock, displayInline, displayNone, getChecked, id, setChecked, setHTML } from "./util.js";
 
 let interval_position = -1;

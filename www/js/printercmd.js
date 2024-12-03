@@ -1,6 +1,6 @@
 import { Monitor_output_Update } from "./commands.js";
 import { SendGetHttp } from "./http.js";
-import { translate_text_item } from "./translate.js";
+import { translate_text_item } from "./langUtils.js";
 import { conErr, HTMLDecode, stdErrMsg } from "./util.js";
 
 var grbl_processfn = null;
@@ -69,10 +69,10 @@ function SendPrinterCommandSuccess(response) {
 }
 
 function SendPrinterCommandFailed(error_code, response) {
-    let errMsg = (error_code == 0)
+    const errMsg = (error_code === 0)
         ? translate_text_item("Connection error")
         : stdErrMsg(error_code, HTMLDecode(response), translate_text_item("Error"));
-    Monitor_output_Update(errMsg + "\n");
+    Monitor_output_Update(`${errMsg}\n`);
 
     conErr(error_code, HTMLDecode(response), "printer cmd Error");
 }

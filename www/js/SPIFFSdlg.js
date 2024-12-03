@@ -5,7 +5,7 @@ import { SendFileHttp, SendGetHttp } from "./http.js";
 import { get_icon_svg } from "./icons.js";
 import { inputdlg } from "./inputdlg.js";
 import { closeModal, setactiveModal, showModal } from "./modaldlg.js";
-import { translate_text_item } from "./translate.js";
+import { translate_text_item } from "./langUtils.js";
 import { conErr, stdErrMsg, displayBlock, displayNone, id, setValue, setHTML } from "./util.js";
 
 //SPIFFS dialog

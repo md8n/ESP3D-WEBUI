@@ -3,8 +3,8 @@ import { Common } from "./common.js";
 import { on_autocheck_position } from "./controls.js";
 import { grblHandleMessage, reportNone } from "./grbl.js";
 import { clear_cmd_list } from "./http.js";
-import { enable_ping } from "./preferencesdlg.js";
-import { translate_text_item } from "./translate.js";
+import { enable_ping } from "./prefUtils.js";
+import { translate_text_item } from "./langUtils.js";
 import { UIdisableddlg } from "./UIdisableddlg.js";
 import { id, HTMLDecode, setHTML } from "./util.js";
 
@@ -26,6 +26,25 @@ const check_ping = () => {
     if ((Date.now() - common.last_ping) > 20000) {
         Disable_interface(true);
         console.log("No heart beat for more than 20s");
+    }
+}
+
+let interval_ping = 0;
+/** Turn ping on or off based on its current value */
+const handlePing = () => {
+    if (enable_ping()) {
+        // First clear any existing interval
+        if (interval_ping) {
+            clearInterval(interval_ping);
+        }
+        const common = new Common();
+        common.last_ping = Date.now();
+        interval_ping = setInterval(() => check_ping(), 10 * 1000);
+        console.log('enable ping');
+    } else {
+        clearInterval(interval_ping);
+        interval_ping = 0;
+        console.log('disable ping');
     }
 }
 
@@ -199,7 +218,7 @@ const startSocket = () => {
 
 export {
     CancelCurrentUpload,
-    check_ping,
+    handlePing,
     EventListenerSetup,
     process_socket_response,
     startSocket

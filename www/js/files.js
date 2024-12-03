@@ -7,7 +7,7 @@ import { SendFileHttp, SendGetHttp } from "./http.js";
 import { get_icon_svg } from "./icons.js";
 import { inputdlg } from "./inputdlg.js";
 import { SendPrinterCommand } from "./printercmd.js";
-import { translate_text_item } from "./translate.js";
+import { translate_text_item } from "./langUtils.js";
 import { displayBlock, displayInline, displayNone, id, stdErrMsg, setHTML } from "./util.js";
 
 var files_currentPath = "/";
@@ -219,7 +219,7 @@ function process_files_Createdir(answer) {
 function files_create_dir(name) {
     if (direct_sd) {
         var cmdpath = files_currentPath;
-        var url = "/upload?path=" + encodeURIComponent(cmdpath) + "&action=createdir&filename=" + encodeURIComponent(name);
+        const url = `/upload?path=${encodeURIComponent(cmdpath)}&action=createdir&filename=${encodeURIComponent(name)}`;
         displayBlock('files_nav_loader');
         SendGetHttp(url, files_list_success, files_list_failed);
     }
@@ -227,7 +227,7 @@ function files_create_dir(name) {
 
 function files_delete(index) {
     files_current_file_index = index;
-    var msg = translate_text_item("Confirm deletion of directory: ");
+    let msg = translate_text_item("Confirm deletion of directory: ");
     if (!files_file_list[index].isdir) msg = translate_text_item("Confirm deletion of file: ");
     confirmdlg(translate_text_item("Please Confirm"), msg + files_file_list[index].name, process_files_Delete);
 }

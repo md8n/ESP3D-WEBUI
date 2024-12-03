@@ -1,7 +1,7 @@
 import { Common } from "./common.js";
 import { closeModal, setactiveModal, showModal } from "./modaldlg.js";
 import { SendPrinterCommand } from "./printercmd.js";
-import { translate_text_item } from "./translate.js";
+import { translate_text_item } from "./langUtils.js";
 import { conErr, stdErrMsg, displayBlock, displayNone, id, setHTML } from "./util.js";
 
 /** Restart dialog */

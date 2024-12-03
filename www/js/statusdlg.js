@@ -1,7 +1,7 @@
 import { SendGetHttp } from "./http.js";
 import { get_icon_svg } from "./icons.js";
 import { closeModal, getactiveModal, setactiveModal, showModal } from "./modaldlg.js";
-import { translate_text_item } from "./translate.js";
+import { translate_text_item } from "./langUtils.js";
 import { conErr, stdErrMsg, displayBlock, displayNone, id, setHTML } from "./util.js";
 
 var statuspage = 0;
@@ -51,19 +51,19 @@ function statussuccess(response) {
     for (var i = 0; i < tresponse.length; i++) {
         var data = tresponse[i].split(":");
         if (data.length >= 2) {
-            statuscontent += "<label>" + translate_text_item(data[0]) + ": </label>&nbsp;<span class='text-info'><strong>";
+            statuscontent += `<label>${translate_text_item(data[0])}: </label>&nbsp;<span class='text-info'><strong>`;
             var data2 = data[1].split(" (")
             statuscontent += translate_text_item(data2[0].trim());
             for (v = 1; v < data2.length; v++) {
-                statuscontent += " (" + data2[v];
+                statuscontent += ` (${data2[v]}`;
             }
             for (v = 2; v < data.length; v++) {
-                statuscontent += ":" + data[v];
+                statuscontent += `:${data[v]}`;
             }
             statuscontent += "</strong></span><br>";
         } //else statuscontent += tresponse[i] + "<br>";
     }
-    statuscontent += "<label>" + translate_text_item("WebUI version") + ": </label>&nbsp;<span class='text-info'><strong>";
+    statuscontent += `<label>${translate_text_item("WebUI version")}: </label>&nbsp;<span class='text-info'><strong>`;
     statuscontent += web_ui_version
     statuscontent += "</strong></span><br>";
     text.innerHTML = statuscontent;

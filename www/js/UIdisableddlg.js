@@ -1,6 +1,6 @@
 import { setactiveModal, showModal } from "./modaldlg.js";
 import { saveSerialMessages } from "./tablet.js";
-import { translate_text_item } from "./translate.js";
+import { translate_text_item } from "./langUtils.js";
 import { id, setHTML } from "./util.js";
 
 //UIdisabled dialog

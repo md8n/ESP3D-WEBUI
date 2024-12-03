@@ -1,6 +1,6 @@
 import { Common } from "./common.js";
 import { logindlg } from "./logindlg.js";
-import { translate_text_item } from "./translate.js";
+import { translate_text_item } from "./langUtils.js";
 import { setHTML } from "./util.js";
 
 var http_cmd_list = [];

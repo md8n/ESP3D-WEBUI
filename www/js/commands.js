@@ -1,6 +1,6 @@
 import { SendGetHttp } from "./http.js";
+import { translate_text_item } from "./langUtils.js";
 import { process_socket_response } from "./socket.js";
-import { translate_text_item } from "./translate.js";
 import { conErr, stdErrMsg, getChecked, id, HTMLDecode } from "./util.js";
 
 var CustomCommand_history = [];
@@ -81,10 +81,10 @@ const Monitor_output_Update = (message) => {
         out = out.replace("<", "&lt;");
         out = out.replace(">", "&gt;");
         if (out.startsWith("ALARM:") || out.startsWith("Hold:") || out.startsWith("Door:")) {
-            out = "<font color='orange'><b>" + out + translate_text_item(out.trim()) + "</b></font>\n";
+            out = `<font color='orange'><b>${out}${translate_text_item(out.trim())}</b></font>\n`;
         }
         if (out.startsWith("error:")) {
-            out = "<font color='red'><b>" + out.toUpperCase() + translate_text_item(out.trim()) + "</b></font>\n";
+            out = `<font color='red'><b>${out.toUpperCase()}${translate_text_item(out.trim())}</b></font>\n`;
         }
         output += out;
     }
@@ -138,17 +138,17 @@ function CustomCommand_OnKeyUp(event) {
 }
 
 function SendCustomCommandSuccess(response) {
-    Monitor_output_Update(response[response.length - 1] == '\n' ? response : response + "\n");
-    for (var res of response.split("\n")) {
+    Monitor_output_Update(response[response.length - 1] === '\n' ? response : `${response}\n`);
+    for (const res of response.split("\n")) {
         process_socket_response(res);
     }
 }
 
 function SendCustomCommandFailed(error_code, response) {
-    const errMsg = (error_code == 0)
+    const errMsg = (error_code === 0)
         ? translate_text_item("Connection error")
         : stdErrMsg(error_code, HTMLDecode(response), translate_text_item("Error"));
-    Monitor_output_Update(errMsg + "\n");
+    Monitor_output_Update(`${errMsg}\n`);
 
     conErr(error_code, HTMLDecode(response), "cmd Error");
 }

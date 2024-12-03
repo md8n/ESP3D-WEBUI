@@ -4,7 +4,7 @@ import { Common } from "./common.js";
 import { get_icon_svg } from "./icons.js";
 import { sendCommand } from "./maslow.js";
 import { SendPrinterCommand } from "./printercmd.js";
-import { translate_text_item } from "./translate.js";
+import { translate_text_item } from "./langUtils.js";
 import { getChecked, getValue, setValue, id, setChecked, setHTML } from "./util.js";
 
 
@@ -71,7 +71,7 @@ function build_axis_selection() {
 
   setHTML('axis_selection', html);
   id('control_select_axis').addEventListener("change", (event) => control_changeaxis());
-  setHTML('axis_label', translate_text_item('Axis') + ':');
+  setHTML('axis_label', `${translate_text_item('Axis')}:`);
   setClickability('axis_selection', true);
 }
 
@@ -452,13 +452,13 @@ function show_grbl_status(stateName, message, hasSD) {
     setClickability('sd_resume_btn', clickable.resume)
     setClickability('sd_pause_btn', clickable.pause)
     setClickability('sd_reset_btn', clickable.reset)
-    if (stateName == 'Hold' && probe_progress_status != 0) {
+    if (stateName === 'Hold' && probe_progress_status !== 0) {
       probe_failed_notification()
     }
   }
 
   setHTML('grbl_status_text', translate_text_item(message))
-  setClickability('clear_status_btn', stateName == 'Alarm')
+  setClickability('clear_status_btn', stateName === 'Alarm')
 }
 
 function finalize_probing() {
