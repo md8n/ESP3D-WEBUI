@@ -513,7 +513,7 @@ function scaleMeasurementsBasedOnTension(measurements, guess) {
 
 
 function findMaxFitness(measurements) {
-  sendCalibrationEvent({
+  ({
     initialGuess
   }, true);
 
@@ -565,8 +565,8 @@ function findMaxFitness(measurements) {
 
       const tlxStr = bestGuess.tl.x.toFixed(1), tlyStr = bestGuess.tl.y.toFixed(1);
       const trxStr = bestGuess.tr.x.toFixed(1), tryStr = bestGuess.tr.y.toFixed(1);
-      const blxStr = bestGuess.tl.x.toFixed(1), blyStr = bestGuess.tl.y.toFixed(1);
-      const brxStr = bestGuess.tr.x.toFixed(1), bryStr = bestGuess.tr.y.toFixed(1);
+      const blxStr = bestGuess.bl.x.toFixed(1), blyStr = bestGuess.bl.y.toFixed(1);
+      const brxStr = bestGuess.br.x.toFixed(1), bryStr = bestGuess.br.y.toFixed(1);
 
       messagesBox.textContent += `\n${M}_tlX: ${tlxStr}`;
       messagesBox.textContent += `\n${M}_tlY: ${tlyStr}`;
@@ -588,7 +588,7 @@ function findMaxFitness(measurements) {
         sendCommand(`$/${M}_blY=: ${blyStr}`);
         sendCommand(`$/${M}_brX=: ${brxStr}`);
         sendCommand(`$/${M}_brY=: ${bryStr}`);
-
+        
         sendCalibrationEvent({
           good: true,
           final: true,
