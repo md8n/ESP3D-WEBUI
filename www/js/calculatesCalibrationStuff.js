@@ -1,5 +1,4 @@
-import { Common } from "./common.js";
-import { M } from "./constants.js";
+import { Common, M } from "./common.js";
 import { sendCommand } from "./maslow.js";
 import { refreshSettings, saveMaslowYaml } from "./settings.js";
 import { onCalibrationButtonsClick } from "./tablet.js";

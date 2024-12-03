@@ -1,17 +1,18 @@
-import { closeModal, setactiveModal, showModal } from "./modaldlg.js";
-import { id } from "./util.js";
+import { closeModal, setactiveModal, showModal, id } from "./common.js";
 
 //Credits dialog
 const creditsdlg = () => {
-    const modal = setactiveModal('creditsdlg.html');
-    if (modal == null) {
-        return;
-    }
+	const modal = setactiveModal("creditsdlg.html");
+	if (modal == null) {
+		return;
+	}
 
-    id("creditsDlgCancel").addEventListener("click", (event) => closeModal('cancel'));
-    id("creditsDlgClose").addEventListener("click", (event) => closeModal('Ok'));
+	id("creditsDlgCancel").addEventListener("click", (event) =>
+		closeModal("cancel"),
+	);
+	id("creditsDlgClose").addEventListener("click", (event) => closeModal("Ok"));
 
-    showModal();
-}
+	showModal();
+};
 
 export { creditsdlg };

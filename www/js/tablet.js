@@ -1,4 +1,4 @@
-import { Common } from "./common.js";
+import { Common, getValue, id, setValue, numpad } from "./common.js";
 import { files_list_success, files_select_upload } from "./files.js";
 import { SendRealtimeCmd, MPOS, WPOS } from "./grbl.js";
 import { SendGetHttp } from "./http.js";
@@ -12,10 +12,8 @@ import {
 	saveConfigValues,
 	sendCommand,
 } from "./maslow.js";
-import { numpad } from "./numpad.js";
 import { SendPrinterCommand } from "./printercmd.js";
 // import { arrayToXYZ, displayer, refreshGcode } from "./toolpath-displayer.js";
-import { getValue, id, setValue, setHTML } from "./util.js";
 
 var gCodeLoaded = false;
 var gCodeDisplayable = false;
@@ -196,7 +194,7 @@ const setDistance = (distance) => {
 const jogTo = (axisAndDistance) => {
 	// Always force G90 mode because synchronization of modal reports is unreliable
 	var feedrate = JogFeedrate(axisAndDistance);
-	const common = new Common()
+	const common = new Common();
 	if (common.modal.units === "G20") {
 		feedrate /= 25.4;
 		feedrate = feedrate.toFixed(2);

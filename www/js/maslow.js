@@ -1,5 +1,4 @@
-import { Common } from "./common.js";
-import { M } from "./constants.js";
+import { Common, M } from "./common.js";
 import { get_Position } from "./controls.js";
 import { SendPrinterCommand } from "./printercmd.js";
 import { refreshSettings, saveMaslowYaml } from "./settings.js";

@@ -1,4 +1,4 @@
-import { id } from "./util.js";
+import { id } from "./common.js";
 
 const numpad = {
   // (A) CREATE NUMPAD HTML

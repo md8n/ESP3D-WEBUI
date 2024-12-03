@@ -76,65 +76,51 @@
   </div>
   <!--removeIf(cleanheader)-->
   <!-- scripts with no import dependencies -->
-  <script type="module" src="./js/constants.js"></script>
-  <script type="module" src="./js/util.js"></script>
   <script type="module" src="./js/common.js"></script>
-  <script type="module" src="./js/icons.js"></script>
-  <script type="module" src="./js/languages.js"></script>
 
   <!-- <script type="module" src="./js/loadingOverlay.js"></script> -->
-  <!-- scripts only with dependencies on those with no import dependencies -->
-  <script type="module" src="./js/wizard.js"></script>
-  <script type="module" src="./js/tabs.js"></script>
-  <script type="module" src="./js/modaldlg.js"></script>
+  <!-- Circular ref -->
+  <script type="module" src="./js/prefUtils.js"></script> <!-- prefDefs, langUtils, util -->
+  <script type="module" src="./js/langUtils.js"></script> <!-- languages, prefUtils -->
 
-  <script type="module" src="./js/prefDefs.js"></script>
-  <script type="module" src="./js/prefUtils.js"></script>
+  <script type="module" src="./js/translate.js"></script> <!-- langUtils, util -->
 
-  <script type="module" src="./js/alertdlg.js"></script>
-  <script type="module" src="./js/confirmdlg.js"></script>
+  <!-- Circular ref -->
+  <script type="module" src="./js/http.js"></script> <!-- common, logindlg, langUtils, util -->
+  <script type="module" src="./js/logindlg.js"></script> <!-- http, modaldlg, langUtils, util -->
 
-  <script type="module" src="./js/langUtils.js"></script>
+  <script type="module" src="./js/passworddlg.js"></script> <!-- http, modaldlg, langUtils, util -->
+  <script type="module" src="./js/scanwifidlg.js"></script> <!-- http, icons, modaldlg, langUtils, util -->
+  <script type="module" src="./js/statusdlg.js"></script> <!-- http, icons, modaldlg, langUtils, util -->
 
-
-  <script type="module" src="./js/files.js"></script>
-
-  <script type="module" src="./js/settings.js"></script>
-  <script type="module" src="./js/config.js"></script>
+  <script type="module" src="./js/config.js"></script> <!-- alertdlg, common, http, icons, langUtils, util -->
+  <script type="module" src="./js/controls.js"></script> <!-- alertdlg, common, http, icons, macrodlg., prefUtils, printercmd, langUtils, util -->
+  <script type="module" src="./js/files.js"></script> <!-- alertdlg, commands, common, confirmdlg, grbl, http, icons, inputdlg, printercmd, langUtils, util -->
+  <script type="module" src="./js/grbl.js"></script> <!-- alertdlg, calculatesCalibrationStuff, common, icons, maslow., printercmd, langUtils, util -->
+  <script type="module" src="./js/macrodlg.js"></script> <!-- alertdlg, common, confirmdlg, dropmenu, /http, icons, modaldlg, langUtils, util -->
+  <script type="module" src="./js/settings.js"></script> <!-- alertdlg, common, confirmdlg, files, http, icons, restartdlg, langUtils, util -->
+  <script type="module" src="./js/SPIFFSdlg.js"></script> <!-- alertdlg, common, confirmdlg, http, icons, inputdlg, modaldlg, langUtils, util -->
+  <script type="module" src="./js/updatedlg.js"></script> <!-- alertdlg, common, confirmdlg, http, modaldlg, langUtils, util -->
  
-  <script type="module" src="./js/passworddlg.js"></script>
-  <script type="module" src="./js/logindlg.js"></script>
+  <script type="module" src="./js/maslow.js"></script> <!-- common, controls, printercmd, settings, tablet -->
 
-  <script type="module" src="./js/http.js"></script>
-  
-  <script type="module" src="./js/inputdlg.js"></script>
-  <script type="module" src="./js/creditsdlg.js"></script>
-  <script type="module" src="./js/scanwifidlg.js"></script>
-  <script type="module" src="./js/connectdlg.js"></script>
-  <script type="module" src="./js/restartdlg.js"></script>
-  <script type="module" src="./js/SPIFFSdlg.js"></script>
-  <script type="module" src="./js/statusdlg.js"></script>
-  <script type="module" src="./js/updatedlg.js"></script>
-  <script type="module" src="./js/setupdlg.js"></script>
-  <script type="module" src="./js/macrodlg.js"></script>
-  <script type="module" src="./js/preferencesdlg.js"></script>
- 
-  <script type="module" src="./js/camera.js"></script>
-  <script type="module" src="./js/translate.js"></script>
-  <script type="module" src="./js/commands.js"></script>
-  <script type="module" src="./js/printercmd.js"></script>
-  <script type="module" src="./js/controls.js"></script>
-  <script type="module" src="./js/grbl.js"></script>
-  <script type="module" src="./js/dropmenu.js"></script>
-  <script type="module" src="./js/localstorage.js"></script>
-  <script type="module" src="./js/UIdisableddlg.js"></script>
-  <script type="module" src="./js/custom.js"></script>
-  <script type="module" src="./js/numpad.js"></script>
-  <script type="module" src="./js/tablet.js"></script>
-  <script type="module" src="./js/calculatesCalibrationStuff.js"></script>
+  <script type="module" src="./js/socket.js"></script> <!-- commands, common, controls, grbl, http, prefUtils, langUtils, UIdisableddlg, util -->
+  <script type="module" src="./js/commands.js"></script> <!-- http, langUtils, socket, util -->
+  <script type="module" src="./js/printercmd.js"></script> <!-- commands, http, langUtils, util -->
+
+  <script type="module" src="./js/connectdlg.js"></script> <!-- common, http, logindlg, modaldlg, socket, util -->
+  <script type="module" src="./js/restartdlg.js"></script> <!-- common, modaldlg, printercmd, langUtils, util -->
+  <script type="module" src="./js/setupdlg.js"></script> <!-- common, icons, langUtils, modaldlg, preferencesdlg, prefUtils, settings, translate, util, wizard  -->
+
+  <script type="module" src="./js/preferencesdlg.js"></script> <!-- alertdlg, camera, commands, common, confirmdlg, dropmenu, files, grbl, grblpanel, http, icons, langUtils, modaldlg, navbar, prefDefs, prefUtils, settings, socket, translate, util -->
+  <script type="module" src="./js/camera.js"></script> <!-- prefUtils, preferencesdlg, util -->
+
+  <script type="module" src="./js/tablet.js"></script> <!-- common, files, grbl, http, maslow, numpad, printercmd, util -->
+  <script type="module" src="./js/UIdisableddlg.js"></script> <!-- modaldlg, tablet, langUtils, util -->
+  <script type="module" src="./js/calculatesCalibrationStuff.js"></script> <!-- common, maslow, settings, tablet -->
 
   <!--endRemoveIf(cleanheader)-->
-  <script type="module" src="./js/app.js"></script>
+  <script type="module" src="./js/app.js"></script> <!-- commands, common, connectdlg, controls, files, grbl, grblpanel, modaldlg, navbar, preferencesdlg, settings, setupdlg, tablet, util -->
 </body>
 
 </html>
