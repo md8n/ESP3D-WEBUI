@@ -48,15 +48,11 @@ const loadAndReplaceHTML = async (fileContents: string) => {
 
 const build = async () => {
 	await Bun.build({
-		entrypoints: [
-			"./www/index.html",
-			"./js/common.js",
-			"./js/app.js",
-		],
+		entrypoints: ["./www/index.html", "./js/common.js", "./js/app.js"],
 		outdir: "./dist",
 		target: "browser",
 		format: "esm",
-		splitting: true,
+		splitting: false,
 		naming: "[dir]/[name].[ext]",
 		minify: false,
 		plugins: [
