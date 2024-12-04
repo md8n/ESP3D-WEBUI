@@ -9,9 +9,9 @@ import {
 	process_socket_response,
 } from "./common.js";
 
-var CustomCommand_history = [];
-var CustomCommand_history_index = -1;
-var Monitor_output = [];
+const CustomCommand_history = [];
+let CustomCommand_history_index = -1;
+let Monitor_output = [];
 
 /** Set up the event handlers for the commands panel */
 const init_command_panel = () => {
@@ -55,19 +55,19 @@ const Monitor_output_Update = (message) => {
 			Monitor_output = Monitor_output.concat(message);
 		} else {
 			try {
-				var msg = JSON.stringify(message, null, " ");
-				Monitor_output = Monitor_output.concat(msg + "\n");
+				const msg = JSON.stringify(message, null, " ");
+				Monitor_output = Monitor_output.concat(`${msg}\n`);
 			} catch (err) {
-				Monitor_output = Monitor_output.concat(message.toString() + "\n");
+				Monitor_output = Monitor_output.concat(`${message.toString()}\n`);
 			}
 		}
 		Monitor_output = Monitor_output.slice(-300);
 	}
 
-	var output = "";
-	var isverbosefilter = getChecked("monitor_enable_verbose_mode") !== "false";
-	for (var out of Monitor_output) {
-		var outlc = out.trim();
+	let output = "";
+	const isverbosefilter = getChecked("monitor_enable_verbose_mode") !== "false";
+	for (let out of Monitor_output) {
+		const outlc = out.trim();
 
 		// Filter the output to remove boring chatter
 		if (outlc === "") {
@@ -75,7 +75,7 @@ const Monitor_output_Update = (message) => {
 		}
 		if (!isverbosefilter) {
 			if (
-				outlc == "wait" ||
+				outlc === "wait" ||
 				outlc.startsWith("ok") ||
 				outlc.startsWith("[#]") ||
 				outlc.startsWith("x:") ||
@@ -115,22 +115,22 @@ const Monitor_output_Update = (message) => {
 		cmdContElem.innerHTML = output;
 		// Do not autoscroll if the contents have not changed.
 		// This prevents scrolling on filtered-out status reports.
-		if (output != old_output) {
+		if (output !== old_output) {
 			Monitor_check_autoscroll();
 		}
 	}
 };
 
 function SendCustomCommand() {
-	var cmd = id("custom_cmd_txt").value;
-	var url = "/command?commandText=";
+	let cmd = id("custom_cmd_txt").value;
+	const url = "/command?commandText=";
 	cmd = cmd.trim();
-	if (cmd.trim().length == 0) return;
+	if (cmd.trim().length === 0) return;
 	CustomCommand_history.push(cmd);
 	CustomCommand_history.slice(-40);
 	CustomCommand_history_index = CustomCommand_history.length;
 	id("custom_cmd_txt").value = "";
-	Monitor_output_Update(cmd + "\n");
+	Monitor_output_Update(`${cmd}\n`);
 	cmd = encodeURI(cmd);
 	//because # is not encoded
 	cmd = cmd.replace("#", "%23");
@@ -138,19 +138,19 @@ function SendCustomCommand() {
 }
 
 function CustomCommand_OnKeyUp(event) {
-	if (event.keyCode == 13) {
+	if (event.keyCode === 13) {
 		SendCustomCommand();
 	}
-	if (event.keyCode == 38 || event.keyCode == 40) {
+	if (event.keyCode === 38 || event.keyCode === 40) {
 		if (
-			event.keyCode == 38 &&
+			event.keyCode === 38 &&
 			CustomCommand_history.length > 0 &&
 			CustomCommand_history_index > 0
 		) {
 			// Up arrow
 			CustomCommand_history_index--;
 		} else if (
-			event.keyCode == 40 &&
+			event.keyCode === 40 &&
 			CustomCommand_history_index < CustomCommand_history.length - 1
 		) {
 			// Down arrow
