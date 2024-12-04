@@ -28,29 +28,27 @@ const cameratab = () => {
 };
 
 function cameraformataddress() {
-	var saddress = id("camera_webaddress").value;
-	var saddressl = saddress.trim().toLowerCase();
-	saddress = saddress.trim();
+	let saddress = id("camera_webaddress").value.trim();
+	const saddressl = saddress.toLowerCase();
 	if (saddress.length > 0) {
 		if (
 			!(
-				saddressl.indexOf("https://") != -1 ||
-				saddressl.indexOf("http://") != -1 ||
-				saddressl.indexOf("rtp://") != -1 ||
-				saddressl.indexOf("rtps://") != -1 ||
-				saddressl.indexOf("rtp://") != -1
+				saddressl.indexOf("https://") !== -1 ||
+				saddressl.indexOf("http://") !== -1 ||
+				saddressl.indexOf("rtp://") !== -1 ||
+				saddressl.indexOf("rtps://") !== -1 ||
+				saddressl.indexOf("rtp://") !== -1
 			)
 		) {
-			saddress = "http://" + saddress;
+			saddress = `http://${saddress}`;
 		}
 	}
 	id("camera_webaddress").value = saddress;
 }
 
 function camera_loadframe() {
-	var saddress = id("camera_webaddress").value;
-	saddress = saddress.trim();
-	if (saddress.length == 0) {
+	const saddress = id("camera_webaddress").value.trim();
+	if (saddress.length === 0) {
 		id("camera_frame").src = "";
 		displayNone("camera_frame_display");
 		displayNone("camera_detach_button");
@@ -63,7 +61,7 @@ function camera_loadframe() {
 }
 
 function camera_OnKeyUp(event) {
-	if (event.keyCode == 13) {
+	if (event.keyCode === 13) {
 		camera_loadframe();
 	}
 	return true;
@@ -76,7 +74,7 @@ function camera_saveaddress() {
 }
 
 function camera_detachcam() {
-	var webaddress = id("camera_frame").src;
+	const webaddress = id("camera_frame").src;
 	id("camera_frame").src = "";
 	displayNone("camera_frame_display");
 	displayNone("camera_detach_button");
