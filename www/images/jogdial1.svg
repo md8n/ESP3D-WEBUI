@@ -1,24 +1,25 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<svg width="320" height="260" xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink">
+<svg width="320" height="260"
+    xmlns="http://www.w3.org/2000/svg" version="1.1">
     <g id="HomeAll" data-ng-click="motoVM.jogButtonClick('G28')" transform="translate(10, 10)">
         <path class="std" d="M10 182.5 h-10 v57.5 h57.5 v-10 a 125,125 0 0,1 -47.5 -47.5 Z" fill="#f0f0f0" />
-        <use x="3" y="217" width="20" height="18" xlink:href="#HomeIcon"/>
+        <use x="3" y="217" width="20" height="18" href="#HomeIcon"/>
     </g>
 
     <g id="HomeX" data-ng-click="motoVM.jogButtonClick('G28 X0')" transform="translate(10, 10)">
         <path class="std" d="M10 57.50 h-10 v-57.5 h57.5 v10 a 125,125 0 0,0 -47.5 47.5 Z" fill="Khaki" />
-        <use x="3" y="5" width="20" height="18" xlink:href="#HomeIcon"/>
+        <use x="3" y="5" width="20" height="18" href="#HomeIcon"/>
         <text x="25" y="20" class="home"> X</text>
     </g>
     <g id="HomeY" data-ng-click="motoVM.jogButtonClick('G28 Y0')" transform="translate(10, 10)">
         <path class="std" d="M230 57.50 h10 v-57.5 h-57.5 v10 a 125,125 0 0,1 47.5 47.5 z" fill="SteelBlue" />
-        <use x="217" y="5" width="20" height="18" xlink:href="#HomeIcon"/>
+        <use x="217" y="5" width="20" height="18" href="#HomeIcon"/>
         <text x="202" y="20" class="home"> Y</text>
     </g>
 
     <g id="HomeZ" data-ng-click="motoVM.jogButtonClick('G28 Z0')" transform="translate(10, 10)">
         <path class="std" d="M230 182.5 h10 v57.5 h-57.5 v-10 a 125,125 0 0,0 47.5 -47.5 z" fill="DarkSeaGreen" />
-        <use x="217" y="217" width="20" height="18" xlink:href="#HomeIcon"/>
+        <use x="217" y="217" width="20" height="18" href="#HomeIcon"/>
         <text x="202" y="232" class="home"> Z</text>
     </g>
 
@@ -207,8 +208,7 @@
                     <text class="scl" x="182" y="50" font-size="15"> 100</text>
                 </g>
             </g>
-            <g id="Decoration" pointer-events="none"
-               font-weight="900" font-size="11" fill-opacity=".6">
+            <g id="Decoration" pointer-events="none" font-weight="900" font-size="11" fill-opacity=".6">
                 <path class="std" d="M120,20 l17,17 h-10 v11 h-14 v-11 h-10 z" fill="SteelBlue"/>
                 <!-- y pos arrow -->
                 <path class="std" d="M120,220 l17,-17 h-10 v-11 h-14 v11 h-10 z" fill="SteelBlue"/>
@@ -225,10 +225,10 @@
         </symbol>
 
         <symbol id="PrinterCtl">
-            <use x="0" y="0" xlink:href="#JogRose"/>
-            <use x="260" y="0" xlink:href="#JogBar"/>
+            <use x="0" y="0" href="#JogRose"/>
+            <use x="260" y="0" href="#JogBar"/>
         </symbol>
     </defs>
 
-    <use x="0" y="0" xlink:href="#PrinterCtl"/>
+    <use x="0" y="0" href="#PrinterCtl"/>
 </svg>
