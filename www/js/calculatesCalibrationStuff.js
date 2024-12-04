@@ -538,10 +538,10 @@ function calculateAverage(array) {
  * @returns {Object} - An object containing the projected measurements
  */
 function projectMeasurement(measurement) {
-	const tl = Math.sqrt(Math.pow(measurement.tl, 2) - Math.pow(tlZ, 2));
-	const tr = Math.sqrt(Math.pow(measurement.tr, 2) - Math.pow(trZ, 2));
-	const bl = Math.sqrt(Math.pow(measurement.bl, 2) - Math.pow(blZ, 2));
-	const br = Math.sqrt(Math.pow(measurement.br, 2) - Math.pow(brZ, 2));
+	const tl = Math.sqrt((measurement.tl ** 2) - (tlZ ** 2));
+	const tr = Math.sqrt((measurement.tr ** 2) - (trZ ** 2));
+	const bl = Math.sqrt((measurement.bl ** 2) - (blZ ** 2));
+	const br = Math.sqrt((measurement.br ** 2) - (brZ ** 2));
 
 	return { tl: tl, tr: tr, bl: bl, br: br };
 }
@@ -552,7 +552,7 @@ function projectMeasurement(measurement) {
  * @returns {Object[]} - An array of objects containing the projected measurements of the top left, top right, bottom left, and bottom right corners of a rectangle.
  */
 function projectMeasurements(measurements) {
-	var projectedMeasurements = [];
+	const projectedMeasurements = [];
 
 	measurements.forEach((measurement) => {
 		projectedMeasurements.push(projectMeasurement(measurement));
@@ -641,7 +641,7 @@ const findMaxFitness = (measurements) => {
 	let currentGuess = JSON.parse(JSON.stringify(initialGuess));
 	let stagnantCounter = 0;
 	let totalCounter = 0;
-	var bestGuess = JSON.parse(JSON.stringify(initialGuess));
+	let bestGuess = JSON.parse(JSON.stringify(initialGuess));
 
 	function iterate() {
 		const messagesBox = document.getElementById("messages");
@@ -666,7 +666,7 @@ const findMaxFitness = (measurements) => {
 				totalCounter,
 			});
 
-			if (totalCounter % 100 == 0) {
+			if (totalCounter % 100 === 0) {
 				messagesBox.textContent += `Fitness: ${(1 / bestGuess.fitness).toFixed(7)} in ${totalCounter}\n`;
 				messagesBox.scrollTop = messagesBox.scrollHeight;
 			}
@@ -681,37 +681,38 @@ const findMaxFitness = (measurements) => {
 
 			messagesBox.textContent += "\nCalibration complete \nCalibration values:";
 			messagesBox.textContent +=
-				"\nFitness: " + 1 / bestGuess.fitness.toFixed(7);
+				`\nFitness: ${1 / bestGuess.fitness.toFixed(7)}`;
 
-			const tlxStr = bestGuess.tl.x.toFixed(1),
-				tlyStr = bestGuess.tl.y.toFixed(1);
-			const trxStr = bestGuess.tr.x.toFixed(1),
-				tryStr = bestGuess.tr.y.toFixed(1);
-			const blxStr = bestGuess.tl.x.toFixed(1),
-				blyStr = bestGuess.tl.y.toFixed(1);
-			const brxStr = bestGuess.tr.x.toFixed(1),
-				bryStr = bestGuess.tr.y.toFixed(1);
+			const tlxStr = bestGuess.tl.x.toFixed(1);
+			const tlyStr = bestGuess.tl.y.toFixed(1);
+			const trxStr = bestGuess.tr.x.toFixed(1);
+			const tryStr = bestGuess.tr.y.toFixed(1);
+			const blxStr = bestGuess.bl.x.toFixed(1);
+			const blyStr = bestGuess.bl.y.toFixed(1);
+			const brxStr = bestGuess.br.x.toFixed(1);
+			const bryStr = bestGuess.br.y.toFixed(1);
 
-			messagesBox.textContent += `\n${M}_tlX: ${tlxStr}`;
-			messagesBox.textContent += `\n${M}_tlY: ${tlyStr}`;
-			messagesBox.textContent += `\n${M}_trX: ${trxStr}`;
-			messagesBox.textContent += `\n${M}_trY: ${tryStr}`;
-			messagesBox.textContent += `\n${M}_blX: ${blxStr}`;
-			messagesBox.textContent += `\n${M}_blY: ${blyStr}`;
-			messagesBox.textContent += `\n${M}_brX: ${brxStr}`;
-			messagesBox.textContent += `\n${M}_brY: ${bryStr}`;
-			messagesBox.scrollTop;
-			messagesBox.scrollTop = messagesBox.scrollHeight;
+			// Uncomment this if you want to see all of the values
+			// messagesBox.textContent += `\n${M}_tlX: ${tlxStr}`;
+			// messagesBox.textContent += `\n${M}_tlY: ${tlyStr}`;
+			// messagesBox.textContent += `\n${M}_trX: ${trxStr}`;
+			// messagesBox.textContent += `\n${M}_trY: ${tryStr}`;
+			// messagesBox.textContent += `\n${M}_blX: ${blxStr}`;
+			// messagesBox.textContent += `\n${M}_blY: ${blyStr}`;
+			// messagesBox.textContent += `\n${M}_brX: ${brxStr}`;
+			// messagesBox.textContent += `\n${M}_brY: ${bryStr}`;
+			// messagesBox.scrollTop;
+			// messagesBox.scrollTop = messagesBox.scrollHeight;
 
 			if (1 / bestGuess.fitness > acceptableCalibrationThreshold) {
-				sendCommand(`$/${M}_tlX=: ${tlxStr}`);
-				sendCommand(`$/${M}_tlY=: ${tlyStr}`);
-				sendCommand(`$/${M}_trX=: ${trxStr}`);
-				sendCommand(`$/${M}_trY=: ${tryStr}`);
-				sendCommand(`$/${M}_blX=: ${blxStr}`);
-				sendCommand(`$/${M}_blY=: ${blyStr}`);
-				sendCommand(`$/${M}_brX=: ${brxStr}`);
-				sendCommand(`$/${M}_brY=: ${bryStr}`);
+				sendCommand(`$/${M}_tlX= ${tlxStr}`);
+				sendCommand(`$/${M}_tlY= ${tlyStr}`);
+				sendCommand(`$/${M}_trX= ${trxStr}`);
+				sendCommand(`$/${M}_trY= ${tryStr}`);
+				sendCommand(`$/${M}_blX= ${blxStr}`);
+				sendCommand(`$/${M}_blY= ${blyStr}`);
+				sendCommand(`$/${M}_brX= ${brxStr}`);
+				sendCommand(`$/${M}_brY= ${bryStr}`);
 
 				sendCalibrationEvent(
 					{
@@ -721,6 +722,7 @@ const findMaxFitness = (measurements) => {
 					},
 					true,
 				);
+
 				const common = new Common();
 				refreshSettings(common.current_setting_filter);
 				saveMaslowYaml();
@@ -733,7 +735,7 @@ const findMaxFitness = (measurements) => {
 				initialGuess.fitness = 100000000;
 
 				// This restarts calibration process for the next stage
-				setTimeout(function () {
+				setTimeout(() => {
 					onCalibrationButtonsClick("$CAL", "Calibrate");
 				}, 2000);
 			} else {
