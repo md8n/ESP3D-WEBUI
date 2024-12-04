@@ -7,7 +7,7 @@ var gCodeDisplayable = false
 var snd = null
 var sndok = true
 
-var versionNumber = 0.86
+var versionNumber = 0.87
 
 //Print the version number to the console
 let msgWindow = document.getElementById('messages')
