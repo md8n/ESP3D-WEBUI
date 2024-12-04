@@ -19,19 +19,22 @@ const server = Bun.serve({
       const checkFile = Bun.file(path);
       return (await checkFile.exists()) ? await checkFile.bytes() : null;
     }
-    const sendFile = async (path: string, contentType: string = "text/plain") => {
+    const sendFile = async (path: string, contentType = "text/plain") => {
       const checkFile = await fileExists(path);
       if (checkFile) {
         return new Response(checkFile, {headers: {"Content-Type": contentType}});
       }
+      const errText = `404 requesting '${url.pathname}' translated to '${path}`;
+      console.error(errText);
       // Note that the following statusText is unlikely to show up in the browser's dev/debug window
-      return new Response(null, { status: 404, statusText: `404 requesting '${url.pathname}' translated to '${path}`});
+      return new Response(null, { status: 404, statusText: errText});
     }
-    if (url.pathname.endsWith(".html")) return sendFile(`./www${url.pathname}`, "text/html");
-    if (url.pathname.endsWith(".js")) return sendFile(`./www${url.pathname}`, "text/javascript");
-    if (url.pathname.endsWith(".css")) return sendFile(`./www${url.pathname}`, "text/css");
-    if (url.pathname.includes("/js/")) {
-      const checkFileBase = `./www${url.pathname}`;
+    const checkFileBase = `./www${url.pathname}`;
+    if (checkFileBase.endsWith(".html")) return sendFile(checkFileBase, "text/html");
+    if (checkFileBase.endsWith(".svg")) return sendFile(checkFileBase, "text/svg+xml");
+    if (checkFileBase.endsWith(".js")) return sendFile(checkFileBase, "text/javascript");
+    if (checkFileBase.endsWith(".css")) return sendFile(checkFileBase, "text/css");
+    if (checkFileBase.includes("/js/")) {
       let checkFileName = `${checkFileBase}.js`;
       let checkFile = fileExists(checkFileName);
       if (!checkFile) {
