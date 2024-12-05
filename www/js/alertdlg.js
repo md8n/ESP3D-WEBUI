@@ -3,7 +3,7 @@ import { closeModal, setactiveModal, showModal, id } from "./common.js";
 /** alert dialog */
 const alertdlg = (titledlg, textdlg, closefunc) => {
 	const modal = setactiveModal("alertdlg.html", closefunc);
-	if (modal == null) {
+	if (modal === null) {
 		return;
 	}
 
