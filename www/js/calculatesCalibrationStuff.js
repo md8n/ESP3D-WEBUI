@@ -44,8 +44,8 @@ let result;
  * @returns {number} - The distance between the two points.
  */
 function distanceBetweenPoints(a, b, c, d) {
-	var dx = c - a;
-	var dy = d - b;
+	const dx = c - a;
+	const dy = d - b;
 	return Math.sqrt(dx * dx + dy * dy);
 }
 
@@ -58,8 +58,8 @@ function distanceBetweenPoints(a, b, c, d) {
  * @returns {Object} - An object containing the x and y coordinates of the line's end point.
  */
 function getEndPoint(startX, startY, angle, length) {
-	var endX = startX + length * Math.cos(angle);
-	var endY = startY + length * Math.sin(angle);
+	const endX = startX + length * Math.cos(angle);
+	const endY = startY + length * Math.sin(angle);
 	return { x: endX, y: endY };
 }
 
@@ -147,7 +147,7 @@ function walkLines(tlLine, trLine, blLine, brLine, stepSize) {
 		for (let i = 0; i < lines.length; i++) {
 			const line = lines[i];
 
-			for (let direction of [-1, 1]) {
+			for (const direction of [-1, 1]) {
 				const newLine = computeLineEndPoint({
 					xBegin: line.xBegin,
 					yBegin: line.yBegin,
@@ -207,81 +207,81 @@ function magneticallyAttractedLinesFitness(measurement, individual) {
 	}
 
 	//Define the four lines with starting points and lengths
-	var tlLine = computeLineEndPoint({
+	const tlLine = computeLineEndPoint({
 		xBegin: individual.tl.x,
 		yBegin: individual.tl.y,
 		theta: measurement.tlTheta,
 		length: measurement.tl,
 	});
-	var trLine = computeLineEndPoint({
+	const trLine = computeLineEndPoint({
 		xBegin: individual.tr.x,
 		yBegin: individual.tr.y,
 		theta: measurement.trTheta,
 		length: measurement.tr,
 	});
-	var blLine = computeLineEndPoint({
+	const blLine = computeLineEndPoint({
 		xBegin: individual.bl.x,
 		yBegin: individual.bl.y,
 		theta: measurement.blTheta,
 		length: measurement.bl,
 	});
-	var brLine = computeLineEndPoint({
+	const brLine = computeLineEndPoint({
 		xBegin: individual.br.x,
 		yBegin: individual.br.y,
 		theta: measurement.brTheta,
 		length: measurement.br,
 	});
 
-	var { tlLine, trLine, blLine, brLine } = walkLines(
+	const { tlLine, trLine, blLine, brLine } = walkLines(
 		tlLine,
 		trLine,
 		blLine,
 		brLine,
 		0.1,
 	);
-	var { tlLine, trLine, blLine, brLine } = walkLines(
+	const { tlLine, trLine, blLine, brLine } = walkLines(
 		tlLine,
 		trLine,
 		blLine,
 		brLine,
 		0.01,
 	);
-	var { tlLine, trLine, blLine, brLine } = walkLines(
+	const { tlLine, trLine, blLine, brLine } = walkLines(
 		tlLine,
 		trLine,
 		blLine,
 		brLine,
 		0.001,
 	);
-	var { tlLine, trLine, blLine, brLine } = walkLines(
+	const { tlLine, trLine, blLine, brLine } = walkLines(
 		tlLine,
 		trLine,
 		blLine,
 		brLine,
 		0.0001,
 	);
-	var { tlLine, trLine, blLine, brLine } = walkLines(
+	const { tlLine, trLine, blLine, brLine } = walkLines(
 		tlLine,
 		trLine,
 		blLine,
 		brLine,
 		0.00001,
 	);
-	var { tlLine, trLine, blLine, brLine } = walkLines(
+	const { tlLine, trLine, blLine, brLine } = walkLines(
 		tlLine,
 		trLine,
 		blLine,
 		brLine,
 		0.000001,
 	);
-	var { tlLine, trLine, blLine, brLine } = walkLines(
+	const { tlLine, trLine, blLine, brLine } = walkLines(
 		tlLine,
 		trLine,
 		blLine,
 		brLine,
 		0.0000001,
 	);
-	var { tlLine, trLine, blLine, brLine } = walkLines(
+	const { tlLine, trLine, blLine, brLine } = walkLines(
 		tlLine,
 		trLine,
 		blLine,
@@ -409,7 +409,7 @@ function computeFurthestFromCenterOfMass(lines, lastGuess) {
 	const brXAbs = Math.abs(brX);
 	const maxError = Math.max(tlXAbs, tlyAbs, trXAbs, tryAbs, brXAbs);
 
-	var scalor = -1;
+	const scalor = -1;
 	switch (maxError) {
 		case tlXAbs:
 			//console.log("Move tlX by: " + tlX/divisor);
@@ -445,8 +445,8 @@ function computeFurthestFromCenterOfMass(lines, lastGuess) {
  * @returns {Object} - An object containing the fitness of the guess and the lines used to calculate the fitness.
  */
 function computeLinesFitness(measurements, lastGuess) {
-	var fitnesses = [];
-	var allLines = [];
+	const fitnesses = [];
+	const allLines = [];
 
 	//Check each of the measurements against the guess
 	measurements.forEach((measurement) => {
@@ -679,30 +679,8 @@ const findMaxFitness = (measurements) => {
 					"\nWARNING FITNESS TOO LOW. DO NOT USE THESE CALIBRATION VALUES!";
 			}
 
-			messagesBox.textContent += "\nCalibration complete \nCalibration values:";
-			messagesBox.textContent +=
-				`\nFitness: ${1 / bestGuess.fitness.toFixed(7)}`;
-
-			const tlxStr = bestGuess.tl.x.toFixed(1);
-			const tlyStr = bestGuess.tl.y.toFixed(1);
-			const trxStr = bestGuess.tr.x.toFixed(1);
-			const tryStr = bestGuess.tr.y.toFixed(1);
-			const blxStr = bestGuess.bl.x.toFixed(1);
-			const blyStr = bestGuess.bl.y.toFixed(1);
-			const brxStr = bestGuess.br.x.toFixed(1);
-			const bryStr = bestGuess.br.y.toFixed(1);
-
-			// Uncomment this if you want to see all of the values
-			// messagesBox.textContent += `\n${M}_tlX: ${tlxStr}`;
-			// messagesBox.textContent += `\n${M}_tlY: ${tlyStr}`;
-			// messagesBox.textContent += `\n${M}_trX: ${trxStr}`;
-			// messagesBox.textContent += `\n${M}_trY: ${tryStr}`;
-			// messagesBox.textContent += `\n${M}_blX: ${blxStr}`;
-			// messagesBox.textContent += `\n${M}_blY: ${blyStr}`;
-			// messagesBox.textContent += `\n${M}_brX: ${brxStr}`;
-			// messagesBox.textContent += `\n${M}_brY: ${bryStr}`;
-			// messagesBox.scrollTop;
-			// messagesBox.scrollTop = messagesBox.scrollHeight;
+			messagesBox.textContent += '\nCalibration values:';
+			messagesBox.textContent += `\nFitness: ${1 / bestGuess.fitness.toFixed(7)}`;
 
 			if (1 / bestGuess.fitness > acceptableCalibrationThreshold) {
 				sendCommand(`$/${M}_tlX= ${tlxStr}`);
