@@ -44,7 +44,7 @@ const logindlg = (closefunc, check_first) => {
 function checkloginsuccess(response_text) {
 	const response = JSON.parse(response_text);
 	if (typeof response.authentication_lvl !== "undefined") {
-		if (response.authentication_lvl != "guest") {
+		if (response.authentication_lvl !== "guest") {
 			if (typeof response.authentication_lvl !== "undefined") {
 				setHTML(
 					"current_auth_level",
@@ -63,16 +63,16 @@ function checkloginsuccess(response_text) {
 
 function login_id_OnKeyUp(event) {
 	//console.log(event.keyCode);
-	if (event.keyCode == 13) id("login_password_text").focus();
+	if (event.keyCode === 13) id("login_password_text").focus();
 }
 
 function login_password_OnKeyUp(event) {
 	//console.log(event.keyCode);
-	if (event.keyCode == 13) id("login_submit_btn").click();
+	if (event.keyCode === 13) id("login_submit_btn").click();
 }
 
 function loginfailed(error_code, response_text) {
-	var response = JSON.parse(response_text);
+	const response = JSON.parse(response_text);
 	setHTML(
 		"login_title",
 		translate_text_item(response.status || "Identification invalid!"),
@@ -87,7 +87,7 @@ function loginfailed(error_code, response_text) {
 }
 
 function loginsuccess(response_text) {
-	var response = JSON.parse(response_text);
+	const response = JSON.parse(response_text);
 	if (typeof response.authentication_lvl !== "undefined") {
 		setHTML(
 			"current_auth_level",
@@ -102,14 +102,10 @@ function loginsuccess(response_text) {
 }
 
 function SubmitLogin() {
-	var user = id("login_user_text").value.trim();
-	var password = id("login_password_text").value.trim();
-	var url =
-		"/login?USER=" +
-		encodeURIComponent(user) +
-		"&PASSWORD=" +
-		encodeURIComponent(password) +
-		"&SUBMIT=yes";
+	const user = id("login_user_text").value.trim();
+	const password = id("login_password_text").value.trim();
+	const url =
+		`/login?USER=${encodeURIComponent(user)}&PASSWORD=${encodeURIComponent(password)}&SUBMIT=yes`;
 	setHTML("current_ID", user);
 	setHTML("current_auth_level", "");
 	displayNone("login_content");
@@ -135,8 +131,8 @@ function DisconnectionFailed(error_code, response) {
 }
 
 function DisconnectLogin(answer) {
-	if (answer == "yes") {
-		var url = "/login?DISCONNECT=yes";
+	if (answer === "yes") {
+		const url = "/login?DISCONNECT=yes";
 		SendGetHttp(url, DisconnectionSuccess, DisconnectionFailed);
 	}
 }
