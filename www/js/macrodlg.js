@@ -6,6 +6,7 @@ import {
 	id,
 	setHTML,
 	clear_drop_menu,
+	hide_drop_menu,
 	showhide_drop_menu,
 	closeModal,
 	setactiveModal,
@@ -44,8 +45,8 @@ function showmacrodlg(closefn) {
 }
 
 function build_color_selection(index, actions) {
-	var content = "";
-	var entry = macrodlg_macrolist[index];
+	let content = "";
+	const entry = macrodlg_macrolist[index];
 	const menu_pos = index > 3 ? "dropmenu-content-up" : "dropmenu-content-down";
 	content += `<div id='macro_color_line${index}' class='dropdownselect'>`;
 	content += `<button id='macro_color_line${index}_btn' class='btn ${entry.class}'>&nbsp;`;
@@ -63,22 +64,22 @@ function build_color_selection(index, actions) {
 		method: (event) => showhide_drop_menu(event),
 	});
 	content += `<div class='dropmenu-content ${menu_pos}' style='min-width:auto; padding-left: 4px;padding-right: 4px;'>`;
-	["default", "primary", "info", "warning", "danger"].forEach((col) => {
+	for ((col) in ["default", "primary", "info", "warning", "danger"]) {
 		content += `<button id='macro_select_color_${col}${index}_btn' class='btn btn-${col}'>&nbsp;</button>`;
 		actions.push({
 			id: `macro_select_color_${col}${index}_btn`,
 			type: "click",
-			method: (event) => macro_select_target(event, col, index),
+			method: (event) => macro_select_color(event, col, index),
 		});
-	});
+	};
 	content += "</div>";
 	content += "</div>";
 	return content;
 }
 
 function build_target_selection(index, actions) {
-	var content = "";
-	var entry = macrodlg_macrolist[index];
+	let content = "";
+	const entry = macrodlg_macrolist[index];
 	const menu_pos = index > 3 ? "dropmenu-content-up" : "dropmenu-content-down";
 	content += `<div id='macro_target_line${index}' class='dropdownselect'>`;
 	content += `<button id='macro_target_line${index}_btn' class='btn btn-default' style='min-width:5em;'><span>${entry.target}</span>`;
@@ -121,8 +122,8 @@ function build_target_selection(index, actions) {
 }
 
 function build_glyph_selection(index, actions) {
-	var content = "";
-	var entry = macrodlg_macrolist[index];
+	let content = "";
+	const entry = macrodlg_macrolist[index];
 	const menu_pos = index > 3 ? "dropmenu-content-up" : "dropmenu-content-down";
 	content += `<div id='macro_glyph_line${index}' class='dropdownselect'>`;
 	content += `<button id='macro_glyph_line${index}_btn' class='btn ${entry.class}'><span>${get_icon_svg(entry.glyph)}</span>&nbsp;`;
@@ -140,7 +141,7 @@ function build_glyph_selection(index, actions) {
 		method: (event) => showhide_drop_menu(event),
 	});
 	content += `<div class='dropmenu-content ${menu_pos}' style='min-width:30em'>`;
-	for (var key in list_icon) {
+	for (const key in list_icon) {
 		if (key === "plus") {
 			continue;
 		}
@@ -157,7 +158,7 @@ function build_glyph_selection(index, actions) {
 }
 
 function build_filename_selection(index, actions) {
-	var entry = macrodlg_macrolist[index];
+	const entry = macrodlg_macrolist[index];
 	const noFilename = entry.filename.length == 0;
 	const mflId = `macro_filename_line_${index}`;
 
@@ -181,9 +182,9 @@ function build_filename_selection(index, actions) {
 }
 
 function build_dlg_macrolist_line(index) {
-	var content = "";
+	let content = "";
 	const actions = [];
-	var entry = macrodlg_macrolist[index];
+	const entry = macrodlg_macrolist[index];
 
 	const buildTdVertMiddle = (content) =>
 		`<td style='vertical-align:middle'>${content}</td>`;
@@ -216,36 +217,32 @@ function build_dlg_macrolist_line(index) {
 	}
 
 	setHTML(`macro_line_${index}`, content);
-	actions.forEach((action) => {
+	for (const action in actions) {
 		id(action.id).addEventListener(action.type, (event) => action.method);
-	});
+	};
 }
 
 function macro_filename_OnKeyUp(index) {
-	var item = id("macro_filename_line_" + index);
-	var group = id("macro_filename_input_line_" + index);
-	var value = item.value.trim();
+	const item = id(`macro_filename_line_${index}`);
+	const group = id(`macro_filename_input_line_${index}`);
+	const value = item.value.trim();
 	if (value.length > 0) {
-		if (group.classList.contains("has-feedback"))
-			group.classList.remove("has-feedback");
-		if (group.classList.contains("has-error"))
-			group.classList.remove("has-error");
-		displayNone("icon_macro_status_line_" + index);
+		group.classList.remove("has-feedback");
+		group.classList.remove("has-error");
+		displayNone(`icon_macro_status_line_${index}`);
 	} else {
-		displayBlock("icon_macro_status_line_" + index);
-		if (!group.classList.contains("has-error"))
-			group.classList.add("has-error");
-		if (!group.classList.contains("has-feedback"))
-			group.classList.add("has-feedback");
+		displayBlock(`icon_macro_status_line_${index}`);
+		group.classList.add("has-error");
+		group.classList.add("has-feedback");
 	}
 	return true;
 }
 
 function on_macro_filename(event, index) {
-	var entry = macrodlg_macrolist[index];
-	var filename = event.value.trim();
+	const entry = macrodlg_macrolist[index];
+	const filename = event.value.trim();
 	entry.filename = event.value;
-	if (filename.length == 0) {
+	if (filename.length === 0) {
 		alertdlg(
 			translate_text_item("Out of range"),
 			translate_text_item("File name cannot be empty!"),
@@ -255,13 +252,9 @@ function on_macro_filename(event, index) {
 }
 
 function on_macro_name(event, index) {
-	var entry = macrodlg_macrolist[index];
-	var macroname = event.value.trim();
-	if (macroname.length > 0) {
-		entry.name = event.value;
-	} else {
-		entry.name = "&nbsp;";
-	}
+	const entry = macrodlg_macrolist[index];
+	const macroname = event.value.trim();
+	entry.name = macroname.length > 0 ? event.value : "&nbsp;";
 }
 
 function build_dlg_macrolist_ui() {
@@ -281,11 +274,11 @@ function build_dlg_macrolist_ui() {
 }
 
 function macro_reset_button(index) {
-	var entry = macrodlg_macrolist[index];
-	if (entry.class == "") {
-		entry.name = "M" + (1 + entry.index);
+	const entry = macrodlg_macrolist[index];
+	if (entry.class === "") {
+		entry.name = `M${1 + entry.index}`;
 		entry.glyph = "star";
-		entry.filename = "/macro" + (1 + entry.index) + ".g";
+		entry.filename = `/macro${1 + entry.index}.g`;
 		entry.target = "ESP";
 		entry.class = "btn-default";
 	} else {
@@ -299,21 +292,21 @@ function macro_reset_button(index) {
 }
 
 function macro_select_color(event, color, index) {
-	var entry = macrodlg_macrolist[index];
+	const entry = macrodlg_macrolist[index];
 	hide_drop_menu(event);
-	entry.class = "btn btn-" + color;
+	entry.class = `btn btn-${color}`;
 	build_dlg_macrolist_line(index);
 }
 
 function macro_select_target(event, target, index) {
-	var entry = macrodlg_macrolist[index];
+	const entry = macrodlg_macrolist[index];
 	hide_drop_menu(event);
 	entry.target = target;
 	build_dlg_macrolist_line(index);
 }
 
 function macro_select_glyph(event, glyph, index) {
-	var entry = macrodlg_macrolist[index];
+	const entry = macrodlg_macrolist[index];
 	hide_drop_menu(event);
 	entry.glyph = glyph;
 	build_dlg_macrolist_line(index);
@@ -389,8 +382,8 @@ function SaveNewMacroList() {
 		file.name = "/macrocfg.json";
 		file.lastModifiedDate = new Date();
 	} else file = new File([blob], "/macrocfg.json");
-	var formData = new FormData();
-	var url = "/files";
+	const formData = new FormData();
+	const url = "/files";
 	formData.append("path", "/");
 	formData.append("myfile[]", file, "/macrocfg.json");
 	SendFileHttp(
@@ -404,7 +397,7 @@ function SaveNewMacroList() {
 
 function macrodlgUploadProgressDisplay(oEvent) {
 	if (oEvent.lengthComputable) {
-		var percentComplete = (oEvent.loaded / oEvent.total) * 100;
+		const percentComplete = (oEvent.loaded / oEvent.total) * 100;
 		id("macrodlg_prg").value = percentComplete;
 		setHTML("macrodlg_upload_percent", percentComplete.toFixed(0));
 		displayBlock("macrodlg_upload_msg");
