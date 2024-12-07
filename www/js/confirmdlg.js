@@ -1,4 +1,4 @@
-import { closeModal, setactiveModal, showModal, id } from "./common.js";
+// import - closeModal, setactiveModal, showModal, id
 
 /** confirm dialog */
 const confirmdlg = (titledlg, textdlg, closefunc) => {
@@ -7,12 +7,8 @@ const confirmdlg = (titledlg, textdlg, closefunc) => {
 		return;
 	}
 
-	id("ConfirmDialogClose").addEventListener("click", (event) =>
-		closeModal("cancel"),
-	);
-	id("ConfirmDialogYes").addEventListener("click", (event) =>
-		closeModal("yes"),
-	);
+	id("ConfirmDialogClose").addEventListener("click", (event) => closeModal("cancel"));
+	id("ConfirmDialogYes").addEventListener("click", (event) => closeModal("yes"));
 	id("ConfirmDialogNo").addEventListener("click", (event) => closeModal("no"));
 
 	const title = modal.element.getElementsByClassName("modal-title")[0];
@@ -21,5 +17,3 @@ const confirmdlg = (titledlg, textdlg, closefunc) => {
 	body.innerHTML = textdlg;
 	showModal();
 };
-
-export { confirmdlg };
