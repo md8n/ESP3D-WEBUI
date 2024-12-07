@@ -3,6 +3,7 @@ import {
 	getValue,
 	id,
 	setValue,
+	setDisabled,
 	numpad,
 	SendPrinterCommand,
 	files_list_success,
@@ -647,11 +648,11 @@ function tabletGrblState(grbl, response) {
 	const cannotClick = stateName === "Run" || stateName === "Hold";
 	// Recompute the layout only when the state changes
 	if (oldCannotClick !== cannotClick) {
-		selectDisabled(".dropdown-toggle", cannotClick);
-		selectDisabled(".axis-position .position", cannotClick);
-		selectDisabled(".axis-position .form-control", cannotClick);
-		selectDisabled(".axis-position .btn", cannotClick);
-		selectDisabled(".axis-position .position", cannotClick);
+		setDisabled(".dropdown-toggle", cannotClick);
+		setDisabled(".axis-position .position", cannotClick);
+		setDisabled(".axis-position .form-control", cannotClick);
+		setDisabled(".axis-position .btn", cannotClick);
+		setDisabled(".axis-position .position", cannotClick);
 		// if (!cannotClick) {
 		//     contractVisualizer();
 		// }

@@ -184,7 +184,7 @@ function files_build_file_line(index, actions) {
 		var sizecol = "col-md-2 col-sm-2 filesize";
 		var timecol = "col-md-2 col-sm-2";
 		var iconcol = "col-md-3 col-sm-3";
-		if (!entry.isdir && entry.datetime == "") {
+		if (!entry.isdir && entry.datetime === "") {
 			sizecol = "col-md-3 col-sm-3 filesize";
 			timecol = "hide_it";
 			iconcol = "col-md-4 col-sm-4";
@@ -697,7 +697,7 @@ function files_build_display_filelist(displaylist) {
 			content += "</li>";
 			actions.push({ id: liId, type: "click", method: files_go_levelup() });
 		}
-		for (var index = 0; index < files_file_list.length; index++) {
+		for (let index = 0; index < files_file_list.length; index++) {
 			if (!files_file_list[index].isdir)
 				content += files_build_file_line(index, actions);
 		}

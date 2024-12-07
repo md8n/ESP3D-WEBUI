@@ -1,7 +1,7 @@
 /** Get the element identified with the supplied name */
 const id = (name) => document.getElementById(name);
 
-// Returns an array of elements with the supplied class name, which can be use with forEach()
+/** Returns an array of elements with the supplied class name, which can be use with forEach() or for ... of */
 const classes = (name) => Array.from(document.getElementsByClassName(name));
 
 /** Set an element's `value` value (if the element exists) */
@@ -73,13 +73,11 @@ function displayInitial(name) {
 function displayUndoNone(name) {
   setDisplay(name, '')
 }
-function selectDisabled(selector, value) {
-  document.querySelectorAll(selector).forEach(function (element) {
-    element.disabled = value
-  })
-}
-function click(name) {
-  id(name).click()
+/** Set the disabled value for the elements matching the selector */
+function setDisabled(selector, value) {
+  for ((element) of document.querySelectorAll(selector)) {
+    element.disabled = value;
+  }
 }
 function files(name) {
   return id(name).files
@@ -120,7 +118,7 @@ const HTMLEncode = (value) => {
   const aRet = valChars.map((vc) => {
     let iC = vc.charCodeAt();
     if (iC < 65 || iC > 127 || (iC > 90 && iC < 97)) {
-      if (iC == 65533) {
+      if (iC === 65533) {
         iC = 176;
       }
       return `&#${iC};`;
@@ -149,6 +147,7 @@ export {
   getChecked, setChecked,
   getValue, setValue,
   setHTML,
+  setDisabled,
   HTMLEncode, HTMLDecode,
   id
 };

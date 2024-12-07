@@ -616,7 +616,7 @@ const showpreferencesdlg = () => {
 };
 
 function closePreferencesDialog() {
-	var modified = false;
+	let modified = false;
 	//check dialog compare to global state
 	if (typeof getPrefValue("enable_ping") === "undefined") {
 		modified = true;
