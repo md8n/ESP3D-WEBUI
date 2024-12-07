@@ -18,21 +18,11 @@ const changepassworddlg = () => {
 		return;
 	}
 
-	id("passwordDlgClose").addEventListener("click", (event) =>
-		closeModal("cancel"),
-	);
-	id("password_password_text1").addEventListener("keyup", (event) =>
-		checkpassword(),
-	);
-	id("password_password_text2").addEventListener("keyup", (event) =>
-		checkpassword(),
-	);
-	id("passwordDlgCancel").addEventListener("click", (event) =>
-		closeModal("cancel"),
-	);
-	id("change_password_btn").addEventListener("click", (event) =>
-		SubmitChangePassword(),
-	);
+	id("passwordDlgClose").addEventListener("click", (event) => closeModal("cancel"));
+	id("password_password_text1").addEventListener("keyup", (event) => checkpassword());
+	id("password_password_text2").addEventListener("keyup", (event) => checkpassword());
+	id("passwordDlgCancel").addEventListener("click", (event) => closeModal("cancel"));
+	id("change_password_btn").addEventListener("click", (event) => SubmitChangePassword());
 
 	displayNone("password_loader");
 	displayBlock("change_password_content");
@@ -80,17 +70,10 @@ function ChangePasswordsuccess(response_text) {
 }
 
 function SubmitChangePassword() {
-	var user = id("current_ID").innerHTML.trim();
-	var password = id("password_password_text").value.trim();
-	var newpassword = id("password_password_text1").value.trim();
-	var url =
-		"/login?USER=" +
-		encodeURIComponent(user) +
-		"&PASSWORD=" +
-		encodeURIComponent(password) +
-		"&NEWPASSWORD=" +
-		encodeURIComponent(newpassword) +
-		"&SUBMIT=yes";
+	const user = encodeURIComponent(id("current_ID").innerHTML.trim());
+	const password = encodeURIComponent(id("password_password_text").value.trim());
+	const newpassword = encodeURIComponent(id("password_password_text1").value.trim());
+	const url = `/login?USER=${user}&PASSWORD=${password}&NEWPASSWORD=${newpassword}&SUBMIT=yes`;
 	displayBlock("password_loader");
 	displayNone("change_password_content");
 	SendGetHttp(url, ChangePasswordsuccess, ChangePasswordfailed);
