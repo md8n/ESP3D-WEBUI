@@ -89,12 +89,12 @@ function translate_text(lang) {
         }
         //add support for placeholder attribut
         if (All[i].hasAttribute('translateph') && All[i].hasAttribute('placeholder')) {
-            var content = "";
+            let content = "";
             if (!All[i].hasAttribute('english_content')) {
                 content = All[i].getAttribute('placeholder');
                 content.trim();
                 //removeIf(production) 
-                var item = {
+                const item = {
                     content: content
                 };
                 translated_list.push(item);
@@ -103,7 +103,7 @@ function translate_text(lang) {
             }
             content = All[i].getAttribute('english_content');
 
-            translated_content = decode_entitie(translate_text_item(content));
+            translated_content = HTMLDecode(translate_text_item(content));
             All[i].setAttribute('placeholder', translated_content)
         }
     }

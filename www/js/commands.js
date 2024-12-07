@@ -1,4 +1,4 @@
-// import - conErr, stdErrMsg, getChecked, id, decode_entitie, SendGetHttp, translate_text_item, process_socket_response
+// import - conErr, stdErrMsg, getChecked, id, HTMLDecode, SendGetHttp, translate_text_item, process_socket_response
 
 const CustomCommand_history = [];
 let CustomCommand_history_index = -1;
@@ -175,12 +175,12 @@ function SendCustomCommandFailed(error_code, response) {
 			? translate_text_item("Connection error")
 			: stdErrMsg(
 					error_code,
-					decode_entitie(response),
+					HTMLDecode(response),
 					translate_text_item("Error"),
 				);
 	Monitor_output_Update(`${errMsg}\n`);
 
-	conErr(error_code, decode_entitie(response), "cmd Error");
+	conErr(error_code, HTMLDecode(response), "cmd Error");
 }
 
 // export - init_command_panel, Monitor_check_autoscroll, Monitor_check_verbose_mode, Monitor_output_Update
