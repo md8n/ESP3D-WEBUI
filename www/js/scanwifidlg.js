@@ -76,9 +76,7 @@ function process_scanWifi_answer(response_text) {
 		} else {
 			const aplist = response.AP_LIST;
 			//console.log("found " + aplist.length + " AP");
-			aplist.sort((a, b) => Number.parseInt(a.SIGNAL) < Number.parseInt(b.SIGNAL)
-					? -1
-					: Number.parseInt(a.SIGNAL) > Number.parseInt(b.SIGNAL) ? 1 : 0);
+			aplist.sort((a, b) => Number.parseInt(a.SIGNAL) - Number.parseInt(b.SIGNAL));
 			for (let i = aplist.length - 1; i >= 0; i--) {
 				const protIcon = aplist[i].IS_PROTECTED === "1" ? get_icon_svg("lock") : "";
 				const escapedSSID = aplist[i].SSID.replace("'", "\\'").replace('"', '\\"',);

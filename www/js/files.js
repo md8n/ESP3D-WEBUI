@@ -593,9 +593,7 @@ const files_list_success = (response_text) => {
 			files_file_list.push(file_entry);
 		}
 	}
-	files_file_list.sort(function (a, b) {
-		return a.name.localeCompare(b.name);
-	});
+	files_file_list.sort((a, b) => a.name.localeCompare(b.name, undefined, {sensitivity: 'base'}));
 	var vtotal = "-1";
 	var vused = "-1";
 	var voccupation = "-1";
