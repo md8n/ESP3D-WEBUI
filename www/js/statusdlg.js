@@ -14,8 +14,8 @@ import {
 	translate_text_item,
 } from "./common.js";
 
-var statuspage = 0;
-var statuscontent = "";
+let statuspage = 0;
+let statuscontent = "";
 //status dialog
 const statusdlg = () => {
 	const modal = setactiveModal("statusdlg.html");
@@ -23,16 +23,10 @@ const statusdlg = () => {
 		return;
 	}
 
-	id("status_dlg_close").addEventListener("click", (event) =>
-		closeModal("cancel"),
-	);
+	id("status_dlg_close").addEventListener("click", (event) => closeModal("cancel"));
 	id("next_status_btn").addEventListener("click", (event) => next_status());
-	id("status_dlg_btn_close").addEventListener("click", (event) =>
-		closeModal("cancel"),
-	);
-	id("status_dlg_refreshstatus").addEventListener("click", (event) =>
-		refreshstatus(),
-	);
+	id("status_dlg_btn_close").addEventListener("click", (event) => closeModal("cancel"));
+	id("status_dlg_refreshstatus").addEventListener("click", (event) => refreshstatus());
 
 	showModal();
 	refreshstatus();
@@ -67,16 +61,19 @@ function update_btn_status(forcevalue) {
 function statussuccess(response) {
 	displayBlock("refreshstatusbtn");
 	displayNone("status_loader");
-	var modal = getactiveModal();
-	if (modal == null) return;
-	var text = modal.element.getElementsByClassName("modal-text")[0];
-	var tresponse = response.split("\n");
+	const modal = getactiveModal();
+	if (modal == null) {
+		return;
+	}
+	
+	const text = modal.element.getElementsByClassName("modal-text")[0];
+	const tresponse = response.split("\n");
 	statuscontent = "";
-	for (var i = 0; i < tresponse.length; i++) {
-		var data = tresponse[i].split(":");
+	for (let i = 0; i < tresponse.length; i++) {
+		const data = tresponse[i].split(":");
 		if (data.length >= 2) {
 			statuscontent += `<label>${translate_text_item(data[0])}: </label>&nbsp;<span class='text-info'><strong>`;
-			var data2 = data[1].split(" (");
+			const data2 = data[1].split(" (");
 			statuscontent += translate_text_item(data2[0].trim());
 			for (v = 1; v < data2.length; v++) {
 				statuscontent += ` (${data2[v]}`;
@@ -107,12 +104,15 @@ function statusfailed(error_code, response) {
 function refreshstatus() {
 	displayNone("refreshstatusbtn");
 	displayBlock("status_loader");
-	var modal = getactiveModal();
-	if (modal == null) return;
-	var text = modal.element.getElementsByClassName("modal-text")[0];
+	const modal = getactiveModal();
+	if (modal == null) {
+		return;
+	}
+
+	const text = modal.element.getElementsByClassName("modal-text")[0];
 	text.innerHTML = "";
 	displayNone("status_msg");
-	var url = "/command?plain=" + encodeURIComponent("[ESP420]plain");
+	const url = `/command?plain=${encodeURIComponent("[ESP420]plain")}`;
 	SendGetHttp(url, statussuccess, statusfailed);
 }
 
