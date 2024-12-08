@@ -33,13 +33,12 @@ const restartdlg = () => {
 };
 
 function restart_esp_success(response) {
-	var i = 0;
-	var interval;
-	var x = id("prgrestart");
+	let i = 0;
+	const x = id("prgrestart");
 	const common = new Common();
 	common.http_communication_locked = true;
 	x.max = 10;
-	interval = setInterval(() => {
+	const interval = setInterval(() => {
 		common.last_ping = Date.now();
 		i = i + 1;
 		const x = id("prgrestart");
