@@ -1,4 +1,4 @@
-// import: displayBlock, displayNone, id, getPrefValue, setPrefValue, SavePreferences
+// import: displayBlock, displayNone, id, SavePreferences
 
 /** Set up the event handlers for the camera tab */
 const cameratab = () => {
@@ -61,9 +61,9 @@ function camera_OnKeyUp(event) {
 }
 
 function camera_saveaddress() {
-	cameraformataddress();
-	setPrefValue("camera_address", id("camera_webaddress").value);
-	SavePreferences(true);
+    cameraformataddress();
+    preferenceslist[0].camera_address = HTMLEncode(id('camera_webaddress').value);
+    SavePreferences(true);
 }
 
 function camera_detachcam() {
