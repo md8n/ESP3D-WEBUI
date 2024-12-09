@@ -72,7 +72,7 @@ function build_accept(file_filters_list) {
 	console.log(accept_txt);
 }
 
-function init_files_panel(dorefresh) {
+function init_files_panel(dorefresh = true) {
 	displayInline("files_refresh_btn");
 	displayNone("files_refresh_primary_sd_btn");
 	displayNone("files_refresh_secondary_sd_btn");
@@ -105,8 +105,7 @@ function init_files_panel(dorefresh) {
 	id("files_input_file").addEventListener("change", (event) => files_check_if_upload());
 
 	files_set_button_as_filter(files_filter_sd_list);
-	const refreshlist = typeof dorefresh !== "undefined" ? dorefresh : true;
-	if (direct_sd && refreshlist) {
+	if (direct_sd && dorefresh) {
 		files_refreshFiles(files_currentPath);
 	}
 }
