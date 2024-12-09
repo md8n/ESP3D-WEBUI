@@ -569,7 +569,7 @@ function processPreferencesGetFailed(error_code, response) {
 function Preferences_build_list(response_text) {
 	preferenceslist = [];
 	try {
-		if (response_text.length != 0) {
+		if (response_text.length !== 0) {
 			//console.log(response_text);
 			preferenceslist = JSON.parse(response_text);
 		} else {

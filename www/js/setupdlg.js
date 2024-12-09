@@ -59,7 +59,7 @@ function openStep(wizard, step) {
 function closeStep(step) {
 	if (id(step).className.indexOf(" wizard_done") === -1) {
 		id(step).className += " wizard_done";
-		const common = Common();
+		const common = new Common();
 		if (!common.can_revert_wizard) {
 			id(step).className += " no_revert_wizard";
 		}
