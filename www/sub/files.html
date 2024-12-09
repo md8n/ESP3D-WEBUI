@@ -8,11 +8,14 @@
                             <td><b><span id="fileSource" translate>SD Files</span></b></td>
                             <td>&nbsp;&nbsp;</td>
                             <td class="tooltip">
-                              <span class="tooltip-text">Make a directory</span>
-                                <button id="files_createdir_btn" class="btn btn-info btn-xs" style="padding: -2px 2px 0x 0px;">
+                                <span class="tooltip-text">Make a directory</span>
+                                <button id="files_createdir_btn" class="btn btn-info btn-xs"
+                                    style="padding: -2px 2px 0x 0px;">
                                     <svg width="1.5em" height="1.2em" viewBox="5 10 30 10">
-                                        <rect x="5" y="10" width="30" height="20" rx="2" ry="2" fill="currentColor"></rect>
-                                        <rect x="20" y="5" width="15" height="15" rx="2" ry="2" fill="currentColor"></rect>
+                                        <rect x="5" y="10" width="30" height="20" rx="2" ry="2" fill="currentColor">
+                                        </rect>
+                                        <rect x="20" y="5" width="15" height="15" rx="2" ry="2" fill="currentColor">
+                                        </rect>
                                         <text x="15" y="25" font-size="18" font-weight="800" fill="#5BC0DE">+</text>
                                     </svg>
                                 </button>
@@ -41,16 +44,18 @@
                 <div class="pull-right" id="files_navigation_buttons">
                     <div class="item-flex-row-wrap">
                         <div class="tooltip">
-                          <span class="tooltip-text">Show runnable files or all files</span>
-                          <button id="files_filter_btn" class="btn btn-xs btn-primary">
-                            <span id="files_filter_glyph" style="position:relative; top:2px">
-                              <svg width='1.3em' height='1.2em' viewBox='0 0 1300 1200'>
-                                <g transform='translate(50,1200) scale(1, -1)'>
-                                  <path fill='currentColor' d='M150 1200h900q21 0 35.5 -14.5t14.5 -35.5t-14.5 -35.5t-35.5 -14.5h-900q-21 0 -35.5 14.5t-14.5 35.5t14.5 35.5t35.5 14.5zM700 500v-300l-200 -200v500l-350 500h900z'></path>
-                                </g>
-                              </svg>
-                            </span>
-                          </button>
+                            <span class="tooltip-text">Show runnable files or all files</span>
+                            <button id="files_filter_btn" class="btn btn-xs btn-primary">
+                                <span id="files_filter_glyph" style="position:relative; top:2px">
+                                    <svg width='1.3em' height='1.2em' viewBox='0 0 1300 1200'>
+                                        <g transform='translate(50,1200) scale(1, -1)'>
+                                            <path fill='currentColor'
+                                                d='M150 1200h900q21 0 35.5 -14.5t14.5 -35.5t-14.5 -35.5t-35.5 -14.5h-900q-21 0 -35.5 14.5t-14.5 35.5t14.5 35.5t35.5 14.5zM700 500v-300l-200 -200v500l-350 500h900z'>
+                                            </path>
+                                        </g>
+                                    </svg>
+                                </span>
+                            </button>
                         </div>
                         &nbsp;
                         <button id="files_refresh_btn" class="btn btn-xs btn-primary hide_it" translate>Refresh</button>
@@ -75,7 +80,8 @@
                         <button id="abort_btn" class="btn btn-xs btn-primary" translate>Abort</button>
                         &nbsp;
                         <button id="print_upload_btn" class="btn btn-xs btn-primary" translate>Upload</button>
-                        <input id="files_input_file" type="file" accept=" .g, .gco, .gcode, .G, .GCO, .GCODE" style="display:none" />
+                        <input id="files_input_file" type="file" accept=" .g, .gco, .gcode, .G, .GCO, .GCODE"
+                            style="display:none" />
                     </div>
                 </div>
             </div>
@@ -99,7 +105,8 @@
                         <span class="form-inline">
                             <div class="form-group">
                                 <span><span translate>Ocupation:</span>
-                                    <meter id="files_sd_status_occupation" style='width:150px' min='0' max='100' high='90' value=50></meter></span>
+                                    <meter id="files_sd_status_occupation" style='width:150px' min='0' max='100'
+                                        high='90' value=50></meter></span>
                                 <span id="files_sd_status_percent"></span><span>%</span>
                             </div>
                         </span>
