@@ -85,21 +85,16 @@ function UpdateProgressDisplay(oEvent) {
 }
 
 function UploadUpdatefile() {
-	confirmdlg(
-		translate_text_item("Please confirm"),
-		translate_text_item("Update Firmware ?"),
-		StartUploadUpdatefile,
-	);
+	confirmdlg(translate_text_item("Please confirm"), translate_text_item("Update Firmware ?"), StartUploadUpdatefile);
 }
 
 function StartUploadUpdatefile(response) {
-	if (response !== "yes") return;
+	if (response !== "yes") {
+		return;
+	}
 	const common = new Common();
 	if (common.http_communication_locked) {
-		alertdlg(
-			translate_text_item("Busy..."),
-			translate_text_item("Communications are currently locked, please wait and retry."),
-		);
+		alertdlg(translate_text_item("Busy..."), translate_text_item("Communications are currently locked, please wait and retry."));
 		return;
 	}
 	const files = id("fw-select").files;
@@ -120,13 +115,7 @@ function StartUploadUpdatefile(response) {
 	if (files.length === 1) current_update_filename = files[0].name;
 	else current_update_filename = "";
 	setHTML("updatemsg", `${translate_text_item("Uploading")} ${current_update_filename}`);
-	SendFileHttp(
-		url,
-		formData,
-		UpdateProgressDisplay,
-		updatesuccess,
-		updatefailed,
-	);
+	SendFileHttp(url, formData, UpdateProgressDisplay, updatesuccess, updatefailed);
 }
 
 function updatesuccess(response) {

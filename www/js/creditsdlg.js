@@ -7,9 +7,7 @@ const creditsdlg = () => {
 		return;
 	}
 
-	id("creditsDlgCancel").addEventListener("click", (event) =>
-		closeModal("cancel"),
-	);
+	id("creditsDlgCancel").addEventListener("click", (event) => closeModal("cancel"));
 	id("creditsDlgClose").addEventListener("click", (event) => closeModal("Ok"));
 
 	showModal();

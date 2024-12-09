@@ -236,7 +236,7 @@ const setDialog = (prefs) => {
 					// Because `click`ing the checkbox will toggle it (one way or another) we click it twice
 					fElem.value =
 						typeof value.value === "string" &&
-						value.value.toLowerCase() === "false"
+							value.value.toLowerCase() === "false"
 							? "false"
 							: `${!!value.value}`;
 					fElem.click();
@@ -598,18 +598,10 @@ const showpreferencesdlg = () => {
 
 	initpreferences();
 
-	id("preferencesdlg.html").addEventListener("click", (event) =>
-		clear_drop_menu(event),
-	);
-	id("PreferencesDialogClose").addEventListener("click", (event) =>
-		closePreferencesDialog(),
-	);
-	id("PreferencesDialogCancel").addEventListener("click", (event) =>
-		closePreferencesDialog(),
-	);
-	id("PreferencesDialogSave").addEventListener("click", (event) =>
-		SavePreferences(),
-	);
+	id("preferencesdlg.html").addEventListener("click", (event) => clear_drop_menu(event),);
+	id("PreferencesDialogClose").addEventListener("click", (event) => closePreferencesDialog(),);
+	id("PreferencesDialogCancel").addEventListener("click", (event) => closePreferencesDialog(),);
+	id("PreferencesDialogSave").addEventListener("click", (event) => SavePreferences(),);
 
 	displayNone("preferencesdlg_upload_msg");
 	showModal();
@@ -622,10 +614,10 @@ function closePreferencesDialog() {
 		modified = true;
 	} else {
 		//camera address
-		if (getChecked("camera_address") != getPrefValue("camera_address"))
+		if (getChecked("camera_address") !== getPrefValue("camera_address"))
 			modified = true;
 		//Monitor connection
-		if (getChecked("enable_ping") != getPrefValue("enable_ping"))
+		if (getChecked("enable_ping") !== getPrefValue("enable_ping"))
 			modified = true;
 	}
 	if (modified) {
@@ -718,8 +710,8 @@ function preferencesUploadfailed(error_code, response) {
 const valueMinTest = (value, valueDef) => {
 	return "min" in valueDef && value < valueDef.min
 		? translate_text_item(
-				`${valueDef.label} must be greater than or equal to ${valueDef.min}"`,
-			)
+			`${valueDef.label} must be greater than or equal to ${valueDef.min}"`,
+		)
 		: "";
 };
 
@@ -727,8 +719,8 @@ const valueMinTest = (value, valueDef) => {
 const valueMaxTest = (value, valueDef) => {
 	return "max" in valueDef && value > valueDef.max
 		? translate_text_item(
-				`${valueDef.label} must be less than or equal to ${valueDef.max}"`,
-			)
+			`${valueDef.label} must be less than or equal to ${valueDef.max}"`,
+		)
 		: "";
 };
 
@@ -819,7 +811,7 @@ const CheckValue = (fId, valueDef) => {
 			errorList.join("\n"),
 		);
 	}
-	return errorList.length == 0;
+	return errorList.length === 0;
 };
 
 export {

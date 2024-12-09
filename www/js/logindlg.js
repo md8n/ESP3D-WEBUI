@@ -12,28 +12,21 @@ import {
 } from "./common.js";
 
 /** login dialog */
-const logindlg = (closefunc, check_first) => {
+const logindlg = (closefunc, check_first = false) => {
 	const modal = setactiveModal("logindlg.html", closefunc);
-	let need_query_auth = false;
 	if (modal == null) {
 		return;
 	}
 
-	id("login_user_text").addEventListener("keyup", (event) =>
-		login_id_OnKeyUp(event),
-	);
-	id("login_password_text").addEventListener("keyup", (event) =>
-		login_password_OnKeyUp(event),
-	);
+	id("login_user_text").addEventListener("keyup", (event) => login_id_OnKeyUp(event));
+	id("login_password_text").addEventListener("keyup", (event) => login_password_OnKeyUp(event));
 	id("login_submit_btn").addEventListener("click", (event) => SubmitLogin());
 
 	setHTML("login_title", translate_text_item("Identification requested"));
 	displayNone("login_loader");
 	displayBlock("login_content");
-	if (typeof check_first !== "undefined") {
-		need_query_auth = check_first;
-	}
-	if (need_query_auth) {
+
+	if (check_first) {
 		const url = "/login";
 		SendGetHttp(url, checkloginsuccess);
 	} else {

@@ -310,7 +310,3 @@ function initUI_4() {
 function show_main_UI() {
 	displayUndoNone("main_ui");
 }
-
-function compareInts(a, b) {
-	return a < b ? -1 : a > b ? 1 : 0;
-}

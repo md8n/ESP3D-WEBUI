@@ -79,6 +79,7 @@ function setDisabled(selector, value) {
     element.disabled = value;
   }
 }
+
 function files(name) {
   return id(name).files
 }
@@ -96,6 +97,7 @@ const getChecked = (name) => {
   const checkBox = id(name);
   return checkBox?.value || "false";
 }
+
 
 const sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay));
 

@@ -1,7 +1,7 @@
 import { translate_text_item, HTMLDecode } from "./common.js";
 
 //removeIf(production)
-var translated_list = [];
+const translated_list = [];
 //endRemoveIf(production)
 
 /** Set up text translation to the selected language */
@@ -28,11 +28,8 @@ const translate_text = (lang) => {
 
 			All[i].innerHTML = translated_content;
 		}
-		//add support for placeholder attribut
-		if (
-			All[i].hasAttribute("translateph") &&
-			All[i].hasAttribute("placeholder")
-		) {
+		//add support for placeholder attribute
+		if (All[i].hasAttribute('translateph') && All[i].hasAttribute('placeholder')) {
 			let content = "";
 			if (!All[i].hasAttribute("english_content")) {
 				content = All[i].getAttribute("placeholder");

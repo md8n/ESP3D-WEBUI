@@ -26,18 +26,10 @@ function showmacrodlg(closefn) {
 		return;
 	}
 
-	id("macrodlg.html").addEventListener("click", (event) =>
-		clear_drop_menu(event),
-	);
-	id("MacroDialogClose").addEventListener("click", (event) =>
-		closeMacroDialog(),
-	);
-	id("MacroDialogCancel").addEventListener("click", (event) =>
-		closeMacroDialog(),
-	);
-	id("MacroDialogSave").addEventListener("click", (event) =>
-		SaveNewMacroList(),
-	);
+	id("macrodlg.html").addEventListener("click", (event) => clear_drop_menu(event));
+	id("MacroDialogClose").addEventListener("click", (event) => closeMacroDialog());
+	id("MacroDialogCancel").addEventListener("click", (event) => closeMacroDialog());
+	id("MacroDialogSave").addEventListener("click", (event) => SaveNewMacroList());
 
 	build_dlg_macrolist_ui();
 	displayNone("macrodlg_upload_msg");
@@ -159,7 +151,7 @@ function build_glyph_selection(index, actions) {
 
 function build_filename_selection(index, actions) {
 	const entry = macrodlg_macrolist[index];
-	const noFilename = entry.filename.length == 0;
+	const noFilename = entry.filename.length === 0;
 	const mflId = `macro_filename_line_${index}`;
 
 	let content = `<span id='macro_filename_input_line_${index}' class='form-group ${noFilename ? "has-error has-feedback" : ""}'>`;

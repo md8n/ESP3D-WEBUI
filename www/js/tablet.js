@@ -621,10 +621,10 @@ function tabletUpdateModal() {
 }
 function tabletGrblState(grbl, response) {
 	// tabletShowResponse(response)
-	var stateName = grbl.stateName;
+	const stateName = grbl.stateName;
 
 	// Unit conversion factor - depends on both $13 setting and parser units
-	var factor = 1.0;
+	let factor = 1.0;
 
 	const common = new Common();
 
@@ -635,7 +635,7 @@ function tabletGrblState(grbl, response) {
 	//  rapidOverride = OVR.rapid/100.0;
 	//  spindleOverride = OVR.spindle/100.0;
 
-	var mmPerInch = 25.4;
+	const mmPerInch = 25.4;
 	switch (common.modal.units) {
 		case "G20":
 			factor = grblReportingUnits === 0 ? 1 / mmPerInch : 1.0;

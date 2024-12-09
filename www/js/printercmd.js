@@ -7,24 +7,16 @@ import {
 	translate_text_item,
 } from "./common.js";
 
-var grbl_processfn = null;
-var grbl_errorfn = null;
+let grbl_processfn = null;
+let grbl_errorfn = null;
 
-function noop() {}
-const SendPrinterCommand = (
-	cmd,
-	echo_on,
-	processfn,
-	errorfn,
-	id,
-	max_id,
-	extra_arg,
-) => {
-	if (cmd.length == 0) {
+function noop() { }
+const SendPrinterCommand = (cmd, echo_on, processfn, errorfn, id, max_id, extra_arg) => {
+	if (cmd.length === 0) {
 		return;
 	}
 	const url = "/command?commandText=";
-	let push_cmd = typeof echo_on !== "undefined" ? echo_on : true;
+	const push_cmd = typeof echo_on !== "undefined" ? echo_on : true;
 	if (push_cmd) {
 		Monitor_output_Update(`[#]${cmd}\n`);
 	}
@@ -78,17 +70,12 @@ function SendPrinterSilentCommandSuccess(response) {
 	//console.log(response);
 }
 
-function SendPrinterCommandSuccess(response) {}
+function SendPrinterCommandSuccess(response) { }
 
 function SendPrinterCommandFailed(error_code, response) {
-	const errMsg =
-		error_code === 0
-			? translate_text_item("Connection error")
-			: stdErrMsg(
-					error_code,
-					HTMLDecode(response),
-					translate_text_item("Error"),
-				);
+	const errMsg = (error_code === 0)
+		? translate_text_item("Connection error")
+		: stdErrMsg(error_code, HTMLDecode(response), translate_text_item("Error"));
 	Monitor_output_Update(`${errMsg}\n`);
 
 	conErr(error_code, HTMLDecode(response), "printer cmd Error");
