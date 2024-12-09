@@ -55,10 +55,7 @@ const SPIFFSdlg = (root) => {
 
 function closeSPIFFSDialog(msg) {
 	if (SPIFFS_upload_ongoing) {
-		alertdlg(
-			translate_text_item("Busy..."),
-			translate_text_item("Upload is ongoing, please wait and retry."),
-		);
+		alertdlg(translate_text_item("Busy..."), translate_text_item("Upload is ongoing, please wait and retry."));
 		return;
 	}
 	closeModal(msg);
@@ -76,7 +73,7 @@ function SPIFFSselect_dir(directoryname) {
 /** Builds the SPIFFS nav bar, adds it to the parent element, and sets up the event handlers */
 const SPIFFSnavbar = () => {
 	const common = new Common();
-	const tlist = common.SPIFFS_currentpath().split("/");
+	const tlist = common.SPIFFS_currentpath.split("/");
 	let path = "/";
 	let nb = 1;
 
@@ -101,13 +98,7 @@ const SPIFFSnavbar = () => {
 	};
 };
 
-function SPIFFS_Createdir() {
-	inputdlg(
-		translate_text_item("Please enter directory name"),
-		translate_text_item("Name:"),
-		processSPIFFS_Createdir,
-	);
-}
+const SPIFFS_Createdir = () => inputdlg(translate_text_item("Please enter directory name"), translate_text_item("Name:"), processSPIFFS_Createdir);
 
 function processSPIFFS_Createdir(answer) {
 	if (answer.length > 0) {
@@ -133,20 +124,12 @@ function processSPIFFSDelete(answer) {
 
 function SPIFFSDelete(filename) {
 	SPIFFS_currentfile = filename;
-	confirmdlg(
-		translate_text_item("Please Confirm"),
-		translate_text_item("Confirm deletion of file: ") + filename,
-		processSPIFFSDelete,
-	);
+	confirmdlg(translate_text_item("Please Confirm"), translate_text_item("Confirm deletion of file: ") + filename, processSPIFFSDelete);
 }
 
 function SPIFFSDeleteDir(filename) {
 	SPIFFS_currentfile = filename;
-	confirmdlg(
-		translate_text_item("Please Confirm"),
-		translate_text_item("Confirm deletion of directory: ") + filename,
-		processSPIFFSDeleteDir,
-	);
+	confirmdlg(translate_text_item("Please Confirm"), translate_text_item("Confirm deletion of directory: ") + filename, processSPIFFSDeleteDir);
 }
 
 function processSPIFFSDeleteDir(answer) {
@@ -158,12 +141,7 @@ function processSPIFFSDeleteDir(answer) {
 
 function SPIFFSRename(filename) {
 	old_file_name = filename;
-	inputdlg(
-		translate_text_item("New file name"),
-		translate_text_item("Name:"),
-		processSPIFFSRename,
-		old_file_name,
-	);
+	inputdlg(translate_text_item("New file name"), translate_text_item("Name:"), processSPIFFSRename, old_file_name);
 }
 
 function processSPIFFSRename(new_file_name) {
@@ -245,14 +223,14 @@ function SPIFFSdispatchfilestatus(jsonresponse) {
 	let content = "";
 	const actions = [];
 	const common = new Common();
-	if (common.SPIFFS_currentpath() !== "/") {
+	if (common.SPIFFS_currentpath !== "/") {
 		const pos = common.SPIFFS_currentpath.lastIndexOf("/", common.SPIFFS_currentpath.length - 2);
 		const previouspath = common.SPIFFS_currentpath.slice(0, pos + 1);
 		const rowId = "SPIFFS_row_up_dir";
 		content += `<tr id="${rowId}" style="cursor:pointer;"><td >${get_icon_svg("level-up")}</td><td colspan='4'> Up..</td></tr>`;
 		actions.push({ id: rowId, method: upDirAndRelist, filename: previouspath });
 	}
-	jsonresponse.files.sort((a, b) => a.name.localeCompare(b.name, undefined, {sensitivity: 'base'}));
+	jsonresponse.files.sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }));
 
 	const bIdF = "SPIFFS_btn_file_";
 	for (let i = 0; i < jsonresponse.files.length; i++) {
