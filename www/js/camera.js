@@ -40,7 +40,7 @@ function camera_saveaddress() {
 }
 
 function camera_detachcam() {
-    var webaddress = id('camera_frame').src;
+    const webaddress = id('camera_frame').src;
     id('camera_frame').src = "";
     displayNone('camera_frame_display');
     displayNone('camera_detach_button');
@@ -49,6 +49,6 @@ function camera_detachcam() {
 
 function camera_GetAddress() {
     if (typeof(preferenceslist[0].camera_address) !== 'undefined') {
-        id('camera_webaddress').value = decode_entitie(preferenceslist[0].camera_address);
+        id('camera_webaddress').value = HTMLDecode(preferenceslist[0].camera_address);
     } else id('camera_webaddress').value = "";
 }

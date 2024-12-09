@@ -336,7 +336,7 @@ function build_dlg_preferences_list() {
     } else id('autoload_camera_panel').checked = false;
     //camera address
     if (typeof(preferenceslist[0].camera_address) !== 'undefined') {
-        id('preferences_camera_webaddress').value = decode_entitie(preferenceslist[0].camera_address);
+        id('preferences_camera_webaddress').value = HTMLDecode(preferenceslist[0].camera_address);
     } else id('preferences_camera_webaddress').value = "";
     //DHT
     if (typeof(preferenceslist[0].enable_DHT) !== 'undefined') {
@@ -503,7 +503,7 @@ function closePreferencesDialog() {
             //Autoload
             if (id('autoload_camera_panel').checked != (preferenceslist[0].auto_load_camera === 'true')) modified = true;
             //camera address
-            if (id('preferences_camera_webaddress').value != decode_entitie(preferenceslist[0].camera_address)) modified = true;
+            if (id('preferences_camera_webaddress').value !== HTMLDecode(preferenceslist[0].camera_address)) modified = true;
             //DHT
             if (id('enable_DHT').checked != (preferenceslist[0].enable_DHT === 'true')) modified = true;
             //Lock UI
@@ -613,9 +613,9 @@ function SavePreferences(current_preferences) {
         var saveprefs = "[{\"language\":\"" + language;
         saveprefs += "\",\"enable_camera\":\"" + id('show_camera_panel').checked;
         saveprefs += "\",\"auto_load_camera\":\"" + id('autoload_camera_panel').checked;
-        saveprefs += "\",\"camera_address\":\"" + HTMLEncode(id('preferences_camera_webaddress').value);
-        saveprefs += "\",\"enable_DHT\":\"" + id('enable_DHT').checked;
-        saveprefs += "\",\"enable_lock_UI\":\"" + id('enable_lock_UI').checked;
+        saveprefs += `\",\"camera_address\":\"${HTMLEncode(id('preferences_camera_webaddress').value)}`;
+        saveprefs += `\",\"enable_DHT\":\"${id('enable_DHT').checked}`;
+        saveprefs += `\",\"enable_lock_UI\":\"${id('enable_lock_UI').checked}`;
         saveprefs += "\",\"enable_ping\":\"" + id('enable_ping').checked;
         saveprefs += "\",\"enable_control_panel\":\"" + id('show_control_panel').checked;
         saveprefs += "\",\"enable_grbl_probe_panel\":\"" + id('show_grbl_probe_tab').checked;
