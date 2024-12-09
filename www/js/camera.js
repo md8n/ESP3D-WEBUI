@@ -76,7 +76,7 @@ function camera_detachcam() {
 
 function camera_GetAddress() {
 	id("camera_webaddress").value =
-		typeof getPrefValue("camera_address") !== "undefined"
-			? getPrefValue("camera_address")
+		typeof (preferenceslist[0].camera_address) !== "undefined"
+			? HTMLDecode(preferenceslist[0].camera_address)
 			: "";
 }
