@@ -2,22 +2,12 @@
 
 /** Set up the event handlers for the camera tab */
 const cameratab = () => {
-	id("camera_webaddress").addEventListener("keyup", (event) =>
-		camera_OnKeyUp(event),
-	);
+	id("camera_webaddress").addEventListener("keyup", (event) => camera_OnKeyUp(event));
 
-	id("cameratab_loadframe").addEventListener("click", (event) =>
-		camera_loadframe(),
-	);
-	id("cameratab_getaddress").addEventListener("click", (event) =>
-		camera_GetAddress(),
-	);
-	id("cameratab_saveaddress").addEventListener("click", (event) =>
-		camera_saveaddress(),
-	);
-	id("camera_detach_button").addEventListener("click", (event) =>
-		camera_detachcam(),
-	);
+	id("cameratab_loadframe").addEventListener("click", (event) => camera_loadframe());
+	id("cameratab_getaddress").addEventListener("click", (event) => camera_GetAddress());
+	id("cameratab_saveaddress").addEventListener("click", (event) => camera_saveaddress());
+	id("camera_detach_button").addEventListener("click", (event) => camera_detachcam());
 };
 
 function cameraformataddress() {
