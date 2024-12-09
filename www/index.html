@@ -9,20 +9,10 @@
     <title>ESP3D WebUI</title>
     <script>
       var target_firmware = "";
-    </script>
-    <script>
       var web_ui_version = "replaceVERSION";
-    </script>
-    <script>
       var direct_sd = false;
-    </script>
-    <script>
       var fw_version = "";
-    </script>
-    <script>
       var primary_sd = "/ext/";
-    </script>
-    <script>
       var secondary_sd = "/sd/";
     </script>
     <!--removeIf(cleanheader)-->
@@ -43,9 +33,7 @@
   </head>
   <body>
     <div id="loadingmsg">
-      <center>
-        <h3>Loading....</h3>
-      </center>
+      <h3 class="center">Loading....</h3>
     </div>
     <!-- <div id="main_ui" class="container-fluid hide_it"> -->
       <div id="main_ui" class="hide_it"></div>
@@ -54,6 +42,7 @@
       <!-- /topnavbar -->
       <!-- content -->
       <div id="mainuitabscontent">
+        <!-- dashtab is actually maintab -->
         <file-include w3-include-html="'sub/dashtab.html'"></file-include>
         <file-include w3-include-html="'sub/cameratab.html'"></file-include>
         <file-include w3-include-html="'sub/configtab.html'"></file-include>
