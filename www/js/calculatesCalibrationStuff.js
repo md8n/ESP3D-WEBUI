@@ -560,7 +560,7 @@ function findMaxFitness(measurements) {
         messagesBox.value += '\nWARNING FITNESS TOO LOW. DO NOT USE THESE CALIBRATION VALUES!';
       }
 
-      messagesBox.textContent += '\nCalibration complete \nCalibration values:';
+      messagesBox.textContent += '\nCalibration values:';
       messagesBox.textContent += '\nFitness: ' + 1 / bestGuess.fitness.toFixed(7);
 
       const tlxStr = bestGuess.tl.x.toFixed(1), tlyStr = bestGuess.tl.y.toFixed(1);

@@ -272,12 +272,12 @@ function display_boot_progress(step) {
 }
 
 function Disable_interface(lostconnection) {
-  var lostcon = false
-  if (typeof lostconnection != 'undefined') lostcon = lostconnection
+  let lostcon = false
+  if (typeof lostconnection !== 'undefined') lostcon = lostconnection
   //block all communication
   http_communication_locked = true
   log_off = true
-  if (interval_ping != -1) clearInterval(interval_ping)
+  if (interval_ping !== -1) clearInterval(interval_ping)
   //clear all waiting commands
   clear_cmd_list()
   //no camera
@@ -291,7 +291,7 @@ function Disable_interface(lostconnection) {
     event_source.removeEventListener('DHT', DHT_events, false)
   }
   ws_source.close()
-  document.title += '(' + decode_entitie(translate_text_item('Disabled')) + ')'
+  document.title += `(${HTMLDecode(translate_text_item('Disabled'))})`
   UIdisableddlg(lostcon)
 }
 
@@ -429,24 +429,24 @@ function initUI_3() {
 }
 
 function initUI_4() {
-  AddCmd(display_boot_progress)
-  init_command_panel()
-  init_files_panel(false)
-  //check if we need setup
-  if (target_firmware == '???') {
-    console.log('Launch Setup')
-    AddCmd(display_boot_progress)
-    closeModal('Connection successful')
-    setupdlg()
-  } else {
-    //wizard is done UI can be updated
-    setup_is_done = true
-    do_not_build_settings = false
-    AddCmd(display_boot_progress)
-    build_HTML_setting_list(current_setting_filter)
-    AddCmd(closeModal)
-    AddCmd(show_main_UI)
-  }
+	AddCmd(display_boot_progress);
+	init_command_panel();
+	init_files_panel(false);
+	//check if we need setup
+	if (target_firmware == "???") {
+		console.log("Launch Setup");
+		AddCmd(display_boot_progress);
+		closeModal("Connection successful");
+		setupdlg();
+	} else {
+		//wizard is done UI can be updated
+		setup_is_done = true;
+		do_not_build_settings = false;
+		AddCmd(display_boot_progress);
+		build_HTML_setting_list(current_setting_filter);
+		AddCmd(closeModal);
+		AddCmd(show_main_UI);
+	}
 }
 
 function show_main_UI() {
@@ -462,30 +462,6 @@ function compareStrings(a, b) {
 
 function compareInts(a, b) {
   return a < b ? -1 : a > b ? 1 : 0
-}
-
-function HTMLEncode(str) {
-  var i = str.length,
-    aRet = []
-
-  while (i--) {
-    var iC = str[i].charCodeAt()
-    if (iC < 65 || iC > 127 || (iC > 90 && iC < 97)) {
-      if (iC == 65533) iC = 176
-      aRet[i] = '&#' + iC + ';'
-    } else {
-      aRet[i] = str[i]
-    }
-  }
-  return aRet.join('')
-}
-
-function decode_entitie(str_text) {
-  var tmpelement = document.createElement('div')
-  tmpelement.innerHTML = str_text
-  str_text = tmpelement.textContent
-  tmpelement.textContent = ''
-  return str_text
 }
 
 var socket_response = ''

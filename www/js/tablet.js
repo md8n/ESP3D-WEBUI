@@ -7,7 +7,7 @@ var gCodeDisplayable = false
 var snd = null
 var sndok = true
 
-var versionNumber = 0.86
+var versionNumber = 0.87
 
 //Print the version number to the console
 let msgWindow = document.getElementById('messages')
@@ -582,14 +582,14 @@ function tabletGrblState(grbl, response) {
       break
   }
 
-  var cannotClick = stateName == 'Run' || stateName == 'Hold'
+  const cannotClick = stateName === 'Run' || stateName === 'Hold'
   // Recompute the layout only when the state changes
-  if (oldCannotClick != cannotClick) {
-    selectDisabled('.dropdown-toggle', cannotClick)
-    selectDisabled('.axis-position .position', cannotClick)
-    selectDisabled('.axis-position .form-control', cannotClick)
-    selectDisabled('.axis-position .btn', cannotClick)
-    selectDisabled('.axis-position .position', cannotClick)
+  if (oldCannotClick !== cannotClick) {
+    setDisabled('.dropdown-toggle', cannotClick)
+    setDisabled('.axis-position .position', cannotClick)
+    setDisabled('.axis-position .form-control', cannotClick)
+    setDisabled('.axis-position .btn', cannotClick)
+    setDisabled('.axis-position .position', cannotClick)
     // if (!cannotClick) {
     //     contractVisualizer();
     // }
