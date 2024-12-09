@@ -729,48 +729,6 @@ function addOption(selector, name, value, isDisabled, isSelected) {
 
 var gCodeFilename = ''
 
-function populateTabletFileSelector(files, path) {
-  var selector = id('filelist')
-
-  var selectedFile = gCodeFilename.split('/').slice(-1)[0]
-
-  selector.length = 0
-  selector.selectedIndex = 0
-
-  if (!files.length) {
-    addOption(selector, 'No files found', -3, true, selectedFile == '')
-    return
-  }
-  var inRoot = path === '/'
-  var legend = 'Load GCode File from /SD' + path
-  addOption(selector, legend, -2, true, true) // A different one might be selected later
-
-  if (!inRoot) {
-    addOption(selector, '..', -1, false, false)
-  }
-  var gCodeFileFound = false
-  files.forEach(function (file, index) {
-    if (file.isprintable) {
-      var found = file.name == selectedFile
-      if (found) {
-        gCodeFileFound = true
-      }
-      addOption(selector, file.name, index, false, found)
-    }
-  })
-  if (!gCodeFileFound) {
-    gCodeFilename = ''
-    gCodeDisplayable = false
-    showGCode('')
-  }
-
-  files.forEach(function (file, index) {
-    if (file.isdir) {
-      addOption(selector, file.name + '/', index, false, false)
-    }
-  })
-}
-
 var filename = 'TEST.NC'
 var watchPath = ''
 
