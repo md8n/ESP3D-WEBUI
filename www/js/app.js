@@ -78,7 +78,7 @@ window.onload = () => {
 			controlsLoaded = true;
 		}
 
-		if (!navbarLoaded && id("navbar.html")) {
+		if (!navbarLoaded && id("navbar")) {
 			navbar();
 			tabletInit();
 			navbarLoaded = true;
