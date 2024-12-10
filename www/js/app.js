@@ -96,30 +96,6 @@ function disable_items(item, state) {
 	for (i = 0; i < liste.length; i++) liste[i].disabled = state
 }
 
-function ontoggleLock(forcevalue) {
-	if (typeof forcevalue != 'undefined') id('lock_UI').checked = forcevalue
-	if (id('lock_UI').checked) {
-		id('lock_UI_btn_txt').innerHTML = translate_text_item('Unlock interface')
-		disable_items(id('maintab'), true)
-		disable_items(id('configtab'), true)
-		id('progress_btn').disabled = false
-		id('clear_monitor_btn').disabled = false
-		id('monitor_enable_verbose_mode').disabled = false
-		id('monitor_enable_autoscroll').disabled = false
-		id('settings_update_fw_btn').disabled = true
-		id('settings_restart_btn').disabled = true
-		disable_items(id('JogUI'), false)
-		displayNone('JogUI')
-	} else {
-		id('lock_UI_btn_txt').innerHTML = translate_text_item('Lock interface')
-		disable_items(id('maintab'), false)
-		disable_items(id('configtab'), false)
-		id('settings_update_fw_btn').disabled = false
-		id('settings_restart_btn').disabled = false
-		id('JogUI').style.pointerEvents = 'auto'
-	}
-}
-
 //window.addEventListener("resize", OnresizeWindow);
 
 //function OnresizeWindow(){
