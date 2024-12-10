@@ -25,7 +25,6 @@ var EP_DIRECT_SD_CHECK = 853
 var SETTINGS_AP_MODE = 1
 var SETTINGS_STA_MODE = 2
 var SETTINGS_FALLBACK_MODE = 3
-var interval_ping = -1
 var last_ping = 0
 var enable_ping = true
 var esp_error_message = ''
@@ -95,22 +94,6 @@ window.onload = () => {
 function disable_items(item, state) {
 	var liste = item.getElementsByTagName('*')
 	for (i = 0; i < liste.length; i++) liste[i].disabled = state
-}
-
-function ontogglePing(forcevalue) {
-	if (typeof forcevalue != 'undefined') enable_ping = forcevalue
-	else enable_ping = !enable_ping
-	if (enable_ping) {
-		if (interval_ping != -1) clearInterval(interval_ping)
-		last_ping = Date.now()
-		interval_ping = setInterval(function () {
-			check_ping()
-		}, 10 * 1000)
-		console.log('enable ping')
-	} else {
-		if (interval_ping != -1) clearInterval(interval_ping)
-		console.log('disable ping')
-	}
 }
 
 function ontoggleLock(forcevalue) {

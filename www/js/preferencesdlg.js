@@ -155,6 +155,20 @@ function Preferences_build_list(response_text) {
     applypreferenceslist();
 }
 
+function ontogglePing(forcevalue) {
+	if (typeof forcevalue !== 'undefined') enable_ping = forcevalue
+	else enable_ping = !enable_ping
+	if (enable_ping) {
+		if (interval_ping !== -1) clearInterval(interval_ping)
+		last_ping = Date.now()
+		interval_ping = setInterval(() => {check_ping()}, 10 * 1000)
+		console.log('enable ping')
+	} else {
+		if (interval_ping !== -1) clearInterval(interval_ping)
+		console.log('disable ping')
+	}
+}
+
 function applypreferenceslist() {
     //Assign each control state
     translate_text(preferenceslist[0].language);
