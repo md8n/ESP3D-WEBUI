@@ -250,24 +250,10 @@ function reportNone() {
 }
 
 function reportPolled() {
-  if (reportType == 'auto') {
+  if (reportType === 'auto') {
     disableAutoReport()
   }
   enablePolling()
-}
-
-function onReportType(e) {
-  switch (e.value) {
-    case 'none':
-      reportNone()
-      break
-    case 'auto':
-      tryAutoReport()
-      break
-    case 'poll':
-      reportPolled()
-      break
-  }
 }
 
 function onstatusIntervalChange() {
