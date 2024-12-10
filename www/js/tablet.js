@@ -485,9 +485,9 @@ function doPlayButton() {
     playButtonHandler()
   }
 
-  let msgWindow = document.getElementById('messages')
+  const msgWindow = document.getElementById('messages')
   let text = msgWindow.textContent
-  text += '\n' + "Starting File: " + document.getElementById('filelist').options[selectElement.selectedIndex].text
+  text += `\nStarting File: ${document.getElementById('filelist').options[selectElement.selectedIndex].text}`
   msgWindow.textContent = text
   msgWindow.scrollTop = msgWindow.scrollHeight
 
@@ -750,7 +750,12 @@ function tabletInit() {
     requestModes();
     loadConfigValues();
     loadCornerValues();
-  }, 1000);
+
+		id("tablettablink").addEventListener("DOMActivate", () => {
+			fullscreenIfMobile();
+			setBottomHeight();
+		}, false);
+	}, 1000);
 }
 
 function arrayToXYZ(a) {
@@ -1094,9 +1099,6 @@ function fullscreenIfMobile() {
   }
 }
 
-id('tablettablink').addEventListener('DOMActivate', fullscreenIfMobile, false)
-
-
 // setMessageHeight(), with these helper functions, adjusts the size of the message
 // window to fill the height of the screen.  It would be nice if we could do that
 // solely with CSS, but I did not find a way to do that.  Everything I tried either
@@ -1124,8 +1126,6 @@ function setBottomHeight() {
   tPad += 20
 }
 window.onresize = setBottomHeight
-
-id('tablettablink').addEventListener('DOMActivate', setBottomHeight, false)
 
 function updateGcodeViewerAngle() {
   const gcode = id('gcode').value
@@ -1174,8 +1174,6 @@ document.addEventListener('click', function (event) {
     document.getElementById('calibration-popup').style.display = 'none'
   }
 })
-
-id('tablettablink').addEventListener('DOMActivate', fullscreenIfMobile, false)
 
 /* Calibration modal */
 
