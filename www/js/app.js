@@ -1,7 +1,4 @@
 var ESP3D_authentication = false
-var convertDHT2Fahrenheit = false
-var ws_source
-var event_source
 var log_off = false
 var async_webcommunication = false
 var websocket_port = 0

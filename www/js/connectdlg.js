@@ -72,18 +72,18 @@ function getFWdata(response) {
     }
     if (tlist.length > 7) {
         sublist = tlist[7].split(":");
-        if (sublist[0].trim() == "hostname") esp_hostname = sublist[1].trim();
+        if (sublist[0].trim() === "hostname") esp_hostname = sublist[1].trim();
     }
     
     if (tlist.length > 8) {
         sublist = tlist[8].split(":");
-        if (sublist[0].trim() == "axis") {
-            grblaxis = parseInt(sublist[1].trim());
+        if (sublist[0].trim() === "axis") {
+            grblaxis = Number.parseInt(sublist[1].trim());
         }
     }
     
     if (async_webcommunication) {
-        if (!!window.EventSource) {
+        if (window.EventSource) {
             event_source = new EventSource('/events');
             event_source.addEventListener('InitID', Init_events, false);
             event_source.addEventListener('ActiveID', ActiveID_events, false);
@@ -97,7 +97,7 @@ function getFWdata(response) {
 
 function connectsuccess(response) {
     if (getFWdata(response)) {
-        console.log("Fw identification:" + response);
+        console.log(`Fw identification:${response}`);
         if (ESP3D_authentication) {
             closeModal("Connection successful");
             displayInline('menu_authentication');
