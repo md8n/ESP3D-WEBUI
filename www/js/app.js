@@ -36,11 +36,11 @@ var esp_error_code = 0
 
 function Init_events(e) {
   page_id = e.data
-  console.log('connection id = ' + page_id)
+  console.log(`connection id = ${page_id}`)
 }
 
 function ActiveID_events(e) {
-  if (page_id != e.data) {
+  if (page_id !== e.data) {
     Disable_interface()
     console.log('I am disabled')
     event_source.close()
