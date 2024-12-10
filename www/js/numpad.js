@@ -208,7 +208,7 @@ const numpad = {
     if (opt.decimal === undefined) { opt.decimal = true; }
 
     // (C2) GET + SET TARGET OPTIONS
-    const target = id(opt.target);
+    const target = document.getElementById(opt.target);
     if (target) {
       target.readOnly = true;
       target.dataset.max = opt.max;
