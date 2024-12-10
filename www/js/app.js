@@ -91,17 +91,8 @@ window.onload = () => {
 	}, 500);
 }
 
-function disable_items(item, state) {
-	var liste = item.getElementsByTagName('*')
-	for (i = 0; i < liste.length; i++) liste[i].disabled = state
-}
-
-//window.addEventListener("resize", OnresizeWindow);
-
-//function OnresizeWindow(){
-//}
-var total_boot_steps = 5
-var current_boot_steps = 0
+const total_boot_steps = 5;
+let current_boot_steps = 0;
 
 function display_boot_progress(step) {
 	let val = 1;
