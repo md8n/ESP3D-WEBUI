@@ -779,8 +779,10 @@ function tabletGrblState(grbl, response) {
 	});
 }
 
-var filename = "TEST.NC";
-var watchPath = "";
+var gCodeFilename = ''
+
+var filename = 'TEST.NC'
+var watchPath = ''
 
 function tabletGetFileList(path) {
 	const common = new Common();

@@ -85,8 +85,6 @@ button.center {
     line-height: 0;
 }
 
-.noshowonlowrestab {}
-
 .btn-svg {
     padding: 4px 0px 0px 0px !important;
     width: 34px !important;
@@ -413,7 +411,6 @@ w25 {
     }
 }
 
-
 @media (min-width: 800px) and (max-width: 1350px) {
     .fixedbutton {
         width: 6em !important;
@@ -466,7 +463,6 @@ w25 {
     text-decoration: none;
     font-style: normal;
     font-variant: small-caps slashed-zero;
-    ;
     text-transform: none;
 }
 
@@ -475,5 +471,3 @@ w25 {
     valign: middle;
     text-align: center;
 }
-
-.button_txt {}
