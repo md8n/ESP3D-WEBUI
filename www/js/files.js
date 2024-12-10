@@ -195,6 +195,13 @@ function files_build_file_line(index, actions) {
 	return content;
 }
 
+function tabletSelectGCodeFile(filename) {
+	const selector = id("filelist");
+	const options = Array.from(selector.options);
+	const option = options.find((item) => item.text === filename);
+	option.selected = true;
+}
+
 function files_print(index) {
 	const file = files_file_list[index];
 	const path = files_currentPath + file.name;

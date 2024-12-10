@@ -1,4 +1,4 @@
-import { id } from "./common.js";
+import { goAxisByValue, id } from "./common.js";
 
 const numpad = {
   // (A) CREATE NUMPAD HTML

@@ -57,8 +57,8 @@ function beep(vol, freq, duration) {
 }
 
 function tabletClick() {
-  if (window.navigator && window.navigator.vibrate) {
-    window.navigator.vibrate(200);
+  if (window.navigator?.vibrate) {
+    window.navigator.vibrate(200)
   }
   // beep(3, 400, 10)
 }
@@ -77,38 +77,33 @@ const MDIcmd = (value) => {
 //   MDIcmd(id(field).value)
 // }
 
-const enterFullscreen = () => {
-  try {
-    document.documentElement.requestFullscreen();
-  } catch (exception) {
-    try {
-      document.documentElement.webkitRequestFullscreen();
-    } catch (exception) {
-      return;
-    }
-  }
-};
-const exitFullscreen = () => {
-  try {
-    document.exitFullscreen();
-  } catch (exception) {
-    try {
-      document.webkitExitFullscreen();
-    } catch (exception) {
-      return;
-    }
-  }
-};
+// const enterFullscreen = () => {
+//   try {
+//     document.documentElement.requestFullscreen();
+//   } catch (exception) {
+//     try {
+//       document.documentElement.webkitRequestFullscreen();
+//     } catch (exception) {
+//       return;
+//     }
+//   }
+// };
+// const exitFullscreen = () => {
+//   try {
+//     document.exitFullscreen();
+//   } catch (exception) {
+//     try {
+//       document.webkitExitFullscreen();
+//     } catch (exception) {
+//       return;
+//     }
+//   }
+// };
 
 const toggleFullscreen = () => { };
 
-const inputFocused = () => {
-  isInputFocused = true;
-};
-
-const inputBlurred = () => {
-  isInputFocused = false;
-};
+// const inputFocused = () => isInputFocused = true;
+// const inputBlurred = () => isInputFocused = false;
 
 // Define XY Home functions
 let xyHomeTimerId = null;
@@ -117,10 +112,8 @@ const xyHomeLabelDefault = "Define XY Home";
 const xyHomeLabelInstr = "Press+Hold Tap_x2";
 const xyHomeLabelRedefined = "XY Home Redefined";
 
-const getXYHomeBtnText = () =>
-  document.getElementById(xyHomeBtnId).textContent || "";
-const setXYHomeBtnText = (xyText = xyHomeLabelDefault) =>
-  (document.getElementById(xyHomeBtnId).textContent = xyText);
+const getXYHomeBtnText = () => document.getElementById(xyHomeBtnId).textContent || "";
+const setXYHomeBtnText = (xyText = xyHomeLabelDefault) => { document.getElementById(xyHomeBtnId).textContent = xyText; };
 
 const clearXYHomeTimer = () => {
   if (xyHomeTimerId) {
@@ -142,7 +135,7 @@ const setXYHome = () => {
 
 const xyHomeTimer = () => {
   const buttonText = getXYHomeBtnText();
-  const buttonValue = isNaN(+buttonText) ? 0 : +buttonText;
+  const buttonValue = Number.isNaN(+buttonText) ? 0 : +buttonText;
   if (buttonValue > 1) {
     setXYHomeBtnText(buttonValue - 1);
     xyHomeTimerId = setTimeout(xyHomeTimer, 1000);
@@ -173,9 +166,9 @@ const zeroAxis = (axis) => {
   tabletClick();
   setAxisByValue(axis, 0);
 
-  let msgWindow = document.getElementById("messages");
+  const msgWindow = document.getElementById("messages");
   let text = msgWindow.textContent;
-  text += "\n" + "Home pos set for: " + axis;
+  text += `\nHome pos set for: ${axis}`;
   msgWindow.textContent = text;
   msgWindow.scrollTop = msgWindow.scrollHeight;
 };
@@ -188,20 +181,20 @@ const toggleUnits = () => {
   sendCommand("$G");
 };
 
-const btnSetDistance = () => {
-  tabletClick();
-  var distance = event.target.innerText;
-  setValue("jog-distance", distance);
-};
+// const btnSetDistance = () => {
+//   tabletClick();
+//   const distance = event.target.innerText;
+//   setValue("jog-distance", distance);
+// };
 
-const setDistance = (distance) => {
-  tabletClick();
-  setValue("jog-distance", distance);
-};
+// const setDistance = (distance) => {
+//   tabletClick();
+//   setValue("jog-distance", distance);
+// };
 
 const jogTo = (axisAndDistance) => {
   // Always force G90 mode because synchronization of modal reports is unreliable
-  var feedrate = JogFeedrate(axisAndDistance);
+  let feedrate = JogFeedrate(axisAndDistance);
   const common = new Common();
   if (common.modal.units === "G20") {
     feedrate /= 25.4;
@@ -256,93 +249,74 @@ const sendMove = (cmd) => {
     }
     jogTo(s);
 
-    let msgWindow = document.getElementById("messages");
-    let text = msgWindow.textContent;
-    text += "\n" + "Jog: " + s;
-    msgWindow.textContent = text;
-    msgWindow.scrollTop = msgWindow.scrollHeight;
-  };
+    const msgWindow = document.getElementById('messages')
+    let text = msgWindow.textContent
+    text += `\nJog: ${s}`
+    msgWindow.textContent = text
+    msgWindow.scrollTop = msgWindow.scrollHeight
+
+  }
   const move = (params) => {
-    params = params || {};
-    var s = "";
+    params = params || {}
+    let s = ''
     for (key in params) {
       s += key + params[key];
     }
     moveTo(s);
   };
 
-  var distance = Number(id("disM").innerText) || 0;
+  let distance = cmd.includes('Z') ? Number(id('disZ').innerText) || 0 : Number(id('disM').innerText) || 0
 
-  if (cmd.includes("Z")) {
-    distance = Number(id("disZ").innerText) || 0;
-  }
-
-  var fn = {
-    G28: function () {
-      sendCommand("G28");
-    },
-    G30: function () {
-      sendCommand("G30");
-    },
-    X0Y0Z0: function () {
-      move({ X: 0, Y: 0, Z: 0 });
-    },
-    X0: function () {
-      move({ X: 0 });
-    },
-    Y0: function () {
-      move({ Y: 0 });
-    },
-    Z0: function () {
-      move({ Z: 0 });
-    },
-    "X-Y+": function () {
+  const fn = {
+    G28: () => sendCommand('G28'),
+    G30: () => sendCommand('G30'),
+    X0Y0Z0: () => move({ X: 0, Y: 0, Z: 0 }),
+    X0: () => move({ X: 0 }),
+    Y0: () => move({ Y: 0 }),
+    Z0: () => move({ Z: 0 }),
+    'X-Y+': () => {
       if (checkHomed()) {
         jog({ X: -distance, Y: distance });
       }
     },
-    "X+Y+": function () {
+    'X+Y+': () => {
       if (checkHomed()) {
         jog({ X: distance, Y: distance });
       }
     },
-    "X-Y-": function () {
+    'X-Y-': () => {
       if (checkHomed()) {
         jog({ X: -distance, Y: -distance });
       }
     },
-    "X+Y-": function () {
+    'X+Y-': () => {
       if (checkHomed()) {
         jog({ X: distance, Y: -distance });
       }
     },
-    "X-": function () {
+    'X-': () => {
       if (checkHomed()) {
         jog({ X: -distance });
       }
     },
-    "X+": function () {
+    'X+': () => {
       if (checkHomed()) {
         jog({ X: distance });
       }
     },
-    "Y-": function () {
+    'Y-': () => {
       if (checkHomed()) {
         jog({ Y: -distance });
       }
     },
-    "Y+": function () {
+    'Y+': () => {
       if (checkHomed()) {
         jog({ Y: distance });
       }
     },
-    "Z-": function () {
-      jog({ Z: -distance });
-    },
-    "Z+": function () {
-      jog({ Z: distance });
-    },
-    Z_TOP: function () {
+    'Z-': () => jog({ Z: -distance }),
+    'Z+': () => jog({ Z: distance }),
+    'Z_TOP': () => {
       // She's got legs ♫
       move({ Z: 70 });
     },
@@ -903,22 +877,19 @@ function nthLineEnd(str, n) {
 }
 
 function scrollToLine(lineNumber) {
-  var gCodeLines = id("tablettab_gcode");
-  var lineHeight = parseFloat(
-    getComputedStyle(gCodeLines).getPropertyValue("line-height"),
-  );
-  var gCodeText = gCodeLines.value;
+  const gCodeLines = id("tablettab_gcode");
+  const lineHeight = Number.parseFloat(getComputedStyle(gCodeLines).getPropertyValue("line-height"));
+  const gCodeText = gCodeLines.value;
 
   gCodeLines.scrollTop = lineNumber * lineHeight;
 
-  var start;
-  var end;
+  let start;
+  let end;
   if (lineNumber <= 0) {
     start = 0;
     end = 1;
   } else {
-    start =
-      lineNumber == 1 ? 0 : (start = nthLineEnd(gCodeText, lineNumber) + 1);
+    start = lineNumber === 1 ? 0 : nthLineEnd(gCodeText, lineNumber) + 1;
     end = gCodeText.indexOf("\n", start);
   }
 
@@ -935,12 +906,6 @@ function runGCode() {
   // expandVisualizer()
 }
 
-function tabletSelectGCodeFile(filename) {
-  var selector = id("filelist");
-  var options = Array.from(selector.options);
-  var option = options.find((item) => item.text == filename);
-  option.selected = true;
-}
 function tabletLoadGCodeFile(path, size) {
   const common = new Common();
   common.gCodeFilename = path;
@@ -1030,13 +995,13 @@ const cycleDistance = (up) => {
 };
 const clickon = (name) => {
   //    $('[data-route="workspace"] .btn').removeClass('active');
-  var button = id(name);
+  const button = id(name);
   button.classList.add("active");
   button.dispatchEvent(new Event("click"));
 };
-var ctrlDown = false;
-var oldIndex = null;
-var newChild = null;
+let ctrlDown = false;
+let oldIndex = null;
+let newChild = null;
 
 function shiftUp() {
   if (!newChild) {
@@ -1057,8 +1022,8 @@ function shiftDown() {
   if (newChild) {
     return;
   }
-  var sel = id("jog-distance");
-  var distance = sel.value;
+  const sel = id("jog-distance");
+  const distance = sel.value;
   oldIndex = sel.selectedIndex;
   newChild = addJogDistance(distance * 10);
 }
@@ -1066,8 +1031,8 @@ function altDown() {
   if (newChild) {
     return;
   }
-  var sel = id("jog-distance");
-  var distance = sel.value;
+  const sel = id("jog-distance");
+  const distance = sel.value;
   oldIndex = sel.selectedIndex;
   newChild = addJogDistance(distance / 10);
 }
@@ -1260,12 +1225,8 @@ function homeZ() {
   move({ Z: 85 });
   sendCommand("G91 G0 Z-28");
   //This is a total hack to make set the z to zero after the moves complete and should be done better
-  setTimeout(() => {
-    sendCommand("$HZ");
-  }, 25000);
-  setTimeout(() => {
-    zeroAxis("Z");
-  }, 26000);
+  setTimeout(() => { sendCommand("$HZ"); }, 25000);
+  setTimeout(() => { zeroAxis("Z"); }, 26000);
 }
 
 document.addEventListener("click", (event) => {
@@ -1309,10 +1270,8 @@ const onCalibrationButtonsClick = async (command, msg) => {
     msgWindow.scrollTop = msgWindow.scrollHeight;
   }
 
-  if (command != "$MINFO") {
-    setTimeout(() => {
-      sendCommand("$MINFO");
-    }, 1000);
+  if (command !== "$MINFO") {
+    setTimeout(() => { sendCommand("$MINFO"); }, 1000);
   }
 };
 
@@ -1320,6 +1279,7 @@ export {
   loadedValues,
   openModal,
   hideModal,
+  goAxisByValue,
   onCalibrationButtonsClick,
   saveSerialMessages,
   tabletInit,
