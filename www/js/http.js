@@ -222,12 +222,6 @@ function SendFileHttp(url, postdata, progress_fn, result_fn, error_fn) {
     process_cmd();
 }
 
-function CancelCurrentUpload() {
-    xmlhttpupload.abort();
-    //http_communication_locked = false;
-    console.log("Cancel Upload");
-}
-
 function ProcessFileHttp(url, postdata, progressfn, resultfn, errorfn) {
     if (http_communication_locked) {
         errorfn(503, translate_text_item("Communication locked!"));
