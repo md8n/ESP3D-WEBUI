@@ -209,9 +209,9 @@ function build_dlg_macrolist_line(index) {
 	}
 
 	setHTML(`macro_line_${index}`, content);
-	for (const action in actions) {
+	actions.forEach((action) => {
 		id(action.id).addEventListener(action.type, (event) => action.method);
-	};
+	});
 }
 
 function macro_filename_OnKeyUp(index) {

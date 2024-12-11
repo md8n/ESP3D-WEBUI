@@ -251,6 +251,7 @@ class Common {
 		/** See wizard.js - this is always false for some reason */
 		this.can_revert_wizard = false;
 
+		this.ESP3D_authentication = false;
 		this.esp_error_code = 0;
 		this.esp_error_message = "";
 

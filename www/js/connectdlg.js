@@ -15,18 +15,17 @@ import {
 } from "./common.js";
 
 /** Connect Dialog */
-const connectdlg = (getFw) => {
+const connectdlg = (getFw = true) => {
 	const modal = setactiveModal("connectdlg.html");
 	if (modal == null) {
 		return;
 	}
 
-	const btnElem = id("connectbtn");
-	btnElem.addEventListener("click", (event) => retryconnect());
+	id("connectbtn").addEventListener("click", (event) => retryconnect());
 
 	showModal();
 
-	if (typeof getFw !== "undefined" ? getFw : true) {
+	if (getFw) {
 		retryconnect();
 	}
 };
@@ -76,13 +75,13 @@ const getFWdata = (response) => {
 	if (sublist.length !== 2) {
 		return false;
 	}
-	if (sublist[0].trim() === "authentication" && sublist[1].trim() === "yes")
-		ESP3D_authentication = true;
-	else ESP3D_authentication = false;
+
+	const common = new Common();
+	common.ESP3D_authentication = sublist[0].trim() === "authentication" && sublist[1].trim() === "yes";
+
 	//async communications
 	if (tlist.length > 6) {
 		sublist = tlist[6].split(":");
-		const common = new Common();
 		if (
 			sublist[0].trim() === "webcommunication" &&
 			sublist[1].trim() === "Async"
@@ -107,7 +106,6 @@ const getFWdata = (response) => {
 	if (tlist.length > 8) {
 		sublist = tlist[8].split(":");
 		if (sublist[0].trim() === "axis") {
-			const common = new Common();
 			common.grblaxis = Number.parseInt(sublist[1].trim());
 		}
 	}
@@ -128,7 +126,8 @@ const connectfailed = (error_code, response) => {
 const connectsuccess = (response) => {
 	if (getFWdata(response)) {
 		console.log(`Fw identification:${response}`);
-		if (ESP3D_authentication) {
+		const common = new Common();
+		if (common.ESP3D_authentication) {
 			closeModal("Connection successful");
 			displayInline("menu_authentication");
 			logindlg(initUI, true);
@@ -146,7 +145,7 @@ const retryconnect = () => {
 	displayNone("connectbtn");
 	displayNone("failed_connect_msg");
 	displayBlock("connecting_msg");
-	var url = "/command?plain=" + encodeURIComponent("[ESP800]");
+	const url = `/command?plain=${encodeURIComponent("[ESP800]")}`;
 	SendGetHttp(url, connectsuccess, connectfailed);
 };
 

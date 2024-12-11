@@ -23,8 +23,6 @@ import {
 	tabletInit,
 } from "./common.js";
 
-var ESP3D_authentication = false;
-
 var log_off = false;
 var websocket_port = 0;
 var websocket_ip = "";
@@ -133,9 +131,7 @@ function display_boot_progress(step) {
 	current_boot_steps += val;
 	//console.log(current_boot_steps);
 	//console.log(Math.round((current_boot_steps*100)/total_boot_steps));
-	id("load_prg").value = Math.round(
-		(current_boot_steps * 100) / total_boot_steps,
-	);
+	id("load_prg").value = Math.round((current_boot_steps * 100) / total_boot_steps);
 }
 
 function update_UI_firmware_target() {
@@ -233,7 +229,10 @@ function Set_page_title(page_title) {
 
 function initUI() {
 	console.log("Init UI");
-	if (ESP3D_authentication) connectdlg(false);
+	const common = new Common();
+	if (common.ESP3D_authentication) {
+		connectdlg(false);
+	}
 	AddCmd(display_boot_progress);
 	//initial check
 	if (

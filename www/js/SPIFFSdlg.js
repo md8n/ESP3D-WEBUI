@@ -93,9 +93,9 @@ const SPIFFSnavbar = () => {
 	}
 
 	setHTML("SPIFFS_path", buildTable(buildTr(content)));
-	for (const action in actions) {
+	actions.forEach((action) => {
 		id(action.id).addEventListener("click", (event) => action.method(action.path));
-	};
+	});
 };
 
 const SPIFFS_Createdir = () => inputdlg(translate_text_item("Please enter directory name"), translate_text_item("Name:"), processSPIFFS_Createdir);
@@ -277,9 +277,9 @@ function SPIFFSdispatchfilestatus(jsonresponse) {
 	}
 
 	setHTML("SPIFFS_file_list", content);
-	for (const action in actions) {
+	actions.forEach((action) => {
 		id(action.id).addEventListener("click", (event) => action.method(action.filename));
-	};
+	});
 
 	SPIFFSnavbar();
 }

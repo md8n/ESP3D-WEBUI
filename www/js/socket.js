@@ -34,7 +34,7 @@ const check_ping = () => {
 	}
 };
 
-let interval_ping = 0;
+let interval_ping = -1;
 /** Turn ping on or off based on its current value */
 const handlePing = () => {
 	if (enable_ping()) {
@@ -48,7 +48,7 @@ const handlePing = () => {
 		console.log("enable ping");
 	} else {
 		clearInterval(interval_ping);
-		interval_ping = 0;
+		interval_ping = -1;
 		console.log("disable ping");
 	}
 };

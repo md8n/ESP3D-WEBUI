@@ -44,40 +44,43 @@ function http_errorfn(error_code, response_text) {
 }
 
 function process_cmd() {
-	if (http_cmd_list.length > 0 && !processing_cmd) {
-		//console.log("Processing 1/" + http_cmd_list.length);
-		//console.log("Processing " + http_cmd_list[0].cmd);
-		if (http_cmd_list[0].type == "GET") {
-			processing_cmd = true;
-			ProcessGetHttp(http_cmd_list[0].cmd, http_resultfn, http_errorfn);
-		} else if (http_cmd_list[0].type == "POST") {
-			processing_cmd = true;
-			if (!http_cmd_list[0].isupload) {
-				ProcessPostHttp(
-					http_cmd_list[0].cmd,
-					http_cmd_list[0].data,
-					http_resultfn,
-					http_errorfn,
-				);
-			} else {
-				//console.log("Uploading");
-				ProcessFileHttp(
-					http_cmd_list[0].cmd,
-					http_cmd_list[0].data,
-					http_cmd_list[0].progressfn,
-					http_resultfn,
-					http_errorfn,
-				);
-			}
-		} else if (http_cmd_list[0].type == "CMD") {
-			processing_cmd = true;
-			var fn = http_cmd_list[0].cmd;
-			fn();
-			http_cmd_list.shift();
-			processing_cmd = false;
-			process_cmd();
-		}
-	} //else if (http_cmd_list.length > 0)console.log("processing");
+    if (!http_cmd_list.length || processing_cmd) {
+        // if (processing_cmd) { 
+        //     console.log("Currently processing a command");
+        // }
+        return;
+    }
+
+    const cmdType = http_cmd_list[0].type;
+    if (!["GET", "POST", "CMD"].includes(cmdType)) {
+        console.error(`Unknown command type ${cmdType} for command ${http_cmd_list[0].cmd}`);
+        // This should never be true, but just in case we'll deliberately set it to false
+        processing_cmd = false;
+        return;
+    }
+    // console.log("Processing 1/" + http_cmd_list.length);
+    // console.log("Processing " + http_cmd_list[0].cmd);
+    processing_cmd = true;
+    switch (cmdType) {
+        case "GET":
+            ProcessGetHttp(http_cmd_list[0].cmd, http_resultfn, http_errorfn);
+            break;
+        case "POST":
+            if (!(http_cmd_list[0].isupload)) {
+                ProcessPostHttp(http_cmd_list[0].cmd, http_cmd_list[0].data, http_resultfn, http_errorfn);
+            } else {
+                //console.log("Uploading");
+                ProcessFileHttp(http_cmd_list[0].cmd, http_cmd_list[0].data, http_cmd_list[0].progressfn, http_resultfn, http_errorfn);
+            }
+            break;
+        case "CMD":
+            var fn = http_cmd_list[0].cmd;
+            fn();
+            http_cmd_list.shift();
+            processing_cmd = false;
+            process_cmd();
+            break;
+    }
 }
 
 function AddCmd(cmd_fn, id) {
