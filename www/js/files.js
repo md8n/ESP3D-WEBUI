@@ -530,9 +530,9 @@ function files_build_display_filelist(displaylist = true) {
 		}
 
 		fileListElem.innerHTML = content;
-		for (const action in actions) {
+		actions.forEach((action) => {
 			id(action.id).addEventListener(action.type, (event) => action.method);
-		};
+		});
 		displayBlock("files_fileList");
 	}
 

@@ -10,9 +10,9 @@ var sndok = true
 var versionNumber = 0.87
 
 //Print the version number to the console
-let msgWindow = document.getElementById('messages')
+const msgWindow = document.getElementById('messages')
 let text = msgWindow.textContent
-text = text + '\n' + "Index.html Version: " + versionNumber
+text = `${text}\nIndex.html Version: ${versionNumber}`
 msgWindow.textContent = text
 msgWindow.scrollTop = msgWindow.scrollHeight
 
@@ -35,38 +35,38 @@ function beep(vol, freq, duration) {
 }
 
 function tabletClick() {
-  if (window.navigator && window.navigator.vibrate) {
+  if (window.navigator?.vibrate) {
     window.navigator.vibrate(200)
   }
   // beep(3, 400, 10)
 }
 
-moveTo = function (location) {
+const moveTo = (location) => {
   // Always force G90 mode because synchronization of modal reports is unreliable
   sendCommand(`G90 G0 ${location}`);
 }
 
-MDIcmd = function (value) {
+const MDIcmd = (value) => {
   tabletClick();
   sendCommand(value);
 }
 
-MDI = function (field) {
-  MDIcmd(id(field).value)
-}
+// const MDI = (field) => {
+//   MDIcmd(id(field).value)
+// }
 
-enterFullscreen = function () {
-  try {
-    document.documentElement.requestFullscreen()
-  } catch (exception) {
-    try {
-      document.documentElement.webkitRequestFullscreen()
-    } catch (exception) {
-      return
-    }
-  }
-}
-exitFullscreen = function () {
+// const enterFullscreen = () => {
+//   try {
+//     document.documentElement.requestFullscreen()
+//   } catch (exception) {
+//     try {
+//       document.documentElement.webkitRequestFullscreen()
+//     } catch (exception) {
+//       return
+//     }
+//   }
+// }
+const exitFullscreen = () => {
   try {
     document.exitFullscreen()
   } catch (exception) {
@@ -78,15 +78,12 @@ exitFullscreen = function () {
   }
 }
 
-toggleFullscreen = function () { }
+/** This does nothing, but it does get called */
+const toggleFullscreen = () => { }
 
-inputFocused = function () {
-  isInputFocused = true
-}
+// const inputFocused = () => { isInputFocused = true; };
 
-inputBlurred = function () {
-  isInputFocused = false
-}
+// const inputBlurred = () => { isInputFocused = false; };
 
 // Define XY Home functions
 let xyHomeTimerId = null;
@@ -96,7 +93,7 @@ const xyHomeLabelInstr = "Press+Hold Tap_x2";
 const xyHomeLabelRedefined = "XY Home Redefined";
 
 const getXYHomeBtnText = () => document.getElementById(xyHomeBtnId).textContent || "";
-const setXYHomeBtnText = (xyText = xyHomeLabelDefault) => document.getElementById(xyHomeBtnId).textContent = xyText;
+const setXYHomeBtnText = (xyText = xyHomeLabelDefault) => { document.getElementById(xyHomeBtnId).textContent = xyText; };
 
 const clearXYHomeTimer = () => {
   if (xyHomeTimerId) {
@@ -118,7 +115,7 @@ const setXYHome = () => {
 
 const xyHomeTimer = () => {
   const buttonText = getXYHomeBtnText();
-  const buttonValue = isNaN(+buttonText) ? 0 : +buttonText;
+  const buttonValue = Number.isNaN(+buttonText) ? 0 : +buttonText;
   if (buttonValue > 1) {
     setXYHomeBtnText(buttonValue - 1);
     xyHomeTimerId = setTimeout(xyHomeTimer, 1000);
@@ -145,39 +142,39 @@ const setHomeClickUp = () => {
   }
 }
 
-zeroAxis = function (axis) {
+const zeroAxis = (axis) => {
   tabletClick()
   setAxisByValue(axis, 0)
 
-  let msgWindow = document.getElementById('messages')
+  const msgWindow = document.getElementById('messages')
   let text = msgWindow.textContent
-  text += '\n' + "Home pos set for: " + axis
+  text += `\nHome pos set for: ${axis}`
   msgWindow.textContent = text
   msgWindow.scrollTop = msgWindow.scrollHeight
 }
 
-toggleUnits = function () {
+const toggleUnits = () => {
   tabletClick()
   sendCommand(modal.units === 'G21' ? 'G20' : 'G21');
   // The button label will be fixed by the response to $G
   sendCommand('$G');
 }
 
-btnSetDistance = function () {
-  tabletClick()
-  var distance = event.target.innerText
-  id('jog-distance').value = distance
-}
+// const btnSetDistance = () => {
+//   tabletClick()
+//   var distance = event.target.innerText
+//   id('jog-distance').value = distance
+// }
 
-setDistance = function (distance) {
-  tabletClick()
-  id('jog-distance').value = distance
-}
+// const setDistance = (distance) => {
+//   tabletClick()
+//   id('jog-distance').value = distance
+// }
 
-jogTo = function (axisAndDistance) {
+const jogTo = (axisAndDistance) => {
   // Always force G90 mode because synchronization of modal reports is unreliable
   var feedrate = JogFeedrate(axisAndDistance)
-  if (modal.units == 'G20') {
+  if (modal.units === 'G20') {
     feedrate /= 25.4;
     feedrate = feedrate.toFixed(2);
   }
@@ -186,17 +183,17 @@ jogTo = function (axisAndDistance) {
   sendCommand(`$J=G91F${feedrate}${axisAndDistance}\n`);
 }
 
-goAxisByValue = function (axis, coordinate) {
+const goAxisByValue = (axis, coordinate) => {
   tabletClick()
   moveTo(axis + coordinate)
 }
 
-setAxisByValue = function (axis, coordinate) {
+const setAxisByValue = (axis, coordinate) => {
   tabletClick();
   sendCommand(`G10 L20 P0 ${axis}${coordinate}`);
 }
 
-setAxis = function (axis, field) {
+const setAxis = (axis, field) => {
   tabletClick();
   sendCommand(`G10 L20 P1 ${axis}${id(field).value}`);
 }
@@ -219,104 +216,84 @@ function long_jog(target) {
   sendCommand(`$J=G91F${feedrate}${axisAndDirection}${distance}\n`)
 }
 
-sendMove = function (cmd) {
+const sendMove = (cmd) => {
   tabletClick()
-  var jog = function (params) {
+  const jog = (params) => {
     params = params || {}
-    var s = ''
+    let s = ''
     for (key in params) {
       s += key + params[key]
     }
     jogTo(s)
 
-    let msgWindow = document.getElementById('messages')
+    const msgWindow = document.getElementById('messages')
     let text = msgWindow.textContent
-    text += '\n' + "Jog: " + s
+    text += `\nJog: ${s}`
     msgWindow.textContent = text
     msgWindow.scrollTop = msgWindow.scrollHeight
 
   }
-  var move = function (params) {
+  const move = (params) => {
     params = params || {}
-    var s = ''
+    let s = ''
     for (key in params) {
       s += key + params[key]
     }
     moveTo(s)
   }
 
-  var distance = Number(id('disM').innerText) || 0
+  let distance = cmd.includes('Z') ? Number(id('disZ').innerText) || 0 : Number(id('disM').innerText) || 0
 
-  if (cmd.includes('Z')) {
-    distance = Number(id('disZ').innerText) || 0;
-  }
-
-  var fn = {
-    G28: function () {
-      sendCommand('G28')
-    },
-    G30: function () {
-      sendCommand('G30')
-    },
-    X0Y0Z0: function () {
-      move({ X: 0, Y: 0, Z: 0 })
-    },
-    X0: function () {
-      move({ X: 0 })
-    },
-    Y0: function () {
-      move({ Y: 0 })
-    },
-    Z0: function () {
-      move({ Z: 0 })
-    },
-    'X-Y+': function () {
+  const fn = {
+    G28: () => sendCommand('G28'),
+    G30: () => sendCommand('G30'),
+    X0Y0Z0: () => move({ X: 0, Y: 0, Z: 0 }),
+    X0: () => move({ X: 0 }),
+    Y0: () => move({ Y: 0 }),
+    Z0: () => move({ Z: 0 }),
+    'X-Y+': () => {
       if (checkHomed()) {
         jog({ X: -distance, Y: distance })
       }
     },
-    'X+Y+': function () {
+    'X+Y+': () => {
       if (checkHomed()) {
         jog({ X: distance, Y: distance })
       }
     },
-    'X-Y-': function () {
+    'X-Y-': () => {
       if (checkHomed()) {
         jog({ X: -distance, Y: -distance })
       }
     },
-    'X+Y-': function () {
+    'X+Y-': () => {
       if (checkHomed()) {
         jog({ X: distance, Y: -distance })
       }
     },
-    'X-': function () {
+    'X-': () => {
       if (checkHomed()) {
         jog({ X: -distance })
       }
     },
-    'X+': function () {
+    'X+': () => {
       if (checkHomed()) {
         jog({ X: distance })
       }
     },
-    'Y-': function () {
+    'Y-': () => {
       if (checkHomed()) {
         jog({ Y: -distance })
       }
     },
-    'Y+': function () {
+    'Y+': () => {
       if (checkHomed()) {
         jog({ Y: distance })
       }
     },
-    'Z-': function () {
-      jog({ Z: -distance })
-    },
-    'Z+': function () {
-      jog({ Z: distance })
-    },
-    'Z_TOP': function () {
+    'Z-': () => jog({ Z: -distance }),
+    'Z+': () => jog({ Z: distance }),
+    'Z_TOP': () => {
       // She's got legs ♫
       move({ Z: 70 })
     },
@@ -325,18 +302,18 @@ sendMove = function (cmd) {
   fn && fn()
 }
 
-moveHome = function () {
+const moveHome = () => {
   if (!checkHomed()) {
     return;
   }
 
   //We want to move to the opposite of the machine's current X,Y cordinates
-  var x = parseFloat(id('mpos-x').innerText)
-  var y = parseFloat(id('mpos-y').innerText)
+  const x = Number.parseFloat(id('mpos-x').innerText)
+  const y = Number.parseFloat(id('mpos-y').innerText)
 
-  var jog = function (params) {
+  const jog = (params) => {
     params = params || {}
-    var s = ''
+    let s = ''
     for (key in params) {
       s += key + params[key]
     }
@@ -362,7 +339,7 @@ function saveSerialMessages() {
   // save off the serial messages
   const msgs = document.getElementById('messages').value;
   const link = document.createElement('a');
-  link.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURI(msgs));
+  link.setAttribute('href', `data:text/plain;charset=utf-8,${encodeURI(msgs)}`);
   link.setAttribute('download', "Maslow-serial.log");
   document.body.appendChild(link);
   link.click();
@@ -373,7 +350,7 @@ var loadedValues = {};
 function tabletShowMessage(msg, collecting) {
   if (
     collecting ||
-    msg == '' ||
+    msg === '' ||
     msg.startsWith('<') ||
     msg.startsWith('ok') ||
     msg.startsWith('\n') ||
@@ -427,7 +404,7 @@ function setJogSelector(units) {
     menuDistances = [0.005, 0.01, 0.03, 0.05, 0.1, 0.3, 0.5, 1, 3, 5, 10, 30, 50, 100, 300, 500, 1000]
     selected = '10'
   }
-  var buttonNames = [
+  const buttonNames = [
     'jog00',
     'jog01',
     'jog02',
@@ -550,8 +527,8 @@ function scaleUnits(target) {
 
 
 function tabletUpdateModal() {
-  var newUnits = modal.units == 'G21' ? 'mm' : 'Inch'
-  if (getText('units') != newUnits) {
+  const newUnits = modal.units === 'G21' ? 'mm' : 'Inch'
+  if (getText('units') !== newUnits) {
     setText('units', newUnits)
     setJogSelector(modal.units)
     scaleUnits("disM")
@@ -751,11 +728,11 @@ function tabletInit() {
     loadConfigValues();
     loadCornerValues();
 
-		id("tablettablink").addEventListener("DOMActivate", () => {
-			fullscreenIfMobile();
-			setBottomHeight();
-		}, false);
-	}, 1000);
+    id("tablettablink").addEventListener("DOMActivate", () => {
+      fullscreenIfMobile();
+      setBottomHeight();
+    }, false);
+  }, 1000);
 }
 
 function arrayToXYZ(a) {
@@ -910,7 +887,7 @@ function requestModes() {
   sendCommand('$G')
 }
 
-cycleDistance = function (up) {
+const cycleDistance = (up) => {
   //var sel = id('jog-distance');
   //var newIndex = sel.selectedIndex + (up ? 1 : -1);
   //if (newIndex >= 0 && newIndex < sel.length) {
@@ -918,7 +895,7 @@ cycleDistance = function (up) {
   //    sel.selectedIndex = newIndex;
   //}
 }
-clickon = function (name) {
+const clickon = (name) => {
   //    $('[data-route="workspace"] .btn').removeClass('active');
   var button = id(name)
   button.classList.add('active')
@@ -1082,11 +1059,11 @@ function saveJogDists() {
 
 function loadJogDists() {
 
-  let disM = localStorage.getItem("disM");
+  const disM = localStorage.getItem("disM");
   if (disM != null) {
     id('disM').innerText = disM;
   }
-  let disZ = localStorage.getItem("disZ");
+  const disZ = localStorage.getItem("disZ");
   if (disZ != null) {
     id('disZ').innerText = disZ;
   }
@@ -1121,8 +1098,8 @@ function setBottomHeight() {
     return
   }
   var residue = bodyHeight() - heightId('navbar') - controlHeight()
-  var tStyle = getComputedStyle(id('tablettab'))
-  var tPad = parseFloat(tStyle.paddingTop) + parseFloat(tStyle.paddingBottom)
+  const tStyle = getComputedStyle(id('tablettab'))
+  let tPad = Number.parseFloat(tStyle.paddingTop) + Number.parseFloat(tStyle.paddingBottom)
   tPad += 20
 }
 window.onresize = setBottomHeight
@@ -1145,9 +1122,9 @@ function showCalibrationPopup() {
 function homeZ() {
   console.log('Homing Z latest')
 
-  var move = function (params) {
+  const move = (params) => {
     params = params || {}
-    var s = ''
+    let s = ''
     for (key in params) {
       s += key + params[key]
     }
@@ -1157,15 +1134,15 @@ function homeZ() {
   move({ Z: 85 })
   sendCommand('G91 G0 Z-28')
   //This is a total hack to make set the z to zero after the moves complete and should be done better
-  setTimeout(function () {
+  setTimeout(() => {
     sendCommand('$HZ')
   }, 25000)
-  setTimeout(function () {
+  setTimeout(() => {
     zeroAxis('Z')
   }, 26000)
 }
 
-document.addEventListener('click', function (event) {
+document.addEventListener('click', (event) => {
   if (
     !document.getElementById('calibration-popup').contains(event.target) &&
     !document.getElementById('calibrationBTN').contains(event.target) &&
@@ -1178,7 +1155,7 @@ document.addEventListener('click', function (event) {
 /* Calibration modal */
 
 function openModal(modalId) {
-  let modal = document.getElementById(modalId)
+  const modal = document.getElementById(modalId)
 
   if (modal) {
     modal.style.display = 'flex'
@@ -1186,7 +1163,7 @@ function openModal(modalId) {
 }
 
 function hideModal(modalId) {
-  let modal = document.getElementById(modalId)
+  const modal = document.getElementById(modalId)
 
   if (modal) {
     modal.style.display = 'none'
@@ -1199,15 +1176,15 @@ const onCalibrationButtonsClick = async (command, msg) => {
   sendCommand(command)
 
   //Prints out the index.html version number when test is pressed
-  if (command == '$TEST') {
-    let msgWindow = document.getElementById('messages')
+  if (command === '$TEST') {
+    const msgWindow = document.getElementById('messages')
     let text = msgWindow.textContent
-    text = text + '\n' + "Index.html Version: " + versionNumber
+    text = `${text}\nIndex.html Version: ${versionNumber}`
     msgWindow.textContent = text
     msgWindow.scrollTop = msgWindow.scrollHeight
   }
 
-  if (command != '$MINFO') {
+  if (command !== '$MINFO') {
     setTimeout(() => { sendCommand('$MINFO'); }, 1000)
   }
 }
