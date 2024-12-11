@@ -1,5 +1,5 @@
 var ESP3D_authentication = false
-var log_off = false
+
 var async_webcommunication = false
 var websocket_port = 0
 var websocket_ip = ''

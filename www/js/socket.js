@@ -37,6 +37,7 @@ const handlePing = () => {
 	}
 };
 
+let log_off = false;
 const Disable_interface = (lostconnection) => {
 	let lostcon = false;
 	if (typeof lostconnection !== "undefined") lostcon = lostconnection;
