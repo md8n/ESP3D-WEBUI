@@ -22,7 +22,7 @@ const check_ping = () => {
 let interval_ping = -1;
 /** Turn ping on or off based on its current value */
 const handlePing = () => {
-	if (enable_ping()) {
+	if (enable_ping) {
 		// First clear any existing interval
 		if (interval_ping) {
 			clearInterval(interval_ping);
@@ -174,7 +174,7 @@ const startSocket = () => {
 					page_id = tval[1];
 					console.log(`connection id = ${page_id}`);
 				}
-				if (enable_ping()) {
+				if (enable_ping) {
 					if (tval[0] === "PING") {
 						page_id = tval[1];
 						// console.log("ping from id = " + page_id);

@@ -50,8 +50,8 @@ function process_cmd() {
         processing_cmd = false;
         return;
     }
-    console.log("Processing 1/" + http_cmd_list.length);
-    console.log("Processing " + http_cmd_list[0].cmd);
+    // console.log("Processing 1/" + http_cmd_list.length);
+    // console.log("Processing " + http_cmd_list[0].cmd);
     processing_cmd = true;
     switch (cmdType) {
         case "GET":
