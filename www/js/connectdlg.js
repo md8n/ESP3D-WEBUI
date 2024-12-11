@@ -61,20 +61,17 @@ const getFWdata = (response) => {
 	if (sublist.length !== 2) {
 		return false;
 	}
-	if (sublist[0].trim() === "authentication" && sublist[1].trim() === "yes")
-		ESP3D_authentication = true;
-	else ESP3D_authentication = false;
+	ESP3D_authentication = sublist[0].trim() === "authentication" && sublist[1].trim() === "yes";
 	//async communications
 	if (tlist.length > 6) {
 		sublist = tlist[6].split(":");
-		const common = new Common();
 		if (
 			sublist[0].trim() === "webcommunication" &&
 			sublist[1].trim() === "Async"
 		) {
-			common.async_webcommunication = true;
+			async_webcommunication = true;
 		} else {
-			common.async_webcommunication = false;
+			async_webcommunication = false;
 			websocket_port = sublist[2].trim();
 			if (sublist.length > 3) {
 				websocket_ip = sublist[3].trim();
@@ -92,8 +89,7 @@ const getFWdata = (response) => {
 	if (tlist.length > 8) {
 		sublist = tlist[8].split(":");
 		if (sublist[0].trim() === "axis") {
-			const common = new Common();
-			common.grblaxis = Number.parseInt(sublist[1].trim());
+			grblaxis = Number.parseInt(sublist[1].trim());
 		}
 	}
 

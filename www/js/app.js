@@ -1,8 +1,5 @@
 var ESP3D_authentication = false
-var convertDHT2Fahrenheit = false
-var ws_source
-var event_source
-var log_off = false
+
 var async_webcommunication = false
 var websocket_port = 0
 var websocket_ip = ''
@@ -28,28 +25,12 @@ var EP_DIRECT_SD_CHECK = 853
 var SETTINGS_AP_MODE = 1
 var SETTINGS_STA_MODE = 2
 var SETTINGS_FALLBACK_MODE = 3
-var interval_ping = -1
+
 var last_ping = 0
 var enable_ping = true
 var esp_error_message = ''
 var esp_error_code = 0
 
-function Init_events(e) {
-  page_id = e.data
-  console.log('connection id = ' + page_id)
-}
-
-function ActiveID_events(e) {
-  if (page_id != e.data) {
-    Disable_interface()
-    console.log('I am disabled')
-    event_source.close()
-  }
-}
-
-function DHT_events(e) {
-  Handle_DHT(e.data)
-}
 //Check for IE
 //Edge
 //Chrome
@@ -90,111 +71,6 @@ window.onload = function () {
     id('file-body').className = 'panel-body panel-height panel-max-height panel-scroll'
   }
   tabletInit()
-}
-
-var wsmsg = ''
-
-function startSocket() {
-  try {
-    if (async_webcommunication) {
-      ws_source = new WebSocket('ws://' + document.location.host + '/ws', ['arduino'])
-    } else {
-      console.log('Socket is ' + websocket_ip + ':' + websocket_port)
-      ws_source = new WebSocket('ws://' + websocket_ip + ':' + websocket_port, ['arduino'])
-    }
-  } catch (exception) {
-    console.error(exception)
-  }
-  ws_source.binaryType = 'arraybuffer'
-  ws_source.onopen = function (e) {
-    console.log('Connected')
-  }
-  ws_source.onclose = function (e) {
-    console.log('Disconnected')
-    //seems sometimes it disconnect so wait 3s and reconnect
-    //if it is not a log off
-    if (!log_off) setTimeout(startSocket, 3000)
-  }
-  ws_source.onerror = function (e) {
-    //Monitor_output_Update("[#]Error "+ e.code +" " + e.reason + "\n");
-    console.log('ws error', e)
-  }
-  ws_source.onmessage = function (e) {
-    var msg = ''
-    //bin
-    if (e.data instanceof ArrayBuffer) {
-      var bytes = new Uint8Array(e.data)
-      for (var i = 0; i < bytes.length; i++) {
-        msg += String.fromCharCode(bytes[i])
-        if (bytes[i] == 10) {
-          wsmsg += msg.replace('\r\n', '\n')
-          var thismsg = wsmsg
-          wsmsg = ''
-          msg = ''
-          Monitor_output_Update(thismsg)
-          process_socket_response(thismsg)
-          if (
-            !(
-              thismsg.startsWith('<') ||
-              thismsg.startsWith('ok T:') ||
-              thismsg.startsWith('X:') ||
-              thismsg.startsWith('FR:') ||
-              thismsg.startsWith('echo:E0 Flow')
-            )
-          )
-            console.log(thismsg)
-        }
-      }
-      wsmsg += msg
-    } else {
-      msg += e.data
-      var tval = msg.split(':')
-      if (tval.length >= 2) {
-        if (tval[0] == 'CURRENT_ID') {
-          page_id = tval[1]
-          console.log('connection id = ' + page_id)
-        }
-        if (enable_ping) {
-          if (tval[0] == 'PING') {
-            page_id = tval[1]
-            // console.log("ping from id = " + page_id);
-            last_ping = Date.now()
-            if (interval_ping == -1)
-              interval_ping = setInterval(function () {
-                check_ping()
-              }, 10 * 1000)
-          }
-        }
-        if (tval[0] == 'ACTIVE_ID') {
-          if (page_id != tval[1]) {
-            Disable_interface()
-          }
-        }
-        if (tval[0] == 'DHT') {
-          Handle_DHT(tval[1])
-        }
-        if (tval[0] == 'ERROR') {
-          esp_error_message = tval[2]
-          esp_error_code = tval[1]
-          console.error(`ERROR: ${tval[2]} code:${tval[1]}`);
-          CancelCurrentUpload()
-        }
-        if (tval[0] == 'MSG') {
-          var error_message = tval[2]
-          var error_code = tval[1]
-          console.log('MSG: ' + tval[2] + ' code:' + tval[1])
-        }
-      }
-    }
-    //console.log(msg);
-  }
-}
-
-function check_ping() {
-  if ((Date.now() - last_ping) > 20000){
-    Disable_interface(true);
-    console.log("No heart beat for more than 20s");
-  }
 }
 
 function disable_items(item, state) {
@@ -242,19 +118,6 @@ function ontoggleLock(forcevalue) {
   }
 }
 
-function Handle_DHT(data) {
-  var tdata = data.split(' ')
-  if (tdata.length != 2) {
-    console.log('DHT data invalid: ' + data)
-    return
-  }
-  var temp = convertDHT2Fahrenheit ? parseFloat(tdata[0]) * 1.8 + 32 : parseFloat(tdata[0])
-  id('DHT_humidity').innerHTML = parseFloat(tdata[1]).toFixed(2).toString() + '%'
-  var temps = temp.toFixed(2).toString() + '&deg;'
-  if (convertDHT2Fahrenheit) temps += 'F'
-  else temps += 'C'
-  id('DHT_temperature').innerHTML = temps
-}
 //window.addEventListener("resize", OnresizeWindow);
 
 //function OnresizeWindow(){
@@ -269,30 +132,6 @@ function display_boot_progress(step) {
   //console.log(current_boot_steps);
   //console.log(Math.round((current_boot_steps*100)/total_boot_steps));
   id('load_prg').value = Math.round((current_boot_steps * 100) / total_boot_steps)
-}
-
-function Disable_interface(lostconnection) {
-  let lostcon = false
-  if (typeof lostconnection !== 'undefined') lostcon = lostconnection
-  //block all communication
-  http_communication_locked = true
-  log_off = true
-  if (interval_ping !== -1) clearInterval(interval_ping)
-  //clear all waiting commands
-  clear_cmd_list()
-  //no camera
-  id('camera_frame').src = ''
-  //No auto check
-  on_autocheck_position(false)
-  reportNone()
-  if (async_webcommunication) {
-    event_source.removeEventListener('ActiveID', ActiveID_events, false)
-    event_source.removeEventListener('InitID', Init_events, false)
-    event_source.removeEventListener('DHT', DHT_events, false)
-  }
-  ws_source.close()
-  document.title += `(${HTMLDecode(translate_text_item('Disabled'))})`
-  UIdisableddlg(lostcon)
 }
 
 function update_UI_firmware_target() {
@@ -451,22 +290,4 @@ function initUI_4() {
 
 function show_main_UI() {
   displayUndoNone('main_ui')
-}
-
-function compareStrings(a, b) {
-  // case-insensitive comparison
-  a = a.toLowerCase()
-  b = b.toLowerCase()
-  return a < b ? -1 : a > b ? 1 : 0
-}
-
-function compareInts(a, b) {
-  return a < b ? -1 : a > b ? 1 : 0
-}
-
-var socket_response = ''
-var socket_is_settings = false
-
-function process_socket_response(msg) {
-  msg.split('\n').forEach(grblHandleMessage)
 }
