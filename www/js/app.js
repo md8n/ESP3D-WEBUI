@@ -1,7 +1,4 @@
 var ESP3D_authentication = false
-var convertDHT2Fahrenheit = false
-var ws_source
-var event_source
 var log_off = false
 var async_webcommunication = false
 var websocket_port = 0
@@ -28,7 +25,7 @@ var EP_DIRECT_SD_CHECK = 853
 var SETTINGS_AP_MODE = 1
 var SETTINGS_STA_MODE = 2
 var SETTINGS_FALLBACK_MODE = 3
-var interval_ping = -1
+
 var last_ping = 0
 var enable_ping = true
 var esp_error_message = ''
@@ -75,8 +72,6 @@ window.onload = function () {
   }
   tabletInit()
 }
-
-var wsmsg = ''
 
 function disable_items(item, state) {
   var liste = item.getElementsByTagName('*')

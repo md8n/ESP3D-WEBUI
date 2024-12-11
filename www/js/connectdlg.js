@@ -61,9 +61,7 @@ const getFWdata = (response) => {
 	if (sublist.length !== 2) {
 		return false;
 	}
-	if (sublist[0].trim() === "authentication" && sublist[1].trim() === "yes")
-		ESP3D_authentication = true;
-	else ESP3D_authentication = false;
+	ESP3D_authentication = sublist[0].trim() === "authentication" && sublist[1].trim() === "yes";
 	//async communications
 	if (tlist.length > 6) {
 		sublist = tlist[6].split(":");
