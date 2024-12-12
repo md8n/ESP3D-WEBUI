@@ -40,8 +40,7 @@ const getFWdata = (response) => {
 		return false;
 	}
 	const sddirect = sublist[1].toLowerCase().trim();
-	if (sddirect === "direct sd") direct_sd = true;
-	else direct_sd = false;
+	direct_sd = sddirect === "direct sd";
 	//primary sd
 	sublist = tlist[3].split(":");
 	if (sublist.length !== 2) {
