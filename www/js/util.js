@@ -48,6 +48,16 @@ const displayNone = (name) => setDisplay(name, 'none');
 /** Set the display style of the element identified by name to 'block' */
 const displayBlock = (name) => setDisplay(name, 'block');
 
+const disable_items = (item, state) => {
+  if (!item) {
+    return;
+  }
+  const liste = item.getElementsByTagName('*');
+  for (let i = 0; i < liste.length; i++) {
+    liste[i].disabled = state;
+  }
+}
+
 function displayFlex(name) {
   setDisplay(name, 'flex')
 }

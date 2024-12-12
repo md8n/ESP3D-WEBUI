@@ -80,11 +80,13 @@ const Init_events = (e) => {
 };
 
 const ActiveID_events = (e) => {
-	if (page_id !== e.data) {
-		Disable_interface();
-		console.log("I am disabled");
-		event_source.close();
+	if (page_id === e.data) {
+		return;
 	}
+
+	Disable_interface();
+	console.log("I am disabled");
+	event_source.close();
 };
 
 const DHT_events = (e) => {
@@ -92,23 +94,21 @@ const DHT_events = (e) => {
 };
 
 const Handle_DHT = (data) => {
-	var tdata = data.split(" ");
-	if (tdata.length != 2) {
-		console.log("DHT data invalid: " + data);
+	const tdata = data.split(" ");
+	if (tdata.length !== 2) {
+		console.log(`DHT data invalid: ${data}`);
 		return;
 	}
 
-	var temp = convertDHT2Fahrenheit
-		? parseFloat(tdata[0]) * 1.8 + 32
-		: parseFloat(tdata[0]);
-	setHTML("DHT_humidity", parseFloat(tdata[1]).toFixed(2).toString() + "%");
-	var temps = `${temp.toFixed(2).toString()}&deg;${convertDHT2Fahrenheit ? "F" : "C"}`;
+	const temp = convertDHT2Fahrenheit
+		? Number.parseFloat(tdata[0]) * 1.8 + 32
+		: Number.parseFloat(tdata[0]);
+	setHTML("DHT_humidity", `${Number.parseFloat(tdata[1]).toFixed(2).toString()}%`);
+	const temps = `${temp.toFixed(2).toString()}&deg;${convertDHT2Fahrenheit ? "F" : "C"}`;
 	setHTML("DHT_temperature", temps);
 };
 
-const process_socket_response = (msg) => {
-	msg.split("\n").forEach(grblHandleMessage);
-};
+const process_socket_response = (msg) => msg.split("\n").forEach(grblHandleMessage);
 
 const startSocket = () => {
 	try {
@@ -140,15 +140,15 @@ const startSocket = () => {
 		console.log("ws error", e);
 	};
 	ws_source.onmessage = (e) => {
-		var msg = "";
+		let msg = "";
 		//bin
 		if (e.data instanceof ArrayBuffer) {
-			var bytes = new Uint8Array(e.data);
-			for (var i = 0; i < bytes.length; i++) {
+			const bytes = new Uint8Array(e.data);
+			for (let i = 0; i < bytes.length; i++) {
 				msg += String.fromCharCode(bytes[i]);
-				if (bytes[i] == 10) {
+				if (bytes[i] === 10) {
 					wsmsg += msg.replace("\r\n", "\n");
-					var thismsg = wsmsg;
+					const thismsg = wsmsg;
 					wsmsg = "";
 					msg = "";
 					Monitor_output_Update(thismsg);
