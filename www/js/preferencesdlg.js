@@ -512,12 +512,7 @@ const setupCommandsHandlers = () => {
 };
 
 function getpreferenceslist() {
-	var url = prefFile;
-	//removeIf(production)
-	var response = defaultpreferenceslist;
-	processPreferencesGetSuccess(response);
-	return;
-	//endRemoveIf(production)
+	const url = prefFile;
 	SendGetHttp(url, processPreferencesGetSuccess, processPreferencesGetFailed);
 }
 

@@ -122,12 +122,12 @@ window.onload = () => {
 
 //function OnresizeWindow(){
 //}
-var total_boot_steps = 5;
-var current_boot_steps = 0;
+const total_boot_steps = 5;
+let current_boot_steps = 0;
 
 function display_boot_progress(step) {
-	var val = 1;
-	if (typeof step != "undefined") val = step;
+	let val = 1;
+	if (typeof step !== "undefined") val = step;
 	current_boot_steps += val;
 	//console.log(current_boot_steps);
 	//console.log(Math.round((current_boot_steps*100)/total_boot_steps));
@@ -136,7 +136,7 @@ function display_boot_progress(step) {
 
 function update_UI_firmware_target() {
 	const common = new Common();
-	var fwName;
+	let fwName;
 	initpreferences();
 	setHTML("control_x_position_label", "X");
 	setHTML("control_y_position_label", "Y");
@@ -223,7 +223,7 @@ function update_UI_firmware_target() {
 }
 
 function Set_page_title(page_title) {
-	if (typeof page_title != "undefined") esp_hostname = page_title;
+	if (typeof page_title !== "undefined") esp_hostname = page_title;
 	document.title = esp_hostname;
 }
 
@@ -236,9 +236,9 @@ function initUI() {
 	AddCmd(display_boot_progress);
 	//initial check
 	if (
-		typeof target_firmware == "undefined" ||
-		typeof web_ui_version == "undefined" ||
-		typeof direct_sd == "undefined"
+		typeof target_firmware === "undefined" ||
+		typeof web_ui_version === "undefined" ||
+		typeof direct_sd === "undefined"
 	)
 		alert("Missing init data!");
 	//check FW
@@ -256,9 +256,6 @@ function initUI() {
 		id("grblcontroltablink").click();
 	}
 
-	//removeIf(production)
-	console.log(JSON.stringify(translated_list));
-	//endRemoveIf(production)
 	initUI_2();
 
 	setTimeout(tryAutoReport, 500); //Not sure why this needs a delay but it seems like a hack
@@ -289,7 +286,7 @@ function initUI_4() {
 	init_command_panel();
 	init_files_panel(false);
 	//check if we need setup
-	if (target_firmware == "???") {
+	if (target_firmware === "???") {
 		console.log("Launch Setup");
 		AddCmd(display_boot_progress);
 		closeModal("Connection successful");

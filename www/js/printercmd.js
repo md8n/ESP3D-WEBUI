@@ -11,8 +11,11 @@ let grbl_processfn = null;
 let grbl_errorfn = null;
 
 function noop() { }
+
+const cleanFunc = (fn, cleanFn) => fn instanceof Function ? fn : cleanFn;
+
 const SendPrinterCommand = (cmd, echo_on, processfn, errorfn, id, max_id, extra_arg) => {
-	if (cmd.length === 0) {
+	if (!cmd.length) {
 		return;
 	}
 	const url = "/command?commandText=";
@@ -20,29 +23,21 @@ const SendPrinterCommand = (cmd, echo_on, processfn, errorfn, id, max_id, extra_
 	if (push_cmd) {
 		Monitor_output_Update(`[#]${cmd}\n`);
 	}
-	//removeIf(production)
-	console.log(cmd);
-	if (processfn instanceof Function) {
-		processfn("Test response");
-	} else {
-		SendPrinterCommandSuccess("Test response");
-	}
-	return;
-	//endRemoveIf(production)
-	if (!(processfn instanceof Function)) processfn = SendPrinterCommandSuccess;
-	if (!(errorfn instanceof Function)) errorfn = SendPrinterCommandFailed;
+
+	let procFn = cleanFunc(processfn, SendPrinterCommandSuccess);
+	let errFn = cleanFunc(errorfn, SendPrinterCommandFailed);
+
 	if (!cmd.startsWith("[ESP")) {
-		grbl_processfn = processfn;
-		grbl_errorfn = errorfn;
-		processfn = noop;
-		errorfn = noop;
+		grbl_processfn = procFn;
+		grbl_errorfn = errFn;
+		procFn = noop;
+		errFn = noop;
 	}
-	cmd = encodeURI(cmd);
-	cmd = cmd.replace("#", "%23");
+	let encCmd = encodeURI(cmd).replace("#", "%23");
 	if (extra_arg) {
-		cmd += "&" + extra_arg;
+		encCmd += `&${extra_arg}`;
 	}
-	SendGetHttp(url + cmd, processfn, errorfn, id, max_id);
+	SendGetHttp(url + encCmd, procFn, errFn, id, max_id);
 	//console.log(cmd);
 };
 
@@ -51,18 +46,12 @@ function SendPrinterSilentCommand(cmd, processfn, errorfn, id, max_id) {
 	if (cmd.length === 0) {
 		return;
 	}
-	//removeIf(production)
-	console.log(cmd);
-	if (processfn instanceof Function) processfn("Test response");
-	else SendPrinterCommandSuccess("Test response");
-	return;
-	//endRemoveIf(production)
-	if (!(processfn instanceof Function))
-		processfn = SendPrinterSilentCommandSuccess;
-	if (!(errorfn instanceof Function)) errorfn = SendPrinterCommandFailed;
-	cmd = encodeURI(cmd);
-	cmd = cmd.replace("#", "%23");
-	SendGetHttp(url + cmd, processfn, errorfn, id, max_id);
+
+	const procFn = cleanFunc(processfn, SendPrinterSilentCommandSuccess);
+	const errFn = cleanFunc(errorfn, SendPrinterCommandFailed);
+	const encCmd = encodeURI(cmd).replace("#", "%23");
+	
+	SendGetHttp(url + encCmd, procFn, errFn, id, max_id);
 	//console.log(cmd);
 }
 

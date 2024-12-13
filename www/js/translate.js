@@ -1,9 +1,5 @@
 import { translate_text_item, HTMLDecode } from "./common.js";
 
-//removeIf(production)
-const translated_list = [];
-//endRemoveIf(production)
-
 /** Set up text translation to the selected language */
 const translate_text = (lang) => {
 	let translated_content = "";
@@ -16,12 +12,6 @@ const translate_text = (lang) => {
 				content = All[i].innerHTML;
 				content.trim();
 				All[i].setAttribute("english_content", content);
-				//removeIf(production)
-				const item = {
-					content: content,
-				};
-				translated_list.push(item);
-				//endRemoveIf(production)
 			}
 			content = All[i].getAttribute("english_content");
 			translated_content = translate_text_item(content);
@@ -34,12 +24,6 @@ const translate_text = (lang) => {
 			if (!All[i].hasAttribute("english_content")) {
 				content = All[i].getAttribute("placeholder");
 				content.trim();
-				//removeIf(production)
-				const item = {
-					content: content,
-				};
-				translated_list.push(item);
-				//endRemoveIf(production)
 				All[i].setAttribute("english_content", content);
 			}
 			content = All[i].getAttribute("english_content");
