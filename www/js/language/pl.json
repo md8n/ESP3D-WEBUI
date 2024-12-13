@@ -1,6 +1,4 @@
-//removeIf(pl_lang_disabled)
-//Polish
-export const polishtrans = {
+{
 "pl":"Polski",
 "ESP3D for":"ESP3D dla",
 "Value of auto-check must be between 0s and 99s !!":"Warto&sacute;&cacute; automatycznego spawdzania musi by&cacute; z zakresu 0-99s !",
@@ -287,7 +285,6 @@ export const polishtrans = {
 "Web Update":"Aktualizacja przez Web",
 "Pin Recovery":"Odzyskiwanie pinu",
 "Disabled":"Wy&lstrok;&aogon;czone",
-"Authentication":"Autoryzacja",
 "Target Firmware":"Typ oprogramowania drukarki",
 "SD Card Support":"Wsparcie dla karty SD",
 "Time Support":"Czas",
@@ -373,6 +370,5 @@ export const polishtrans = {
 "error:63":"Nie znaleziono folderu na karcie SD",
 "error:64":"Plik na karcie SD jest pusty",
 "error:70":"B&lstrok;&aogon;d uruchamiania Bluetooth",
-"error:700":"B&lstrok;&aogon;d: Nieznana komenda",
-};
-//endRemoveIf(pl_lang_disabled)
+"error:700":"B&lstrok;&aogon;d: Nieznana komenda"
+}

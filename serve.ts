@@ -33,6 +33,7 @@ const server = Bun.serve({
     if (checkFileBase.endsWith(".html")) return sendFile(checkFileBase, "text/html");
     if (checkFileBase.endsWith(".svg")) return sendFile(checkFileBase, "text/svg+xml");
     if (checkFileBase.endsWith(".js")) return sendFile(checkFileBase, "text/javascript");
+    if (checkFileBase.endsWith(".json")) return sendFile(checkFileBase, "application/json");
     if (checkFileBase.endsWith(".css")) return sendFile(checkFileBase, "text/css");
     if (checkFileBase.includes("/js/")) {
       let checkFileName = `${checkFileBase}.js`;

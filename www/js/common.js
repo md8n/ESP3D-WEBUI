@@ -82,45 +82,19 @@ import { get_icon_svg } from "./icons.js";
 import { inputdlg } from "./inputdlg.js";
 import {
 	language_list,
-	//removeIf(de_lang_disabled)
 	germantrans,
-	//endRemoveIf(de_lang_disabled)
-	//removeIf(en_lang_disabled)
 	englishtrans,
-	//endRemoveIf(en_lang_disabled)
-	//removeIf(es_lang_disabled)
 	spanishtrans,
-	//endRemoveIf(es_lang_disabled)
-	//removeIf(fr_lang_disabled)
 	frenchtrans,
-	//endRemoveIf(fr_lang_disabled)
-	//removeIf(it_lang_disabled)
 	italiantrans,
-	//endRemoveIf(it_lang_disabled)
-	//removeIf(ja_lang_disabled)
 	japanesetrans,
-	//endRemoveIf(ja_lang_disabled)
-	//removeIf(hu_lang_disabled)
 	hungariantrans,
-	//endRemoveIf(hu_lang_disabled)
-	//removeIf(pl_lang_disabled)
 	polishtrans,
-	//endRemoveIf(pl_lang_disabled)
-	//removeIf(ptbr_lang_disabled)
 	ptbrtrans,
-	//endRemoveIf(ptbr_lang_disabled)
-	//removeIf(ru_lang_disabled)
 	russiantrans,
-	//endRemoveIf(ru_lang_disabled)
-	//removeIf(tr_lang_disabled)
 	turkishtrans,
-	//endRemoveIf(tr_lang_disabled)
-	//removeIf(uk_lang_disabled)
 	ukrtrans,
-	//endRemoveIf(uk_lang_disabled)
-	//removeIf(zh_cn_lang_disabled)
 	zh_CN_trans,
-	//endRemoveIf(zh_cn_lang_disabled)
 } from "./languages.js";
 import { build_language_list, translate_text_item } from "./langUtils.js";
 import { DisconnectLogin, logindlg } from "./logindlg.js";
@@ -183,6 +157,7 @@ import {
 	CancelCurrentUpload,
 	handlePing,
 	EventListenerSetup,
+	pageID,
 	process_socket_response,
 	startSocket,
 } from "./socket.js";
@@ -333,45 +308,19 @@ export {
 	inputdlg,
 	// from languages.js
 	language_list,
-	//removeIf(de_lang_disabled)
 	germantrans,
-	//endRemoveIf(de_lang_disabled)
-	//removeIf(en_lang_disabled)
 	englishtrans,
-	//endRemoveIf(en_lang_disabled)
-	//removeIf(es_lang_disabled)
 	spanishtrans,
-	//endRemoveIf(es_lang_disabled)
-	//removeIf(fr_lang_disabled)
 	frenchtrans,
-	//endRemoveIf(fr_lang_disabled)
-	//removeIf(it_lang_disabled)
 	italiantrans,
-	//endRemoveIf(it_lang_disabled)
-	//removeIf(ja_lang_disabled)
 	japanesetrans,
-	//endRemoveIf(ja_lang_disabled)
-	//removeIf(hu_lang_disabled)
 	hungariantrans,
-	//endRemoveIf(hu_lang_disabled)
-	//removeIf(pl_lang_disabled)
 	polishtrans,
-	//endRemoveIf(pl_lang_disabled)
-	//removeIf(ptbr_lang_disabled)
 	ptbrtrans,
-	//endRemoveIf(ptbr_lang_disabled)
-	//removeIf(ru_lang_disabled)
 	russiantrans,
-	//endRemoveIf(ru_lang_disabled)
-	//removeIf(tr_lang_disabled)
 	turkishtrans,
-	//endRemoveIf(tr_lang_disabled)
-	//removeIf(uk_lang_disabled)
 	ukrtrans,
-	//endRemoveIf(uk_lang_disabled)
-	//removeIf(zh_cn_lang_disabled)
 	zh_CN_trans,
-	//endRemoveIf(zh_cn_lang_disabled)
 	// from langUtils.js
 	build_language_list,
 	translate_text_item,
@@ -445,6 +394,7 @@ export {
 	CancelCurrentUpload,
 	handlePing,
 	EventListenerSetup,
+	pageID,
 	process_socket_response,
 	startSocket,
 	// from SPIFFSdlg.js

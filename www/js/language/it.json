@@ -1,6 +1,4 @@
-//removeIf(it_lang_disabled)
-//italian
-export const italiantrans = {
+{
 "it":"Italiano",
 "ESP3D for":"ESP3D per",
 "Value of auto-check must be between 0s and 99s !!":"Il valore di controllo deve essere tra 0 e 99 secondi!!",
@@ -286,7 +284,6 @@ export const italiantrans = {
 "Web Update":"Aggiorna via Web",
 "Pin Recovery":"Pin Ripristino",
 "Disabled":"Disattivato",
-"Authentication":"Autenticazione",
 "Target Firmware":"Target Firmware",
 "SD Card Support":"Supporto scheda SD",
 "Time Support":"Server di tempo",
@@ -371,6 +368,5 @@ export const italiantrans = {
 "error:62":"SD card failed to open directory",
 "error:63":"SD Card directory not found",
 "error:64":"SD Card file empty",
-"error:70":"Bluetooth failed to start",
-};
-//endRemoveIf(it_lang_disabled)
+"error:70":"Bluetooth failed to start"
+}

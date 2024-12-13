@@ -1,6 +1,4 @@
-//removeIf(uk_lang_disabled)
-//Ukrainian
-export const ukrtrans = {
+{
 "uk": "Українська",
 "ESP3D for": "ESP3D для",
 "Value of auto-check must be between 0s and 99s !!": "Значення автоматичної перевірки має бути від 0 до 99 секунд !!",
@@ -371,5 +369,4 @@ export const ukrtrans = {
 "error:63": "Каталог не знайдено на SD-карті",
 "error:64": "Файл відсутній на SD-карті",
 "error:70": "Запуск Bluetooth неможливий"
-};
-//endRemoveIf(uk_lang_disabled)
+}
