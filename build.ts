@@ -4,6 +4,23 @@ const cleanDist = () => {
 	console.log("No file delete function in bun yet. So no `cleanDist`");
 };
 
+const cleanLanguageImports = async (fileContents: string, inclLang: string[] = ["en"]) => {
+	const regexRemoveIf = /\/\/\s*removeIf\s*\(\s*(?<removeDec>\S+)\s*\)/gmi;
+
+	const removeIfResults = [...fileContents.matchAll(regexRemoveIf)];
+	if (!removeIfResults.length) {
+		return fileContents;
+	}
+
+	// Remove the (not) required stuff from the fileContents
+	let fcRemoved = fileContents;
+	for (let ix = 0; ix < removeIfResults.length; ix++) {
+		const rir = removeIfResults[ix];
+		console.log(`Found for removal '${rir[1]}'`);
+	}
+	return fcRemoved;
+}
+
 const loadAndReplaceHTML = async (filePath: string, fileContents: string) => {
 	const fcLower = fileContents.toLowerCase();
 	const hasLoadHTML = fcLower.includes("loadhtml");
@@ -38,15 +55,20 @@ const loadAndReplaceHTML = async (filePath: string, fileContents: string) => {
 			const lhr = loadHTMLResults[ix];
 			const childFilePath = lhr[1].replace("./sub/", "./www/sub/");
 			const hFile = Bun.file(childFilePath);
-			const hText = await hFile.text();
+			let hText = await hFile.text();
 			if (hText.includes(".svg")) {
 				const regexSVG = /\<img\s+src\s*=\s*['"](?<svgpath>.*\.svg)['"].*><\/img>/gmi;
 				const findSVGResults = [...hText.matchAll(regexSVG)];
 				if (findSVGResults.length) {
-					console.log(`found that svg in ${childFilePath}`);
+					console.log(`found SVGs in ${childFilePath}`);
 					for (let jx = 0; jx < findSVGResults.length; jx++) {
 						const svr = findSVGResults[jx];
-						console.log(`it is ${svr[1]}`);
+						const svgPath = svr[1].replace("../images/", "./www/images/");
+						const svgFile = Bun.file(svgPath);
+						const svgExists = await svgFile.exists();
+						if (svgExists) {
+							hText = hText.replace(svr[0], await svgFile.text());
+						}
 					}
 				}
 			}
@@ -71,7 +93,7 @@ const build = async () => {
 		format: "esm",
 		splitting: false,
 		naming: "[dir]/[name].[ext]",
-		minify: false,
+		minify: true,
 		plugins: [
 			html({
 				inline: true,
@@ -80,16 +102,25 @@ const build = async () => {
 					const files = processor.getFiles();
 
 					for (const file of files) {
-						// if (file.path.endsWith("app.js")) {
-						// 	// Remove the loadHTML.js import
-						// 	const fa = await file.content;
-						// 	processor.writeFile(file.path, fa.replace('import { loadedHTML } from "./loadHTML.js";', 'let loadedHTML:any;'));
-						// }
 						if (file.extension === ".html") {
-							const fc = await file.content;
-
-							processor.writeFile(file.path, await loadAndReplaceHTML(file.path, fc));
+							// We process html files last
+							continue;
 						}
+						console.log(`Processing '${file.path}'`);
+						if (file.path.endsWith("common.js")) {
+							const fcRemoved = await cleanLanguageImports(await file.content);
+							// processor.writeFile(file.path, fcRemoved);
+						}
+					}
+
+					for (const file of files) {
+						if (file.extension !== ".html") {
+							// Now we're only processing html files
+							continue;
+						}
+						console.log(`Processing '${file.path}'`);
+						const fc = await file.content;
+						processor.writeFile(file.path, await loadAndReplaceHTML(file.path, fc));
 					}
 				},
 			}),
