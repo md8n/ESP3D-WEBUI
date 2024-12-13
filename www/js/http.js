@@ -1,11 +1,10 @@
-import { Common, setHTML, translate_text_item, logindlg } from "./common.js";
+import { Common, setHTML, translate_text_item, logindlg, pageID } from "./common.js";
 
-var http_cmd_list = [];
-var processing_cmd = false;
-var xmlhttpupload;
-var page_id = "";
+let http_cmd_list = [];
+let processing_cmd = false;
+let xmlhttpupload;
 
-var max_cmd = 20;
+const max_cmd = 20;
 
 const clear_cmd_list = () => {
 	http_cmd_list = [];
@@ -15,9 +14,9 @@ const clear_cmd_list = () => {
 function http_resultfn(response_text) {
 	if (
 		http_cmd_list.length > 0 &&
-		typeof http_cmd_list[0].resultfn != "undefined"
+		typeof http_cmd_list[0].resultfn !== "undefined"
 	) {
-		var fn = http_cmd_list[0].resultfn;
+		const fn = http_cmd_list[0].resultfn;
 		fn(response_text);
 	} //else console.log ("No resultfn");
 	http_cmd_list.shift();
@@ -26,13 +25,13 @@ function http_resultfn(response_text) {
 }
 
 function http_errorfn(error_code, response_text) {
-	var fn = http_cmd_list[0].errorfn;
+	const fn = http_cmd_list[0].errorfn;
 	if (
 		http_cmd_list.length > 0 &&
-		typeof http_cmd_list[0].errorfn != "undefined" &&
+		typeof http_cmd_list[0].errorfn !== "undefined" &&
 		http_cmd_list[0].errorfn != null
 	) {
-		if (error_code == 401) {
+		if (error_code === 401) {
 			logindlg();
 			console.log("Authentication issue pls log");
 		}
@@ -73,13 +72,14 @@ function process_cmd() {
                 ProcessFileHttp(http_cmd_list[0].cmd, http_cmd_list[0].data, http_cmd_list[0].progressfn, http_resultfn, http_errorfn);
             }
             break;
-        case "CMD":
-            var fn = http_cmd_list[0].cmd;
+        case "CMD": {
+            const fn = http_cmd_list[0].cmd;
             fn();
             http_cmd_list.shift();
             processing_cmd = false;
             process_cmd();
             break;
+        }
     }
 }
 
@@ -88,10 +88,10 @@ function AddCmd(cmd_fn, id) {
 		http_errorfn(999, translate_text_item("Server not responding"));
 		return;
 	}
-	var cmd_id = 0;
-	if (typeof id != "undefined") cmd_id = id;
+	let cmd_id = 0;
+	if (typeof id !== "undefined") cmd_id = id;
 	//console.log("adding command");
-	var cmd = {
+	const cmd = {
 		cmd: cmd_fn,
 		type: "CMD",
 		id: cmd_id,
@@ -102,13 +102,13 @@ function AddCmd(cmd_fn, id) {
 }
 
 function GetIdentificationStatus() {
-	var url = "/login";
+	const url = "/login";
 	SendGetHttp(url, GetIdentificationStatusSuccess);
 }
 
 /** This expects the logindlg to be visible */
 function GetIdentificationStatusSuccess(response_text) {
-	var response = JSON.parse(response_text);
+	const response = JSON.parse(response_text);
 	if (typeof response.authentication_lvl !== "undefined") {
 		if (response.authentication_lvl == "guest") {
 			setHTML("current_ID", translate_text_item("guest"));
@@ -118,33 +118,33 @@ function GetIdentificationStatusSuccess(response_text) {
 }
 
 const SendGetHttp = (url, result_fn, error_fn, id, max_id) => {
-	if (http_cmd_list.length > max_cmd && max_cmd != -1) {
+	if (http_cmd_list.length > max_cmd && max_cmd !== -1) {
 		error_fn(999, translate_text_item("Server not responding"));
 		return;
 	}
-	var cmd_id = 0;
-	var cmd_max_id = 1;
+	let cmd_id = 0;
+	let cmd_max_id = 1;
 	//console.log("ID = " + id);
 	//console.log("Max ID = " + max_id);
 	//console.log("+++ " + url);
-	if (typeof id != "undefined") {
+	if (typeof id !== "undefined") {
 		cmd_id = id;
-		if (typeof max_id != "undefined") cmd_max_id = max_id;
+		if (typeof max_id !== "undefined") cmd_max_id = max_id;
 		//else console.log("No Max ID defined");
-		for (p = 0; p < http_cmd_list.length; p++) {
+		for (let p = 0; p < http_cmd_list.length; p++) {
 			//console.log("compare " + (max_id - cmd_max_id));
-			if (http_cmd_list[p].id == cmd_id) {
+			if (http_cmd_list[p].id === cmd_id) {
 				cmd_max_id--;
 				//console.log("found " + http_cmd_list[p].id + " and " + cmd_id);
 			}
 			if (cmd_max_id <= 0) {
-				console.log("Limit reached for " + id);
+				console.log(`Limit reached for ${id}`);
 				return;
 			}
 		}
 	} //else console.log("No ID defined");
 	//console.log("adding " + url);
-	var cmd = {
+	const cmd = {
 		cmd: url,
 		type: "GET",
 		isupload: false,
@@ -181,7 +181,7 @@ function ProcessGetHttp(url, resultfn, errorfn) {
 
 	if (url.startsWith("/command")) {
 		url += url.indexOf("?") === -1 ? "?" : "&";
-		url += "PAGEID=" + page_id;
+		url += `PAGEID=${pageID()}`;
 	}
 	//console.log("GET:" + url);
 	xmlhttp.open("GET", url, true);
@@ -189,23 +189,23 @@ function ProcessGetHttp(url, resultfn, errorfn) {
 }
 
 function SendPostHttp(url, postdata, result_fn, error_fn, id, max_id) {
-	if (http_cmd_list.length > max_cmd && max_cmd != -1) {
+	if (http_cmd_list.length > max_cmd && max_cmd !== -1) {
 		error_fn(999, translate_text_item("Server not responding"));
 		return;
 	}
-	var cmd_id = 0;
-	var cmd_max_id = 1;
-	if (typeof id != "undefined") {
+	let cmd_id = 0;
+	let cmd_max_id = 1;
+	if (typeof id !== "undefined") {
 		cmd_id = id;
-		if (typeof max_id != "undefined") cmd_max_id = max_id;
+		if (typeof max_id !== "undefined") cmd_max_id = max_id;
 		for (p = 0; p < http_cmd_list.length; p++) {
-			if (http_cmd_list[p].id == cmd_id) cmd_max_id--;
+			if (http_cmd_list[p].id === cmd_id) cmd_max_id--;
 			if (cmd_max_id <= 0) return;
 		}
 	}
 
 	//console.log("adding " + url);
-	var cmd = {
+	const cmd = {
 		cmd: url,
 		type: "POST",
 		isupload: false,
@@ -238,8 +238,8 @@ function ProcessPostHttp(url, postdata, resultfn, errorfn) {
 			}
 		}
 	};
-	url += url.indexOf("?") == -1 ? "?" : "&";
-	url += "PAGEID=" + page_id;
+	url += url.indexOf("?") === -1 ? "?" : "&";
+	url += `PAGEID=${pageID()}`;
 	//console.log(url);
 	xmlhttp.open("POST", url, true);
 	xmlhttp.send(postdata);
