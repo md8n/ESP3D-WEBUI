@@ -83,7 +83,7 @@ const EventListenerSetup = () => {
 	if (!common.async_webcommunication) {
 		return;
 	}
-	if (!!window.EventSource) {
+	if (window.EventSource) {
 		event_source = new EventSource("/events");
 		event_source.addEventListener("InitID", Init_events, false);
 		event_source.addEventListener("ActiveID", ActiveID_events, false);
@@ -100,6 +100,7 @@ const pageID = (value) => {
 	return page_id;
 }
 
+/** Initialiase the page_id from the event data */
 const Init_events = (e) => console.log(`connection id = ${pageID(e.data)}`);
 
 const ActiveID_events = (e) => {

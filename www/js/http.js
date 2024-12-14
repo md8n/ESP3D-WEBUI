@@ -110,7 +110,7 @@ function GetIdentificationStatus() {
 function GetIdentificationStatusSuccess(response_text) {
 	const response = JSON.parse(response_text);
 	if (typeof response.authentication_lvl !== "undefined") {
-		if (response.authentication_lvl == "guest") {
+		if (response.authentication_lvl === "guest") {
 			setHTML("current_ID", translate_text_item("guest"));
 			setHTML("current_auth_level", "");
 		}

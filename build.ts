@@ -101,6 +101,8 @@ const build = async () => {
 				async preprocessor(processor) {
 					const files = processor.getFiles();
 
+					console.log(`Process env ${process.env}`);
+
 					for (const file of files) {
 						if (file.extension === ".html") {
 							// We process html files last
