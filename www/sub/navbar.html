@@ -1,17 +1,17 @@
-<nav class="navbar navbar-default navbar-static-top" id="navbar" role="navigation"
+<nav id="navbar" class="navbar navbar-default navbar-static-top" role="navigation"
     style="margin-bottom: 0; padding-right:2em;">
     <div class="navbar-header">
         <span class="navbar-brand">
-            <!-- <div> -->
+            <!--           <div> -->
             <span translate>ESP3D for</span>
             <span id='fwName'>&nbsp;</span>
-            <span class='hidden' display='none' id='showSDused'>&nbsp;</span>
-            <!-- </div> -->
+            <span id='showSDused' class='hidden' display='none'>&nbsp;</span>
+            <!--</div> -->
         </span>
     </div>
 
     <div class="tab" id="mainuitablinks">
-        <button class="tablinks" id="maintablink">
+        <button id="maintablink" class="tablinks">
             <svg width='1.3em' height='1.2em' viewBox='0 0 1300 1200'>
                 <g transform='translate(50,1200) scale(1, -1)'>
                     <path fill='currentColor'
@@ -21,7 +21,7 @@
             </svg>
             <span></span>
         </button>
-        <button class="tablinks hide_it" id="camtablink">
+        <button id="camtablink" class="tablinks hide_it">
             <svg width='1.3em' height='1.2em' viewBox='0 0 1300 1200'>
                 <g transform='translate(50,1200) scale(1, -1)'>
                     <path fill='currentColor'
@@ -31,7 +31,7 @@
             </svg>
             <span translate>Camera</span>
         </button>
-        <button class="tablinks hide_it" id="configtablink">
+        <button id="configtablink" class="tablinks hide_it">
             <svg width='1.3em' height='1.2em' viewBox='0 0 1300 1200'>
                 <g transform='translate(50,1200) scale(1, -1)'>
                     <path fill='currentColor'
@@ -41,7 +41,7 @@
             </svg>
             <span id='tab_printer_configuration'><span translate>Printer</span><span>
         </button>
-        <button class="tablinks" id="settingtablink">
+        <button id="settingtablink" class="tablinks">
             <svg width='1.3em' height='1.2em' viewBox='0 0 1300 1200'>
                 <g transform='translate(50,1200) scale(1, -1)'>
                     <path fill='currentColor'
@@ -51,7 +51,7 @@
             </svg>
             <span translate>FluidNC</span>
         </button>
-        <button class="tablinks" id="tablettablink">
+        <button id="tablettablink" class="tablinks">
             <svg width="2em" height="1.5em" viewBox="40 40 150 150">
                 <g id="Badge">
                     <path fill="currentColor" stroke="white" stroke-miterlimit="10" d="M125.458,44.447c-40.212,0-72.81,32.598-72.81,72.811
@@ -122,7 +122,7 @@
                  </a>
                  <div class="menu-divider"></div>
 -->
-                <a href="#" id="showPreferencesDlg">
+                <a id="showPreferencesDlg" href="#">
                     <span class="pull-right" translate>Preferences</span>
                     <span class="pull-left">
                         <svg width='1.3em' height='1.2em' viewBox='0 0 1300 1200'>
@@ -135,7 +135,7 @@
                     </span>
                     <span class="clearfix"></span>
                 </a>
-                <a href="#" id="showSetupDlg">
+                <a id="showSetupDlg" href="#">
                     <span class="pull-right" translate>Setup</span>
                     <span class="pull-left">
                         <svg width='1.3em' height='1.2em' viewBox='0 0 1300 1200'>
@@ -236,7 +236,7 @@
     </ul>
     <ul class="nav navbar-nav navbar-right" id='lock_ui_btn'>
         <li class="dropdown">
-            <a href="#" id="toggleLockUI">
+            <a id="toggleLockUI" href="#">
                 <i class="dropbtn">
                     <label>
                         <input type="checkbox" id="lock_UI" />

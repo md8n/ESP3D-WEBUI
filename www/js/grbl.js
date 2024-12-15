@@ -301,7 +301,7 @@ const reportNone = () => {
 };
 
 const reportPolled = () => {
-	if (reportType == "auto") {
+	if (reportType === "auto") {
 		disableAutoReport();
 	}
 	enablePolling();

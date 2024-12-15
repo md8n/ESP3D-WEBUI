@@ -130,9 +130,7 @@ const Handle_DHT = (data) => {
 	setHTML("DHT_temperature", temps);
 };
 
-const process_socket_response = (msg) => {
-	msg.split("\n").forEach(grblHandleMessage);
-};
+const process_socket_response = (msg) => msg.split("\n").forEach(grblHandleMessage);
 
 const startSocket = () => {
 	const common = new Common();

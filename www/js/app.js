@@ -23,7 +23,6 @@ import {
 	tabletInit,
 } from "./common.js";
 
-var log_off = false;
 var websocket_port = 0;
 var websocket_ip = "";
 var esp_hostname = "ESP3D WebUI";
@@ -97,10 +96,8 @@ window.onload = () => {
 			connectLoaded = true;
 		}
 
-		if (
-			!controlsLoaded &&
-			common.loadedHTML.includes("./sub/controlspanel.html")
-		) {
+		if (!controlsLoaded &&
+			common.loadedHTML.includes("./sub/controlspanel.html")) {
 			ControlsPanel();
 			controlsLoaded = true;
 		}
@@ -127,7 +124,9 @@ let current_boot_steps = 0;
 
 function display_boot_progress(step) {
 	let val = 1;
-	if (typeof step !== "undefined") val = step;
+	if (typeof step !== "undefined") {
+		val = step;
+	}
 	current_boot_steps += val;
 	//console.log(current_boot_steps);
 	//console.log(Math.round((current_boot_steps*100)/total_boot_steps));
@@ -306,3 +305,6 @@ function initUI_4() {
 function show_main_UI() {
 	displayUndoNone("main_ui");
 }
+
+// var socket_response = ''
+// var socket_is_settings = false
