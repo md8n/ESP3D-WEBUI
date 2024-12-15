@@ -20,7 +20,7 @@ const navbar = () => {
 	id("logout_menu").addEventListener("click", (event) => confirmdlg(translate_text_item("Disconnection requested"), translate_text_item("Please confirm disconnection."), DisconnectLogin,),);
 
 	cameratab();
-	// configtab();
+	configtab();
 	// settingstab();
 };
 
