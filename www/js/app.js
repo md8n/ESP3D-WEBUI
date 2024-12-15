@@ -158,7 +158,7 @@ function update_UI_firmware_target() {
 	displayFlex('grblPanel');
 	grblpanel();
 	// id('FW_github').href = 'https://github.com/bdring/FluidNC';
-	displayBlock('settings_filters');
+	displayBlock('settings_filters'); // TODO: Or should this be 'preferences_filters'?
 	id('control_x_position_label').innerHTML = 'Xw';
 	id('control_y_position_label').innerHTML = 'Yw';
 

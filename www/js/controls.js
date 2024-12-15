@@ -166,9 +166,9 @@ function SendZerocommand(cmd) {
 }
 
 function JogFeedrate(axis) {
-    var controlName = axis.startsWith("Z") ? "control_z_velocity" : "control_xy_velocity";
-    var feedrateValue = parseInt(id(controlName).value);
-    if (feedrateValue < 1 || isNaN(feedrateValue) || (feedrateValue === null)) {
+    const controlName = axis.startsWith("Z") ? "control_z_velocity" : "control_xy_velocity";
+    const feedrateValue = Number.parseInt(id(controlName).value);
+    if (feedrateValue < 1 || Number.isNaN(feedrateValue) || (feedrateValue === null)) {
         alertdlg(translate_text_item("Out of range"), translate_text_item("Feedrate value must be at least 1 mm/min!"));
         return 1;
     }

@@ -55,10 +55,10 @@ function build_axis_selection() {
 }
 
 function control_changeaxis() {
-  var letter = getValue('control_select_axis')
-  setHTML('axisup', '+' + letter)
-  setHTML('axisdown', '-' + letter)
-  setHTML('homeZlabel', ' ' + letter + ' ')
+  const letter = getValue('control_select_axis')
+  setHTML('axisup', `+${letter}`)
+  setHTML('axisdown', `-${letter}`)
+  setHTML('homeZlabel', ` ${letter} `)
   switch (last_axis_letter) {
     case 'Z':
       axis_feedrate[2] = getValue('control_z_velocity')
@@ -103,14 +103,14 @@ function grbl_clear_status() {
 }
 
 function grbl_set_probe_detected(state) {
-  var color = state ? 'green' : 'grey'
-  var glyph = state ? 'ok-circle' : 'record'
+  const color = state ? 'green' : 'grey'
+  const glyph = state ? 'ok-circle' : 'record'
   setHTML('touch_status_icon', get_icon_svg(glyph, '1.3em', '1.3em', color))
 }
 
 function onprobemaxtravelChange() {
-  var travel = parseFloat(getValue('probemaxtravel'))
-  if (travel > 9999 || travel <= 0 || isNaN(travel) || travel === null) {
+  const travel = Number.parseFloat(getValue('grblpanel_probemaxtravel'))
+  if (travel > 9999 || travel <= 0 || Number.isNaN(travel) || travel === null) {
     alertdlg(
       translate_text_item('Out of range'),
       translate_text_item('Value of maximum probe travel must be between 1 mm and 9999 mm !')
@@ -121,8 +121,8 @@ function onprobemaxtravelChange() {
 }
 
 function onprobefeedrateChange() {
-  var feedratevalue = parseInt(getValue('probefeedrate'))
-  if (feedratevalue <= 0 || feedratevalue > 9999 || isNaN(feedratevalue) || feedratevalue === null) {
+  const feedratevalue = Number.parseInt(getValue('grblpanel_probefeedrate'))
+  if (feedratevalue <= 0 || feedratevalue > 9999 || Number.isNaN(feedratevalue) || feedratevalue === null) {
     alertdlg(
       translate_text_item('Out of range'),
       translate_text_item('Value of probe feedrate must be between 1 mm/min and 9999 mm/min !')
@@ -133,8 +133,8 @@ function onprobefeedrateChange() {
 }
 
 function onproberetractChange() {
-  var thickness = parseFloat(getValue('proberetract'))
-  if (thickness < 0 || thickness > 999 || isNaN(thickness) || thickness === null) {
+  const thickness = Number.parseFloat(getValue('grblpanel_proberetract'))
+  if (thickness < 0 || thickness > 999 || Number.isNaN(thickness) || thickness === null) {
     alertdlg(
       translate_text_item('Out of range'),
       translate_text_item('Value of probe retract must be between 0 mm and 9999 mm !')
@@ -145,8 +145,8 @@ function onproberetractChange() {
 }
 
 function onprobetouchplatethicknessChange() {
-  var thickness = parseFloat(getValue('probetouchplatethickness'))
-  if (thickness < 0 || thickness > 999 || isNaN(thickness) || thickness === null) {
+  const thickness = Number.parseFloat(getValue('grblpanel_probetouchplatethickness'))
+  if (thickness < 0 || thickness > 999 || Number.isNaN(thickness) || thickness === null) {
     alertdlg(
       translate_text_item('Out of range'),
       translate_text_item('Value of probe touch plate thickness must be between 0 mm and 9999 mm !')
@@ -160,8 +160,8 @@ var reportType = 'none'
 
 function disablePolling() {
   setAutocheck(false)
-  // setValue('statusInterval_check', 0);
-  if (interval_status != -1) {
+  // setValue('grblpanel_interval_status', 0);
+  if (interval_status !== -1) {
     clearInterval(interval_status)
     interval_status = -1
   }
@@ -171,56 +171,51 @@ function disablePolling() {
 }
 
 function enablePolling() {
-  var interval = parseFloat(getValue('statusInterval_check'))
-  if (!isNaN(interval) && interval == 0) {
-    if (interval_status != -1) {
+  const interval = Number.parseFloat(getValue('grblpanel_interval_status'))
+  if (!Number.isNaN(interval) && interval === 0) {
+    if (interval_status !== -1) {
       clearInterval(interval_status)
     }
     disablePolling()
     reportNone()
     return
   }
-  if (!isNaN(interval) && interval > 0 && interval < 100) {
-    if (interval_status != -1) {
+  if (!Number.isNaN(interval) && interval > 0 && interval < 100) {
+    if (interval_status !== -1) {
       clearInterval(interval_status)
     }
-    interval_status = setInterval(function () {
-      get_status()
-    }, interval * 1000)
+    interval_status = setInterval(() => { get_status() }, interval * 1000)
     reportType = 'polled'
     setChecked('report_poll', true)
     return
   }
-  setValue('statusInterval_check', 0)
-  alertdlg(
-    translate_text_item('Out of range'),
-    translate_text_item('Value of auto-check must be between 0s and 99s !!')
-  )
+  setValue('grblpanel_interval_status', 0)
+  alertdlg(translate_text_item('Out of range'), translate_text_item('Value of auto-check must be between 0s and 99s !!'))
   disablePolling()
   reportNone()
 }
 
 function tryAutoReport() {
-  if (reportType == 'polled') {
-    disablePolling()
+  if (reportType === 'polled') {
+    disablePolling();
   }
-  reportType == 'auto'
-  var interval = id('autoReportInterval').value
-  if (interval == 0) {
-    enablePolling()
-    return
+  reportType = "auto";
+  const interval = id("grblpanel_autoreport_interval").value ?? 0;
+  if (interval === 0) {
+    enablePolling();
+    return;
   }
-  setChecked('report_auto', true)
+  setChecked("report_auto", true);
   reportType = 'auto'
   SendPrinterCommand(
-    '$Report/Interval=' + interval,
+    `$Report/Interval=${interval}`,
     true,
     // Do nothing more on success
-    function () {},
+    () => { },
 
     // Fall back to polling if the firmware does not support auto-reports
-    function () {
-      enablePolling()
+    () => {
+      enablePolling();
     },
 
     99.1,
@@ -455,8 +450,8 @@ function finalize_probing() {
 }
 
 function show_grbl_SD(sdName, sdPercent) {
-  var status = sdName
-    ? sdName + '&nbsp;<progress id="print_prg" value=' + sdPercent + ' max="100"></progress>' + sdPercent + '%'
+  const status = sdName
+    ? `${sdName}&nbsp;<progress id="print_prg" value=${sdPercent} max="100"></progress>${sdPercent}%`
     : ''
   setHTML('grbl_SD_status', status)
 }
@@ -494,39 +489,34 @@ function grblProcessStatus(response) {
   if (grbl.mpos) {
     MPOS = grbl.mpos
     if (WCO) {
-      WPOS = grbl.mpos.map(function (v, index) {
-        return v - WCO[index]
-      })
+      WPOS = grbl.mpos.map((v, index) => v - WCO[index])
     }
   } else if (grbl.wpos) {
     WPOS = grbl.wpos
     if (WCO) {
-      MPOS = grbl.wpos.map(function (v, index) {
-        return v + WCO[index]
-      })
+      MPOS = grbl.wpos.map((v, index) => v + WCO[index])
     }
   }
   show_grbl_position(WPOS, MPOS)
   show_grbl_status(grbl.stateName, grbl.message, grbl.sdName)
   show_grbl_SD(grbl.sdName, grbl.sdPercent)
-  show_grbl_probe_status(grbl.pins && grbl.pins.indexOf('P') != -1)
+  show_grbl_probe_status(grbl.pins && grbl.pins.indexOf('P') !== -1)
   tabletGrblState(grbl, response)
 }
 
 function grbl_reset() {
-  if (probe_progress_status != 0) probe_failed_notification()
+  if (probe_progress_status !== 0) probe_failed_notification()
   SendRealtimeCmd(0x18)
 }
 
 function grblGetProbeResult(response) {
-  var tab1 = response.split(':')
+  const tab1 = response.split(':')
   if (tab1.length > 2) {
-    var status = tab1[2].replace(']', '')
-    if (parseInt(status.trim()) == 1) {
-      if (probe_progress_status != 0) {
-        var cmd =
-          '$J=G90 G21 F1000 Z' +
-          (parseFloat(getValue('probetouchplatethickness')) + parseFloat(getValue('proberetract')))
+    const status = tab1[2].replace(']', '')
+    if (Number.parseInt(status.trim()) === 1) {
+      if (probe_progress_status !== 0) {
+        const cmd =
+          `$J=G90 G21 F1000 Z${Number.parseFloat(getValue('probetouchplatethickness')) + Number.parseFloat(getValue('grblpanel_proberetract'))}`
         SendPrinterCommand(cmd, true, null, null, 0, 1)
         finalize_probing()
       }
@@ -541,7 +531,7 @@ function probe_failed_notification() {
   alertdlg(translate_text_item('Error'), translate_text_item('Probe failed !'))
   beep(3, 140, 261)
 }
-var modalModes = [
+const modalModes = [
   { name: 'motion', values: ['G80', 'G0', 'G1', 'G2', 'G3', 'G38.1', 'G38.2', 'G38.3', 'G38.4'] },
   { name: 'wcs', values: ['G54', 'G55', 'G56', 'G57', 'G58', 'G59'] },
   { name: 'plane', values: ['G17', 'G18', 'G19'] },
@@ -621,7 +611,7 @@ function grblHandleMessage(msg) {
       .replace(/(\b(?:bl|br|tr|tl)\b):/g, '"$1":')
       .replace('CLBM:', '')
       .replace(/,]$/, ']')
-    let measurements = JSON.parse(validJsonMSG)
+    const measurements = JSON.parse(validJsonMSG)
     handleCalibrationData(measurements)
   }
   if (msg.startsWith('<')) {
@@ -705,10 +695,10 @@ function grblHandleMessage(msg) {
     }
   }
   if (msg.startsWith('error:') || msg.startsWith('ALARM:') || msg.startsWith('Hold:') || msg.startsWith('Door:')) {
-    if (probe_progress_status != 0) {
+    if (probe_progress_status !== 0) {
       probe_failed_notification()
     }
-    if (grbl_error_msg.length == 0) {
+    if (grbl_error_msg.length === 0) {
       grbl_error_msg = translate_text_item(msg.trim())
     }
     return
@@ -734,15 +724,11 @@ function StartProbeProcess() {
     return
   }
   cmd +=
-    parseFloat(getValue('probemaxtravel')) +
-    ' F' +
-    parseInt(getValue('probefeedrate')) +
-    ' P' +
-    getValue('probetouchplatethickness')
+    `${Number.parseFloat(getValue('grblpanel_probemaxtravel'))} F${Number.parseInt(getValue('grblpanel_probefeedrate'))} P${getValue('grblpanel_probetouchplatethickness')}`
   console.log(cmd)
   probe_progress_status = 1
-  var restoreReport = false
-  if (reportType == 'none') {
+  let restoreReport = false
+  if (reportType === 'none') {
     tryAutoReport() // will fall back to polled if autoreport fails
     restoreReport = true
   }

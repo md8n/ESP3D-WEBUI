@@ -47,7 +47,8 @@
                 <div class="panel-heading">
                     <div class="checkbox">
                         <label>
-                            <input type="checkbox" id="show_camera_panel" onclick="prefs_toggledisplay('show_camera_panel')" />
+                            <input type="checkbox" id="show_camera_panel"
+                                onclick="prefs_toggledisplay('show_camera_panel')" />
                             <span translate>Show camera panel</span>
                         </label>
                     </div>
@@ -62,7 +63,8 @@
                     <div class="form-inline">
                         <div class="form-group">
                             <span><span translate>Camera address</span>:</span>
-                            <input type="text" class="form-control w14" id="preferences_camera_webaddress" translateph placeholder="Camera address" />
+                            <input id="preferences_camera_webaddress" type="text" class="form-control w14" translateph
+                                placeholder="Camera address" />
                         </div>
                     </div>
                 </div>
@@ -71,7 +73,8 @@
                 <div class="panel-heading">
                     <div class="checkbox">
                         <label>
-                            <input type="checkbox" id="show_control_panel" onclick="prefs_toggledisplay('show_control_panel')" />
+                            <input type="checkbox" id="show_control_panel"
+                                onclick="prefs_toggledisplay('show_control_panel')" />
                             <span translate>Show control panel</span>
                         </label>
                     </div>
@@ -86,8 +89,10 @@
                                 </td>
                                 <td>
                                     <div class="input-group has-control">
-                                        <input class="form-control w4" type="number" min="1" max="99" id="preferences_pos_Interval_check" onchange="Checkvalues('preferences_pos_Interval_check')" />
-                                        <span id="preferences_pos_Interval_check_icon" class="form-control-feedback ico_feedback"></span>
+                                        <input id="preferences_pos_Interval_check" class="form-control w4" type="number"
+                                            min="1" max="99" onchange="Checkvalues('preferences_pos_Interval_check')" />
+                                        <span id="preferences_pos_Interval_check_icon"
+                                            class="form-control-feedback ico_feedback"></span>
                                     </div>
                                 </td>
                                 <td>
@@ -109,8 +114,11 @@
                                 </td>
                                 <td>
                                     <div class="input-group  has-control">
-                                        <input class="form-control w8" type="number" min="1" id="preferences_control_xy_velocity" onchange="Checkvalues('preferences_control_xy_velocity')" />
-                                        <span id="preferences_control_xy_velocity_icon" class="form-control-feedback ico_feedback"></span>
+                                        <input id="preferences_control_xy_velocity" class="form-control w8"
+                                            type="number" min="1"
+                                            onchange="Checkvalues('preferences_control_xy_velocity')" />
+                                        <span id="preferences_control_xy_velocity_icon"
+                                            class="form-control-feedback ico_feedback"></span>
                                     </div>
                                 </td>
                                 <td>
@@ -124,7 +132,7 @@
                     </div>
 
                     <br>
-                            
+
                     <div id="preferences_control_z_velocity_group">
                         <table>
                             <tr>
@@ -133,8 +141,10 @@
                                 </td>
                                 <td>
                                     <div class="input-group has-control">
-                                        <input class="form-control w6" type="number" min="1" id="preferences_control_z_velocity" onchange="Checkvalues('preferences_control_z_velocity')" />
-                                        <span id="preferences_control_z_velocity_icon" class="form-control-feedback ico_feedback"></span>
+                                        <input id="preferences_control_z_velocity" class="form-control w6" type="number"
+                                            min="1" onchange="Checkvalues('preferences_control_z_velocity')" />
+                                        <span id="preferences_control_z_velocity_icon"
+                                            class="form-control-feedback ico_feedback"></span>
                                     </div>
                                 </td>
                                 <td>
@@ -154,8 +164,10 @@
                                 </td>
                                 <td>
                                     <div class="input-group has-control">
-                                        <input class="form-control w6" type="number" min="1" id="preferences_control_a_velocity" onchange="Checkvalues('preferences_control_a_velocity')" />
-                                        <span id="preferences_control_a_velocity_icon" class="form-control-feedback ico_feedback"></span>
+                                        <input id="preferences_control_a_velocity" class="form-control w6" type="number"
+                                            min="1" onchange="Checkvalues('preferences_control_a_velocity')" />
+                                        <span id="preferences_control_a_velocity_icon"
+                                            class="form-control-feedback ico_feedback"></span>
                                     </div>
                                 </td>
                                 <td>
@@ -175,8 +187,10 @@
                                 </td>
                                 <td>
                                     <div class="input-group has-control">
-                                        <input class="form-control w6" type="number" min="1" id="preferences_control_b_velocity" onchange="Checkvalues('preferences_control_b_velocity')" />
-                                        <span id="preferences_control_b_velocity_icon" class="form-control-feedback ico_feedback"></span>
+                                        <input id="preferences_control_b_velocity" class="form-control w6" type="number"
+                                            min="1" onchange="Checkvalues('preferences_control_b_velocity')" />
+                                        <span id="preferences_control_b_velocity_icon"
+                                            class="form-control-feedback ico_feedback"></span>
                                     </div>
                                 </td>
                                 <td>
@@ -196,8 +210,10 @@
                                 </td>
                                 <td>
                                     <div class="input-group has-control">
-                                        <input class="form-control w6" type="number" min="1" id="preferences_control_c_velocity" onchange="Checkvalues('preferences_control_c_velocity')" />
-                                        <span id="preferences_control_c_velocity_icon" class="form-control-feedback ico_feedback"></span>
+                                        <input id="preferences_control_c_velocity" class="form-control w6" type="number"
+                                            min="1" onchange="Checkvalues('preferences_control_c_velocity')" />
+                                        <span id="preferences_control_c_velocity_icon"
+                                            class="form-control-feedback ico_feedback"></span>
                                     </div>
                                 </td>
                                 <td>
@@ -215,7 +231,8 @@
                 <div class="panel-heading">
                     <div class="checkbox">
                         <label>
-                            <input type="checkbox" id="show_grbl_panel" onclick="prefs_toggledisplay('show_grbl_panel')" />
+                            <input type="checkbox" id="show_grbl_panel"
+                                onclick="prefs_toggledisplay('show_grbl_panel')" />
                             <span translate>Show GRBL panel</span>
                         </label>
                     </div>
@@ -229,8 +246,11 @@
                                 </td>
                                 <td>
                                     <div class="input-group has-control">
-                                        <input class="form-control w6" type="number" min="50" max="30000" id="preferences_autoReport_Interval" onchange="Checkvalues('preferences_autoReport_Interval')" />
-                                        <span id="preferences_autoReport_Interval_icon" class="form-control-feedback ico_feedback"></span>
+                                        <input id="preferences_autoReport_Interval" class="form-control w6"
+                                            type="number" min="50" max="30000"
+                                            onchange="Checkvalues('preferences_autoReport_Interval')" />
+                                        <span id="preferences_autoReport_Interval_icon"
+                                            class="form-control-feedback ico_feedback"></span>
                                     </div>
                                 </td>
                                 <td>
@@ -251,8 +271,11 @@
                                 </td>
                                 <td>
                                     <div class="input-group has-control">
-                                        <input class="form-control w4" type="number" min="1" max="99" id="preferences_status_Interval_check" onchange="Checkvalues('preferences_status_Interval_check')" />
-                                        <span id="preferences_status_Interval_check_icon" class="form-control-feedback ico_feedback"></span>
+                                        <input id="preferences_status_Interval_check" class="form-control w4"
+                                            type="number" min="1" max="99"
+                                            onchange="Checkvalues('preferences_status_Interval_check')" />
+                                        <span id="preferences_status_Interval_check_icon"
+                                            class="form-control-feedback ico_feedback"></span>
                                     </div>
                                 </td>
                                 <td>
@@ -269,7 +292,8 @@
                         <div class="panel-heading">
                             <div class="checkbox">
                                 <label>
-                                    <input type="checkbox" id="show_grbl_probe_tab" onclick="prefs_toggledisplay('show_grbl_probe_tab')" />
+                                    <input type="checkbox" id="show_grbl_probe_tab"
+                                        onclick="prefs_toggledisplay('show_grbl_probe_tab')" />
                                     <span translate>Show probe panel</span>
                                 </label>
                             </div>
@@ -283,8 +307,11 @@
                                         </td>
                                         <td>
                                             <div class="input-group has-control">
-                                                <input class="form-control w8" type="number" min="1" max="99999" id="preferences_probemaxtravel" onchange="Checkvalues('preferences_probemaxtravel')" />
-                                                <span id="preferences_probemaxtravel_icon" class="form-control-feedback ico_feedback"></span>
+                                                <input id="preferences_probemaxtravel" class="form-control w8"
+                                                    type="number" min="1" max="99999"
+                                                    onchange="Checkvalues('preferences_probemaxtravel')" />
+                                                <span id="preferences_probemaxtravel_icon"
+                                                    class="form-control-feedback ico_feedback"></span>
                                             </div>
                                         </td>
                                         <td>
@@ -305,8 +332,11 @@
                                         </td>
                                         <td>
                                             <div class="input-group has-control">
-                                                <input class="form-control w8" type="number" min="1" max="99999" id="preferences_probefeedrate" onchange="Checkvalues('preferences_probefeedrate')" />
-                                                <span id="preferences_probefeedrate_icon" class="form-control-feedback ico_feedback"></span>
+                                                <input id="preferences_probefeedrate" class="form-control w8"
+                                                    type="number" min="1" max="99999"
+                                                    onchange="Checkvalues('preferences_probefeedrate')" />
+                                                <span id="preferences_probefeedrate_icon"
+                                                    class="form-control-feedback ico_feedback"></span>
                                             </div>
                                         </td>
                                         <td>
@@ -327,8 +357,11 @@
                                         </td>
                                         <td>
                                             <div class="input-group has-control">
-                                                <input class="form-control w8" type="number" min="0" max="99999" id="preferences_probetouchplatethickness" onchange="Checkvalues('preferences_probetouchplatethickness')" />
-                                                <span id="preferences_probetouchplatethickness_icon" class="form-control-feedback ico_feedback"></span>
+                                                <input id="preferences_probetouchplatethickness" class="form-control w8"
+                                                    type="number" min="0" max="99999"
+                                                    onchange="Checkvalues('preferences_probetouchplatethickness')" />
+                                                <span id="preferences_probetouchplatethickness_icon"
+                                                    class="form-control-feedback ico_feedback"></span>
                                             </div>
                                         </td>
                                         <td>
@@ -349,8 +382,11 @@
                                         </td>
                                         <td>
                                             <div class="input-group has-control">
-                                                <input class="form-control w8" type="number" min="0" max="99999" id="preferences_proberetract" onchange="Checkvalues('preferences_proberetract')" />
-                                                <span id="preferences_proberetract_icon" class="form-control-feedback ico_feedback"></span>
+                                                <input id="preferences_proberetract" class="form-control w8"
+                                                    type="number" min="0" max="99999"
+                                                    onchange="Checkvalues('preferences_proberetract')" />
+                                                <span id="preferences_proberetract_icon"
+                                                    class="form-control-feedback ico_feedback"></span>
                                             </div>
                                         </td>
                                         <td>
@@ -371,7 +407,8 @@
                 <div class="panel-heading">
                     <div class="checkbox">
                         <label>
-                            <input type="checkbox" id="show_files_panel" onclick="prefs_toggledisplay('show_files_panel')" />
+                            <input type="checkbox" id="show_files_panel"
+                                onclick="prefs_toggledisplay('show_files_panel')" />
                             <span translate>Show files panel</span>
                         </label>
                     </div>
@@ -405,8 +442,10 @@
                                 </td>
                                 <td>
                                     <div class="input-group has-control">
-                                        <input class="form-control w25" type="text" id="preferences_filters" onchange="Checkvalues('preferences_filters')" />
-                                        <span id="preferences_filters_icon" class="form-control-feedback ico_feedback"></span>
+                                        <input id="preferences_filters" class="form-control w25" type="text"
+                                            onchange="Checkvalues('preferences_filters')" />
+                                        <span id="preferences_filters_icon"
+                                            class="form-control-feedback ico_feedback"></span>
                                     </div>
                                 </td>
                             </tr>
@@ -418,7 +457,8 @@
                 <div class="panel-heading">
                     <div class="checkbox">
                         <label>
-                            <input type="checkbox" id="show_commands_panel" onclick="prefs_toggledisplay('show_commands_panel')" />
+                            <input type="checkbox" id="show_commands_panel"
+                                onclick="prefs_toggledisplay('show_commands_panel')" />
                             <span translate>Show commands panel</span>
                         </label>
                     </div>
@@ -426,13 +466,13 @@
                 <div class="panel-body" id="cmd_preferences">
                     <div class="checkbox">
                         <label>
-                            <input type="checkbox" id="preferences_autoscroll" />
+                            <input id="preferences_autoscroll" type="checkbox" />
                             <span translate>Autoscroll</span>
                         </label>
                     </div>
                     <div id="verbose_mode_prefs_check" class="checkbox">
                         <label>
-                            <input type="checkbox" id="preferences_verbose_mode" />
+                            <input id="preferences_verbose_mode" type="checkbox" />
                             <span translate>Verbose mode</span>
                         </label>
                     </div>
