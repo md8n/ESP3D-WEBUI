@@ -476,8 +476,8 @@ function build_dlg_preferences_list() {
 }
 
 function closePreferencesDialog() {
-    var modified = false;
-    if (preferenceslist[0].length != 0) {
+    let modified = false;
+    if (preferenceslist[0].length !== 0) {
         //check dialog compare to global state
         if ((typeof (preferenceslist[0].language) === 'undefined') ||
             (typeof (preferenceslist[0].enable_camera) === 'undefined') ||
@@ -511,33 +511,33 @@ function closePreferencesDialog() {
             modified = true;
         } else {
             //camera
-            if (id('show_camera_panel').checked != (preferenceslist[0].enable_camera === 'true')) modified = true;
+            if (id('show_camera_panel').checked !== (preferenceslist[0].enable_camera === 'true')) modified = true;
             //Autoload
-            if (id('autoload_camera_panel').checked != (preferenceslist[0].auto_load_camera === 'true')) modified = true;
+            if (id('autoload_camera_panel').checked !== (preferenceslist[0].auto_load_camera === 'true')) modified = true;
             //camera address
             if (id('preferences_camera_webaddress').value !== HTMLDecode(preferenceslist[0].camera_address)) modified = true;
             //DHT
-            if (id('enable_DHT').checked != (preferenceslist[0].enable_DHT === 'true')) modified = true;
+            if (id('enable_DHT').checked !== (preferenceslist[0].enable_DHT === 'true')) modified = true;
             //Lock UI
-            if (id('enable_lock_UI').checked != (preferenceslist[0].enable_lock_UI === 'true')) modified = true;
+            if (id('enable_lock_UI').checked !== (preferenceslist[0].enable_lock_UI === 'true')) modified = true;
             //Monitor connection
-            if (id('enable_ping').checked != (preferenceslist[0].enable_ping === 'true')) modified = true;
+            if (id('enable_ping').checked !== (preferenceslist[0].enable_ping === 'true')) modified = true;
             //probe
-            if (id('enable_probe_controls').checked != (preferenceslist[0].enable_probe === 'true')) modified = true;
+            if (id('show_grbl_probe_tab').checked !== (preferenceslist[0].enable_probe === 'true')) modified = true;
             //control panel
-            if (id('show_control_panel').checked != (preferenceslist[0].enable_control_panel === 'true')) modified = true;
+            if (id('show_control_panel').checked !== (preferenceslist[0].enable_control_panel === 'true')) modified = true;
             //grbl panel
-            if (id('show_grbl_panel').checked != (preferenceslist[0].enable_grbl_panel === 'true')) modified = true;
+            if (id('show_grbl_panel').checked !== (preferenceslist[0].enable_grbl_panel === 'true')) modified = true;
             //grbl probe panel
-            if (id('show_grbl_probe_tab').checked != (preferenceslist[0].enable_grbl_probe_panel === 'true')) modified = true;
+            if (id('show_grbl_probe_tab').checked !== (preferenceslist[0].enable_grbl_probe_panel === 'true')) modified = true;
             //files panel
-            if (id('show_files_panel').checked != (preferenceslist[0].enable_files_panel === 'true')) modified = true;
+            if (id('show_files_panel').checked !== (preferenceslist[0].enable_files_panel === 'true')) modified = true;
             //TFT SD
-            if (id('has_tft_sd').checked != (preferenceslist[0].has_TFT_SD === 'true')) modified = true;
+            if (id('has_tft_sd').checked !== (preferenceslist[0].has_TFT_SD === 'true')) modified = true;
             //TFT USB
-            if (id('has_tft_usb').checked != (preferenceslist[0].has_TFT_USB === 'true')) modified = true;
+            if (id('has_tft_usb').checked !== (preferenceslist[0].has_TFT_USB === 'true')) modified = true;
             //commands
-            if (id('show_commands_panel').checked != (preferenceslist[0].enable_commands_panel === 'true')) modified = true;
+            if (id('show_commands_panel').checked !== (preferenceslist[0].enable_commands_panel === 'true')) modified = true;
             //interval positions
             if (id('preferences_autoReport_Interval').value !== Number.parseInt(preferenceslist[0].autoReport_interval)) modified = true;
             if (id('preferences_pos_Interval_check').value !== Number.parseInt(preferenceslist[0].interval_positions)) modified = true;
@@ -622,19 +622,19 @@ function SavePreferences(current_preferences) {
         if ((grblaxis > 5) && (!Checkvalues("preferences_control_c_velocity"))) return;
 
         preferenceslist = [];
-        var saveprefs = "[{\"language\":\"" + language;
-        saveprefs += "\",\"enable_camera\":\"" + id('show_camera_panel').checked;
-        saveprefs += "\",\"auto_load_camera\":\"" + id('autoload_camera_panel').checked;
+        let saveprefs = `[{\"language\":\"${language}`;
+        saveprefs += `\",\"enable_camera\":\"${id('show_camera_panel').checked}`;
+        saveprefs += `\",\"auto_load_camera\":\"${id('autoload_camera_panel').checked}`;
         saveprefs += `\",\"camera_address\":\"${HTMLEncode(id('preferences_camera_webaddress').value)}`;
         saveprefs += `\",\"enable_DHT\":\"${id('enable_DHT').checked}`;
         saveprefs += `\",\"enable_lock_UI\":\"${id('enable_lock_UI').checked}`;
-        saveprefs += "\",\"enable_ping\":\"" + id('enable_ping').checked;
-        saveprefs += "\",\"enable_control_panel\":\"" + id('show_control_panel').checked;
-        saveprefs += "\",\"enable_grbl_probe_panel\":\"" + id('show_grbl_probe_tab').checked;
-        saveprefs += "\",\"enable_grbl_panel\":\"" + id('show_grbl_panel').checked;
-        saveprefs += "\",\"enable_files_panel\":\"" + id('show_files_panel').checked;
-        saveprefs += "\",\"has_TFT_SD\":\"" + id('has_tft_sd').checked;
-        saveprefs += "\",\"has_TFT_USB\":\"" + id('has_tft_usb').checked;
+        saveprefs += `\",\"enable_ping\":\"${id('enable_ping').checked}`;
+        saveprefs += `\",\"enable_control_panel\":\"${id('show_control_panel').checked}`;
+        saveprefs += `\",\"enable_grbl_probe_panel\":\"${id('show_grbl_probe_tab').checked}`;
+        saveprefs += `\",\"enable_grbl_panel\":\"${id('show_grbl_panel').checked}`;
+        saveprefs += `\",\"enable_files_panel\":\"${id('show_files_panel').checked}`;
+        saveprefs += `\",\"has_TFT_SD\":\"${id('has_tft_sd').checked}`;
+        saveprefs += `\",\"has_TFT_USB\":\"${id('has_tft_usb').checked}`;
         saveprefs += `\",\"probemaxtravel\":\"${id('preferences_probemaxtravel').value}`;
         saveprefs += `\",\"probefeedrate\":\"${id('preferences_probefeedrate').value}`;
         saveprefs += `\",\"proberetract\":\"${id('preferences_proberetract').value}`;
@@ -659,7 +659,7 @@ function SavePreferences(current_preferences) {
         saveprefs += `\",\"f_filters\":\"${id('preferences_filters').value}`;
         saveprefs += `\",\"enable_autoscroll\":\"${id('preferences_autoscroll').checked}`;
         saveprefs += `\",\"enable_verbose_mode\":\"${id('preferences_verbose_mode').checked}`;
-        saveprefs += "\",\"enable_commands_panel\":\"" + id('show_commands_panel').checked + "\"}]";
+        saveprefs += `\",\"enable_commands_panel\":\"${id('show_commands_panel').checked}\"}]`;
         preferenceslist = JSON.parse(saveprefs);
     }
     const blob = new Blob([JSON.stringify(preferenceslist, null, " ")], { type: 'application/json' });
