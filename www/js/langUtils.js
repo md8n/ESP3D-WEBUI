@@ -2,6 +2,7 @@ import { getPrefValue} from "./common.js";
 
 /** List of currently support languages
  * There should be a json file for each one of these in js/language
+ * Also check serve.ts when serving locally
  */
 const language_list = [
 	["de", "Deutsch", typeof germantrans === "undefined" ? null : germantrans],
