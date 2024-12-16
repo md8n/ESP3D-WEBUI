@@ -9,7 +9,7 @@
   "scripts": {
     "build": "gulp package",
     "build:en": "gulp package -en",
-    "build:bun": "bun run build.ts",
+    "build:bun": "bun run build.ts --lang en",
     "serve": "bun run --hot serve.ts"
   },
   "devDependencies": {

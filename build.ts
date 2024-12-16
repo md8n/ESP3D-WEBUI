@@ -2,7 +2,9 @@ import html from "bun-plugin-html";
 
 const cleanDist = () => {
 	console.log("No file delete function in bun yet. So no `cleanDist`");
-};
+	
+	console.log(Bun.env.npm_lifecycle_script);
+}
 
 const cleanLanguageImports = async (fileContents: string, inclLang: string[] = ["en"]) => {
 	const regexRemoveIf = /\/\/\s*removeIf\s*\(\s*(?<removeDec>\S+)\s*\)/gmi;
@@ -11,6 +13,7 @@ const cleanLanguageImports = async (fileContents: string, inclLang: string[] = [
 	if (!removeIfResults.length) {
 		return fileContents;
 	}
+
 
 	// Remove the (not) required stuff from the fileContents
 	let fcRemoved = fileContents;
@@ -100,8 +103,6 @@ const build = async () => {
 				keepOriginalPaths: true,
 				async preprocessor(processor) {
 					const files = processor.getFiles();
-
-					console.log(`Process env ${process.env}`);
 
 					for (const file of files) {
 						if (file.extension === ".html") {

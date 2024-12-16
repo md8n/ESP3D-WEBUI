@@ -85,9 +85,9 @@ function build_axis_selection() {
 
 function control_changeaxis() {
 	var letter = getValue("control_select_axis");
-	setHTML("axisup", "+" + letter);
-	setHTML("axisdown", "-" + letter);
-	setHTML("homeZlabel", " " + letter + " ");
+	setHTML("axisup", `+${letter}`);
+	setHTML("axisdown", `-${letter}`);
+	setHTML("homeZlabel", ` ${letter} `);
 	switch (last_axis_letter) {
 		case "Z":
 			axis_feedrate[2] = getValue("z_feedrate");
@@ -138,71 +138,36 @@ function grbl_set_probe_detected(state) {
 }
 
 const onprobemaxtravelChange = () => {
-	var travel = parseFloat(getValue("grblpanel_probemaxtravel"));
-	if (travel > 9999 || travel <= 0 || isNaN(travel) || travel === null) {
-		alertdlg(
-			translate_text_item("Out of range"),
-			translate_text_item(
-				"Value of maximum probe travel must be between 1 mm and 9999 mm !",
-			),
-		);
+	const travel = Number.parseFloat(getValue("grblpanel_probemaxtravel"));
+	if (travel > 9999 || travel <= 0 || Number.isNaN(travel) || travel === null) {
+		alertdlg(translate_text_item("Out of range"), translate_text_item("Value of maximum probe travel must be between 1 mm and 9999 mm !"));
 		return false;
 	}
 	return true;
 };
 
 const onprobefeedrateChange = () => {
-	var feedratevalue = parseInt(getValue("grblpanel_probefeedrate"));
-	if (
-		feedratevalue <= 0 ||
-		feedratevalue > 9999 ||
-		isNaN(feedratevalue) ||
-		feedratevalue === null
-	) {
-		alertdlg(
-			translate_text_item("Out of range"),
-			translate_text_item(
-				"Value of probe feedrate must be between 1 mm/min and 9999 mm/min !",
-			),
-		);
+	const feedratevalue = Number.parseInt(getValue("grblpanel_probefeedrate"));
+	if (feedratevalue <= 0 || feedratevalue > 9999 || Number.isNaN(feedratevalue) || feedratevalue === null) {
+		alertdlg(translate_text_item("Out of range"), translate_text_item("Value of probe feedrate must be between 1 mm/min and 9999 mm/min !"));
 		return false;
 	}
 	return true;
 };
 
 const onproberetractChange = () => {
-	var thickness = parseFloat(getValue("grblpanel_proberetract"));
-	if (
-		thickness < 0 ||
-		thickness > 999 ||
-		isNaN(thickness) ||
-		thickness === null
-	) {
-		alertdlg(
-			translate_text_item("Out of range"),
-			translate_text_item(
-				"Value of probe retract must be between 0 mm and 9999 mm !",
-			),
-		);
+	const thickness = Number.parseFloat(getValue("grblpanel_proberetract"));
+	if (thickness < 0 || thickness > 999 || Number.isNaN(thickness) || thickness === null) {
+		alertdlg(translate_text_item("Out of range"), translate_text_item("Value of probe retract must be between 0 mm and 9999 mm !"));
 		return false;
 	}
 	return true;
 };
 
 const onprobetouchplatethicknessChange = () => {
-	var thickness = parseFloat(getValue("grblpanel_probetouchplatethickness"));
-	if (
-		thickness < 0 ||
-		thickness > 999 ||
-		isNaN(thickness) ||
-		thickness === null
-	) {
-		alertdlg(
-			translate_text_item("Out of range"),
-			translate_text_item(
-				"Value of probe touch plate thickness must be between 0 mm and 9999 mm !",
-			),
-		);
+	const thickness = Number.parseFloat(getValue("grblpanel_probetouchplatethickness"));
+	if (thickness < 0 || thickness > 999 || Number.isNaN(thickness) || thickness === null) {
+		alertdlg(translate_text_item("Out of range"), translate_text_item("Value of probe touch plate thickness must be between 0 mm and 9999 mm !"));
 		return false;
 	}
 	return true;
@@ -213,7 +178,7 @@ var reportType = "none";
 function disablePolling() {
 	setAutocheck(false);
 	// setValue('grblpanel_interval_status', 0);
-	if (interval_status != -1) {
+	if (interval_status !== -1) {
 		clearInterval(interval_status);
 		interval_status = -1;
 	}
@@ -223,58 +188,49 @@ function disablePolling() {
 }
 
 function enablePolling() {
-	var interval = parseFloat(getValue("grblpanel_interval_status"));
-	if (!isNaN(interval) && interval == 0) {
-		if (interval_status != -1) {
+	const interval = Number.parseFloat(getValue("grblpanel_interval_status"));
+	if (!Number.isNaN(interval) && interval === 0) {
+		if (interval_status !== -1) {
 			clearInterval(interval_status);
 		}
 		disablePolling();
 		reportNone();
 		return;
 	}
-	if (!isNaN(interval) && interval > 0 && interval < 100) {
-		if (interval_status != -1) {
+	if (!Number.isNaN(interval) && interval > 0 && interval < 100) {
+		if (interval_status !== -1) {
 			clearInterval(interval_status);
 		}
-		interval_status = setInterval(function () {
-			get_status();
-		}, interval * 1000);
+		interval_status = setInterval(() => get_status(), interval * 1000);
 		reportType = "polled";
 		setChecked("report_poll", true);
 		return;
 	}
 	setValue("grblpanel_interval_status", 0);
-	alertdlg(
-		translate_text_item("Out of range"),
-		translate_text_item("Value of auto-check must be between 0s and 99s !!"),
-	);
+	alertdlg( translate_text_item("Out of range"), translate_text_item("Value of auto-check must be between 0s and 99s !!") );
 	disablePolling();
 	reportNone();
 }
 
 function tryAutoReport() {
-	if (reportType == "polled") {
+	if (reportType === "polled") {
 		disablePolling();
 	}
-	reportType == "auto";
-	var interval = getValue("grblpanel_autoreport_interval");
-	if (interval == 0) {
+	reportType === "auto";
+	const interval = getValue("grblpanel_autoreport_interval");
+	if (interval === 0) {
 		enablePolling();
 		return;
 	}
 	setChecked("report_auto", true);
 	reportType = "auto";
 	SendPrinterCommand(
-		"$Report/Interval=" + interval,
+		`$Report/Interval=${interval}`,
 		true,
 		// Do nothing more on success
-		function () {},
-
+		() => { },
 		// Fall back to polling if the firmware does not support auto-reports
-		function () {
-			enablePolling();
-		},
-
+		() => enablePolling(),
 		99.1,
 		1,
 	);
@@ -472,7 +428,7 @@ function show_grbl_position(wpos, mpos) {
 
 function show_grbl_status(stateName, message, hasSD) {
 	if (stateName) {
-		var clickable = clickableFromStateName(stateName, hasSD);
+		const clickable = clickableFromStateName(stateName, hasSD);
 		setHTML("grbl_status", stateName);
 		setHTML("systemStatus", stateName);
 		if (stateName === "Alarm") {
@@ -504,13 +460,8 @@ function finalize_probing() {
 }
 
 function show_grbl_SD(sdName, sdPercent) {
-	var status = sdName
-		? sdName +
-			'&nbsp;<progress id="print_prg" value=' +
-			sdPercent +
-			' max="100"></progress>' +
-			sdPercent +
-			"%"
+	const status = sdName
+		? `${sdName}&nbsp;<progress id="print_prg" value=${sdPercent} max="100"></progress>${sdPercent}%`
 		: "";
 	setHTML("grbl_SD_status", status);
 }
@@ -772,10 +723,10 @@ const grblHandleMessage = (msg) => {
 		msg.startsWith("Hold:") ||
 		msg.startsWith("Door:")
 	) {
-		if (probe_progress_status != 0) {
+		if (probe_progress_status !== 0) {
 			probe_failed_notification();
 		}
-		if (grbl_error_msg.length == 0) {
+		if (grbl_error_msg.length === 0) {
 			grbl_error_msg = translate_text_item(msg.trim());
 		}
 		return;

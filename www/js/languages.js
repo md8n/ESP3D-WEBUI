@@ -12,24 +12,7 @@ import turkishtrans from "./language/tr.json" with {type: "json"};
 import ukrtrans from "./language/uk.json" with {type: "json"};
 import zh_CN_trans from "./language/zh_CN.json" with {type: "json"};
 
-const language_list = [
-	["de", "Deutsch", germantrans],
-	["en", "English", englishtrans],
-	["es", "Espa&ntilde;ol", spanishtrans],
-	["fr", "Fran&ccedil;ais", frenchtrans],
-	["it", "Italiano", italiantrans],
-	["ja", "&#26085;&#26412;&#35486;", japanesetrans],
-	["hu", "Magyar", hungariantrans],
-	["pl", "Polski", polishtrans],
-	["ptbr", "Português-Br", ptbrtrans],
-	["ru", "Русский", russiantrans],
-	["tr", "T&uuml;rk&ccedil;e", turkishtrans],
-	["uk", "Українська", ukrtrans],
-	["zh_CN", "&#31616;&#20307;&#20013;&#25991;", zh_CN_trans],
-];
-
 export {
-	language_list,
 	germantrans,
 	englishtrans,
 	spanishtrans,

@@ -1,11 +1,34 @@
-import { language_list, getPrefValue} from "./common.js";
+import { getPrefValue} from "./common.js";
+
+/** List of currently support languages
+ * There should be a json file for each one of these in js/language
+ */
+const language_list = [
+	["de", "Deutsch", typeof germantrans === "undefined" ? null : germantrans],
+	["en", "English", typeof englishtrans === "undefined" ? null : englishtrans],
+	["es", "Espa&ntilde;ol", typeof spanishtrans === "undefined" ? null : spanishtrans],
+	["fr", "Fran&ccedil;ais", typeof frenchtrans === "undefined" ? null : frenchtrans],
+	["it", "Italiano", typeof italiantrans === "undefined" ? null : italiantrans],
+	["ja", "&#26085;&#26412;&#35486;", typeof japanesetrans === "undefined" ? null : japanesetrans],
+	["hu", "Magyar", typeof hungariantrans === "undefined" ? null : hungariantrans],
+	["pl", "Polski", typeof polishtrans === "undefined" ? null : polishtrans],
+	["ptbr", "Português-Br", typeof ptbrtrans === "undefined" ? null : ptbrtrans],
+	["ru", "Русский", typeof russiantrans === "undefined" ? null : russiantrans],
+	["tr", "T&uuml;rk&ccedil;e", typeof turkishtrans === "undefined" ? null : turkishtrans],
+	["uk", "Українська", typeof ukrtrans === "undefined" ? null : ukrtrans],
+	["zh_CN", "&#31616;&#20307;&#20013;&#25991;", typeof zh_CN_trans === "undefined" ? null : zh_CN_trans],
+];
 
 /** Build a language list select element */
 const build_language_list = (id_item) => {
     const content = [`<select class='form-control' id='${id_item}'>`];
     for (let lang_i = 0; lang_i < language_list.length; lang_i++) {
-        const isSelected = (language_list[lang_i][0] === getPrefValue("language_list")) ? "selected" : "";
-        content.push(`<option value='${language_list[lang_i][0]}' ${isSelected}>${language_list[lang_i][1]}</option>`);
+        const langCode = language_list[lang_i][0];
+        const langName = language_list[lang_i][1];
+        const langEnabled = language_list[lang_i][2] ? "" : "disabled";
+        const isSelected = (langCode === getPrefValue("language_list")) ? "selected" : "";
+        
+        content.push(`<option value='${langCode}' ${isSelected} ${langEnabled}>${langName}</option>`);
     }
     content.push("</select>");
     return content.join("\n");
@@ -15,7 +38,9 @@ const getCurrentTrans = () => {
     let currenttrans = {};
 
     for (let lang_i = 0; lang_i < language_list.length; lang_i++) {
-        if (language_list[lang_i][0] === getPrefValue("language_list")) {
+        const langCode = language_list[lang_i][0];
+        const langEnabled = language_list[lang_i][2];
+        if (langCode === getPrefValue("language_list") && langEnabled) {
             currenttrans = language_list[lang_i][2];
             break;
         }
@@ -29,10 +54,11 @@ const translate_text_item = (item_text, withtag = false) => {
     const currenttrans = getCurrentTrans();
 
     let translated_content = currenttrans[item_text];
-    if (typeof translated_content === 'undefined') translated_content = item_text;
+    if (typeof translated_content === 'undefined') {
+        translated_content = item_text;
+    }
     if (withtag) {
-        const translated_content_tmp = `<span english_content="${item_text}" translate>${translated_content}</span>`;
-        translated_content = translated_content_tmp;
+        return `<span english_content="${item_text}" translate>${translated_content}</span>`;
     }
 
     return translated_content;

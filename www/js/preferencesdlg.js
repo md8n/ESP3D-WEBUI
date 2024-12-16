@@ -54,28 +54,18 @@ const buildElem = (elem, contents, classVal) => {
 };
 
 const buildDiv = (contents, classVal) => buildElem("div", contents, classVal);
-const buildTable = (contents, classVal) =>
-	buildElem("table", contents, classVal);
+const buildTable = (contents, classVal) => buildElem("table", contents, classVal);
 
-const buildDivPanel = (contents) =>
-	buildDiv(
-		`<div class="panel-heading">${contents}</div>`,
-		"panel panel-default",
-	);
+const buildDivPanel = (contents) => buildDiv(`<div class="panel-heading">${contents}</div>`, "panel panel-default");
 
 const buildTdIcon = (icon) => `<td>${get_icon_svg(icon)}&nbsp;</td>`;
-const buildTdLabel = (key, value) =>
-	`<td><span>${translate_text_item(value.label || key, true)}:&nbsp;</span></td>`;
-const buildTdInp = (inpFld, key, value) =>
-	`<td><div class="input-group has-control">${inpFld}${buildSpnErrFld(key, value)}</div></td>`;
-const buildSpnErrFld = (key, value) =>
-	`<span id="${buildFieldId(key, value)}_icon" class="form-control-feedback ico_feedback"></span>`;
+const buildTdLabel = (key, value) => `<td><span>${translate_text_item(value.label || key, true)}:&nbsp;</span></td>`;
+const buildTdInp = (inpFld, key, value) => `<td><div class="input-group has-control">${inpFld}${buildSpnErrFld(key, value)}</div></td>`;
+const buildSpnErrFld = (key, value) => `<span id="${buildFieldId(key, value)}_icon" class="form-control-feedback ico_feedback"></span>`;
 
 const buildFieldIdAttr = (key, value) => `id="${buildFieldId(key, value)}"`;
-const buildMinMaxAttr = (value) =>
-	`${typeof value.min !== "undefined" ? ` min="${value.min}"` : ""}${typeof value.max !== "undefined" ? ` max="${value.max}"` : ""}`;
-const buildPlaceholderAttr = (value) =>
-	value.placeholder ? `placeholder="${value.placeholder}" translateph` : "";
+const buildMinMaxAttr = (value) => `${typeof value.min !== "undefined" ? ` min="${value.min}"` : ""}${typeof value.max !== "undefined" ? ` max="${value.max}"` : ""}`;
+const buildPlaceholderAttr = (value) => value.placeholder ? `placeholder="${value.placeholder}" translateph` : "";
 
 const setGroupId = (elem, fId) => elem.setAttribute("id", `${fId}_group`);
 
@@ -583,7 +573,7 @@ function ontogglePing(forcevalue) {
 	if (enable_ping) {
 		if (interval_ping !== -1) clearInterval(interval_ping)
 		last_ping = Date.now()
-		interval_ping = setInterval(() => {check_ping()}, 10 * 1000)
+		interval_ping = setInterval(() => { check_ping() }, 10 * 1000)
 		console.log('enable ping')
 	} else {
 		if (interval_ping !== -1) clearInterval(interval_ping)
@@ -630,11 +620,7 @@ function closePreferencesDialog() {
 			modified = true;
 	}
 	if (modified) {
-		confirmdlg(
-			translate_text_item("Data modified"),
-			translate_text_item("Do you want to save?"),
-			process_preferencesCloseDialog,
-		);
+		confirmdlg(translate_text_item("Data modified"), translate_text_item("Do you want to save?"), process_preferencesCloseDialog);
 	} else {
 		closeModal("cancel");
 	}
@@ -654,31 +640,24 @@ function process_preferencesCloseDialog(answer) {
 const SavePreferences = (save_current_preferences = false) => {
 	const common = new Common();
 	if (common.http_communication_locked) {
-		alertdlg(
-			translate_text_item("Busy..."),
-			translate_text_item(
-				"Communications are currently locked, please wait and retry.",
-			),
-		);
+		alertdlg(translate_text_item("Busy..."), translate_text_item("Communications are currently locked, please wait and retry."));
 		return;
 	}
 	console.log("save prefs");
 
-	if (!!save_current_preferences) {
+	if (save_current_preferences) {
 		preferenceslist = [];
-		var saveprefs = '[{"language":"' + getPrefValue("language_list");
-		saveprefs += '","enable_ping":"' + getChecked("enable_ping");
+		let saveprefs = `[{"language":"${getPrefValue("language_list")}`;
+		saveprefs += `","enable_ping":"${getChecked("enable_ping")}`;
 		preferenceslist = JSON.parse(saveprefs);
 	}
-	var blob = new Blob([JSON.stringify(preferenceslist, null, " ")], {
-		type: "application/json",
-	});
+	var blob = new Blob([JSON.stringify(preferenceslist, null, " ")], { type: "application/json" });
 	var file = new File([blob], prefFile);
 	var formData = new FormData();
 	var url = "/files";
 	formData.append("path", "/");
 	formData.append("myfile[]", file, prefFile);
-	if (!!save_current_preferences) {
+	if (save_current_preferences) {
 		SendFileHttp(url, formData);
 	} else {
 		SendFileHttp(
@@ -693,7 +672,7 @@ const SavePreferences = (save_current_preferences = false) => {
 
 function preferencesdlgUploadProgressDisplay(oEvent) {
 	if (oEvent.lengthComputable) {
-		var percentComplete = (oEvent.loaded / oEvent.total) * 100;
+		const percentComplete = (oEvent.loaded / oEvent.total) * 100;
 		setValue("preferencesdlg_prg", percentComplete);
 		setHTML("preferencesdlg_upload_percent", percentComplete.toFixed(0));
 		displayBlock("preferencesdlg_upload_msg");
@@ -709,27 +688,20 @@ function preferencesUploadsuccess(response) {
 }
 
 function preferencesUploadfailed(error_code, response) {
-	alertdlg(
-		translate_text_item("Error"),
-		translate_text_item("Save preferences failed!"),
-	);
+	alertdlg(translate_text_item("Error"), translate_text_item("Save preferences failed!"));
 }
 
 /** Test the supplied numeric value against any defined `min` test */
 const valueMinTest = (value, valueDef) => {
 	return "min" in valueDef && value < valueDef.min
-		? translate_text_item(
-			`${valueDef.label} must be greater than or equal to ${valueDef.min}"`,
-		)
+		? translate_text_item(`${valueDef.label} must be greater than or equal to ${valueDef.min}"`)
 		: "";
 };
 
 /** Test the supplied numeric value against any defined `max` test */
 const valueMaxTest = (value, valueDef) => {
 	return "max" in valueDef && value > valueDef.max
-		? translate_text_item(
-			`${valueDef.label} must be less than or equal to ${valueDef.max}"`,
-		)
+		? translate_text_item(`${valueDef.label} must be less than or equal to ${valueDef.max}"`)
 		: "";
 };
 
@@ -754,20 +726,19 @@ const CheckValue = (fId, valueDef) => {
 				case "bool":
 					// These are both boolean values
 					break;
-				case "int":
-					const vInt = parseInt(value);
-					if (isNaN(vInt)) {
-						errorList.push(
-							translate_text_item(`${valueDef.label} must be an integer"`),
-						);
+				case "int": {
+					const vInt = Number.parseInt(value);
+					if (Number.isNaN(vInt)) {
+						errorList.push(translate_text_item(`${valueDef.label} must be an integer"`));
 					} else {
 						errorList.push(valueMinTest(vInt, valueDef));
 						errorList.push(valueMaxTest(vInt, valueDef));
 					}
 					break;
-				case "float":
-					const vFlt = parseFloat(value);
-					if (isNaN(vFlt)) {
+				}
+				case "float": {
+					const vFlt = Number.parseFloat(value);
+					if (Number.isNaN(vFlt)) {
 						errorList.push(
 							translate_text_item(`${valueDef.label} must be an float"`),
 						);
@@ -776,6 +747,7 @@ const CheckValue = (fId, valueDef) => {
 						errorList.push(valueMaxTest(vFlt, valueDef));
 					}
 					break;
+				}
 				case "enctext":
 					break;
 				case "text":
@@ -815,10 +787,7 @@ const CheckValue = (fId, valueDef) => {
 		if (elemIdIcon) {
 			// elemIdIcon.innerHTML = get_icon_svg("remove");
 		}
-		alertdlg(
-			translate_text_item("Errors with settings & preferences"),
-			errorList.join("\n"),
-		);
+		alertdlg(translate_text_item("Errors with settings & preferences"), errorList.join("\n"));
 	}
 	return errorList.length === 0;
 };

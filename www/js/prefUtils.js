@@ -5,18 +5,12 @@ prefDefs.enable_grbl_panel.prefDefs.autoreport_interval.valFunc = (value) => {
 	const vInt = Number.parseInt(value);
 	return !Number.isNaN(vInt) && (vInt === 0 || (vInt >= 50 && vInt <= 30000))
 		? ""
-		: translate_text_item(
-				"Value of auto-report must be 0 or between 50ms and 30000ms !!",
-			);
+		: translate_text_item("Value of auto-report must be 0 or between 50ms and 30000ms !!");
 };
 
 prefDefs.enable_files_panel.prefDefs.f_filters.valFunc = (value) => {
 	const extPat = /^[a-z0-9;]*$/i;
-	return value.match(extPat)
-		? ""
-		: translate_text_item(
-				"Only alphanumeric chars separated by ; for extensions filters !!",
-			);
+	return value.match(extPat) ? "" : translate_text_item("Only alphanumeric chars separated by ; for extensions filters !!");
 };
 
 /** Return the `fieldId`, if defined, otherwise return the `key` */

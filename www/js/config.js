@@ -25,12 +25,7 @@ var config_file_name = "/sd/config";
 const refreshconfig = (is_override) => {
 	const common = new Common();
 	if (common.http_communication_locked) {
-		setHTML(
-			"config_status",
-			translate_text_item(
-				"Communication locked by another process, retry later.",
-			),
-		);
+		setHTML("config_status", translate_text_item("Communication locked by another process, retry later."));
 		return;
 	}
 	is_override_config = false;
@@ -170,16 +165,14 @@ function build_HTML_config_list() {
 }
 
 function config_check_value(value, index, is_override) {
-	var isvalid = true;
+	let isvalid = true;
 	if (
-		value.trim()[0] == "-" ||
+		value.trim()[0] === "-" ||
 		value.length === 0 ||
-		value.toLowerCase().indexOf("#") != -1
+		value.toLowerCase().indexOf("#") !== -1
 	) {
 		isvalid = false;
-		config_error_msg = translate_text_item(
-			"cannot have '-', '#' char or be empty",
-		);
+		config_error_msg = translate_text_item("cannot have '-', '#' char or be empty");
 	}
 	return isvalid;
 }
@@ -320,35 +313,28 @@ function configGetvalue(index, is_override) {
 		item = config_override_List[index];
 	}
 	//remove possible spaces
-	value = id("config_" + prefix + index).value.trim();
-	if (value == item.defaultvalue) return;
+	value = id(`config_${prefix}${index}`).value.trim();
+	if (value === item.defaultvalue) return;
 	//check validity of value
-	var isvalid = config_check_value(value, index, is_override);
+	const isvalid = config_check_value(value, index, is_override);
 	//if not valid show error
 	if (!isvalid) {
-		id("btn_config_" + prefix + index).className = "btn btn-danger";
-		id("icon_config_" + prefix + index).className =
-			"form-control-feedback has-error ico_feedback";
-		setHTML("icon_config_" + prefix + index, get_icon_svg("remove"));
-		id("status_config_" + prefix + index).className =
-			"form-group has-feedback has-error";
-		alertdlg(
-			translate_text_item("Out of range"),
-			`${translate_text_item("Value ") + config_error_msg} !`,
-		);
+		id(`btn_config_${prefix}${index}`).className = "btn btn-danger";
+		id(`icon_config_${prefix}${index}`).className = "form-control-feedback has-error ico_feedback";
+		setHTML(`icon_config_${prefix}${index}`, get_icon_svg("remove"));
+		id(`status_config_${prefix}${index}`).className = "form-group has-feedback has-error";
+		alertdlg(translate_text_item("Out of range"), `${translate_text_item("Value ") + config_error_msg} !`);
 	} else {
 		//value is ok save it
 		var cmd = item.cmd + value;
 		config_lastindex = index;
 		config_lastindex_is_override = is_override;
 		item.defaultvalue = value;
-		id("btn_config_" + prefix + index).className = "btn btn-success";
-		id("icon_config_" + prefix + index).className =
-			"form-control-feedback has-success ico_feedback";
-		setHTML("icon_config_" + prefix + index, get_icon_svg("ok"));
-		id("status_config_" + prefix + index).className =
-			"form-group has-feedback has-success";
-		var url = "/command?plain=" + encodeURIComponent(cmd);
+		id(`btn_config_${prefix}${index}`).className = "btn btn-success";
+		id(`icon_config_${prefix}${index}`).className = "form-control-feedback has-success ico_feedback";
+		setHTML(`icon_config_${prefix}${index}`, get_icon_svg("ok"));
+		id(`status_config_${prefix}${index}`).className = "form-group has-feedback has-success";
+		const url = `/command?plain=${encodeURIComponent(cmd)}`;
 		SendGetHttp(url, setESPconfigSuccess, setESPconfigfailed);
 	}
 }
@@ -451,12 +437,10 @@ function setESPconfigfailed(error_code, response) {
 	alertdlg(translate_text_item("Set failed"), errMsg);
 	conErr(errMsg);
 	const prefix = config_lastindex_is_override ? "_override" : "";
-	id("btn_config_" + prefix + config_lastindex).className = "btn btn-danger";
-	id("icon_config_" + prefix + config_lastindex).className =
-		"form-control-feedback has-error ico_feedback";
-	setHTML("icon_config_" + prefix + config_lastindex, get_icon_svg("remove"));
-	id("status_config_" + prefix + config_lastindex).className =
-		"form-group has-feedback has-error";
+	id(`btn_config_${prefix}${config_lastindex}`).className = "btn btn-danger";
+	id(`icon_config_${prefix}${config_lastindex}`).className = "form-control-feedback has-error ico_feedback";
+	setHTML(`icon_config_${prefix}${config_lastindex}`, get_icon_svg("remove"));
+	id(`status_config_${prefix}${config_lastindex}`).className = "form-group has-feedback has-error";
 }
 
 function getESPconfigSuccess(response) {
@@ -475,10 +459,7 @@ function getESPconfigfailed(error_code, response) {
 	conErr(error_code, response);
 	displayNone("config_loader");
 	displayBlock("config_status");
-	setHTML(
-		"config_status",
-		stdErrMsg(error_code, response, translate_text_item("Failed")),
-	);
+	setHTML("config_status", stdErrMsg(error_code, response, translate_text_item("Failed")));
 	displayBlock("config_refresh_btn");
 }
 

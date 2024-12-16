@@ -40,15 +40,9 @@ function checkpassword() {
 	setHTML("password_content", "");
 	displayNone("change_password_btn");
 	if (pwd1 !== pwd2) {
-		setHTML(
-			"password_content",
-			translate_text_item("Passwords do not matches!"),
-		);
+		setHTML("password_content", translate_text_item("Passwords do not matches!"));
 	} else if (pwd1.length < 1 || pwd1.length > 16 || pwd1.indexOf(" ") > -1) {
-		setHTML(
-			"password_content",
-			translate_text_item("Password must be >1 and <16 without space!"),
-		);
+		setHTML("password_content", translate_text_item("Password must be >1 and <16 without space!"));
 	} else {
 		displayBlock("change_password_btn");
 	}

@@ -235,10 +235,7 @@ function on_macro_filename(event, index) {
 	const filename = event.value.trim();
 	entry.filename = event.value;
 	if (filename.length === 0) {
-		alertdlg(
-			translate_text_item("Out of range"),
-			translate_text_item("File name cannot be empty!"),
-		);
+		alertdlg(translate_text_item("Out of range"), translate_text_item("File name cannot be empty!"));
 	}
 	build_dlg_macrolist_line(index);
 }
@@ -319,11 +316,7 @@ const closeMacroDialog = () => {
 		}
 	}
 	if (modified) {
-		confirmdlg(
-			translate_text_item("Data modified"),
-			translate_text_item("Do you want to save?"),
-			process_macroCloseDialog,
-		);
+		confirmdlg(translate_text_item("Data modified"), translate_text_item("Do you want to save?"), process_macroCloseDialog);
 	} else {
 		closeModal("cancel");
 	}
@@ -341,12 +334,7 @@ function process_macroCloseDialog(answer) {
 
 function SaveNewMacroList() {
 	if (http_communication_locked) {
-		alertdlg(
-			translate_text_item("Busy..."),
-			translate_text_item(
-				"Communications are currently locked, please wait and retry.",
-			),
-		);
+		alertdlg(translate_text_item("Busy..."), translate_text_item("Communications are currently locked, please wait and retry."));
 		return;
 	}
 	for (let i = 0; i < 9; i++) {
@@ -354,10 +342,7 @@ function SaveNewMacroList() {
 			macrodlg_macrolist[i].filename.length === 0 &&
 			macrodlg_macrolist[i].class !== ""
 		) {
-			alertdlg(
-				translate_text_item("Out of range"),
-				translate_text_item("File name cannot be empty!"),
-			);
+			alertdlg(translate_text_item("Out of range"), translate_text_item("File name cannot be empty!"));
 			return;
 		}
 	}
@@ -425,10 +410,7 @@ function macroUploadsuccess(response) {
 }
 
 function macroUploadfailed(error_code, response) {
-	alertdlg(
-		translate_text_item("Error"),
-		translate_text_item("Save macro list failed!"),
-	);
+	alertdlg(translate_text_item("Error"), translate_text_item("Save macro list failed!"));
 	displayNone("macrodlg_upload_msg");
 }
 

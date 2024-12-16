@@ -53,12 +53,7 @@ const CONFIG_TOOLTIPS = {
 const refreshSettings = (hide_setting_list) => {
 	const common = new Common();
 	if (common.http_communication_locked) {
-		setHTML(
-			"config_status",
-			translate_text_item(
-				"Communication locked by another process, retry later.",
-			),
-		);
+		setHTML("config_status", translate_text_item("Communication locked by another process, retry later."));
 		return;
 	}
 	do_not_build_settings =
@@ -133,25 +128,21 @@ function update_UI_setting() {
 }
 
 /** to generate setting editor in setting or setup */
-const build_control_from_index = (
-	i,
-	actions,
-	extra_set_function = (i) => {},
-) => {
+const build_control_from_index = (i, actions, extra_set_function = (i) => { }) => {
 	let content = "<table>";
 	if (i < scl.length && i > -1) {
-		nbsub = scl[i].type == "F" ? scl[i].Options.length : 1;
-		for (var j = 0; j < nbsub; j++) {
+		nbsub = scl[i].type === "F" ? scl[i].Options.length : 1;
+		for (let j = 0; j < nbsub; j++) {
 			if (j > 0) {
 				content += "<tr><td style='height:10px;'></td></tr>";
 			}
 			content += "<tr><td style='vertical-align: middle;'>";
-			if (scl[i].type == "F") {
+			if (scl[i].type === "F") {
 				content += translate_text_item(scl[i].Options[j].display, true);
 				content += "</td><td>&nbsp;</td><td>";
 			}
 
-			let statId = sId(i, j, "status_");
+			const statId = sId(i, j, "status_");
 			content += `<div id='${statId}' class='form-group has-feedback' style='margin: auto;'>`;
 			content += "<div class='item-flex-row'>";
 			content += "<table><tr><td>";
@@ -204,7 +195,7 @@ const build_control_from_index = (
 			content += "<div class='input-group'>";
 			content += "<input class='hide_it'></input>";
 			content += "<div class='input-group-btn'>";
-			let btnId = sId(i, j, "btn_");
+			const btnId = sId(i, j, "btn_");
 			content += `<button id='${btnId}' class='btn btn-default' translate english_content='Set'>${translate_text_item("Set")}</button>`;
 			actions.push({
 				id: btnId,
@@ -214,7 +205,7 @@ const build_control_from_index = (
 					extra_set_function(i);
 				},
 			});
-			if (scl[i].pos == EP_STA_SSID) {
+			if (scl[i].pos === EP_STA_SSID) {
 				const btnId = sId(i, j, "scanwifi_");
 				content += `<button id='${btnId}' class='btn btn-default btn-svg'>${get_icon_svg("search")}</button>`;
 				actions.push({ id: btnId, type: "click", method: scanwifidlg(i, j) });
@@ -545,10 +536,7 @@ function settingsetvalue(i, j = 0) {
 	//if not valid show error
 	if (!isvalid) {
 		setsettingerror(i);
-		alertdlg(
-			translate_text_item("Out of range"),
-			`${translate_text_item("Value must be ") + setting_error_msg} !`,
-		);
+		alertdlg(translate_text_item("Out of range"), `${translate_text_item("Value must be ") + setting_error_msg} !`);
 	} else {
 		//value is ok save it
 		const cmd = scl[i].cmd + value;
@@ -640,23 +628,16 @@ function getESPsettingsfailed(error_code, response) {
 	conErr(error_code, response);
 	displayNone("settings_loader");
 	displayBlock("settings_status");
-	setHTML(
-		"settings_status",
-		stdErrMsg(error_code, response, translate_text_item("Failed")),
-	);
+	setHTML("settings_status", stdErrMsg(error_code, response, translate_text_item("Failed")));
 	displayBlock("settings_refresh_btn");
 }
 
 const restart_esp = () => {
-	confirmdlg(
-		translate_text_item("Please Confirm"),
-		translate_text_item("Restart FluidNC"),
-		process_restart_esp,
-	);
+	confirmdlg(translate_text_item("Please Confirm"), translate_text_item("Restart FluidNC"), process_restart_esp);
 };
 
 function process_restart_esp(answer) {
-	if (answer == "yes") {
+	if (answer === "yes") {
 		restartdlg();
 	}
 }

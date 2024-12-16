@@ -39,10 +39,7 @@ function checkloginsuccess(response_text) {
 	if (typeof response.authentication_lvl !== "undefined") {
 		if (response.authentication_lvl !== "guest") {
 			if (typeof response.authentication_lvl !== "undefined") {
-				setHTML(
-					"current_auth_level",
-					`(${translate_text_item(response.authentication_lvl)})`,
-				);
+				setHTML("current_auth_level", `(${translate_text_item(response.authentication_lvl)})`);
 			}
 			if (typeof response.user !== "undefined") {
 				setHTML("current_ID", response.user);
@@ -82,10 +79,7 @@ function loginfailed(error_code, response_text) {
 function loginsuccess(response_text) {
 	const response = JSON.parse(response_text);
 	if (typeof response.authentication_lvl !== "undefined") {
-		setHTML(
-			"current_auth_level",
-			`(${translate_text_item(response.authentication_lvl)})`,
-		);
+		setHTML("current_auth_level", `(${translate_text_item(response.authentication_lvl)})`);
 	}
 	displayNone("login_loader");
 	displayBlock("logout_menu");

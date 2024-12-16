@@ -80,22 +80,6 @@ import { grblpanel } from "./grblpanel.js";
 import { clear_cmd_list, SendFileHttp, SendGetHttp } from "./http.js";
 import { get_icon_svg } from "./icons.js";
 import { inputdlg } from "./inputdlg.js";
-import {
-	language_list,
-	germantrans,
-	englishtrans,
-	spanishtrans,
-	frenchtrans,
-	italiantrans,
-	japanesetrans,
-	hungariantrans,
-	polishtrans,
-	ptbrtrans,
-	russiantrans,
-	turkishtrans,
-	ukrtrans,
-	zh_CN_trans,
-} from "./languages.js";
 import { build_language_list, translate_text_item } from "./langUtils.js";
 import { DisconnectLogin, logindlg } from "./logindlg.js";
 import { showmacrodlg } from "./macrodlg.js";
@@ -306,21 +290,6 @@ export {
 	get_icon_svg,
 	// from inputdlg.js
 	inputdlg,
-	// from languages.js
-	language_list,
-	germantrans,
-	englishtrans,
-	spanishtrans,
-	frenchtrans,
-	italiantrans,
-	japanesetrans,
-	hungariantrans,
-	polishtrans,
-	ptbrtrans,
-	russiantrans,
-	turkishtrans,
-	ukrtrans,
-	zh_CN_trans,
 	// from langUtils.js
 	build_language_list,
 	translate_text_item,

@@ -80,7 +80,7 @@ function process_scanWifi_answer(response_text) {
 	}
 	setHTML("AP_scan_data", content);
 
-	for(const action in actions) {
+	for (const action in actions) {
 		id(action.id).addEventListener(action.type, (event) => action.method);
 	};
 
@@ -113,10 +113,7 @@ function getscanWififailed(error_code, response) {
 	conErr(error_code, response);
 	displayNone("AP_scan_loader");
 	displayBlock("AP_scan_status");
-	setHTML(
-		"AP_scan_status",
-		stdErrMsg(error_code, response, translate_text_item("Failed")),
-	);
+	setHTML("AP_scan_status", stdErrMsg(error_code, response, translate_text_item("Failed")));
 	displayBlock("refresh_scanwifi_btn");
 }
 
