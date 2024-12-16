@@ -305,7 +305,7 @@ function onZvelocityChange() {
 }
 
 function processMacroSave(answer) {
-	if (answer == "ok") {
+	if (answer === "ok") {
 		//console.log("now rebuild list");
 		control_build_macro_ui();
 	}

@@ -651,10 +651,10 @@ const SavePreferences = (save_current_preferences = false) => {
 		saveprefs += `","enable_ping":"${getChecked("enable_ping")}`;
 		preferenceslist = JSON.parse(saveprefs);
 	}
-	var blob = new Blob([JSON.stringify(preferenceslist, null, " ")], { type: "application/json" });
-	var file = new File([blob], prefFile);
-	var formData = new FormData();
-	var url = "/files";
+	const blob = new Blob([JSON.stringify(preferenceslist, null, " ")], { type: "application/json" });
+	const file = new File([blob], prefFile);
+	const formData = new FormData();
+	const url = "/files";
 	formData.append("path", "/");
 	formData.append("myfile[]", file, prefFile);
 	if (save_current_preferences) {
@@ -770,7 +770,7 @@ const CheckValue = (fId, valueDef) => {
 
 	const elemIdGroup = id(`${fId}_group`);
 	const elemIdIcon = id(`${fId}_icon`);
-	if (errorList.length == 0) {
+	if (!errorList.length) {
 		if (elemIdGroup) {
 			elemIdGroup.classList.remove("has-feedback");
 			elemIdGroup.classList.remove("has-error");

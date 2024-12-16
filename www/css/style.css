@@ -12,9 +12,8 @@ label {
 }
 
 .center {
-    text-align: center;
-    display: block;
-    margin: 0 auto;
+    display: flex;
+    justify-content: center; /* Center horizontally */
 }
 
 dl {
