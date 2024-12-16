@@ -1,28 +1,65 @@
 import html from "bun-plugin-html";
+import { platform } from "bun-utilities/os";
+import { minifySync } from "@swc/html";
 
 const cleanDist = () => {
 	console.log("No file delete function in bun yet. So no `cleanDist`");
-	
+
 	console.log(Bun.env.npm_lifecycle_script);
-}
+	console.log(import.meta.dir);
+};
 
-const cleanLanguageImports = async (fileContents: string, inclLang: string[] = ["en"]) => {
-	const regexRemoveIf = /\/\/\s*removeIf\s*\(\s*(?<removeDec>\S+)\s*\)/gmi;
+const pathDiv = (path: string) => path.replaceAll("\\", platform() !== "windows" ? "/" : "\\\\");
 
-	const removeIfResults = [...fileContents.matchAll(regexRemoveIf)];
-	if (!removeIfResults.length) {
+const limitedLanguageImports = async (fileContents: string, inclLang: string[] = ["en"]) => {
+	const langUtilsFile = [];
+	/** This shgould correspond exactly with `language_list in `langUtils.js` */
+	const language_list = [
+		["de", "germantrans"],
+		["en", "englishtrans"],
+		["es", "spanishtrans"],
+		["fr", "frenchtrans"],
+		["it", "italiantrans"],
+		["ja", "japanesetrans"],
+		["hu", "hungariantrans"],
+		["pl", "polishtrans"],
+		["ptbr", "ptbrtrans"],
+		["ru", "russiantrans"],
+		["tr", "turkishtrans"],
+		["uk", "ukrtrans"],
+		["zh_CN", "zh_CN_trans"],
+	];
+	for (let ix = 0; ix < language_list.length; ix++) {
+		const lang = language_list[ix];
+		if (inclLang.includes(lang[0])) {
+			const absPath = pathDiv(`${import.meta.dir}\\www\\js\\language\\${lang[0]}.json`);
+			langUtilsFile.push(`import ${lang[1]} from "${absPath}" with {type: "json"};`);
+		}
+	}
+	// Add in the original file
+	langUtilsFile.push(fileContents);
+
+	return langUtilsFile.join("\n");
+};
+
+/** Change all import filepaths to their absolute version */
+const absolutifyImports = async (fileContents: string) => {
+	const regexImp = /}\s*from\s*['"](?<imppath>.*)['"]\;/gm;
+	const impResults = [...fileContents.matchAll(regexImp)];
+	if (!impResults.length) {
+		// Leave the file as-is - and move on
 		return fileContents;
 	}
 
-
-	// Remove the (not) required stuff from the fileContents
-	let fcRemoved = fileContents;
-	for (let ix = 0; ix < removeIfResults.length; ix++) {
-		const rir = removeIfResults[ix];
-		console.log(`Found for removal '${rir[1]}'`);
+	let fcAbsImp = fileContents;
+	const repPath = `${import.meta.dir}\\www\\js\\`;
+	for (let ix = 0; ix < impResults.length; ix++) {
+		const ir = impResults[ix];
+		const impFilePath = pathDiv(ir[1].replace("./", repPath));
+		fcAbsImp = fcAbsImp.replace(ir[1], impFilePath);
 	}
-	return fcRemoved;
-}
+	return fcAbsImp;
+};
 
 const loadAndReplaceHTML = async (filePath: string, fileContents: string) => {
 	const fcLower = fileContents.toLowerCase();
@@ -44,8 +81,7 @@ const loadAndReplaceHTML = async (filePath: string, fileContents: string) => {
 		const fcNoLoad = fileContents.replace(regexScript, "");
 
 		// Now find all of the places where the above script was used
-		const regexHTML =
-			/\<div\s+id\s*=\s*['"](?<htmlpath>.*\.html)['"]\s*class.*loadhtml.*><\/div>/gm;
+		const regexHTML = /\<div\s+id\s*=\s*['"](?<htmlpath>.*\.html)['"]\s*class.*loadhtml.*><\/div>/gm;
 		const loadHTMLResults = [...fcNoLoad.matchAll(regexHTML)];
 		if (!loadHTMLResults.length) {
 			// Leave the file as-is-ish - and move on
@@ -60,7 +96,7 @@ const loadAndReplaceHTML = async (filePath: string, fileContents: string) => {
 			const hFile = Bun.file(childFilePath);
 			let hText = await hFile.text();
 			if (hText.includes(".svg")) {
-				const regexSVG = /\<img\s+src\s*=\s*['"](?<svgpath>.*\.svg)['"].*><\/img>/gmi;
+				const regexSVG = /\<img\s+src\s*=\s*['"](?<svgpath>.*\.svg)['"].*><\/img>/gim;
 				const findSVGResults = [...hText.matchAll(regexSVG)];
 				if (findSVGResults.length) {
 					console.log(`found SVGs in ${childFilePath}`);
@@ -100,19 +136,24 @@ const build = async () => {
 		plugins: [
 			html({
 				inline: true,
-				keepOriginalPaths: true,
+				keepOriginalPaths: false,
 				async preprocessor(processor) {
 					const files = processor.getFiles();
 
+					// CSS also gets processed, but it falls right through this loop unaffected
+
+					//  Process JS / TS before the HTML
 					for (const file of files) {
-						if (file.extension === ".html") {
-							// We process html files last
+						if (![".js", ".ts"].includes(file.extension)) {
 							continue;
 						}
-						console.log(`Processing '${file.path}'`);
-						if (file.path.endsWith("common.js")) {
-							const fcRemoved = await cleanLanguageImports(await file.content);
-							// processor.writeFile(file.path, fcRemoved);
+						console.log(`Processing JS/TS file '${file.path}'`);
+						if (file.path.endsWith("langUtils.js")) {
+							const fcLang = await limitedLanguageImports(await file.content);
+							processor.writeFile(file.path, fcLang);
+						} else {
+							const fcAbsImp = await absolutifyImports(await file.content);
+							processor.writeFile(file.path, fcAbsImp);
 						}
 					}
 
@@ -121,7 +162,7 @@ const build = async () => {
 							// Now we're only processing html files
 							continue;
 						}
-						console.log(`Processing '${file.path}'`);
+						console.log(`Processing HTML file '${file.path}'`);
 						const fc = await file.content;
 						processor.writeFile(file.path, await loadAndReplaceHTML(file.path, fc));
 					}
@@ -134,6 +175,32 @@ const build = async () => {
 const compress = async () => {
 	const indexFile = Bun.file("./dist/index.html");
 	const data = await indexFile.arrayBuffer();
+	// const { code, map } = minifySync(data, {
+	// 		// filename?: string;
+	// 		// iframeSrcdoc?: boolean;
+	// 		scriptingEnabled: true,
+	// 		// forceSetHtml5Doctype?: boolean;
+	// 		collapseWhitespaces: "all",
+	// 		removeEmptyMetadataElements: true,
+	// 		removeComments: true,
+	// 		// preserveComments?: string[],
+	// 		minifyConditionalComments: true,
+	// 		removeEmptyAttributes: true,
+	// 		removeRedundantAttributes: "all",
+	// 		collapseBooleanAttributes: true,
+	// 		normalizeAttributes: true,
+	// 		minifyJson: true,
+	// 		// TODO improve me after typing `@swc/css`
+	// 		minifyJs: true,
+	// 		minifyCss: true,
+	// 		// minifyAdditionalScriptsContent?: [string, MinifierType][];
+	// 		// minifyAdditionalAttributes?: [string, MinifierType][];
+	// 		// sortSpaceSeparatedAttributeValues?: boolean;
+	// 		// // sortAttributes?: boolean;
+	// 		// tagOmission?: boolean;
+	// 		// selfClosingVoidElements?: boolean;
+	// 		// quotes?: boolean;
+	// });
 	const compressed = Bun.gzipSync(data, { level: 9 });
 	Bun.write("./dist/index.html.gz", compressed);
 };

@@ -774,6 +774,12 @@ const tabletInit = () => {
     loadConfigValues();
     loadCornerValues();
 
+    numpad.attach({ target: "disM", axis: "D" });
+    numpad.attach({ target: "disZ", axis: "Z" });
+    //numpad.attach({target: "wpos-y", axis: "Y"});
+    //numpad.attach({target: "wpos-z", axis: "Z"});
+    //numpad.attach({target: "wpos-a", axis: "A"});
+
     id("tablettablink").addEventListener("DOMActivate", () => {
       fullscreenIfMobile();
       setBottomHeight();
@@ -1143,12 +1149,6 @@ function mdiEnterKey(event) {
 // tablet is active.
 window.addEventListener("keydown", handleKeyDown);
 window.addEventListener("keyup", handleKeyUp);
-
-numpad.attach({ target: "disM", axis: "D" });
-numpad.attach({ target: "disZ", axis: "Z" });
-//numpad.attach({target: "wpos-y", axis: "Y"});
-//numpad.attach({target: "wpos-z", axis: "Z"});
-//numpad.attach({target: "wpos-a", axis: "A"});
 
 function saveJogDists() {
   localStorage.setItem("disM", id("disM").innerText);
