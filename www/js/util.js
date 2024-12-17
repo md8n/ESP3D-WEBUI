@@ -145,7 +145,7 @@ export {
   conErr,
   stdErrMsg,
   disable_items,
-  displayBlock, displayFlex, displayInline, displayNone,
+  displayBlock, displayFlex, displayInline, displayNone, displayUndoNone,
   getChecked, setChecked,
   getValue, setValue,
   setHTML,

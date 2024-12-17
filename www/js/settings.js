@@ -233,8 +233,7 @@ function get_index_from_eeprom_pos(pos) {
 	return -1;
 }
 
-const build_control_from_pos = (pos, actions, extra) =>
-	build_control_from_index(get_index_from_eeprom_pos(pos), actions, extra);
+const build_control_from_pos = (pos, actions, extra) => build_control_from_index(get_index_from_eeprom_pos(pos), actions, extra);
 
 /** Send a command to call Config/Overwrite.
  *
@@ -242,8 +241,7 @@ const build_control_from_pos = (pos, actions, extra) =>
  * Then the error code 153 will be returned via the socket.
  * @see maslow.js maslowErrorMsgHandling()
  */
-const saveMaslowYaml = () =>
-	SendGetHttp(`/command?plain=${encodeURIComponent("$CO")}`);
+const saveMaslowYaml = () => SendGetHttp(`/command?plain=${encodeURIComponent("$CO")}`);
 
 const build_HTML_setting_list = (filter) => {
 	//this to prevent concurrent process to update after we clean content
