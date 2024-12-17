@@ -74,11 +74,7 @@ function process_scanWifi_answer(response_text) {
 				content += `<td style='text-align:center;vertical-align:middle'>${protIcon}</td>`;
 				content += `<td><button id="${btnId}" class='btn btn-primary'>${get_icon_svg("ok")}</button></td>`;
 				content += "</tr>";
-				actions.push({
-					id: btnId,
-					type: "click",
-					method: select_ap_ssid(escapedSSID),
-				});
+				actions.push({ id: btnId, type: "click", method: (event) => select_ap_ssid(escapedSSID) });
 			}
 		}
 	} catch (e) {
