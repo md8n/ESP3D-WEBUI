@@ -31,11 +31,15 @@ var sndok = true;
 
 var versionNumber = 0.87
 
-//Print the version number to the console
-const msgWindow = document.getElementById("messages");
-if (msgWindow) {
-  msgWindow.textContent += `\nIndex.html Version: ${versionNumber}`;
-  msgWindow.scrollTop = msgWindow.scrollHeight;
+/** Print the version number to the console */
+const showVersionNumber = () => {
+  const msgWindow = document.getElementById('messages');
+  if (msgWindow) {
+    let text = msgWindow.textContent;
+    text = `${text}\nIndex.html Version: ${versionNumber}`;
+    msgWindow.textContent = text;
+    msgWindow.scrollTop = msgWindow.scrollHeight;
+  }
 }
 
 function beep(vol, freq, duration) {
@@ -219,8 +223,6 @@ const setAxis = (axis, field) => {
   tabletClick();
   sendCommand(`G10 L20 P1 ${axis}${id(field).value}`);
 };
-var timeout_id = 0,
-  hold_time = 1000;
 
 var longone = false;
 function long_jog(target) {
@@ -763,6 +765,8 @@ function tabletGetFileList(path) {
 const tabletInit = () => {
   // put in a timeout to allow things to settle. when they were here at startup ui froze from time to time.
   setTimeout(() => {
+    showVersionNumber();
+
     // get grbl status
     SendRealtimeCmd(0x3f); // ?
     // print startup messages in serial
@@ -779,6 +783,9 @@ const tabletInit = () => {
     //numpad.attach({target: "wpos-y", axis: "Y"});
     //numpad.attach({target: "wpos-z", axis: "Z"});
     //numpad.attach({target: "wpos-a", axis: "A"});
+
+    setJogSelector('mm');
+    loadJogDists();
 
     id("tablettablink").addEventListener("DOMActivate", () => {
       fullscreenIfMobile();
@@ -1133,8 +1140,6 @@ function handleKeyUp(event) {
   }
 }
 
-setJogSelector("mm");
-
 function mdiEnterKey(event) {
   if (event.key === "Enter") {
     MDIcmd(event.target.value);
@@ -1165,7 +1170,6 @@ function loadJogDists() {
     id("disZ").innerText = disZ;
   }
 }
-loadJogDists();
 
 function fullscreenIfMobile() {
   if (/Mobi|Android/i.test(navigator.userAgent)) {
@@ -1206,28 +1210,28 @@ function controlHeight() {
 
 window.onresize = setBottomHeight;
 
-function showCalibrationPopup() {
-  document.getElementById("calibration-popup").style.display = "block";
-}
+// function showCalibrationPopup() {
+//   document.getElementById("calibration-popup").style.display = "block";
+// }
 
-function homeZ() {
-  console.log("Homing Z latest");
+// function homeZ() {
+//   console.log("Homing Z latest");
 
-  const move = (params) => {
-    params = params || {};
-    let s = "";
-    for (key in params) {
-      s += key + params[key];
-    }
-    moveTo(s);
-  };
+//   const move = (params) => {
+//     params = params || {};
+//     let s = "";
+//     for (key in params) {
+//       s += key + params[key];
+//     }
+//     moveTo(s);
+//   };
 
-  move({ Z: 85 });
-  sendCommand("G91 G0 Z-28");
-  //This is a total hack to make set the z to zero after the moves complete and should be done better
-  setTimeout(() => { sendCommand("$HZ"); }, 25000);
-  setTimeout(() => { zeroAxis("Z"); }, 26000);
-}
+//   move({ Z: 85 });
+//   sendCommand("G91 G0 Z-28");
+//   //This is a total hack to make set the z to zero after the moves complete and should be done better
+//   setTimeout(() => { sendCommand("$HZ"); }, 25000);
+//   setTimeout(() => { zeroAxis("Z"); }, 26000);
+// }
 
 document.addEventListener("click", (event) => {
   const elemIdsToTest = ["calibration-popup", "calibrationBTN", "numPad"];

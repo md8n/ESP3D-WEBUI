@@ -50,19 +50,11 @@ function build_color_selection(index, actions) {
 	content += "</g>";
 	content += "</svg>";
 	content += "</button>";
-	actions.push({
-		id: `macro_color_line${index}_btn`,
-		type: "click",
-		method: (event) => showhide_drop_menu(event),
-	});
+	actions.push({ id: `macro_color_line${index}_btn`, type: "click", method: (event) => showhide_drop_menu(event) });
 	content += `<div class='dropmenu-content ${menu_pos}' style='min-width:auto; padding-left: 4px;padding-right: 4px;'>`;
 	for ((col) in ["default", "primary", "info", "warning", "danger"]) {
 		content += `<button id='macro_select_color_${col}${index}_btn' class='btn btn-${col}'>&nbsp;</button>`;
-		actions.push({
-			id: `macro_select_color_${col}${index}_btn`,
-			type: "click",
-			method: (event) => macro_select_color(event, col, index),
-		});
+		actions.push({ id: `macro_select_color_${col}${index}_btn`, type: "click", method: (event) => macro_select_color(event, col, index) });
 	};
 	content += "</div>";
 	content += "</div>";
@@ -83,30 +75,14 @@ function build_target_selection(index, actions) {
 	content += "</g>";
 	content += "</svg>";
 	content += "</button>";
-	actions.push({
-		id: `macro_target_line${index}_btn`,
-		type: "click",
-		method: (event) => showhide_drop_menu(event),
-	});
+	actions.push({ id: `macro_target_line${index}_btn`, type: "click", method: (event) => showhide_drop_menu(event) });
 	content += `<div class='dropmenu-content ${menu_pos}' style='min-width:auto'>`;
 	content += `<a id='macro_select_targetESP${index}_link' href=#>ESP</a>`;
 	content += `<a id='macro_select_targetSD${index}_link' href=#>SD</a>`;
 	content += `<a id='macro_select_targetURI${index}_link' href=#>URI</a>`;
-	actions.push({
-		id: `macro_select_targetESP${index}_link`,
-		type: "click",
-		method: (event) => macro_select_target(event, "ESP", index),
-	});
-	actions.push({
-		id: `macro_select_targetSD${index}_link`,
-		type: "click",
-		method: (event) => macro_select_target(event, "SD", index),
-	});
-	actions.push({
-		id: `macro_select_targetURI${index}_link`,
-		type: "click",
-		method: (event) => macro_select_target(event, "URI", index),
-	});
+	actions.push({ id: `macro_select_targetESP${index}_link`, type: "click", method: (event) => macro_select_target(event, "ESP", index) });
+	actions.push({ id: `macro_select_targetSD${index}_link`, type: "click", method: (event) => macro_select_target(event, "SD", index) });
+	actions.push({ id: `macro_select_targetURI${index}_link`, type: "click", method: (event) => macro_select_target(event, "URI", index) });
 
 	content += "</div>";
 	content += "</div>";
@@ -127,22 +103,14 @@ function build_glyph_selection(index, actions) {
 	content += "</g>";
 	content += "</svg>";
 	content += "</button>";
-	actions.push({
-		id: `macro_glyph_line${index}_btn`,
-		type: "click",
-		method: (event) => showhide_drop_menu(event),
-	});
+	actions.push({ id: `macro_glyph_line${index}_btn`, type: "click", method: (event) => showhide_drop_menu(event) });
 	content += `<div class='dropmenu-content ${menu_pos}' style='min-width:30em'>`;
 	for (const key in list_icon) {
 		if (key === "plus") {
 			continue;
 		}
 		content += `<button id='macro_glyph_select${index}_btn' class='btn btn-default btn-xs'><span>${get_icon_svg(key)}</span></button>`;
-		actions.push({
-			id: `macro_glyph_select${index}_btn`,
-			type: "click",
-			method: (event) => macro_select_glyph(event, key, index),
-		});
+		actions.push({ id: `macro_glyph_select${index}_btn`, type: "click", method: (event) => macro_select_glyph(event, key, index) });
 	}
 	content += "</div>";
 	content += "</div>";
@@ -159,16 +127,8 @@ function build_filename_selection(index, actions) {
 	content += `<span id='icon_macro_status_line_${index}' style='color:#a94442; position:absolute;bottom:4px;left:7.5em;${noFilename ? "display:none" : ""}'>${get_icon_svg("remove")}</span>`;
 	content += "</input></span>";
 
-	actions.push({
-		id: mflId,
-		type: "keyup",
-		method: macro_filename_OnKeyUp(index),
-	});
-	actions.push({
-		id: mflId,
-		type: "change",
-		method: (event, index) => on_macro_filename(event, index),
-	});
+	actions.push({ id: mflId, type: "keyup", method: (event) => macro_filename_OnKeyUp(index) });
+	actions.push({ id: mflId, type: "change", method: (event) => on_macro_filename(event, index) });
 
 	return content;
 }
@@ -188,7 +148,7 @@ function build_dlg_macrolist_line(index) {
 	content += buildTdVertMiddle(
 		`<button id='${btnId}' class='${btnClass}' style='${btnStyle}>${get_icon_svg(noEC ? "plus" : "trash")}</button>`,
 	);
-	actions.push({ id: btnId, type: "click", method: macro_reset_button(index) });
+	actions.push({ id: btnId, type: "click", method: (event) => macro_reset_button(index) });
 	if (noEC) {
 		content += "<td colspan='5'></td>";
 	} else {
@@ -197,11 +157,7 @@ function build_dlg_macrolist_line(index) {
 		content += buildTdVertMiddle(
 			`<input type='text' id='${inpId}' style='width:4em' class='form-control' value='${entryName}'/>`,
 		);
-		actions.push({
-			id: inpId,
-			type: "change",
-			method: (event, index) => on_macro_name(event, index),
-		});
+		actions.push({ id: inpId, type: "change", method: (event) => on_macro_name(event, index) });
 		content += buildTdVertMiddle(build_glyph_selection(index, actions));
 		content += buildTdVertMiddle(build_color_selection(index, actions));
 		content += buildTdVertMiddle(build_target_selection(index, actions));
@@ -210,7 +166,7 @@ function build_dlg_macrolist_line(index) {
 
 	setHTML(`macro_line_${index}`, content);
 	actions.forEach((action) => {
-		id(action.id).addEventListener(action.type, (event) => action.method);
+		id(action.id).addEventListener(action.type, action.method);
 	});
 }
 

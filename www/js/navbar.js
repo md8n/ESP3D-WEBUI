@@ -21,20 +21,20 @@ import {
 const navbar = () => {
 	id("toggleLockUI").addEventListener("click", (event) => ontoggleLock());
 
-	id("showPreferencesDlg").addEventListener("click", (event) => showpreferencesdlg(),);
+	id("showPreferencesDlg").addEventListener("click", (event) => showpreferencesdlg());
 	id("showSetupDlg").addEventListener("click", (event) => setupdlg());
 	id("showCreditsDlg").addEventListener("click", (event) => creditsdlg());
 
 	// Note: for `maintab` see dashtab.html
-	id("maintablink").addEventListener("click", (event) => opentab(event, "maintab", "mainuitabscontent", "mainuitablinks"),);
-	id("camtablink").addEventListener("click", (event) => opentab(event, "cameratab", "mainuitabscontent", "mainuitablinks"),);
-	id("configtablink").addEventListener("click", (event) => opentab(event, "configtab", "mainuitabscontent", "mainuitablinks"),);
-	id("settingtablink").addEventListener("click", (event) => opentab(event, "settingstab", "mainuitabscontent", "mainuitablinks"),);
-	id("tablettablink").addEventListener("click", (event) => opentab(event, "tablettab", "mainuitabscontent", "mainuitablinks"),);
+	id("maintablink").addEventListener("click", (event) => opentab(event, "maintab", "mainuitabscontent", "mainuitablinks"));
+	id("camtablink").addEventListener("click", (event) => opentab(event, "cameratab", "mainuitabscontent", "mainuitablinks"));
+	id("configtablink").addEventListener("click", (event) => opentab(event, "configtab", "mainuitabscontent", "mainuitablinks"));
+	id("settingtablink").addEventListener("click", (event) => opentab(event, "settingstab", "mainuitabscontent", "mainuitablinks"));
+	id("tablettablink").addEventListener("click", (event) => opentab(event, "tablettab", "mainuitabscontent", "mainuitablinks"));
 
 	id("password_menu").addEventListener("click", (event) => changepassworddlg());
 	id("showLoginDlg").addEventListener("click", (event) => logindlg());
-	id("logout_menu").addEventListener("click", (event) => confirmdlg(translate_text_item("Disconnection requested"), translate_text_item("Please confirm disconnection."), DisconnectLogin,),);
+	id("logout_menu").addEventListener("click", (event) => confirmdlg(translate_text_item("Disconnection requested"), translate_text_item("Please confirm disconnection."), DisconnectLogin,));
 
 	cameratab();
 	configtab();
