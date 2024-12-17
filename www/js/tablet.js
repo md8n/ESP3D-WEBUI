@@ -9,12 +9,14 @@ var sndok = true
 
 var versionNumber = 0.87
 
-//Print the version number to the console
-const msgWindow = document.getElementById('messages')
-let text = msgWindow.textContent
-text = `${text}\nIndex.html Version: ${versionNumber}`
-msgWindow.textContent = text
-msgWindow.scrollTop = msgWindow.scrollHeight
+/** Print the version number to the console */
+const showVersionNumber = () => {
+  const msgWindow = document.getElementById('messages');
+  let text = msgWindow.textContent;
+  text = `${text}\nIndex.html Version: ${versionNumber}`;
+  msgWindow.textContent = text;
+  msgWindow.scrollTop = msgWindow.scrollHeight;
+}
 
 function beep(vol, freq, duration) {
   if (snd == null) {
@@ -717,6 +719,8 @@ function tabletGetFileList(path) {
 function tabletInit() {
   // put in a timeout to allow things to settle. when they were here at startup ui froze from time to time.
   setTimeout(() => {
+    showVersionNumber();
+
     // get grbl status
     SendRealtimeCmd(0x3f); // ?
     // print startup messages in serial
@@ -727,6 +731,9 @@ function tabletInit() {
     requestModes();
     loadConfigValues();
     loadCornerValues();
+
+    setJogSelector('mm');
+    loadJogDists();
 
     id("tablettablink").addEventListener("DOMActivate", () => {
       fullscreenIfMobile();
@@ -1029,8 +1036,6 @@ function handleKeyUp(event) {
   }
 }
 
-setJogSelector('mm')
-
 function mdiEnterKey(event) {
   if (event.key === 'Enter') {
     MDIcmd(event.target.value)
@@ -1058,7 +1063,6 @@ function saveJogDists() {
 }
 
 function loadJogDists() {
-
   const disM = localStorage.getItem("disM");
   if (disM != null) {
     id('disM').innerText = disM;
@@ -1068,7 +1072,6 @@ function loadJogDists() {
     id('disZ').innerText = disZ;
   }
 }
-loadJogDists();
 
 function fullscreenIfMobile() {
   if (/Mobi|Android/i.test(navigator.userAgent)) {
@@ -1169,8 +1172,6 @@ function hideModal(modalId) {
     modal.style.display = 'none'
   }
 }
-
-
 
 const onCalibrationButtonsClick = async (command, msg) => {
   sendCommand(command)
