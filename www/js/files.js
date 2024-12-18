@@ -440,11 +440,12 @@ const files_list_success = (response_text) => {
 		for (let i = 0; i < response.files.length; i++) {
 			const file = response.files[i];
 			const file_name = file.name;
+			const isdirectory = file.size === "-1";
 			files_file_list.push({
 				name: file_name,
 				sdname: file_name,
-				size: (file.size !== "-1") ? file.size : "",
-				isdir: file.size === "-1",
+				size: !isdirectory ? file.size : "",
+				isdir: isdirectory,
 				datetime: file.datetime,
 				isprintable: files_isgcode(file_name, isdirectory),
 			});
