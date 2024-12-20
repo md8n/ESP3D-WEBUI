@@ -262,12 +262,12 @@ function processMacroSave(answer) {
 	}
 }
 
-function control_build_macro_button(entry) {
+function control_build_macro_button(index, entry) {
 	const noGlyph = entry.glyph.length === 0;
 	const btnStyle = noGlyph ? " style='display:none'" : "";
 	const entryIcon = get_icon_svg(noGlyph ? "star" : entry.glyph);
 
-	let content = `<button id="control_macro_${i}" class='btn fixedbutton ${entry.class}' type='text'${btnStyle}>`;
+	let content = `<button id="control_macro_${index}" class='btn fixedbutton ${entry.class}' type='text'${btnStyle}>`;
 	content += `<span style='position:relative; top:3px;'>${entryIcon}</span>${entry.name.length > 0 ? "&nbsp;" : ""}${entry.name}`;
 	content += "</button>";
 
@@ -297,13 +297,13 @@ function control_build_macro_ui() {
 	content += "</div>";
 	for (var i = 0; i < 9; i++) {
 		const entry = control_macrolist[i];
-		content += control_build_macro_button(entry);
+		content += control_build_macro_button(i, entry);
 		actions.push({ id: `control_macro_${i}`, type: "click", method: macro_command(entry.target, entry.filename) });
 	}
-	id('Macro_list').innerHTML = content;
-	for (const action in actions) {
+	id("Macro_list").innerHTML = content;
+	actions.forEach((action) => {
 		id(action.id).addEventListener(action.type, (event) => action.method);
-	}
+	});
 }
 
 function macro_command(target, filename) {

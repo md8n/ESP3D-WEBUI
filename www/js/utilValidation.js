@@ -82,7 +82,6 @@ const valueIsText = (value, valueDef) => {
  * success is an empty array,
  * failure is an array of one or more error messages  */
 const checkValue = (value, valueDef, errorList = []) => {
-  const errorList = [];
   switch (valueDef.valueType) {
     case "int": errorList.push(valueIsInt(value, valueDef)); break;
     case "float": errorList.push(valueIsFloat(value, valueDef)); break;
