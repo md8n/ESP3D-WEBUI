@@ -30,8 +30,8 @@ const grblpanel = () => {
     id("grblpanel_flood").addEventListener("click", (event) => SendRealtimeCmd(0xa0));
     id("grblpanel_mist").addEventListener("click", (event) => SendRealtimeCmd(0xa1));
 
-    id("grblspindle_fwd").addEventListener("click", (event) => SendPrinterCommand(`M3 S${common.spindleTabSpindleSpeed}`, false, null, null, 1, 1,));
-    id("grblspindle_rew").addEventListener("click", (event) => SendPrinterCommand(`M4 S${common.spindleTabSpindleSpeed}`, false, null, null, 1, 1,));
+    id("grblspindle_fwd").addEventListener("click", (event) => SendPrinterCommand(`M3 S${spindleTabSpindleSpeed}`, false, null, null, 1, 1,));
+    id("grblspindle_rew").addEventListener("click", (event) => SendPrinterCommand(`M4 S${spindleTabSpindleSpeed}`, false, null, null, 1, 1,));
     id("grblspindle_off").addEventListener("click", (event) => SendPrinterCommand("M5 S0", false, null, null, 1, 1));
     id("grblspindle_rpm").addEventListener("change", (event) => setSpindleSpeed(event.value));
     id("grblspindle_rpm").addEventListener("keyup", (event) => setSpindleSpeed(event.value));

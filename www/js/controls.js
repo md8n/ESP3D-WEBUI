@@ -212,14 +212,13 @@ function SendJogcommand(cmd, feedrate) {
 		return;
 	}
 
-	const controlName = axis.startsWith("Z") ? "controlpanel_z_feedrate" : "controlpanel_xy_feedrate";
-	const prefName = axis.startsWith("Z") ? "z_feedrate" : "xy_feedrate";
-	const valueDef = buildFeedRateValueDef(axis);
+	const controlName = feedrate.startsWith("Z") ? "controlpanel_z_feedrate" : "controlpanel_xy_feedrate";
+	const prefName = feedrate.startsWith("Z") ? "z_feedrate" : "xy_feedrate";
+	const valueDef = buildFeedRateValueDef(feedrate);
 
 	let letter = "Z";
-	const common = new Common();
 	let cmd = "";
-	if (common.grblaxis > 3) {
+	if (grblaxis > 3) {
 		letter = "Axis";
 		valueDef.label = valueDef.label.replace("Z axis", letter);
 		cmd = cmd.replace("Z", id("control_select_axis").value);
@@ -279,7 +278,7 @@ function control_build_macro_ui() {
 
 	var content = "<div class='tooltip'>";
 	content += "<span class='tooltip-text'>Manage macros</span>"
-	content += "<button class='btn btn-primary' onclick='showmacrodlg(processMacroSave)'>";
+	content += "<button id='control_btn_show_macro_dlg' class='btn btn-primary' onclick='showmacrodlg(processMacroSave)'>";
 	actions.push({ id: "control_btn_show_macro_dlg", type: "click", method: showmacrodlg(processMacroSave) });
 	content += "<span class='badge'>";
 	content += "<svg width='1.3em' height='1.2em' viewBox='0 0 1300 1200'>";

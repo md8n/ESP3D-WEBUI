@@ -80,8 +80,7 @@ function AddCmd(cmd_fn, id) {
         http_errorfn(999, translate_text_item("Server not responding"));
         return;
     }
-    var cmd_id = 0;
-    if (typeof id != 'undefined') cmd_id = id;
+    const cmd_id = (typeof id !== 'undefined') ? id : 0;
     //console.log("adding command");
     var cmd = {
         cmd: cmd_fn,

@@ -58,35 +58,44 @@ function browser_is(bname) {
 
 window.onload = () => {
 	//to check if javascript is disabled like in android preview
-	displayNone('loadingmsg');
-	console.log('Connect to board');
+	displayNone("loadingmsg");
+	console.log("Connect to board");
 
-	let connectLoaded = false;
-	let controlsLoaded = false;
-	let navbarLoaded = false;
+	// These are all falsey, indicating nothing has been loaded
+	let connectDlg = "";
+	let controlsPanel = "";
+	let navbarLoaded = "";
+
+	let failSafe = 10;
 
 	let startUpInt = setInterval(() => {
 		// Check for various key HTML panels and load them up
-		if (!connectLoaded && id("connectdlg.html")) {
+		if (!connectDlg && id("connectdlg.html")) {
+			connectDlg = "loading";
 			connectdlg();
-			connectLoaded = true;
+			connectDlg = "loaded";
 		}
 
-		if (!controlsLoaded && id("controlspanel.html")) {
+		if (!controlsPanel && id("controlPanel")) {
+			controlsPanel = "loading";
 			ControlsPanel();
-			controlsLoaded = true;
+			controlsPanel = "loaded";
 		}
 
 		if (!navbarLoaded && id("navbar")) {
+			navbarLoaded = "loading";
 			navbar();
 			tabletInit();
-			navbarLoaded = true;
+			navbarLoaded = "loaded";
 		}
 
-		if (connectLoaded && controlsLoaded && navbarLoaded) {
+		if ((connectDlg && controlsPanel && navbarLoaded) || failSafe <= 0) {
 			clearInterval(startUpInt);
 			startUpInt = null;
 		}
+
+		// Ensure that we always break out of this
+		failSafe--;
 	}, 500);
 }
 
@@ -195,7 +204,9 @@ function Set_page_title(page_title) {
 
 function initUI() {
 	console.log('Init UI');
-	if (ESP3D_authentication) connectdlg(false);
+	if (ESP3D_authentication) {
+		connectdlg(false);
+	}
 	AddCmd(display_boot_progress);
 	//initial check
 	if (typeof target_firmware === 'undefined' || typeof web_ui_version === 'undefined' || typeof direct_sd === 'undefined')
@@ -238,7 +249,7 @@ function initUI_3() {
 	console.log('Get macros');
 	init_controls_panel();
 	init_grbl_panel();
-	console.log('Get preferences')
+	console.log('Get preferences');
 	getpreferenceslist();
 	initUI_4();
 }
@@ -265,7 +276,7 @@ function initUI_4() {
 }
 
 function show_main_UI() {
-	displayUndoNone('main_ui')
+	displayUndoNone('main_ui');
 }
 
 // var socket_response = ''
