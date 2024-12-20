@@ -289,13 +289,13 @@ function applypreferenceslist() {
     }
 
     id('preferences_pos_Interval_check').value = Number.parseInt(preferenceslist[0].interval_positions);
-    id('preferences_control_xy_velocity').value = Number.parseInt(preferenceslist[0].xy_feedrate);
-    id('preferences_control_z_velocity').value = Number.parseInt(preferenceslist[0].z_feedrate);
+    id('preferences_control_xy_velocity').value = Number.parseFloat(preferenceslist[0].xy_feedrate);
+    id('preferences_control_z_velocity').value = Number.parseFloat(preferenceslist[0].z_feedrate);
 
-    if (grblaxis > 2) axis_Z_feedrate = Number.parseInt(preferenceslist[0].z_feedrate);
-    if (grblaxis > 3) axis_A_feedrate = Number.parseInt(preferenceslist[0].a_feedrate);
-    if (grblaxis > 4) axis_B_feedrate = Number.parseInt(preferenceslist[0].b_feedrate);
-    if (grblaxis > 5) axis_C_feedrate = Number.parseInt(preferenceslist[0].c_feedrate);
+    if (grblaxis > 2) axis_Z_feedrate = Number.parseFloat(preferenceslist[0].z_feedrate);
+    if (grblaxis > 3) axis_A_feedrate = Number.parseFloat(preferenceslist[0].a_feedrate);
+    if (grblaxis > 4) axis_B_feedrate = Number.parseFloat(preferenceslist[0].b_feedrate);
+    if (grblaxis > 5) axis_C_feedrate = Number.parseFloat(preferenceslist[0].c_feedrate);
 
     if (grblaxis > 3) {
         const letter = id('control_select_axis').value;
@@ -316,7 +316,7 @@ function applypreferenceslist() {
     }
 
     id('preferences_probemaxtravel').value = Number.parseFloat(preferenceslist[0].probemaxtravel);
-    id('preferences_probefeedrate').value = Number.parseInt(preferenceslist[0].probefeedrate);
+    id('preferences_probefeedrate').value = Number.parseFloat(preferenceslist[0].probefeedrate);
     id('preferences_proberetract').value = Number.parseFloat(preferenceslist[0].proberetract);
     id('preferences_probetouchplatethickness').value = Number.parseFloat(preferenceslist[0].probetouchplatethickness);
     build_file_filter_list(preferenceslist[0].f_filters);
@@ -405,31 +405,31 @@ function build_dlg_preferences_list() {
     } else id('preferences_status_Interval_check').value = Number.parseInt(default_preferenceslist[0].interval_status);
     //xy feedrate
     if (typeof (preferenceslist[0].xy_feedrate) !== 'undefined') {
-        id('preferences_control_xy_velocity').value = Number.parseInt(preferenceslist[0].xy_feedrate);
-    } else id('preferences_control_xy_velocity').value = Number.parseInt(default_preferenceslist[0].xy_feedrate);
+        id('preferences_control_xy_velocity').value = Number.parseFloat(preferenceslist[0].xy_feedrate);
+    } else id('preferences_control_xy_velocity').value = Number.parseFloat(default_preferenceslist[0].xy_feedrate);
     if (grblaxis > 2) {
         //z feedrate
         if (typeof (preferenceslist[0].z_feedrate) !== 'undefined') {
-            id('preferences_control_z_velocity').value = Number.parseInt(preferenceslist[0].z_feedrate);
-        } else id('preferences_control_z_velocity').value = Number.parseInt(default_preferenceslist[0].z_feedrate);
+            id('preferences_control_z_velocity').value = Number.parseFloat(preferenceslist[0].z_feedrate);
+        } else id('preferences_control_z_velocity').value = Number.parseFloat(default_preferenceslist[0].z_feedrate);
     }
     if (grblaxis > 3) {
         //a feedrate
         if (typeof (preferenceslist[0].a_feedrate) !== 'undefined') {
-            id('preferences_control_a_velocity').value = Number.parseInt(preferenceslist[0].a_feedrate);
-        } else id('preferences_control_a_velocity').value = Number.parseInt(default_preferenceslist[0].a_feedrate);
+            id('preferences_control_a_velocity').value = Number.parseFloat(preferenceslist[0].a_feedrate);
+        } else id('preferences_control_a_velocity').value = Number.parseFloat(default_preferenceslist[0].a_feedrate);
     }
     if (grblaxis > 4) {
         //b feedrate
         if (typeof (preferenceslist[0].b_feedrate) !== 'undefined') {
-            id('preferences_control_b_velocity').value = Number.parseInt(preferenceslist[0].b_feedrate);
-        } else id('preferences_control_b_velocity').value = Number.parseInt(default_preferenceslist[0].b_feedrate);
+            id('preferences_control_b_velocity').value = Number.parseFloat(preferenceslist[0].b_feedrate);
+        } else id('preferences_control_b_velocity').value = Number.parseFloat(default_preferenceslist[0].b_feedrate);
     }
     if (grblaxis > 5) {
         //c feedrate
         if (typeof (preferenceslist[0].c_feedrate) !== 'undefined') {
-            id('preferences_control_c_velocity').value = Number.parseInt(preferenceslist[0].c_feedrate);
-        } else id('preferences_control_c_velocity').value = Number.parseInt(default_preferenceslist[0].c_feedrate);
+            id('preferences_control_c_velocity').value = Number.parseFloat(preferenceslist[0].c_feedrate);
+        } else id('preferences_control_c_velocity').value = Number.parseFloat(default_preferenceslist[0].c_feedrate);
     }
 
     //probemaxtravel
@@ -440,8 +440,8 @@ function build_dlg_preferences_list() {
     }
     //probefeedrate
     if ((typeof (preferenceslist[0].probefeedrate) !== 'undefined') && (preferenceslist[0].probefeedrate.length !== 0)) {
-        id('preferences_probefeedrate').value = Number.parseInt(preferenceslist[0].probefeedrate);
-    } else id('preferences_probefeedrate').value = Number.parseInt(default_preferenceslist[0].probefeedrate);
+        id('preferences_probefeedrate').value = Number.parseFloat(preferenceslist[0].probefeedrate);
+    } else id('preferences_probefeedrate').value = Number.parseFloat(default_preferenceslist[0].probefeedrate);
     //proberetract
     if ((typeof (preferenceslist[0].proberetract) !== 'undefined') && (preferenceslist[0].proberetract.length !== 0)) {
         id('preferences_proberetract').value = Number.parseFloat(preferenceslist[0].proberetract);
@@ -544,22 +544,22 @@ function closePreferencesDialog() {
             //interval status
             if (id('preferences_status_Interval_check').value !== Number.parseInt(preferenceslist[0].interval_status)) modified = true;
             //xy feedrate
-            if (id('preferences_control_xy_velocity').value !== Number.parseInt(preferenceslist[0].xy_feedrate)) modified = true;
+            if (id('preferences_control_xy_velocity').value !== Number.parseFloat(preferenceslist[0].xy_feedrate)) modified = true;
             if (grblaxis > 2) {
                 //z feedrate
-                if (id('preferences_control_z_velocity').value !== Number.parseInt(preferenceslist[0].z_feedrate)) modified = true;
+                if (id('preferences_control_z_velocity').value !== Number.parseFloat(preferenceslist[0].z_feedrate)) modified = true;
             }
             if (grblaxis > 3) {
                 //a feedrate
-                if (id('preferences_control_a_velocity').value !== Number.parseInt(preferenceslist[0].a_feedrate)) modified = true;
+                if (id('preferences_control_a_velocity').value !== Number.parseFloat(preferenceslist[0].a_feedrate)) modified = true;
             }
             if (grblaxis > 4) {
                 //b feedrate
-                if (id('preferences_control_b_velocity').value !== Number.parseInt(preferenceslist[0].b_feedrate)) modified = true;
+                if (id('preferences_control_b_velocity').value !== Number.parseFloat(preferenceslist[0].b_feedrate)) modified = true;
             }
             if (grblaxis > 5) {
                 //c feedrate
-                if (id('preferences_control_c_velocity').value !== Number.parseInt(preferenceslist[0].c_feedrate)) modified = true;
+                if (id('preferences_control_c_velocity').value !== Number.parseFloat(preferenceslist[0].c_feedrate)) modified = true;
             }
         }
         //autoscroll
@@ -571,7 +571,7 @@ function closePreferencesDialog() {
         //probemaxtravel
         if (id('preferences_probemaxtravel').value !== Number.parseFloat(preferenceslist[0].probemaxtravel)) modified = true;
         //probefeedrate
-        if (id('preferences_probefeedrate').value !== Number.parseInt(preferenceslist[0].probefeedrate)) modified = true;
+        if (id('preferences_probefeedrate').value !== Number.parseFloat(preferenceslist[0].probefeedrate)) modified = true;
         //proberetract
         if (id('preferences_proberetract').value !== Number.parseFloat(preferenceslist[0].proberetract)) modified = true;
         //probetouchplatethickness
@@ -725,51 +725,51 @@ function Checkvalues(id_2_check) {
             }
             break;
         case "preferences_control_xy_velocity":
-            value = Number.parseInt(id(id_2_check).value);
-            if (!(!Number.isNaN(value) && value >= 1)) {
-                error_message = translate_text_item("XY Feedrate value must be at least 1 mm/min!");
+            value = Number.parseFloat(id(id_2_check).value);
+            if (!(!Number.isNaN(value) && value >= 0.00001)) {
+                error_message = translate_text_item("XY Feedrate value must be at least 0.00001 mm/min!");
                 status = false;
             }
             break;
         case "preferences_control_z_velocity":
-            value = Number.parseInt(id(id_2_check).value);
-            if (!(!Number.isNaN(value) && value >= 1)) {
-                error_message = translate_text_item("Z Feedrate value must be at least 1 mm/min!");
+            value = Number.parseFloat(id(id_2_check).value);
+            if (!(!Number.isNaN(value) && value >= 0.00001)) {
+                error_message = translate_text_item("Z Feedrate value must be at least 0.00001 mm/min!");
                 status = false;
             }
             break;
         case "preferences_control_a_velocity":
         case "preferences_control_b_velocity":
         case "preferences_control_c_velocity":
-            value = Number.parseInt(id(id_2_check).value);
-            if (!(!Number.isNaN(value) && value >= 1)) {
-                error_message = translate_text_item("Axis Feedrate value must be at least 1 mm/min!");
+            value = Number.parseFloat(id(id_2_check).value);
+            if (!(!Number.isNaN(value) && value >= 0.00001)) {
+                error_message = translate_text_item("Axis Feedrate value must be at least 0.00001 mm/min!");
                 status = false;
             }
             break;
         case "preferences_probefeedrate":
-            value = Number.parseInt(id(id_2_check).value);
-            if (!(!Number.isNaN(value) && value >= 1 && value <= 9999)) {
-                error_message = translate_text_item("Value of probe feedrate must be between 1 mm/min and 9999 mm/min !");
+            value = Number.parseFloat(id(id_2_check).value);
+            if (!(!Number.isNaN(value) && value >= 0.00001 && value <= 9999)) {
+                error_message = translate_text_item("Value of probe feedrate must be between 0.00001 mm/min and 9999 mm/min !");
                 status = false;
             }
             break;
         case "preferences_probemaxtravel":
-            value = Number.parseInt(id(id_2_check).value);
-            if (!(!Number.isNaN(value) && value >= 1 && value <= 9999)) {
-                error_message = translate_text_item("Value of maximum probe travel must be between 1 mm and 9999 mm !");
+            value = Number.parseFloat(id(id_2_check).value);
+            if (!(!Number.isNaN(value) && value >= 0.00001 && value <= 9999)) {
+                error_message = translate_text_item("Value of maximum probe travel must be between 0.00001 mm and 9999 mm !");
                 status = false;
             }
             break;
         case "preferences_proberetract":
-            value = Number.parseInt(id(id_2_check).value);
+            value = Number.parseFloat(id(id_2_check).value);
             if (!(!Number.isNaN(value) && value >= 0 && value <= 9999)) {
                 error_message = translate_text_item("Value of probe retract must be between 0 mm and 9999 mm !");
                 status = false;
             }
             break;
         case "preferences_probetouchplatethickness":
-            value = Number.parseInt(id(id_2_check).value);
+            value = Number.parseFloat(id(id_2_check).value);
             if (!(!Number.isNaN(value) && value >= 0 && value <= 9999)) {
                 error_message = translate_text_item("Value of probe touch plate thickness must be between 0 mm and 9999 mm !");
                 status = false;
