@@ -46,43 +46,43 @@ export const prefDefs = {
             },
             "xy_feedrate": {
                 "defValue": 2500,
-                "valueType": "int",
+                "valueType": "float",
                 "units": "mm/min",
                 "label": "XY axis feedrate",
                 "inpClass": "w8",
-                "min": 1
+                "min": 0.00001
             },
             "z_feedrate": {
                 "defValue": 300,
-                "valueType": "int",
+                "valueType": "float",
                 "units": "mm/min",
                 "label": "Z axis feedrate",
                 "inpClass": "w8",
-                "min": 1
+                "min": 0.00001
             },
             "a_feedrate": {
                 "defValue": 100,
-                "valueType": "int",
+                "valueType": "float",
                 "units": "mm/min",
                 "label": "A axis feedrate",
                 "inpClass": "w6",
-                "min": 1
+                "min": 0.00001
             },
             "b_feedrate": {
                 "defValue": 100,
-                "valueType": "int",
+                "valueType": "float",
                 "units": "mm/min",
                 "label": "B axis feedrate",
                 "inpClass": "w6",
-                "min": 1
+                "min": 0.00001
             },
             "c_feedrate": {
                 "defValue": 100,
-                "valueType": "int",
+                "valueType": "float",
                 "units": "mm/min",
                 "label": "C axis feedrate",
                 "inpClass": "w6",
-                "min": 1
+                "min": 0.00001
             },
         },
     },
@@ -125,16 +125,16 @@ export const prefDefs = {
                         "units": "mm",
                         "label": "Max travel",
                         "inpClass": "w8",
-                        "min": 1,
+                        "min": 0.00001,
                         "max": 9999
                     },
                     "probefeedrate": {
                         "defValue": 100,
-                        "valueType": "int",
+                        "valueType": "float",
                         "units": "mm/min",
                         "label": "Feed rate",
                         "inpClass": "w8",
-                        "min": 1,
+                        "min": 0.00001,
                         "max": 9999
                     },
                     "probetouchplatethickness": {
@@ -148,7 +148,7 @@ export const prefDefs = {
                     },
                     "proberetract": {
                         "defValue": 1.0,
-                        "valueType": "int",
+                        "valueType": "float",
                         "units": "mm",
                         "label": "Retract distance",
                         "inpClass": "w8",

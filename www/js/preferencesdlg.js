@@ -8,6 +8,7 @@ import {
 	displayBlock,
 	displayFlex,
 	displayNone,
+	checkValue,
 	getChecked,
 	getValue,
 	id,
@@ -326,15 +327,9 @@ const setupNavbar = () => {
 };
 
 const setupNavbarHandlers = () => {
-	id("enable_lock_UI").addEventListener("change", (event) =>
-		navbar_lockUI(getPrefValue("enable_lock_UI")),
-	);
-	id("enable_DHT").addEventListener("change", (event) =>
-		navbar_enableDHT(getPrefValue("enable_DHT")),
-	);
-	id("show_camera_panel").addEventListener("change", (event) =>
-		navbar_enableCamTab(getPrefValue("show_camera_panel")),
-	);
+	id("enable_lock_UI").addEventListener("change", (event) => navbar_lockUI(getPrefValue("enable_lock_UI")));
+	id("enable_DHT").addEventListener("change", (event) => navbar_enableDHT(getPrefValue("enable_DHT")));
+	id("show_camera_panel").addEventListener("change", (event) => navbar_enableCamTab(getPrefValue("show_camera_panel")));
 };
 
 const language_pref = (value) => {
@@ -347,9 +342,7 @@ const setupPreference = () => {
 };
 
 const setupPreferenceHandlers = () => {
-	id("language_preferences").addEventListener("change", (event) =>
-		language_pref(getPrefValue("language_preferences")),
-	);
+	id("language_preferences").addEventListener("change", (event) => language_pref(getPrefValue("language_preferences")));
 };
 
 const controls_showControlsPanel = (enable) => {
@@ -362,9 +355,7 @@ const setupControls = () => {
 };
 
 const setupControlsHandlers = () => {
-	id("show_control_panel").addEventListener("change", (event) =>
-		controls_showControlsPanel(getPrefValue("show_control_panel")),
-	);
+	id("show_control_panel").addEventListener("change", (event) => controls_showControlsPanel(getPrefValue("show_control_panel")));
 };
 
 const grbl_showGRBLPanel = (enable) => {
@@ -392,29 +383,15 @@ const grbl_showProbeTab = (enable) => {
 /** Initial setup of the GRBL Panel from the preferences coming from the file */
 const setupGRBL = () => {
 	grbl_showGRBLPanel(getPrefValue("show_grbl_panel"));
-	grbl_ReportIntervalChange(
-		getPrefValue("autoreport_interval") || getPrefValue("interval_status"),
-	);
+	grbl_ReportIntervalChange(getPrefValue("autoreport_interval") || getPrefValue("interval_status"));
 	grbl_showProbeTab(getPrefValue("show_grbl_probe_tab"));
 };
 
 const setupGRBLHandlers = () => {
-	id("show_grbl_panel").addEventListener("change", (event) =>
-		grbl_showGRBLPanel(getPrefValue("show_grbl_panel")),
-	);
-	id("autoreport_interval").addEventListener("change", (event) =>
-		grbl_ReportIntervalChange(
-			getPrefValue("autoreport_interval") || getPrefValue("interval_status"),
-		),
-	);
-	id("interval_status").addEventListener("change", (event) =>
-		grbl_ReportIntervalChange(
-			getPrefValue("autoreport_interval") || getPrefValue("interval_status"),
-		),
-	);
-	id("show_grbl_probe_tab").addEventListener("change", (event) =>
-		grbl_showProbeTab(getPrefValue("show_grbl_probe_tab")),
-	);
+	id("show_grbl_panel").addEventListener("change", (event) => grbl_showGRBLPanel(getPrefValue("show_grbl_panel")));
+	id("autoreport_interval").addEventListener("change", (event) => grbl_ReportIntervalChange(getPrefValue("autoreport_interval") || getPrefValue("interval_status")));
+	id("interval_status").addEventListener("change", (event) => grbl_ReportIntervalChange(getPrefValue("autoreport_interval") || getPrefValue("interval_status")));
+	id("show_grbl_probe_tab").addEventListener("change", (event) => grbl_showProbeTab(getPrefValue("show_grbl_probe_tab")));
 };
 
 const files_showFilesPanel = (enable) => elemBlockOrNone("filesPanel", enable);
@@ -450,23 +427,14 @@ const setupFiles = () => {
 };
 
 const setupFilesHandlers = () => {
-	id("show_files_panel").addEventListener("change", (event) =>
-		files_showFilesPanel(getPrefValue("show_files_panel")),
-	);
-	id("has_TFT_SD").addEventListener("change", (event) =>
-		files_TFTSD(getPrefValue("has_TFT_SD"), getPrefValue("has_TFT_USB")),
-	);
-	id("has_TFT_USB").addEventListener("change", (event) =>
-		files_TFTUSB(getPrefValue("has_TFT_SD"), getPrefValue("has_TFT_USB")),
-	);
+	id("show_files_panel").addEventListener("change", (event) => files_showFilesPanel(getPrefValue("show_files_panel")));
+	id("has_TFT_SD").addEventListener("change", (event) => files_TFTSD(getPrefValue("has_TFT_SD"), getPrefValue("has_TFT_USB")));
+	id("has_TFT_USB").addEventListener("change", (event) => files_TFTUSB(getPrefValue("has_TFT_SD"), getPrefValue("has_TFT_USB")));
 	// TODO: Check if this one needs a debounce
-	id("f_filters").addEventListener("change", (event) =>
-		files_filterList(getPrefValue("f_filters")),
-	);
+	id("f_filters").addEventListener("change", (event) => files_filterList(getPrefValue("f_filters")));
 };
 
-const commands_showCommandsPanel = (enable) =>
-	elemBlockOrNone("commandsPanel", enable);
+const commands_showCommandsPanel = (enable) => elemBlockOrNone("commandsPanel", enable);
 
 const commands_autoScroll = (enable) => {
 	setChecked("monitor_enable_autoscroll", enable);
@@ -490,15 +458,9 @@ const setupCommands = () => {
 };
 
 const setupCommandsHandlers = () => {
-	id("show_commands_panel").addEventListener("change", (event) =>
-		commands_showCommandsPanel(getPrefValue("show_commands_panel")),
-	);
-	id("enable_autoscroll").addEventListener("change", (event) =>
-		commands_autoScroll(getPrefValue("enable_autoscroll")),
-	);
-	id("enable_verbose_mode").addEventListener("change", (event) =>
-		commands_verboseMode(getPrefValue("enable_verbose_mode")),
-	);
+	id("show_commands_panel").addEventListener("change", (event) => commands_showCommandsPanel(getPrefValue("show_commands_panel")));
+	id("enable_autoscroll").addEventListener("change", (event) => commands_autoScroll(getPrefValue("enable_autoscroll")));
+	id("enable_verbose_mode").addEventListener("change", (event) => commands_verboseMode(getPrefValue("enable_verbose_mode")));
 };
 
 function getpreferenceslist() {
@@ -510,12 +472,7 @@ function getpreferenceslist() {
 const handleInputChange = (fieldId) => {
 	const newValue = getValue(fieldId);
 	if (typeof newValue === "undefined") {
-		console.error(
-			stdErrMsg(
-				"Unknown Field",
-				`'${fieldId}' not found as an input field with a value`,
-			),
-		);
+		console.error(stdErrMsg("Unknown Field", `'${fieldId}' not found as an input field with a value`));
 		return undefined;
 	}
 	const pref = getPref(fieldId);
@@ -571,12 +528,16 @@ function ontogglePing(forcevalue) {
 	if (typeof forcevalue !== 'undefined') enable_ping = forcevalue
 	else enable_ping = !enable_ping
 	if (enable_ping) {
-		if (interval_ping !== -1) clearInterval(interval_ping)
+		if (interval_ping !== -1) {
+			clearInterval(interval_ping);
+		}
 		last_ping = Date.now()
 		interval_ping = setInterval(() => { check_ping() }, 10 * 1000)
 		console.log('enable ping')
 	} else {
-		if (interval_ping !== -1) clearInterval(interval_ping)
+		if (interval_ping !== -1) {
+			clearInterval(interval_ping);
+		}
 		console.log('disable ping')
 	}
 }
@@ -691,26 +652,10 @@ function preferencesUploadfailed(error_code, response) {
 	alertdlg(translate_text_item("Error"), translate_text_item("Save preferences failed!"));
 }
 
-/** Test the supplied numeric value against any defined `min` test */
-const valueMinTest = (value, valueDef) => {
-	return "min" in valueDef && value < valueDef.min
-		? translate_text_item(`${valueDef.label} must be greater than or equal to ${valueDef.min}"`)
-		: "";
-};
-
-/** Test the supplied numeric value against any defined `max` test */
-const valueMaxTest = (value, valueDef) => {
-	return "max" in valueDef && value > valueDef.max
-		? translate_text_item(`${valueDef.label} must be less than or equal to ${valueDef.max}"`)
-		: "";
-};
-
 const CheckValue = (fId, valueDef) => {
 	const errorList = [];
 	if (typeof valueDef === "undefined") {
-		errorList.push(
-			`No definition provided for the field '${fId}'. Its value cannot be checked`,
-		);
+		errorList.push( `No definition provided for the field '${fId}'. Its value cannot be checked` );
 	} else {
 		const elem = id(fId);
 		const value = elem ? elem.value : valueDef.defValue;
@@ -721,52 +666,11 @@ const CheckValue = (fId, valueDef) => {
 				errorList.push(vfTest);
 			}
 		} else {
-			switch (valueDef.valueType) {
-				case "panel":
-				case "bool":
-					// These are both boolean values
-					break;
-				case "int": {
-					const vInt = Number.parseInt(value);
-					if (Number.isNaN(vInt)) {
-						errorList.push(translate_text_item(`${valueDef.label} must be an integer"`));
-					} else {
-						errorList.push(valueMinTest(vInt, valueDef));
-						errorList.push(valueMaxTest(vInt, valueDef));
-					}
-					break;
-				}
-				case "float": {
-					const vFlt = Number.parseFloat(value);
-					if (Number.isNaN(vFlt)) {
-						errorList.push(
-							translate_text_item(`${valueDef.label} must be an float"`),
-						);
-					} else {
-						errorList.push(valueMinTest(vFlt, valueDef));
-						errorList.push(valueMaxTest(vFlt, valueDef));
-					}
-					break;
-				}
-				case "enctext":
-					break;
-				case "text":
-					break;
-				case "select":
-					break;
-				default:
-					console.log(`${key}: ${JSON.stringify(value)}`);
-					break;
-			}
+			errorList.push(checkValue(value, valueDef));
 		}
 	}
 
-	// Old skul hack to remove unwanted entries from an array, faster than filter
-	for (let ix = errorList.length - 1; ix >= 0; ix--) {
-		if (!errorList[ix]) {
-			errorList.splice(ix, 1);
-		}
-	}
+	errorList = errorList.filter((err) => err);
 
 	const elemIdGroup = id(`${fId}_group`);
 	const elemIdIcon = id(`${fId}_icon`);

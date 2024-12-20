@@ -15,6 +15,7 @@ import {
 	SendGetHttp,
 	translate_text_item,
 	showmacrodlg,
+	valueIsFloat,
 } from "./common.js";
 
 let interval_position = -1;
@@ -229,76 +230,82 @@ function SendZerocommand(cmd) {
 	SendPrinterCommand(command, true, get_Position);
 }
 
-function JogFeedrate(axis) {
-	const controlName = axis.startsWith("Z") ? "controlpanel_z_feedrate" : "controlpanel_xy_feedrate";
-	const feedrateValue = Number.parseInt(id(controlName).value);
-	if (feedrateValue < 1 || Number.isNaN(feedrateValue) || feedrateValue === null) {
-		alertdlg(translate_text_item("Out of range"), translate_text_item("Feedrate value must be at least 1 mm/min!"));
-		return 1;
-	}
-	return feedrateValue;
+const buildFeedRateValueDef = (axis) => {
+	return {
+		"valueType": "float",
+		"units": "mm/min",
+		"label": axis.startsWith("Z") ? "Z axis feedrate" : "XY axis feedrate",
+		"min": 0.00001,
+		"defValue": 1,
+	};
 }
 
+function JogFeedrate(axis) {
+	const controlName = axis.startsWith("Z") ? "controlpanel_z_feedrate" : "controlpanel_xy_feedrate";
+	const valueDef = buildFeedRateValueDef(axis);
+	const feedrateValue = id(controlName).value;
+	const errorList = valueIsFloat(feedrateValue, valueDef);
+	if (errorList.length) {
+		// error text was "Feedrate value must be at least 1 mm/min!"
+		alertdlg(translate_text_item("Out of range"), errorList.join("\n"));
+		return valueDef.defValue;
+	}
+	return Number.parseFloat(feedrateValue);
+}
+
+/** This is extensively used in the jog dial SVGs */
 function SendJogcommand(cmd, feedrate) {
 	if (getChecked("lock_UI") !== "false") {
 		return;
 	}
-	let feedratevalue = "";
-	let command = "";
+
+	const controlName = axis.startsWith("Z") ? "controlpanel_z_feedrate" : "controlpanel_xy_feedrate";
+	const prefName = axis.startsWith("Z") ? "z_feedrate" : "xy_feedrate";
+	const valueDef = buildFeedRateValueDef(axis);
+
+	let letter = "Z";
 	const common = new Common();
-	if (feedrate === "XYfeedrate") {
-		feedratevalue = Number.parseInt(id("controlpanel_xy_feedrate").value);
-		if (
-			feedratevalue < 1 ||
-			Number.isNaN(feedratevalue) ||
-			feedratevalue === null
-		) {
-			alertdlg(translate_text_item("Out of range"), translate_text_item("XY Feedrate value must be at least 1 mm/min!"));
-			id("controlpanel_xy_feedrate").value = getPrefValue("xy_feedrate");
-			return;
-		}
-	} else {
-		feedratevalue = Number.parseInt(id("controlpanel_z_feedrate").value);
-		if (
-			feedratevalue < 1 ||
-			Number.isNaN(feedratevalue) ||
-			feedratevalue === null
-		) {
-			let letter = "Z";
-			if (common.grblaxis > 3) letter = "Axis";
-			alertdlg(translate_text_item("Out of range"), translate_text_item(`${letter} Feedrate value must be at least 1 mm/min!`,));
-			id("controlpanel_z_feedrate").value = getPrefValue("z_feedrate");
-			return;
-		}
-	}
+	let cmd = "";
 	if (common.grblaxis > 3) {
-		const letter = id("control_select_axis").value;
-		cmd = cmd.replace("Z", letter);
+		letter = "Axis";
+		valueDef.label = valueDef.label.replace("Z axis", letter);
+		cmd = cmd.replace("Z", id("control_select_axis").value);
 	}
-	command = `$J=G91 G21 F${feedratevalue} ${cmd}`;
+
+	const feedrateValue = id(controlName).value;
+	const errorList = valueIsFloat(feedrateValue, valueDef);
+
+	if (errorList.length) {
+		// error text was "(something) Feedrate value must be at least 1 mm/min!"
+		alertdlg(translate_text_item("Out of range"), errorList.join("\n"));
+		id(controlName).value = getPrefValue(prefName);
+		return;
+	}
+
+	let command = `$J=G91 G21 F${feedrateValue} ${cmd}`;
 	console.log(command);
 	SendPrinterCommand(command, true, get_Position);
 }
 
 function onXYvelocityChange() {
-	var feedratevalue = parseInt(id("controlpanel_xy_feedrate").value);
+	var feedrateValue = parseInt(id("controlpanel_xy_feedrate").value);
 	if (
-		feedratevalue < 1 ||
-		feedratevalue > 9999 ||
-		isNaN(feedratevalue) ||
-		feedratevalue === null
+		feedrateValue < 1 ||
+		feedrateValue > 9999 ||
+		isNaN(feedrateValue) ||
+		feedrateValue === null
 	) {
 		//we could display error but we do not
 	}
 }
 
 function onZvelocityChange() {
-	var feedratevalue = parseInt(id("controlpanel_z_feedrate").value);
+	var feedrateValue = parseInt(id("controlpanel_z_feedrate").value);
 	if (
-		feedratevalue < 1 ||
-		feedratevalue > 999 ||
-		isNaN(feedratevalue) ||
-		feedratevalue === null
+		feedrateValue < 1 ||
+		feedrateValue > 999 ||
+		isNaN(feedrateValue) ||
+		feedrateValue === null
 	) {
 		//we could display error but we do not
 	}
@@ -329,11 +336,7 @@ function control_build_macro_ui() {
 	var content = "<div class='tooltip'>";
 	content += "<span class='tooltip-text'>Manage macros</span>";
 	content += "<button id='control_btn_show_macro_dlg' class='btn btn-primary'>";
-	actions.push({
-		id: "control_btn_show_macro_dlg",
-		type: "click",
-		method: showmacrodlg(processMacroSave),
-	});
+	actions.push({ id: "control_btn_show_macro_dlg", type: "click", method: showmacrodlg(processMacroSave) });
 	content += "<span class='badge'>";
 	content += "<svg width='1.3em' height='1.2em' viewBox='0 0 1300 1200'>";
 	content += "<g transform='translate(50,1200) scale(1, -1)'>";
@@ -353,11 +356,7 @@ function control_build_macro_ui() {
 	for (let i = 0; i < 9; i++) {
 		const entry = common.control_macrolist[i];
 		content += control_build_macro_button(i, entry);
-		actions.push({
-			id: `control_macro_${i}`,
-			type: "click",
-			method: macro_command(entry.target, entry.filename),
-		});
+		actions.push({ id: `control_macro_${i}`, type: "click", method: macro_command(entry.target, entry.filename) });
 	}
 	setHTML("Macro_list", content);
 	for (const action in actions) {
@@ -366,21 +365,19 @@ function control_build_macro_ui() {
 }
 
 function macro_command(target, filename) {
-	var cmd = "";
-	if (target == "ESP") {
-		cmd = "$LocalFS/Run=" + filename;
-	} else if (target == "SD") {
-		files_print_filename(filename);
-	} else if (target == "URI") {
-		window.open(filename);
-	} else return;
-	//console.log(cmd);
-	SendPrinterCommand(cmd);
+	switch (target) {
+		case "ESP": SendPrinterCommand(`$LocalFS/Run=${filename}`); break;
+		case "SD": files_print_filename(filename); break;
+		case "URI": window.open(filename); break;
+		default: break; // do nothing
+	}
 }
 
 export {
 	ControlsPanel,
 	get_Position,
 	init_controls_panel,
+	JogFeedrate,
 	on_autocheck_position,
+	SendJogcommand,
 };

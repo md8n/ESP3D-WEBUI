@@ -4,6 +4,7 @@ import {
   id,
   setValue,
   setDisabled,
+  JogFeedrate,
   numpad,
   SendPrinterCommand,
   files_list_success,

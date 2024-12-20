@@ -23,6 +23,7 @@ import {
 	id,
 } from "./util.js";
 import { numpad } from "./numpad.js";
+import { checkValue, valueIsFloat } from "./utilValidation.js";
 
 import { alertdlg } from "./alertdlg.js";
 import {
@@ -48,6 +49,7 @@ import {
 	ControlsPanel,
 	get_Position,
 	init_controls_panel,
+	JogFeedrate,
 	on_autocheck_position,
 } from "./controls.js";
 import { creditsdlg } from "./creditsdlg.js";
@@ -251,6 +253,7 @@ export {
 	ControlsPanel,
 	get_Position,
 	init_controls_panel,
+	JogFeedrate,
 	on_autocheck_position,
 	// from creditsdlg.js
 	creditsdlg,
@@ -404,6 +407,9 @@ export {
 	HTMLEncode,
 	HTMLDecode,
 	id,
+	// from utilValidation.js
+	checkValue,
+	valueIsFloat,
 	// from wizard.js
 	openstep,
 };
