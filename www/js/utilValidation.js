@@ -50,8 +50,8 @@ const valueIsInt = (value, valueDef) => {
 const valueIsFloat = (value, valueDef) => {
   const errorList = [];
   const vFloat = Number.parseFloat(value);
-  if (Number.isNaN(vInt)) {
-    errorList.push(`'${valueDef.label}' ${translate_text_item("must be an float")}`);
+  if (Number.isNaN(vFloat)) {
+    errorList.push(`'${valueDef.label}' ${translate_text_item("must be a float")}`);
   } else {
     errorList.push(valueMinTest(vFloat, valueDef));
     errorList.push(valueMaxTest(vFloat, valueDef));

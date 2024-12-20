@@ -230,7 +230,7 @@ function SendJogcommand(cmd, feedrate) {
 	if (errorList.length) {
 		// error text was "(something) Feedrate value must be at least 1 mm/min!"
 		alertdlg(translate_text_item("Out of range"), errorList.join("\n"));
-		id(controlName).value = getPrefValue(prefName);
+		id(controlName).value = feedrate.startsWith("Z") ? preferenceslist[0].z_feedrate : preferenceslist[0].xy_feedrate ;
 		return;
 	}
 
