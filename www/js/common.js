@@ -23,6 +23,7 @@ class Common {
 		this.calibrationResults = {};
 		this.grblaxis = 3;
 		this.grblzerocmd = "X0 Y0 Z0";
+		this.reportType = 'none';
 		this.spindleTabSpindleSpeed = 1;
 		this.modal = {
 			modes: "",
@@ -31,6 +32,8 @@ class Common {
 			wcs: "G54",
 			distance: "G90",
 		};
+		this.MPOS = [0, 0, 0];
+		this.WPOS = [0, 0, 0];
 
 		/** See http.js */
 		this.http_communication_locked = false;
@@ -50,6 +53,7 @@ class Common {
 		/** See settings.js */
 		this.current_setting_filter = "nvs";
 		this.setup_is_done = false;
+		this.do_not_build_settings = false;
 
 		this.SETTINGS_AP_MODE = 1;
 		this.SETTINGS_STA_MODE = 2;
@@ -63,6 +67,9 @@ class Common {
 
 		/** See SPIFFSdlg.js */
 		this.SPIFFS_currentpath = "/";
+
+		/** see tablet.js */
+		this.gCodeDisplayable = false;
 
 		/** See util.js */
 		this.last_ping = 0;

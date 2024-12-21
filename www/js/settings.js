@@ -1,12 +1,11 @@
 // When we can change to proper ESM - uncomment this
 // import M from "constants";
 
-var scl = [] // setting_configList
-var setting_error_msg = ''
-var setting_lasti = -1
-var setting_lastj = -1
+let scl = []; // setting_configList
+let setting_error_msg = '';
+let setting_lasti = -1;
+let setting_lastj = -1;
 
-var do_not_build_settings = false
 const CONFIG_TOOLTIPS = {
   Maslow_vertical: `If the ${M} is oriented horizontally, set this to false`,
   Maslow_calibration_offset_X: "mm offset from the edge of the frame, X",
@@ -37,7 +36,7 @@ function refreshSettings(hide_setting_list) {
     id('config_status').innerHTML = translate_text_item('Communication locked by another process, retry later.')
     return
   }
-  do_not_build_settings = typeof hide_setting_list === 'undefined' ? false : !hide_setting_list
+  common.do_not_build_settings = typeof hide_setting_list === 'undefined' ? false : !hide_setting_list
 
   displayBlock('settings_loader')
   displayNone('settings_list_content')
@@ -201,12 +200,11 @@ function saveMaslowYaml() {
 }
 
 function build_HTML_setting_list(filter) {
+  const common = new Common();
   //this to prevent concurrent process to update after we clean content
-  if (do_not_build_settings) {
+  if (common.do_not_build_settings) {
     return;
   }
-
-  const common = new Common();
 
   const buildTR = (tds) => `<tr>${tds}</tr>`;
 
@@ -285,10 +283,10 @@ function setting_check_value(value, i) {
     if (entry.min_val > value.length) valid = false
     if (entry.max_val < value.length) valid = false
     if (value === '********') valid = false
-    if (!valid){
+    if (!valid) {
       setting_error_msg = ` between ${entry.min_val} char(s) and ${entry.max_val} char(s) long, and not '********'`;
     }
-  } else if (entry.type == 'A') {
+  } else if (entry.type === 'A') {
     //check ip address
     const ipformat =
       /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/
@@ -413,26 +411,13 @@ function getFlag_description(i, j) {
   return scl[i].Options[j].display;
 }
 
-function setting(i, j) {
-  return id(sId(i, j));
-}
-function setBtn(i, j, value) {
-  id(sId(i, j, 'btn_')).className = `btn ${value}`;
-}
-function setStatus(i, j, value) {
-  id(sId(i, j, 'status_')).className = `form-group ${value}`;
-}
-function setIcon(i, j, value) {
-  id(sId(i, j, 'icon_')).className = `form-control-feedback ${value}`;
-}
-function setIconHTML(i, j, value) {
-  id(sId(i, j, 'icon_')).innerHTML = value;
-}
+const setting = (i, j) => id(sId(i, j));
+const setBtn = (i, j, value) => { id(sId(i, j, 'btn_')).className = `btn ${value}` };
+const setStatus = (i, j, value) => { id(sId(i, j, 'status_')).className = `form-group ${value}`; };
+const setIcon = (i, j, value) => { id(sId(i, j, 'icon_')).className = `form-control-feedback ${value}`; };
+const setIconHTML = (i, j, value) => { id(sId(i, j, 'icon_')).innerHTML = value; };
 
-function setting_revert_to_default(i, j) {
-  if (typeof j === 'undefined') {
-    j = 0;
-  }
+function setting_revert_to_default(i, j = 0) {
   if (scl[i].type === 'F') {
     const tst = Number.parseInt(defval(i));
     setting(i, j).value = (tst === (tst | getFlag(i, j))) ? '1' : '0';
@@ -444,8 +429,7 @@ function setting_revert_to_default(i, j) {
   setIconHTML(i, j, '');
 }
 
-function settingsetvalue(i, j) {
-  if (typeof j === 'undefined') j = 0
+function settingsetvalue(i, j = 0) {
   //remove possible spaces
   value = setting(i, j).value.trim()
   //Apply flag here

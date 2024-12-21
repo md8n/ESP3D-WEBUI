@@ -94,6 +94,7 @@ function getpreferenceslist() {
     processPreferencesGetSuccess(response);
     return;
     //endRemoveIf(production)
+    // biome-ignore lint/correctness/noUnreachable: <explanation>
     SendGetHttp(url, processPreferencesGetSuccess, processPreferencesGetFailed);
 }
 

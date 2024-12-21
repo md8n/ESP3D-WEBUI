@@ -182,8 +182,9 @@ function files_print(index) {
 }
 
 function files_print_filename(path) {
+	const common = new Common();
 	get_status();
-	if (reportType === "none") {
+	if (common.reportType === "none") {
 		tryAutoReport(); // will fall back to polled if autoreport fails
 	}
 	SendPrinterCommand(`$SD/Run=${path}`);
@@ -383,7 +384,7 @@ const populateTabletFileSelector = (files, path) => {
 	});
 	if (!gCodeFileFound) {
 		common.gCodeFilename = "";
-		gCodeDisplayable = false;
+		common.gCodeDisplayable = false;
 		showGCode("");
 	}
 

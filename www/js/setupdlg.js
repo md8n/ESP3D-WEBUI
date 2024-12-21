@@ -90,7 +90,7 @@ function setupdone(response) {
     const common = new Common();
 
     common.setup_is_done = true;
-    do_not_build_settings = false;
+    common.do_not_build_settings = false;
     build_HTML_setting_list(common.current_setting_filter);
     translate_text(language_save);
     displayUndoNone('main_ui');

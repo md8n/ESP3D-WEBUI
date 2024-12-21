@@ -1,29 +1,27 @@
 // Display the XY-plane projection of a GCode toolpath on a 2D canvas
 
-var root = window;
-
 const canvas = document.getElementById("small-toolpath");
 const scale = window.devicePixelRatio;
 const width = window.innerWidth;
 canvas.width = width * scale;
 canvas.height = (width / 2) * scale;
 const tp = canvas.getContext("2d", { willReadFrequently: true });
-var tpRect;
+let tpRect;
 
 tp.lineWidth = 0.1;
 tp.lineCap = 'round';
 tp.strokeStyle = 'black';
 
-var cameraAngle = 0;
+let cameraAngle = 0;
 
-var tlX = -8.339;
-var tlY = 2209;
-var trX = 3505;
-var trY = 2209;
-var blX = 0;
-var blY = 0;
-var brX = 3505;
-var brY = 0;
+/// Some arbitrary starting values
+
+// biome-ignore lint/style/useSingleVarDeclarator: <explanation>
+// biome-ignore lint/style/useConst: <explanation>
+let tlX = -8.339, tlY = 2209, trX = 3505, trY = 2209;
+// biome-ignore lint/style/useSingleVarDeclarator: <explanation>
+// biome-ignore lint/style/useConst: <explanation>
+let blX = 0, blY = 0, brX = 3505, brY = 0;
 
 //Draw buttons
 const tlC = document.getElementById("tlBtn").getContext("2d");
@@ -117,6 +115,7 @@ dnC.fillStyle = "#9d88c0";
 dnC.fillRect(0, 0, 500, 500);
 // #rect441
 dnC.save();
+// biome-ignore lint/suspicious/noApproximativeNumericConstant: <explanation>
 dnC.transform(1.000000, 0.000000, 0.000000, -1.000000, 0.000000, 0.000000);
 dnC.fillStyle = 'white';
 dnC.lineWidth = 1;
@@ -144,6 +143,7 @@ rC.fillStyle = "#9d88c0";
 rC.fillRect(0, 0, 500, 500);
 // #g1100
 rC.save();
+// biome-ignore lint/suspicious/noApproximativeNumericConstant: <explanation>
 rC.transform(0.000000, 1.000000, -1.000000, 0.000000, 187.481000, 0.273690);
 
 // #rect441
@@ -172,6 +172,7 @@ lC.fillStyle = "#9d88c0";
 lC.fillRect(0, 0, 500, 500);
 // #g1100
 lC.save();
+// biome-ignore lint/suspicious/noApproximativeNumericConstant: <explanation>
 lC.transform(0.000000, 1.000000, 1.000000, 0.000000, 11.957500, 0.273690);
 
 // #rect441
@@ -289,7 +290,7 @@ stopC.rect(60 + 44, 65 - 35, 100, 80);
 stopC.fill();
 stopC.stroke();
 
-var tpUnits = 'G21';
+let tpUnits = 'G21';
 
 const tpBbox = {
     min: {
@@ -301,7 +302,7 @@ const tpBbox = {
         y: Number.NEGATIVE_INFINITY
     }
 };
-var bboxIsSet = false;
+let bboxIsSet = false;
 
 const resetBbox = () => {
     tpBbox.min.x = Number.POSITIVE_INFINITY;
@@ -314,26 +315,26 @@ const resetBbox = () => {
 // Project the 3D toolpath onto the 2D Canvas
 // The coefficients determine the type of projection
 // Matrix multiplication written out
-var xx = 0.707;
-var xy = 0.707;
-var xz = 0.0;
-var yx = -0.707 / 2;
-var yy = 0.707 / 2;
-var yz = 1.0;
+let xx = Math.SQRT1_2;
+let xy = Math.SQRT1_2;
+let xz = 0.0;
+let yx = -Math.SQRT1_2 / 2;
+let yy = Math.SQRT1_2 / 2;
+let yz = 1.0;
 const isoView = () => {
-    xx = 0.707;
-    xy = 0.707;
+    xx = Math.SQRT1_2;
+    xy = Math.SQRT1_2;
     xz = 0.0;
-    yx = -0.707;
-    yy = 0.707;
+    yx = -Math.SQRT1_2;
+    yy = Math.SQRT1_2;
     yz = 1.0;
 }
 const obliqueView = () => {
-    xx = 0.707;
-    xy = 0.707;
+    xx = Math.SQRT1_2;
+    xy = Math.SQRT1_2;
     xz = 0.0;
-    yx = -0.707 / 2;
-    yy = 0.707 / 2;
+    yx = -Math.SQRT1_2 / 2;
+    yy = Math.SQRT1_2 / 2;
     yz = 1.0;
 }
 const topView = () => {
@@ -353,11 +354,11 @@ const projection = (wpos) => {
 
 const formatLimit = (mm) => (tpUnits === 'G20') ? `${(mm / 25.4).toFixed(3)}"` : `${mm.toFixed(2)}mm`
 
-var toolX = null;
-var toolY = null;
-var toolSave = null;
-var toolRadius = 6;
-var toolRectWH = toolRadius * 2 + 4;  // Slop to encompass the entire image area
+let toolX = null;
+let toolY = null;
+let toolSave = null;
+const toolRadius = 6;
+const toolRectWH = toolRadius * 2 + 4;  // Slop to encompass the entire image area
 
 const drawTool = (dpos) => {
     pp = projection(dpos)
@@ -542,9 +543,9 @@ const drawARect = (x, y, size, opacity) => {
     tp.fill();
 }
 
-var xOffset = 0;
-var yOffset = 0;
-var scaler = 1;
+let xOffset = 0;
+let yOffset = 0;
+let scaler = 1;
 const xToPixel = (x) => scaler * x + xOffset
 const yToPixel = (y) => -scaler * y + yOffset
 
@@ -785,7 +786,7 @@ const bboxHandlers = {
         bboxIsSet = true;
     }
 };
-var initialMoves = true;
+let initialMoves = true;
 const displayHandlers = {
     addLine: (modal, start, end) => {
         const motion = modal.motion;
@@ -867,10 +868,8 @@ ToolpathDisplayer.prototype.clear = () => {
 }
 
 ToolpathDisplayer.prototype.showToolpath = (gcode, modal, initialPosition) => {
-    cameraAngle = cameraAngle;
-
-    var drawBounds = false;
-    var drawBelts = false;
+    let drawBounds = false;
+    let drawBelts = false;
 
     switch (cameraAngle) {
         case 0:
@@ -948,8 +947,9 @@ ToolpathDisplayer.prototype.cycleCameraAngle = (gcode, modal, position) => {
 
 canvas.addEventListener("mouseup", updateGcodeViewerAngle);
 const refreshGcode = () => {
+    const common = new Common();
     const gcode = id('gcode').value;
-    displayer.showToolpath(gcode, WPOS, MPOS, cameraAngle);
+    displayer.showToolpath(gcode, common.WPOS, common.MPOS, cameraAngle);
 }
 
 // id("small-toolpath").addEventListener("mouseup", updateGcodeViewerAngle); 

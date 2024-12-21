@@ -1,23 +1,20 @@
 // When we can change to proper ESM - uncomment this
 // import { sendCommand } from "./maslow";
 
-var interval_status = -1
-var probe_progress_status = 0
-var grbl_error_msg = ''
-var WCO = undefined
-var OVR = { feed: undefined, rapid: undefined, spindle: undefined }
-var MPOS = [0, 0, 0]
-var WPOS = [0, 0, 0]
-var feedrate = [0, 0, 0, 0, 0, 0]
-var last_axis_letter = 'Z'
+let interval_status = -1;
+let probe_progress_status = 0;
+let grbl_error_msg = '';
+let WCO = undefined;
+let OVR = { feed: undefined, rapid: undefined, spindle: undefined };
+let last_axis_letter = 'Z';
 
-var axisNames = ['x', 'y', 'z', 'a', 'b', 'c']
+const axisNames = ['x', 'y', 'z', 'a', 'b', 'c'];
 
 function setClickability(element, visible) {
-  setDisplay(element, visible ? 'table-row' : 'none')
+  setDisplay(element, visible ? 'table-row' : 'none');
 }
 
-var autocheck = 'report_auto'
+const autocheck = 'report_auto';
 function getAutocheck() {
   return getChecked(autocheck)
 }
@@ -152,9 +149,8 @@ function onprobetouchplatethicknessChange() {
   return true
 }
 
-var reportType = 'none'
-
 function disablePolling() {
+  const common = new Common();
   setAutocheck(false)
   // setValue('grblpanel_interval_status', 0);
   if (interval_status !== -1) {
@@ -163,10 +159,11 @@ function disablePolling() {
   }
 
   grbl_clear_status()
-  reportType = 'none'
+  common.reportType = 'none'
 }
 
 function enablePolling() {
+  const common = new Common();
   const interval = Number.parseFloat(getValue('grblpanel_interval_status'))
   if (!Number.isNaN(interval) && interval === 0) {
     if (interval_status !== -1) {
@@ -181,7 +178,7 @@ function enablePolling() {
       clearInterval(interval_status)
     }
     interval_status = setInterval(() => { get_status() }, interval * 1000)
-    reportType = 'polled'
+    common.reportType = 'polled'
     setChecked('report_poll', true)
     return
   }
@@ -192,17 +189,18 @@ function enablePolling() {
 }
 
 function tryAutoReport() {
-  if (reportType === 'polled') {
+  const common = new Common();
+  if (common.reportType === 'polled') {
     disablePolling();
   }
-  reportType = "auto";
+  common.reportType = "auto";
   const interval = id("grblpanel_autoreport_interval").value ?? 0;
   if (interval === 0) {
     enablePolling();
     return;
   }
   setChecked("report_auto", true);
-  reportType = 'auto'
+  common.reportType = 'auto'
   SendPrinterCommand(
     `$Report/Interval=${interval}`,
     true,
@@ -228,7 +226,9 @@ function disableAutoReport() {
 }
 
 function reportNone() {
-  switch (reportType) {
+  const common = new Common();
+
+  switch (common.reportType) {
     case 'polled':
       disablePolling()
       break
@@ -237,11 +237,12 @@ function reportNone() {
       break
   }
   setChecked('report_none', true)
-  reportType = 'none'
+  common.reportType = 'none'
 }
 
 function reportPolled() {
-  if (reportType === 'auto') {
+  const common = new Common();
+  if (common.reportType === 'auto') {
     disableAutoReport()
   }
   enablePolling()
@@ -471,30 +472,31 @@ function stopGCode() {
 }
 
 function grblProcessStatus(response) {
-  const grbl = parseGrblStatus(response)
+  const common = new Common();
+  const grbl = parseGrblStatus(response);
   // Record persistent values of data
   if (grbl.wco) {
-    WCO = grbl.wco
+    WCO = grbl.wco;
   }
   if (grbl.ovr) {
-    OVR = grbl.ovr
+    OVR = grbl.ovr;
   }
   if (grbl.mpos) {
-    MPOS = grbl.mpos
+    common.MPOS = grbl.mpos;
     if (WCO) {
-      WPOS = grbl.mpos.map((v, index) => v - WCO[index])
+      common.WPOS = grbl.mpos.map((v, index) => v - WCO[index]);
     }
   } else if (grbl.wpos) {
-    WPOS = grbl.wpos
+    common.WPOS = grbl.wpos;
     if (WCO) {
-      MPOS = grbl.wpos.map((v, index) => v + WCO[index])
+      common.MPOS = grbl.wpos.map((v, index) => v + WCO[index]);
     }
   }
-  show_grbl_position(WPOS, MPOS)
-  show_grbl_status(grbl.stateName, grbl.message, grbl.sdName)
-  show_grbl_SD(grbl.sdName, grbl.sdPercent)
-  show_grbl_probe_status(grbl.pins && grbl.pins.indexOf('P') !== -1)
-  tabletGrblState(grbl, response)
+  show_grbl_position(common.WPOS, common.MPOS);
+  show_grbl_status(grbl.stateName, grbl.message, grbl.sdName);
+  show_grbl_SD(grbl.sdName, grbl.sdPercent);
+  show_grbl_probe_status(grbl.pins && grbl.pins.indexOf('P') !== -1);
+  tabletGrblState(grbl, response);
 }
 
 function grbl_reset() {
@@ -727,7 +729,9 @@ function StartProbeProcess() {
   console.log(cmd)
   probe_progress_status = 1
   let restoreReport = false
-  if (reportType === 'none') {
+  const common = new Common();
+
+  if (commomn.reportType === 'none') {
     tryAutoReport() // will fall back to polled if autoreport fails
     restoreReport = true
   }

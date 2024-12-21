@@ -1,6 +1,6 @@
 // import - Monitor_output_Update, id, HTMLDecode, setHTML, on_autocheck_position, enable_ping, grblHandleMessage, reportNone, clear_cmd_list, translate_text_item, UIdisableddlg
 
-let convertDHT2Fahrenheit = false;
+const convertDHT2Fahrenheit = false;
 let event_source;
 
 let wsmsg = "";

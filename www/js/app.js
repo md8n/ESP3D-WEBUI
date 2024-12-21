@@ -234,7 +234,7 @@ function initUI_4() {
 	} else {
 		//wizard is done UI can be updated
 		common.setup_is_done = true;
-		do_not_build_settings = false;
+		common.do_not_build_settings = false;
 		AddCmd(display_boot_progress);
 		build_HTML_setting_list(common.current_setting_filter);
 		AddCmd(closeModal);

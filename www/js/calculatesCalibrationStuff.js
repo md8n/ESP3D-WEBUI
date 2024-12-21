@@ -2,13 +2,13 @@
 // import M from "constants";
 // import { sendCommand } from "./maslow";
 
-var tlZ = 100
-var trZ = 56
-var blZ = 34
-var brZ = 78
-var acceptableCalibrationThreshold = 0.5
+const tlZ = 100;
+const trZ = 56;
+const blZ = 34;
+const brZ = 78;
+const acceptableCalibrationThreshold = 0.5;
 
-//Establish initial guesses for the corners
+/** Establish initial guesses for the corners */
 let initialGuess = {
   tl: { x: 0, y: 2000 },
   tr: { x: 3000, y: 2000 },
@@ -42,7 +42,7 @@ let result
 function distanceBetweenPoints(a, b, c, d) {
   const dx = c - a;
   const dy = d - b;
-  return Math.sqrt(dx * dx + dy * dy);
+  return Math.sqrt((dx ** 2) + (dy ** 2));
 }
 
 /**
@@ -68,16 +68,16 @@ function getEndPoint(startX, startY, angle, length) {
  * @returns {number} - The fitness value, which is the average distance between all line end points.
  */
 function computeEndpointFitness(line1, line2, line3, line4) {
-  const a = distanceBetweenPoints(line1.xEnd, line1.yEnd, line2.xEnd, line2.yEnd)
-  const b = distanceBetweenPoints(line1.xEnd, line1.yEnd, line3.xEnd, line3.yEnd)
-  const c = distanceBetweenPoints(line1.xEnd, line1.yEnd, line4.xEnd, line4.yEnd)
-  const d = distanceBetweenPoints(line2.xEnd, line2.yEnd, line3.xEnd, line3.yEnd)
-  const e = distanceBetweenPoints(line2.xEnd, line2.yEnd, line4.xEnd, line4.yEnd)
-  const f = distanceBetweenPoints(line3.xEnd, line3.yEnd, line4.xEnd, line4.yEnd)
+  const a = distanceBetweenPoints(line1.xEnd, line1.yEnd, line2.xEnd, line2.yEnd);
+  const b = distanceBetweenPoints(line1.xEnd, line1.yEnd, line3.xEnd, line3.yEnd);
+  const c = distanceBetweenPoints(line1.xEnd, line1.yEnd, line4.xEnd, line4.yEnd);
+  const d = distanceBetweenPoints(line2.xEnd, line2.yEnd, line3.xEnd, line3.yEnd);
+  const e = distanceBetweenPoints(line2.xEnd, line2.yEnd, line4.xEnd, line4.yEnd);
+  const f = distanceBetweenPoints(line3.xEnd, line3.yEnd, line4.xEnd, line4.yEnd);
 
-  const fitness = (a + b + c + d + e + f) / 6
+  const fitness = (a + b + c + d + e + f) / 6;
 
-  return fitness
+  return fitness;
 }
 
 /**
@@ -94,21 +94,20 @@ function computeLineEndPoint(line) {
 
 /**
  * Walks the four lines in the given set, adjusting their endpoints to minimize the distance between them.
- * @param {Object} tlLine - The top-left line in the set.
- * @param {Object} trLine - The top-right line in the set.
- * @param {Object} blLine - The bottom-left line in the set.
- * @param {Object} brLine - The bottom-right line in the set.
+ * @param {Array[Object]} lines - An array of `line` objects in the order TL, TR, BL, BR
  * @param {number} stepSize - The amount to adjust the angle of each line by on each iteration.
- * @returns {Object} - An object containing the final positions of each line.
+ * @returns {Array[Object]} - An array of the final positions of each `line`.
  */
-function walkLines(tlLine, trLine, blLine, brLine, stepSize) {
+function walkLines(lines, stepSize) {
   let changeMade = true;
-  let bestFitness = computeEndpointFitness(tlLine, trLine, blLine, brLine);
+  let bestFitness = computeEndpointFitness(...lines);
+
+  let [tl, tr, bl, br] = lines;
 
   while (changeMade) {
     changeMade = false;
 
-    const lines = [tlLine, trLine, blLine, brLine];
+    const lines = [tl, tr, bl, br];
 
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i];
@@ -122,10 +121,10 @@ function walkLines(tlLine, trLine, blLine, brLine, stepSize) {
         });
 
         const newFitness = computeEndpointFitness(
-          i === 0 ? newLine : tlLine,
-          i === 1 ? newLine : trLine,
-          i === 2 ? newLine : blLine,
-          i === 3 ? newLine : brLine
+          i === 0 ? newLine : tl,
+          i === 1 ? newLine : tr,
+          i === 2 ? newLine : bl,
+          i === 3 ? newLine : br,
         );
 
         if (newFitness < bestFitness) {
@@ -136,17 +135,15 @@ function walkLines(tlLine, trLine, blLine, brLine, stepSize) {
       }
     }
 
-    tlLine = lines[0];
-    trLine = lines[1];
-    blLine = lines[2];
-    brLine = lines[3];
+    tl = lines[0];
+    tr = lines[1];
+    bl = lines[2];
+    br = lines[3];
   }
 
-  const result = { tlLine, trLine, blLine, brLine, changeMade };
+  const result = { tlLine: tl, trLine: tr, blLine: bl, brLine: br, changeMade: changeMade };
 
-  sendCalibrationEvent({
-    walkedlines: result,
-  });
+  sendCalibrationEvent({ walkedlines: result });
 
   return result;
 }
@@ -173,39 +170,14 @@ function magneticallyAttractedLinesFitness(measurement, individual) {
   }
 
   //Define the four lines with starting points and lengths
-  let tlLine = computeLineEndPoint({
-    xBegin: individual.tl.x,
-    yBegin: individual.tl.y,
-    theta: measurement.tlTheta,
-    length: measurement.tl,
-  });
-  let trLine = computeLineEndPoint({
-    xBegin: individual.tr.x,
-    yBegin: individual.tr.y,
-    theta: measurement.trTheta,
-    length: measurement.tr,
-  });
-  let blLine = computeLineEndPoint({
-    xBegin: individual.bl.x,
-    yBegin: individual.bl.y,
-    theta: measurement.blTheta,
-    length: measurement.bl,
-  });
-  let brLine = computeLineEndPoint({
-    xBegin: individual.br.x,
-    yBegin: individual.br.y,
-    theta: measurement.brTheta,
-    length: measurement.br,
-  });
+  let tlLine = computeLineEndPoint({ xBegin: individual.tl.x, yBegin: individual.tl.y, theta: measurement.tlTheta, length: measurement.tl });
+  let trLine = computeLineEndPoint({ xBegin: individual.tr.x, yBegin: individual.tr.y, theta: measurement.trTheta, length: measurement.tr });
+  let blLine = computeLineEndPoint({ xBegin: individual.bl.x, yBegin: individual.bl.y, theta: measurement.blTheta, length: measurement.bl });
+  let brLine = computeLineEndPoint({ xBegin: individual.br.x, yBegin: individual.br.y, theta: measurement.brTheta, length: measurement.br });
 
-  var { tlLine, trLine, blLine, brLine } = walkLines(tlLine, trLine, blLine, brLine, 0.1);
-  var { tlLine, trLine, blLine, brLine } = walkLines(tlLine, trLine, blLine, brLine, 0.01);
-  var { tlLine, trLine, blLine, brLine } = walkLines(tlLine, trLine, blLine, brLine, 0.001);
-  var { tlLine, trLine, blLine, brLine } = walkLines(tlLine, trLine, blLine, brLine, 0.0001);
-  var { tlLine, trLine, blLine, brLine } = walkLines(tlLine, trLine, blLine, brLine, 0.00001);
-  var { tlLine, trLine, blLine, brLine } = walkLines(tlLine, trLine, blLine, brLine, 0.000001);
-  var { tlLine, trLine, blLine, brLine } = walkLines(tlLine, trLine, blLine, brLine, 0.0000001);
-  var { tlLine, trLine, blLine, brLine } = walkLines(tlLine, trLine, blLine, brLine, 0.00000001);
+  for (let ix = 0.1; ix >= 0.00000001; ix /= 10) {
+    [tlLine, trLine, blLine, brLine] = walkLines([tlLine, trLine, blLine, brLine], ix);
+  }
 
   measurement.tlTheta = tlLine.theta;
   measurement.trTheta = trLine.theta;
@@ -220,12 +192,11 @@ function magneticallyAttractedLinesFitness(measurement, individual) {
   measurement.TLtension = TL;
   measurement.TRtension = TR;
 
-  const result = { fitness: finalFitness, lines: { tlLine: tlLine, trLine: trLine, blLine: blLine, brLine: brLine } }
-  sendCalibrationEvent({
-    lines: result,
-    individual,
-    measurement
-  });
+  const result = {
+    fitness: finalFitness,
+    lines: { tlLine: tlLine, trLine: trLine, blLine: blLine, brLine: brLine },
+  };
+  sendCalibrationEvent({ lines: result, individual, measurement });
 
   return result;
 }
@@ -336,59 +307,58 @@ function computeFurthestFromCenterOfMass(lines, lastGuess) {
  * @returns {Object} - An object containing the fitness of the guess and the lines used to calculate the fitness.
  */
 function computeLinesFitness(measurements, lastGuess) {
-  const fitnesses = []
-  const allLines = []
+  const fitnesses = [];
+  const allLines = [];
 
   //Check each of the measurements against the guess
-  // biome-ignore lint/complexity/noForEach: <explanation>
-  measurements.forEach((measurement) => {
-    const { fitness, lines } = magneticallyAttractedLinesFitness(measurement, lastGuess)
-    fitnesses.push(fitness)
-    allLines.push(lines)
-  })
+  for (const measurement in measurements) {
+    const { fitness, lines } = magneticallyAttractedLinesFitness(measurement, lastGuess);
+    fitnesses.push(fitness);
+    allLines.push(lines);
+  };
 
   //Computes the average fitness of all of the measurements
-  const fitness = calculateAverage(fitnesses)
+  const fitness = calculateAverage(fitnesses);
 
   // console.log(fitnesses)
 
-  //Here is where we need to do the calculation of which corner is the worst and which direction to move it
-  lastGuess = computeFurthestFromCenterOfMass(allLines, lastGuess)
-  lastGuess.fitness = fitness
+  // Here is where we need to do the calculation of which corner is the worst and which direction to move it
+  const nextGuess = computeFurthestFromCenterOfMass(allLines, lastGuess);
+  nextGuess.fitness = fitness;
 
-  return lastGuess
+  return nextGuess;
 }
 
 function calculateTensions(x, y, guess) {
-  const Xtl = guess.tl.x
-  const Ytl = guess.tl.y
-  const Xtr = guess.tr.x
-  const Ytr = guess.tr.y
-  const Xbl = guess.bl.x
-  const Ybl = guess.bl.y
-  const Xbr = guess.br.x
-  const Ybr = guess.br.y
+  const Xtl = guess.tl.x;
+  const Ytl = guess.tl.y;
+  const Xtr = guess.tr.x;
+  const Ytr = guess.tr.y;
+  const Xbl = guess.bl.x;
+  const Ybl = guess.bl.y;
+  const Xbr = guess.br.x;
+  const Ybr = guess.br.y;
 
-  const mass = 5.0
-  const G_CONSTANT = 9.80665
-  const alpha = 0.26
+  const mass = 5.0;
+  const G_CONSTANT = 9.80665;
+  const alpha = 0.26;
 
-  const A = Math.abs((Xtl - x) / (Ytl - y))
-  const C = Math.abs((Xtr - x) / (Ytr - y))
+  const A = Math.abs((Xtl - x) / (Ytl - y));
+  const C = Math.abs((Xtr - x) / (Ytr - y));
 
-  const sinD = x / Math.sqrt(x ** 2 + y ** 2)
-  const cosD = y / Math.sqrt(x ** 2 + y ** 2)
-  const sinE = Math.abs(Xbr - x) / Math.sqrt((Xbr - x) ** 2 + y ** 2)
-  const cosE = y / Math.sqrt((Xbr - x) ** 2 + y ** 2)
+  const sinD = x / Math.sqrt(x ** 2 + y ** 2);
+  const cosD = y / Math.sqrt(x ** 2 + y ** 2);
+  const sinE = Math.abs(Xbr - x) / Math.sqrt((Xbr - x) ** 2 + y ** 2);
+  const cosE = y / Math.sqrt((Xbr - x) ** 2 + y ** 2);
 
-  const Fx = Ybr * sinE - Ybl * sinD
-  const Fy = Ybr * cosE + Ybl * cosD + mass * G_CONSTANT * Math.cos(alpha)
+  const Fx = Ybr * sinE - Ybl * sinD;
+  const Fy = Ybr * cosE + Ybl * cosD + mass * G_CONSTANT * Math.cos(alpha);
   // console.log(`Fx = ${Fx.toFixed(1)}, Fy = ${Fy.toFixed(1)}`)
 
-  const TLy = (Fx + C * Fy) / (A + C)
-  const TRy = Fy - TLy
-  const TRx = C * (Fy - TLy)
-  const TLx = A * TLy
+  const TLy = (Fx + C * Fy) / (A + C);
+  const TRy = Fy - TLy;
+  const TRx = C * (Fy - TLy);
+  const TLx = A * TLy;
 
   // console.log(`TLy = ${TLy.toFixed(1)}, TRy = ${TRy.toFixed(1)}, TRx = ${TRx.toFixed(1)}, TLx = ${TLx.toFixed(1)}`);
 
@@ -460,10 +430,10 @@ function offsetMeasurements(measurements, offset) {
       tr: measurement.tr + offset,
       bl: measurement.bl + offset,
       br: measurement.br + offset,
-    }
-  })
+    };
+  });
 
-  return newMeasurements
+  return newMeasurements;
 }
 
 /**
@@ -479,41 +449,39 @@ function scaleMeasurements(measurements, scale) {
       tr: measurement.tr * scale,
       bl: measurement.bl, // * scale,
       br: measurement.br, // * scale
-    }
-  })
+    };
+  });
 
-  return newMeasurements
+  return newMeasurements;
 }
 
 function scaleMeasurementsBasedOnTension(measurements, guess) {
-  const maxScale = 0.995
-  const minScale = 0.994
-  const maxTension = 60
-  const minTension = 20
+  const maxScale = 0.995;
+  const minScale = 0.994;
+  const maxTension = 60;
+  const minTension = 20;
 
-  const scaleRange = maxScale - minScale
-  const tensionRange = maxTension - minTension
+  const scaleRange = maxScale - minScale;
+  const tensionRange = maxTension - minTension;
 
   const newMeasurements = measurements.map((measurement) => {
-    const tensionAdjustedTLScale = (1 - (measurement.TLtension - minTension) / tensionRange) * scaleRange + minScale
-    const tensionAdjustedTRScale = (1 - (measurement.TRtension - minTension) / tensionRange) * scaleRange + minScale
+    const tensionAdjustedTLScale = (1 - (measurement.TLtension - minTension) / tensionRange) * scaleRange + minScale;
+    const tensionAdjustedTRScale = (1 - (measurement.TRtension - minTension) / tensionRange) * scaleRange + minScale;
 
     return {
       tl: measurement.tl * tensionAdjustedTLScale,
       tr: measurement.tr * tensionAdjustedTRScale,
       bl: measurement.bl, // * scale,
       br: measurement.br, // * scale
-    }
-  })
+    };
+  });
 
-  return newMeasurements
+  return newMeasurements;
 }
 
 
 function findMaxFitness(measurements) {
-  sendCalibrationEvent({
-    initialGuess
-  }, true);
+  sendCalibrationEvent({ initialGuess }, true);
 
   //Project the measurements into the XY plane...this is now done on the firmware side
   //measurements = projectMeasurements(measurements);

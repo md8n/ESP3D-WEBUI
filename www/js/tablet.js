@@ -1,13 +1,12 @@
 // When we can change to proper ESM - uncomment this
 // import { checkHomed, maslowErrorMsgHandling, maslowInfoMsgHandling, maslowMsgHandling, sendCommand } from "maslow";
 
-var gCodeLoaded = false
-var gCodeDisplayable = false
+let gCodeLoaded = false;
 
-var snd = null
-var sndok = true
+let snd = null;
+let sndok = true;
 
-var versionNumber = 0.87
+const versionNumber = 0.87
 
 /** Print the version number to the console */
 const showVersionNumber = () => {
@@ -222,31 +221,29 @@ function long_jog(target) {
 
 const sendMove = (cmd) => {
   tabletClick()
-  const jog = (params) => {
-    params = params || {}
-    let s = ''
+  const jog = (params = {}) => {
+    let s = '';
     for (key in params) {
-      s += key + params[key]
+      s += key + params[key];
     }
-    jogTo(s)
+    jogTo(s);
 
-    const msgWindow = document.getElementById('messages')
-    let text = msgWindow.textContent
-    text += `\nJog: ${s}`
-    msgWindow.textContent = text
-    msgWindow.scrollTop = msgWindow.scrollHeight
+    const msgWindow = document.getElementById('messages');
+    let text = msgWindow.textContent;
+    text += `\nJog: ${s}`;
+    msgWindow.textContent = text;
+    msgWindow.scrollTop = msgWindow.scrollHeight;
 
   }
-  const move = (params) => {
-    params = params || {}
-    let s = ''
+  const move = (params = {}) => {
+    let s = '';
     for (key in params) {
-      s += key + params[key]
+      s += key + params[key];
     }
-    moveTo(s)
+    moveTo(s);
   }
 
-  let distance = cmd.includes('Z') ? Number(id('disZ').innerText) || 0 : Number(id('disM').innerText) || 0
+  const distance = cmd.includes('Z') ? Number(id('disZ').innerText) || 0 : Number(id('disM').innerText) || 0;
 
   const fn = {
     G28: () => sendCommand('G28'),
@@ -303,7 +300,7 @@ const sendMove = (cmd) => {
     },
   }[cmd]
 
-  fn && fn()
+  fn?.()
 }
 
 const moveHome = () => {
@@ -315,16 +312,15 @@ const moveHome = () => {
   const x = Number.parseFloat(id('mpos-x').innerText)
   const y = Number.parseFloat(id('mpos-y').innerText)
 
-  const jog = (params) => {
-    params = params || {}
-    let s = ''
+  const jog = (params = {}) => {
+    let s = '';
     for (key in params) {
-      s += key + params[key]
+      s += key + params[key];
     }
-    jogTo(s)
+    jogTo(s);
   }
 
-  jog({ X: -1 * x, Y: -1 * y })
+  jog({ X: -1 * x, Y: -1 * y });
 }
 
 
@@ -350,7 +346,7 @@ function saveSerialMessages() {
   document.body.removeChild(link);
 }
 
-var loadedValues = {};
+const loadedValues = {};
 function tabletShowMessage(msg, collecting) {
   if (
     collecting ||
@@ -387,26 +383,26 @@ function tabletShowMessage(msg, collecting) {
 function tabletShowResponse(response) { }
 
 function clearAlarm() {
-  if (id('systemStatus').innerText == 'Alarm') {
+  if (id('systemStatus').innerText === 'Alarm') {
     id('systemStatus').classList.remove('system-status-alarm')
     SendPrinterCommand('$X', true, null, null, 114, 1)
   }
 }
 
 function setJogSelector(units) {
-  var buttonDistances = []
-  var menuDistances = []
-  var selected = 0
-  if (units == 'G20') {
+  let buttonDistances = [];
+  let menuDistances = [];
+  let selected = 0;
+  if (units === 'G20') {
     // Inches
-    buttonDistances = [0.001, 0.01, 0.1, 1, 0.003, 0.03, 0.3, 3, 0.005, 0.05, 0.5, 5]
-    menuDistances = [0.00025, 0.0005, 0.001, 0.003, 0.005, 0.01, 0.03, 0.05, 0.1, 0.3, 0.5, 1, 3, 5, 10, 30]
-    selected = '1'
+    buttonDistances = [0.001, 0.01, 0.1, 1, 0.003, 0.03, 0.3, 3, 0.005, 0.05, 0.5, 5];
+    menuDistances = [0.00025, 0.0005, 0.001, 0.003, 0.005, 0.01, 0.03, 0.05, 0.1, 0.3, 0.5, 1, 3, 5, 10, 30];
+    selected = '1';
   } else {
     // millimeters
-    buttonDistances = [0.1, 1, 10, 100, 0.3, 3, 30, 300, 0.5, 5, 50, 500]
-    menuDistances = [0.005, 0.01, 0.03, 0.05, 0.1, 0.3, 0.5, 1, 3, 5, 10, 30, 50, 100, 300, 500, 1000]
-    selected = '10'
+    buttonDistances = [0.1, 1, 10, 100, 0.3, 3, 30, 300, 0.5, 5, 50, 500];
+    menuDistances = [0.005, 0.01, 0.03, 0.05, 0.1, 0.3, 0.5, 1, 3, 5, 10, 30, 50, 100, 300, 500, 1000];
+    selected = '10';
   }
   const buttonNames = [
     'jog00',
@@ -447,34 +443,33 @@ function addJogDistance(distance) {
   //return selector.appendChild(option);
 }
 
-var runTime = 0
+let runTime = 0;
 
 function setButton(name, isEnabled, color, text) {
-  var button = id(name)
-  button.disabled = !isEnabled
-  button.style.backgroundColor = color
-  button.innerText = text
+  const button = id(name);
+  button.disabled = !isEnabled;
+  button.style.backgroundColor = color;
+  button.innerText = text;
 }
 
-var playButtonHandler
+let playButtonHandler
 function setPlayButton(isEnabled, color, text, click) {
   setButton('playBtn', isEnabled, color, text);
-  playButtonHandler = click
+  playButtonHandler = click;
 }
 function doPlayButton() {
   if (playButtonHandler) {
-    playButtonHandler()
+    playButtonHandler();
   }
 
-  const msgWindow = document.getElementById('messages')
-  let text = msgWindow.textContent
-  text += `\nStarting File: ${document.getElementById('filelist').options[selectElement.selectedIndex].text}`
-  msgWindow.textContent = text
-  msgWindow.scrollTop = msgWindow.scrollHeight
-
+  const msgWindow = document.getElementById('messages');
+  let text = msgWindow.textContent;
+  text += `\nStarting File: ${document.getElementById('filelist').options[selectElement.selectedIndex].text}`;
+  msgWindow.textContent = text;
+  msgWindow.scrollTop = msgWindow.scrollHeight;
 }
 
-var pauseButtonHandler
+let pauseButtonHandler
 function setPauseButton(isEnabled, color, text, click) {
   setButton('pauseBtn', isEnabled, color, text);
   pauseButtonHandler = click
@@ -485,9 +480,9 @@ function doPauseButton() {
   }
 }
 
-var green = '#86f686'
-var red = '#f64646'
-var gray = '#f6f6f6'
+const green = '#86f686';
+const red = '#f64646';
+const gray = '#f6f6f6';
 
 function setRunControls() {
   if (gCodeLoaded) {
@@ -501,11 +496,11 @@ function setRunControls() {
   }
 }
 
-var grblReportingUnits = 0
-var startTime = 0
+const grblReportingUnits = 0;
+let startTime = 0;
 
-var spindleDirection = ''
-var spindleSpeed = ''
+let spindleDirection = '';
+let spindleSpeed = '';
 
 function stopAndRecover() {
   stopGCode()
@@ -515,7 +510,7 @@ function stopAndRecover() {
   requestModes()
 }
 
-var oldCannotClick = null
+let oldCannotClick = null;
 
 function scaleUnits(target) {
   //Scale the units to move when jogging down or up by 25 to keep them reasonable
@@ -626,16 +621,20 @@ function tabletGrblState(grbl, response) {
   spindleSpeed = grbl.spindleSpeed ? Number(grbl.spindleSpeed) : ''
   //setText('spindle-speed', spindleSpeed);
 
-  var now = new Date()
+  const now = new Date()
   //setText('time-of-day', now.getHours() + ':' + String(now.getMinutes()).padStart(2, '0'));
   if (stateName === 'Run') {
     let elapsed = now.getTime() - startTime
-    if (elapsed < 0) elapsed = 0
+    if (elapsed < 0) {
+      elapsed = 0
+    }
     let seconds = Math.floor(elapsed / 1000)
     const minutes = Math.floor(seconds / 60)
     seconds = seconds % 60
-    if (seconds < 10) seconds = `0${seconds}`
-    runTime = `${minutes}:${seconds}`
+    if (seconds < 10) {
+      seconds = `0${seconds}`
+      runTime = `${minutes}:${seconds}`
+    }
   } else {
     startTime = now.getTime()
   }
@@ -660,42 +659,42 @@ function tabletGrblState(grbl, response) {
   //setText('active-state', stateText);
 
   const modeText =
-  `${common.modal.distance} ${common.modal.wcs} ${common.modal.units} T${common.modal.tool} F${common.modal.feedrate} S${common.modal.spindle} `;
+    `${common.modal.distance} ${common.modal.wcs} ${common.modal.units} T${common.modal.tool} F${common.modal.feedrate} S${common.modal.spindle} `;
 
   if (grbl.lineNumber && (stateName === 'Run' || stateName === 'Hold' || stateName === 'Stop')) {
     //setText('line', grbl.lineNumber);
-    if (gCodeDisplayable) {
+    if (common.gCodeDisplayable) {
       scrollToLine(grbl.lineNumber)
     }
   }
-  if (gCodeDisplayable) {
-    displayer.reDrawTool(common.modal, arrayToXYZ(WPOS))
+  if (common.gCodeDisplayable) {
+    displayer.reDrawTool(common.modal, arrayToXYZ(common.WPOS))
   }
 
   const digits = common.modal.units === 'G20' ? 4 : 2
 
-  if (WPOS) {
-    WPOS.forEach((pos, index) => {
+  if (common.WPOS) {
+    common.WPOS.forEach((pos, index) => {
       setTextContent(`mpos-${axisNames[index]}`, Number(pos * factor).toFixed(index > 2 ? 2 : digits))
     })
   }
 
-  MPOS.forEach(function (pos, index) {
-    //setTextContent('mpos-'+axisNames[index], Number(pos*factor).toFixed(index > 2 ? 2 : digits));
-  })
+  // common.MPOS.forEach(function (pos, index) {
+  //   setTextContent('mpos-' + axisNames[index], Number(pos * factor).toFixed(index > 2 ? 2 : digits));
+  // });
 }
 
 function addOption(selector, name, value, isDisabled, isSelected) {
-  var opt = document.createElement('option')
-  opt.appendChild(document.createTextNode(name))
-  opt.disabled = isDisabled
-  opt.selected = isSelected
-  opt.value = value
-  selector.appendChild(opt)
+  const opt = document.createElement('option');
+  opt.appendChild(document.createTextNode(name));
+  opt.disabled = isDisabled;
+  opt.selected = isSelected;
+  opt.value = value;
+  selector.appendChild(opt);
 }
 
-var filename = 'TEST.NC'
-var watchPath = ''
+const filename = 'TEST.NC';
+const watchPath = '';
 
 function tabletGetFileList(path) {
   const common = new Common();
@@ -739,52 +738,53 @@ function arrayToXYZ(a) {
 
 function showGCode(gcode) {
   const common = new Common();
-  gCodeLoaded = gcode !== ''
+  gCodeLoaded = gcode !== '';
   if (!gCodeLoaded) {
-    id('gcode').value = '(No GCode loaded)'
-    displayer.clear()
+    id('gcode').value = '(No GCode loaded)';
+    displayer.clear();
   } else {
-    id('gcode').value = gcode
-    const initialPosition = {
-      x: WPOS[0],
-      y: WPOS[1],
-      z: WPOS[2],
-    }
+    id('gcode').value = gcode;
+    const initialPosition = arrayToXYZ(common.WPOS);
 
-    if (gCodeDisplayable) {
-      displayer.showToolpath(gcode, common.modal, arrayToXYZ(WPOS))
+    if (common.gCodeDisplayable) {
+      displayer.showToolpath(gcode, common.modal, arrayToXYZ(common.WPOS));
     }
   }
 
-  // XXX this needs to take into account error states
-  setRunControls()
+  // NOTE: this needs to take into account error states
+  setRunControls();
 }
 
 function nthLineEnd(str, n) {
-  if (n <= 0) return 0
-  var L = str.length,
-    i = -1
-  while (n-- && i++ < L) {
-    i = str.indexOf('\n', i)
-    if (i < 0) break
+  if (n <= 0) {
+    return 0;
   }
-  return i
+  const L = str.length;
+  let i = -1;
+  let nx = n;
+  while (nx-- && i++ < L) {
+    i = str.indexOf('\n', i);
+    if (i < 0) {
+      break;
+    }
+  }
+  return i;
 }
 
 function scrollToLine(lineNumber) {
-  var gCodeLines = id('gcode')
-  var lineHeight = parseFloat(getComputedStyle(gCodeLines).getPropertyValue('line-height'))
-  var gCodeText = gCodeLines.value
+  const gCodeLines = id('gcode');
+  const lineHeight = Number.parseFloat(getComputedStyle(gCodeLines).getPropertyValue('line-height'));
+  const gCodeText = gCodeLines.value;
 
   gCodeLines.scrollTop = lineNumber * lineHeight
 
-  var start
-  var end
+  let start
+  let end
   if (lineNumber <= 0) {
     start = 0
     end = 1
   } else {
-    start = lineNumber === 1 ? 0 : (start = nthLineEnd(gCodeText, lineNumber) + 1)
+    start = lineNumber === 1 ? 0 : nthLineEnd(gCodeText, lineNumber) + 1;
     end = gCodeText.indexOf('\n', start)
   }
 
@@ -813,10 +813,10 @@ function tabletLoadGCodeFile(path, size) {
   common.gCodeFilename = path;
   if ((Number.isNaN(size) && size.endsWith('GB')) || size > 10000000) {
     showGCode('GCode file too large to display (> 1MB)')
-    gCodeDisplayable = false
+    common.gCodeDisplayable = false
     displayer.clear()
   } else {
-    gCodeDisplayable = true
+    common.gCodeDisplayable = true
     fetch(encodeURIComponent(`SD${common.gCodeFilename}`))
       .then((response) => response.text())
       .then((gcode) => showGCode(gcode))
@@ -896,13 +896,13 @@ const cycleDistance = (up) => {
 }
 const clickon = (name) => {
   //    $('[data-route="workspace"] .btn').removeClass('active');
-  var button = id(name)
+  const button = id(name)
   button.classList.add('active')
   button.dispatchEvent(new Event('click'))
 }
-var ctrlDown = false
-var oldIndex = null
-var newChild = null
+let ctrlDown = false
+let oldIndex = null
+let newChild = null
 
 function shiftUp() {
   if (!newChild) {
@@ -923,8 +923,8 @@ function shiftDown() {
   if (newChild) {
     return
   }
-  var sel = id('jog-distance')
-  var distance = sel.value
+  const sel = id('jog-distance')
+  const distance = sel.value
   oldIndex = sel.selectedIndex
   newChild = addJogDistance(distance * 10)
 }
@@ -932,8 +932,8 @@ function altDown() {
   if (newChild) {
     return
   }
-  var sel = id('jog-distance')
-  var distance = sel.value
+  const sel = id('jog-distance')
+  const distance = sel.value
   oldIndex = sel.selectedIndex
   newChild = addJogDistance(distance / 10)
 }
@@ -943,7 +943,7 @@ function jogClick(name) {
 }
 
 // Reports whether a text input box has focus - see the next comment
-var isInputFocused = false
+const isInputFocused = false
 function tabletIsActive() {
   return id('tablettab').style.display !== 'none'
 }
@@ -1102,13 +1102,7 @@ window.onresize = setBottomHeight
 function updateGcodeViewerAngle() {
   const gcode = id('gcode').value;
   const common = new Common();
-  displayer.cycleCameraAngle(gcode, common.modal, arrayToXYZ(WPOS))
-}
-
-function fullscreenIfMobile() {
-  if (/Mobi|Android/i.test(navigator.userAgent)) {
-    toggleFullscreen()
-  }
+  displayer.cycleCameraAngle(gcode, common.modal, arrayToXYZ(common.WPOS))
 }
 
 function showCalibrationPopup() {
@@ -1118,13 +1112,12 @@ function showCalibrationPopup() {
 function homeZ() {
   console.log('Homing Z latest')
 
-  const move = (params) => {
-    params = params || {}
-    let s = ''
+  const move = (params = {}) => {
+    let s = '';
     for (key in params) {
-      s += key + params[key]
+      s += key + params[key];
     }
-    moveTo(s)
+    moveTo(s);
   }
 
   move({ Z: 85 })
