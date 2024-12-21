@@ -156,11 +156,12 @@ function Preferences_build_list(response_text) {
 }
 
 function ontogglePing(forcevalue) {
+    const common = new Common();
     if (typeof forcevalue !== 'undefined') enable_ping = forcevalue
     else enable_ping = !enable_ping
     if (enable_ping) {
         if (interval_ping !== -1) clearInterval(interval_ping)
-        last_ping = Date.now()
+        common.last_ping = Date.now()
         interval_ping = setInterval(() => { check_ping() }, 10 * 1000)
         console.log('enable ping')
     } else {
@@ -170,9 +171,11 @@ function ontogglePing(forcevalue) {
 }
 
 function applypreferenceslist() {
+    const common = new Common();
+
     //Assign each control state
     translate_text(preferenceslist[0].language);
-    build_HTML_setting_list(current_setting_filter);
+    build_HTML_setting_list(common.current_setting_filter);
     if (typeof id('camtab') !== "undefined") {
         let camoutput = false;
         if (typeof (preferenceslist[0].enable_camera) !== 'undefined') {
@@ -292,12 +295,12 @@ function applypreferenceslist() {
     id('preferences_control_xy_velocity').value = Number.parseFloat(preferenceslist[0].xy_feedrate);
     id('preferences_control_z_velocity').value = Number.parseFloat(preferenceslist[0].z_feedrate);
 
-    if (grblaxis > 2) axis_Z_feedrate = Number.parseFloat(preferenceslist[0].z_feedrate);
-    if (grblaxis > 3) axis_A_feedrate = Number.parseFloat(preferenceslist[0].a_feedrate);
-    if (grblaxis > 4) axis_B_feedrate = Number.parseFloat(preferenceslist[0].b_feedrate);
-    if (grblaxis > 5) axis_C_feedrate = Number.parseFloat(preferenceslist[0].c_feedrate);
+    if (common.grblaxis > 2) axis_Z_feedrate = Number.parseFloat(preferenceslist[0].z_feedrate);
+    if (common.grblaxis > 3) axis_A_feedrate = Number.parseFloat(preferenceslist[0].a_feedrate);
+    if (common.grblaxis > 4) axis_B_feedrate = Number.parseFloat(preferenceslist[0].b_feedrate);
+    if (common.grblaxis > 5) axis_C_feedrate = Number.parseFloat(preferenceslist[0].c_feedrate);
 
-    if (grblaxis > 3) {
+    if (common.grblaxis > 3) {
         const letter = id('control_select_axis').value;
         switch (letter) {
             case "Z":
@@ -332,6 +335,7 @@ function showpreferencesdlg() {
 }
 
 function build_dlg_preferences_list() {
+    const common = new Common();
     //use preferenceslist to set dlg status
     let content = "<table><tr><td>";
     content += `${get_icon_svg("flag")}&nbsp;</td><td>`;
@@ -407,25 +411,25 @@ function build_dlg_preferences_list() {
     if (typeof (preferenceslist[0].xy_feedrate) !== 'undefined') {
         id('preferences_control_xy_velocity').value = Number.parseFloat(preferenceslist[0].xy_feedrate);
     } else id('preferences_control_xy_velocity').value = Number.parseFloat(default_preferenceslist[0].xy_feedrate);
-    if (grblaxis > 2) {
+    if (common.grblaxis > 2) {
         //z feedrate
         if (typeof (preferenceslist[0].z_feedrate) !== 'undefined') {
             id('preferences_control_z_velocity').value = Number.parseFloat(preferenceslist[0].z_feedrate);
         } else id('preferences_control_z_velocity').value = Number.parseFloat(default_preferenceslist[0].z_feedrate);
     }
-    if (grblaxis > 3) {
+    if (common.grblaxis > 3) {
         //a feedrate
         if (typeof (preferenceslist[0].a_feedrate) !== 'undefined') {
             id('preferences_control_a_velocity').value = Number.parseFloat(preferenceslist[0].a_feedrate);
         } else id('preferences_control_a_velocity').value = Number.parseFloat(default_preferenceslist[0].a_feedrate);
     }
-    if (grblaxis > 4) {
+    if (common.grblaxis > 4) {
         //b feedrate
         if (typeof (preferenceslist[0].b_feedrate) !== 'undefined') {
             id('preferences_control_b_velocity').value = Number.parseFloat(preferenceslist[0].b_feedrate);
         } else id('preferences_control_b_velocity').value = Number.parseFloat(default_preferenceslist[0].b_feedrate);
     }
-    if (grblaxis > 5) {
+    if (common.grblaxis > 5) {
         //c feedrate
         if (typeof (preferenceslist[0].c_feedrate) !== 'undefined') {
             id('preferences_control_c_velocity').value = Number.parseFloat(preferenceslist[0].c_feedrate);
@@ -476,6 +480,7 @@ function build_dlg_preferences_list() {
 }
 
 function closePreferencesDialog() {
+    const common = new Common();
     let modified = false;
     if (preferenceslist[0].length !== 0) {
         //check dialog compare to global state
@@ -545,19 +550,19 @@ function closePreferencesDialog() {
             if (id('preferences_status_Interval_check').value !== Number.parseInt(preferenceslist[0].interval_status)) modified = true;
             //xy feedrate
             if (id('preferences_control_xy_velocity').value !== Number.parseFloat(preferenceslist[0].xy_feedrate)) modified = true;
-            if (grblaxis > 2) {
+            if (common.grblaxis > 2) {
                 //z feedrate
                 if (id('preferences_control_z_velocity').value !== Number.parseFloat(preferenceslist[0].z_feedrate)) modified = true;
             }
-            if (grblaxis > 3) {
+            if (common.grblaxis > 3) {
                 //a feedrate
                 if (id('preferences_control_a_velocity').value !== Number.parseFloat(preferenceslist[0].a_feedrate)) modified = true;
             }
-            if (grblaxis > 4) {
+            if (common.grblaxis > 4) {
                 //b feedrate
                 if (id('preferences_control_b_velocity').value !== Number.parseFloat(preferenceslist[0].b_feedrate)) modified = true;
             }
-            if (grblaxis > 5) {
+            if (common.grblaxis > 5) {
                 //c feedrate
                 if (id('preferences_control_c_velocity').value !== Number.parseFloat(preferenceslist[0].c_feedrate)) modified = true;
             }
@@ -587,7 +592,7 @@ function closePreferencesDialog() {
 }
 
 function process_preferencesCloseDialog(answer) {
-    if (answer == 'no') {
+    if (answer === 'no') {
         //console.log("Answer is no so exit");
         translate_text(language_save);
         closeModal('cancel');
@@ -598,7 +603,8 @@ function process_preferencesCloseDialog(answer) {
 }
 
 function SavePreferences(current_preferences) {
-    if (http_communication_locked) {
+    const common = new Common();
+    if (common.http_communication_locked) {
         alertdlg(translate_text_item("Busy..."), translate_text_item("Communications are currently locked, please wait and retry."));
         return;
     }
@@ -614,12 +620,12 @@ function SavePreferences(current_preferences) {
             !Checkvalues("preferences_proberetract") ||
             !Checkvalues("preferences_probetouchplatethickness")
         ) return;
-        if (grblaxis > 2) {
+        if (common.grblaxis > 2) {
             if (!Checkvalues("preferences_control_z_velocity")) return;
         }
-        if ((grblaxis > 3) && (!Checkvalues("preferences_control_a_velocity"))) return;
-        if ((grblaxis > 4) && (!Checkvalues("preferences_control_b_velocity"))) return;
-        if ((grblaxis > 5) && (!Checkvalues("preferences_control_c_velocity"))) return;
+        if ((common.grblaxis > 3) && (!Checkvalues("preferences_control_a_velocity"))) return;
+        if ((common.grblaxis > 4) && (!Checkvalues("preferences_control_b_velocity"))) return;
+        if ((common.grblaxis > 5) && (!Checkvalues("preferences_control_c_velocity"))) return;
 
         preferenceslist = [];
         let saveprefs = `[{\"language\":\"${language}`;
@@ -643,16 +649,16 @@ function SavePreferences(current_preferences) {
         saveprefs += `\",\"interval_positions\":\"${id('preferences_pos_Interval_check').value}`;
         saveprefs += `\",\"interval_status\":\"${id('preferences_status_Interval_check').value}`;
         saveprefs += `\",\"xy_feedrate\":\"${id('preferences_control_xy_velocity').value}`;
-        if (grblaxis > 2) {
+        if (common.grblaxis > 2) {
             saveprefs += `\",\"z_feedrate\":\"${id('preferences_control_z_velocity').value}`;
         }
-        if (grblaxis > 3) {
+        if (common.grblaxis > 3) {
             saveprefs += `\",\"a_feedrate\":\"${id('preferences_control_a_velocity').value}`;
         }
-        if (grblaxis > 4) {
+        if (common.grblaxis > 4) {
             saveprefs += `\",\"b_feedrate\":\"${id('preferences_control_b_velocity').value}`;
         }
-        if (grblaxis > 5) {
+        if (common.grblaxis > 5) {
             saveprefs += `\",\"c_feedrate\":\"${id('preferences_control_c_velocity').value}`;
         }
 

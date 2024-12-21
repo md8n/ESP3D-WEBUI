@@ -651,8 +651,8 @@ var wrappedDegrees = function(radians) {
     return degrees >= 0 ? degrees : degrees + 360;
 }
 
-var bboxHandlers = {
-    addLine: function(modal, start, end) {
+const bboxHandlers = {
+    addLine: (modal, start, end) => {
 	// Update tpUnits in case it changed in a previous line
         tpUnits = modal.units;
 
@@ -665,7 +665,7 @@ var bboxHandlers = {
         tpBbox.max.y = Math.max(tpBbox.max.y, ps.y, pe.y);
         bboxIsSet = true;
     },
-    addArcCurve: function(modal, start, end, center, extraRotations) {
+    addArcCurve: (modal, start, end, center, extraRotations) => {
         // To determine the precise bounding box of a circular arc we
 	// must account for the possibility that the arc crosses one or
 	// more axes.  If so, the bounding box includes the "bulges" of
@@ -674,8 +674,8 @@ var bboxHandlers = {
 	// Update units in case it changed in a previous line
         tpUnits = modal.units;
 
-        if (modal.motion == 'G2') {  // clockwise
-            var tmp = start;
+        if (modal.motion === 'G2') {  // clockwise
+            const tmp = start;
             start = end;
             end = tmp;
         }
@@ -685,18 +685,18 @@ var bboxHandlers = {
         pe = projection(end);
 
 	// Coordinates relative to the center of the arc
-	var sx = ps.x - pc.x;
-	var sy = ps.y - pc.y;
-	var ex = pe.x - pc.x;
-	var ey = pe.y - pc.y;
+	const sx = ps.x - pc.x;
+	const sy = ps.y - pc.y;
+	const ex = pe.x - pc.x;
+	const ey = pe.y - pc.y;
 
-        var radius = Math.hypot(sx, sy);
+        const radius = Math.hypot(sx, sy);
 
 	// Axis crossings - plus and minus x and y
-	var px = false;
-	var py = false;
-	var mx = false;
-	var my = false;
+	let px = false;
+	let py = false;
+	let mx = false;
+	let my = false;
 
 	// There are ways to express this decision tree in fewer lines
 	// of code by converting to alternate representations like angles,
@@ -772,13 +772,13 @@ var bboxHandlers = {
 		}
 	    }
 	}
-	var maxX = px ? pc.x + radius : Math.max(ps.x, pe.x);
-	var maxY = py ? pc.y + radius : Math.max(ps.y, pe.y);
-	var minX = mx ? pc.x - radius : Math.min(ps.x, pe.x);
-	var minY = my ? pc.y - radius : Math.min(ps.y, pe.y);
+	const maxX = px ? pc.x + radius : Math.max(ps.x, pe.x);
+	const maxY = py ? pc.y + radius : Math.max(ps.y, pe.y);
+	const minX = mx ? pc.x - radius : Math.min(ps.x, pe.x);
+	const minY = my ? pc.y - radius : Math.min(ps.y, pe.y);
 
-	var minZ = Math.min(start.z, end.z);
-	var maxZ = Math.max(start.z, end.z);
+	const minZ = Math.min(start.z, end.z);
+	const maxZ = Math.max(start.z, end.z);
 
         const p0 = projection({x: minX, y: minY, z: minZ});
         const p1 = projection({x: minX, y: maxY, z: minZ});
@@ -797,16 +797,16 @@ var bboxHandlers = {
     }
 };
 var initialMoves = true;
-var displayHandlers = {
-    addLine: function(modal, start, end) {
-        var motion = modal.motion;
-        if (motion == 'G0') {
+const displayHandlers = {
+    addLine: (modal, start, end) => {
+        const motion = modal.motion;
+        if (motion === 'G0') {
             tp.strokeStyle = initialMoves ? 'red' : 'green';
         } else {
             tp.strokeStyle = 'black';
             // Don't cancel initialMoves on no-motion G1 (e.g. G1 F30)
             // or on Z-only moves
-            if (start.x != end.x || start.y != end.y) {
+            if (start.x !== end.x || start.y !== end.y) {
                 initialMoves = false;
             }
         }
@@ -820,23 +820,23 @@ var displayHandlers = {
         tp.lineTo(pe.x, pe.y);
         tp.stroke();
     },
-    addArcCurve: function(modal, start, end, center, extraRotations) {
-        var motion = modal.motion;
+    addArcCurve: (modal, start, end, center, extraRotations) => {
+        const motion = modal.motion;
 
-        var deltaX1 = start.x - center.x;
-        var deltaY1 = start.y - center.y;
-        var radius = Math.hypot(deltaX1, deltaY1);
-        var deltaX2 = end.x - center.x;
-        var deltaY2 = end.y - center.y;
-        var theta1 = Math.atan2(deltaY1, deltaX1);
-        var theta2 = Math.atan2(deltaY2, deltaX2);
-        var cw = modal.motion == "G2";
+        const deltaX1 = start.x - center.x;
+        const deltaY1 = start.y - center.y;
+        const radius = Math.hypot(deltaX1, deltaY1);
+        const deltaX2 = end.x - center.x;
+        const deltaY2 = end.y - center.y;
+        const theta1 = Math.atan2(deltaY1, deltaX1);
+        let theta2 = Math.atan2(deltaY2, deltaX2);
+        const cw = modal.motion === "G2";
         if (!cw && theta2 < theta1) {
             theta2 += Math.PI * 2;
         } else if (cw && theta2 > theta1) {
             theta2 -= Math.PI * 2;
         }
-	if (theta1 == theta2) {
+	if (theta1 === theta2) {
 	    theta2 += Math.PI * ((cw) ? -2 : 2);
 	}
         if (extraRotations > 1) {
@@ -868,16 +868,15 @@ var displayHandlers = {
     },
 };
 
-var ToolpathDisplayer = function() {
-};
+const ToolpathDisplayer = () => {};
 
 // var offset;
 
-ToolpathDisplayer.prototype.clear = function() {
+ToolpathDisplayer.prototype.clear = () => {
     clearCanvas();
 }
 
-ToolpathDisplayer.prototype.showToolpath = function(gcode, modal, initialPosition) {
+ToolpathDisplayer.prototype.showToolpath = (gcode, modal, initialPosition) => {
     cameraAngle = cameraAngle;
 
     var drawBounds = false;
@@ -918,7 +917,7 @@ ToolpathDisplayer.prototype.showToolpath = function(gcode, modal, initialPositio
         drawMachineBelts(); //Adds the belts to the bounding box...does not draw yet
     }
 
-    var gcodeLines = gcode.split('\n');
+    const gcodeLines = gcode.split('\n');
     new Toolpath(bboxHandlers).loadFromLinesSync(gcodeLines);
     transformCanvas();
     if (!bboxIsSet) {
@@ -939,7 +938,7 @@ ToolpathDisplayer.prototype.showToolpath = function(gcode, modal, initialPositio
     }
 };
 
-ToolpathDisplayer.prototype.reDrawTool = function(modal, dpos) {
+ToolpathDisplayer.prototype.reDrawTool = (modal, dpos) => {
     if (toolSave != null) {
         tp.putImageData(toolSave, toolX, toolY);
         drawTool(dpos);
@@ -948,7 +947,7 @@ ToolpathDisplayer.prototype.reDrawTool = function(modal, dpos) {
 
 displayer = new ToolpathDisplayer();
 
-ToolpathDisplayer.prototype.cycleCameraAngle = function(gcode, modal, position) {
+ToolpathDisplayer.prototype.cycleCameraAngle = (gcode, modal, position) => {
     cameraAngle = cameraAngle + 1;
     if(cameraAngle > 4){
         cameraAngle = 0;
@@ -958,7 +957,7 @@ ToolpathDisplayer.prototype.cycleCameraAngle = function(gcode, modal, position) 
 }
 
 canvas.addEventListener("mouseup", updateGcodeViewerAngle); 
-var refreshGcode = function() {
+const refreshGcode = () => {
     const gcode = id('gcode').value;
     displayer.showToolpath(gcode, WPOS, MPOS, cameraAngle);
 }

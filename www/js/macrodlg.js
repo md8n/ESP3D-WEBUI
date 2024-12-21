@@ -148,6 +148,7 @@ function build_dlg_macrolist_line(index) {
 	}
 
 	setHTML(`macro_line_${index}`, content);
+	// biome-ignore lint/complexity/noForEach: <explanation>
 	actions.forEach((action) => {
 		id(action.id).addEventListener(action.type, action.method);
 	});
@@ -189,10 +190,12 @@ function on_macro_name(event, index) {
 }
 
 function build_dlg_macrolist_ui() {
+	const common = new Common();
+
 	let content = "";
 	macrodlg_macrolist = [];
 	for (let i = 0; i < 9; i++) {
-		macrodlg_macrolist.push(control_macrolist[i]);
+		macrodlg_macrolist.push(common.control_macrolist[i]);
 		content += `<tr style='vertical-align:middle' id='macro_line_${i}'>`;
 		content += "</tr>";
 	}
@@ -243,11 +246,13 @@ function macro_select_glyph(event, glyph, index) {
 }
 
 const closeMacroDialog = () => {
+	const common = new Common();
+
 	let modified = false;
 	const fieldsTest = ["filename", "name", "glyph", "class", "target"];
 	for (let i = 0; i < 9; i++) {
 		const macEntry = macrodlg_macrolist[i];
-		const conEntry = control_macrolist[i];
+		const conEntry = common.control_macrolist[i];
 		if (
 			fieldsTest.some(
 				(fieldName) => macEntry[fieldName] !== conEntry[fieldName],
@@ -279,7 +284,8 @@ function process_macroCloseDialog(answer) {
 }
 
 function SaveNewMacroList() {
-	if (http_communication_locked) {
+	const common = new Common();
+	if (common.http_communication_locked) {
 		alertdlg(
 			translate_text_item("Busy..."),
 			translate_text_item(
@@ -335,7 +341,8 @@ function macrodlgUploadProgressDisplay(oEvent) {
 }
 
 function macroUploadsuccess(response) {
-	control_macrolist = [];
+	const common = new Common();
+	common.control_macrolist = [];
 	for (let i = 0; i < 9; i++) {
 		let entry;
 		if (macrodlg_macrolist.length !== 0) {
@@ -357,7 +364,7 @@ function macroUploadsuccess(response) {
 				index: i,
 			};
 		}
-		control_macrolist.push(entry);
+		common.control_macrolist.push(entry);
 	}
 	displayNone("macrodlg_upload_msg");
 	closeModal("ok");

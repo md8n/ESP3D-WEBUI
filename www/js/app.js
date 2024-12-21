@@ -1,33 +1,29 @@
-var ESP3D_authentication = false
-var async_webcommunication = false
-var websocket_port = 0
-var websocket_ip = ''
-var esp_hostname = 'ESP3D WebUI'
-var EP_HOSTNAME
-var EP_STA_SSID
-var EP_STA_PASSWORD
-var EP_STA_IP_MODE
-var EP_STA_IP_VALUE
-var EP_STA_GW_VALUE
-var EP_STA_MK_VALUE
-var EP_WIFI_MODE
-var EP_AP_SSID
-var EP_AP_PASSWORD
-var EP_AP_IP_VALUE
-var EP_BAUD_RATE = 112
-var EP_AUTH_TYPE = 119
-var EP_TARGET_FW = 461
-var EP_IS_DIRECT_SD = 850
-var EP_PRIMARY_SD = 851
-var EP_SECONDARY_SD = 852
-var EP_DIRECT_SD_CHECK = 853
-var SETTINGS_AP_MODE = 1
-var SETTINGS_STA_MODE = 2
-var SETTINGS_FALLBACK_MODE = 3
-var last_ping = 0
-var enable_ping = true
-var esp_error_message = ''
-var esp_error_code = 0
+var websocket_port = 0;
+var websocket_ip = '';
+var esp_hostname = 'ESP3D WebUI';
+var EP_HOSTNAME;
+var EP_STA_SSID;
+var EP_STA_PASSWORD;
+var EP_STA_IP_MODE;
+var EP_STA_IP_VALUE;
+var EP_STA_GW_VALUE;
+var EP_STA_MK_VALUE;
+var EP_WIFI_MODE;
+var EP_AP_SSID;
+var EP_AP_PASSWORD;
+var EP_AP_IP_VALUE;
+var EP_BAUD_RATE = 112;
+var EP_AUTH_TYPE = 119;
+var EP_TARGET_FW = 461;
+var EP_IS_DIRECT_SD = 850;
+var EP_PRIMARY_SD = 851;
+var EP_SECONDARY_SD = 852;
+var EP_DIRECT_SD_CHECK = 853;
+var SETTINGS_AP_MODE = 1;
+var SETTINGS_STA_MODE = 2;
+var SETTINGS_FALLBACK_MODE = 3;
+
+var enable_ping = true;
 
 //Check for IE
 //Edge
@@ -97,7 +93,7 @@ window.onload = () => {
 		// Ensure that we always break out of this
 		failSafe--;
 	}, 500);
-}
+};
 
 const total_boot_steps = 5;
 let current_boot_steps = 0;
@@ -114,6 +110,7 @@ function display_boot_progress(step) {
 }
 
 function update_UI_firmware_target() {
+	const common = new Common();
 	initpreferences();
 	id('control_x_position_label').innerHTML = 'X';
 	id('control_y_position_label').innerHTML = 'Y';
@@ -127,7 +124,7 @@ function update_UI_firmware_target() {
 	displayNone('progress_btn');
 	displayNone('abort_btn');
 	displayNone('motor_off_control');
-	setHTML("tab_title_configuration", "<span translate>GRBL configuration</span>",);
+	setHTML("tab_title_configuration", "<span translate>GRBL configuration</span>");
 	setHTML("tab_printer_configuration", "<span translate>GRBL</span>");
 	const fif = id("files_input_file");
 	if (fif) {
@@ -136,28 +133,28 @@ function update_UI_firmware_target() {
 	displayInitial('zero_xyz_btn');
 	displayInitial('zero_x_btn');
 	displayInitial('zero_y_btn');
-	if (grblaxis > 2) {
+	if (common.grblaxis > 2) {
 		//displayInitial('control_z_position_display');
 		setHTML("control_z_position_label", "Zw");
 	} else {
 		hideAxiscontrols();
 		displayNone('preferences_control_z_velocity_group');
 	}
-	if (grblaxis > 3) {
+	if (common.grblaxis > 3) {
 		id('zero_xyz_btn_txt').innerHTML += 'A';
-		grblzerocmd += ' A0';
+		common.grblzerocmd += ' A0';
 		build_axis_selection();
 		displayBlock('preferences_control_a_velocity_group');
 		id('positions_labels2').style.display = 'inline-grid';
 		displayBlock('control_a_position_display');
 	}
-	if (grblaxis > 4) {
-		displayBlock('control_b_position_display')
-		id('zero_xyz_btn_txt').innerHTML += 'B'
-		grblzerocmd += ' B0'
-		displayBlock('preferences_control_b_velocity_group')
+	if (common.grblaxis > 4) {
+		displayBlock('control_b_position_display');
+		id('zero_xyz_btn_txt').innerHTML += 'B';
+		common.grblzerocmd += ' B0';
+		displayBlock('preferences_control_b_velocity_group');
 	}
-	if (grblaxis > 5) {
+	if (common.grblaxis > 5) {
 		displayBlock('control_c_position_display');
 		id('zero_xyz_btn_txt').innerHTML += 'C';
 		displayBlock('preferences_control_c_velocity_group');
@@ -187,30 +184,30 @@ function update_UI_firmware_target() {
 
 	setHTML("fwName", fwName);
 	//SD image or not
-	setHTML(
-		"showSDused",
-		direct_sd
-			? "<svg width='1.3em' height='1.2em' viewBox='0 0 1300 1200'><g transform='translate(50,1200) scale(1, -1)'><path  fill='#777777' d='M200 1100h700q124 0 212 -88t88 -212v-500q0 -124 -88 -212t-212 -88h-700q-124 0 -212 88t-88 212v500q0 124 88 212t212 88zM100 900v-700h900v700h-900zM500 700h-200v-100h200v-300h-300v100h200v100h-200v300h300v-100zM900 700v-300l-100 -100h-200v500h200z M700 700v-300h100v300h-100z' /></g></svg>"
-			: "",
+	setHTML("showSDused", direct_sd ? "<svg width='1.3em' height='1.2em' viewBox='0 0 1300 1200'><g transform='translate(50,1200) scale(1, -1)'><path  fill='#777777' d='M200 1100h700q124 0 212 -88t88 -212v-500q0 -124 -88 -212t-212 -88h-700q-124 0 -212 88t-88 212v500q0 124 88 212t212 88zM100 900v-700h900v700h-900zM500 700h-200v-100h200v-300h-300v100h200v100h-200v300h300v-100zM900 700v-300l-100 -100h-200v500h200z M700 700v-300h100v300h-100z' /></g></svg>" : ""
 	);
 
-	return fwName
+	return fwName;
 }
 
 function Set_page_title(page_title) {
-	if (typeof page_title !== 'undefined') esp_hostname = page_title
-	document.title = esp_hostname
+	if (typeof page_title !== 'undefined') {
+		esp_hostname = page_title;
+	}
+	document.title = esp_hostname;
 }
 
 function initUI() {
+	const common = new Common();
 	console.log('Init UI');
-	if (ESP3D_authentication) {
+	if (common.ESP3D_authentication) {
 		connectdlg(false);
 	}
 	AddCmd(display_boot_progress);
 	//initial check
-	if (typeof target_firmware === 'undefined' || typeof web_ui_version === 'undefined' || typeof direct_sd === 'undefined')
+	if (typeof target_firmware === 'undefined' || typeof web_ui_version === 'undefined' || typeof direct_sd === 'undefined'){
 		alert('Missing init data!');
+	}
 	//check FW
 	update_UI_firmware_target();
 	//set title using hostname
@@ -220,10 +217,10 @@ function initUI() {
 	//update FW version
 	setHTML("FW_VERSION", fw_version);
 	// Get the element with id="defaultOpen" and click on it
-	id('tablettablink').click()
+	id('tablettablink').click();
 
 	if (typeof id('grblcontroltablink') !== 'undefined') {
-		id('grblcontroltablink').click()
+		id('grblcontroltablink').click();
 	}
 
 	//removeIf(production)
@@ -255,6 +252,7 @@ function initUI_3() {
 }
 
 function initUI_4() {
+	const common = new Common();
 	AddCmd(display_boot_progress);
 	init_command_panel();
 	init_files_panel(false);
@@ -266,10 +264,10 @@ function initUI_4() {
 		setupdlg();
 	} else {
 		//wizard is done UI can be updated
-		setup_is_done = true;
+		common.setup_is_done = true;
 		do_not_build_settings = false;
 		AddCmd(display_boot_progress);
-		build_HTML_setting_list(current_setting_filter);
+		build_HTML_setting_list(common.current_setting_filter);
 		AddCmd(closeModal);
 		AddCmd(show_main_UI);
 	}

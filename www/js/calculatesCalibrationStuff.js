@@ -526,6 +526,8 @@ function findMaxFitness(measurements) {
   var bestGuess = JSON.parse(JSON.stringify(initialGuess));
 
   function iterate() {
+    const common = new Common();
+
     const messagesBox = document.getElementById('messages');
     if (stagnantCounter < 1000 && totalCounter < 200000) {
       //Clear the canvass
@@ -548,7 +550,7 @@ function findMaxFitness(measurements) {
         totalCounter
       });
 
-      if (totalCounter % 100 == 0) {
+      if (totalCounter % 100 === 0) {
         messagesBox.textContent += `Fitness: ${(1 / bestGuess.fitness).toFixed(7)} in ${totalCounter}\n`;
         messagesBox.scrollTop = messagesBox.scrollHeight;
       }
@@ -561,12 +563,16 @@ function findMaxFitness(measurements) {
       }
 
       messagesBox.textContent += '\nCalibration values:';
-      messagesBox.textContent += '\nFitness: ' + 1 / bestGuess.fitness.toFixed(7);
+      messagesBox.textContent += `\nFitness: ${1 / bestGuess.fitness.toFixed(7)}`;
 
-      const tlxStr = bestGuess.tl.x.toFixed(1), tlyStr = bestGuess.tl.y.toFixed(1);
-      const trxStr = bestGuess.tr.x.toFixed(1), tryStr = bestGuess.tr.y.toFixed(1);
-      const blxStr = bestGuess.bl.x.toFixed(1), blyStr = bestGuess.bl.y.toFixed(1);
-      const brxStr = bestGuess.br.x.toFixed(1), bryStr = bestGuess.br.y.toFixed(1);
+      const tlxStr = bestGuess.tl.x.toFixed(1);
+      const tlyStr = bestGuess.tl.y.toFixed(1);
+      const trxStr = bestGuess.tr.x.toFixed(1);
+      const tryStr = bestGuess.tr.y.toFixed(1);
+      const blxStr = bestGuess.bl.x.toFixed(1);
+      const blyStr = bestGuess.bl.y.toFixed(1);
+      const brxStr = bestGuess.br.x.toFixed(1);
+      const bryStr = bestGuess.br.y.toFixed(1);
 
       messagesBox.textContent += `\n${M}_tlX: ${tlxStr}`;
       messagesBox.textContent += `\n${M}_tlY: ${tlyStr}`;
@@ -594,7 +600,7 @@ function findMaxFitness(measurements) {
           final: true,
           bestGuess: bestGuess
         }, true);
-        refreshSettings(current_setting_filter);
+        refreshSettings(common.current_setting_filter);
         saveMaslowYaml();
 
         messagesBox.textContent += '\nA command to save these values has been successfully sent for you. Please check for any error messages.';
@@ -604,7 +610,7 @@ function findMaxFitness(measurements) {
         initialGuess.fitness = 100000000;
 
         // This restarts calibration process for the next stage
-        setTimeout(function () {
+        setTimeout(() => {
           onCalibrationButtonsClick('$CAL', 'Calibrate');
         }, 2000);
       } else {

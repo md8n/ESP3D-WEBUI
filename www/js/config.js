@@ -9,7 +9,8 @@ const config_file_name = "/sd/config";
 
 
 function refreshconfig(is_override) {
-    if (http_communication_locked) {
+    const common = new Common();
+    if (common.http_communication_locked) {
         id('config_status').innerHTML = translate_text_item("Communication locked by another process, retry later.");
         return;
     }

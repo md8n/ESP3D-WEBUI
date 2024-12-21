@@ -159,16 +159,18 @@ function loadCornerValues() {
 
 /** Save the Maslow configuration values */
 function saveConfigValues() {
-    let gridWidth = document.getElementById('gridWidth').value;
-    let gridHeight = document.getElementById('gridHeight').value;
-    let gridSize = document.getElementById('gridSize').value;
-    let retractionForce = document.getElementById('retractionForce').value;
-    let machineOrientation = document.getElementById('machineOrientation').value;
-    let machineWidth = document.getElementById('machineWidth').value;
-    let machineHeight = document.getElementById('machineHeight').value;
+    const common = new Common();
 
-    var gridSpacingWidth = gridWidth / (gridSize - 1);
-    var gridSpacingHeight = gridHeight / (gridSize - 1);
+    const gridWidth = document.getElementById('gridWidth').value;
+    const gridHeight = document.getElementById('gridHeight').value;
+    const gridSize = document.getElementById('gridSize').value;
+    const retractionForce = document.getElementById('retractionForce').value;
+    const machineOrientation = document.getElementById('machineOrientation').value;
+    const machineWidth = document.getElementById('machineWidth').value;
+    const machineHeight = document.getElementById('machineHeight').value;
+
+    const gridSpacingWidth = gridWidth / (gridSize - 1);
+    const gridSpacingHeight = gridHeight / (gridSize - 1);
 
     //If the grid spacing is going to be more than 200 don't save the values
     if (gridSpacingWidth > 260 || gridSpacingHeight > 260) {
@@ -176,22 +178,22 @@ function saveConfigValues() {
         return;
     }
 
-    if (gridWidth != loadedValues['gridWidth']) {
+    if (gridWidth !== loadedValues.gridWidth) {
         sendCommand(`$/${M}_calibration_grid_width_mm_X=${gridWidth}`);
     }
-    if (gridHeight != loadedValues['gridHeight']) {
+    if (gridHeight !== loadedValues.gridHeight) {
         sendCommand(`$/${M}_calibration_grid_height_mm_Y=${gridHeight}`);
     }
-    if (gridSize != loadedValues['gridSize']) {
+    if (gridSize !== loadedValues.gridSize) {
         sendCommand(`$/${M}_calibration_grid_size=${gridSize}`);
     }
-    if (retractionForce != loadedValues['retractionForce']) {
+    if (retractionForce !== loadedValues.retractionForce) {
         sendCommand(`$/${M}_Retract_Current_Threshold=${retractionForce}`);
     }
-    if (machineOrientation != loadedValues['machineOrientation']) {
+    if (machineOrientation !== loadedValues.machineOrientation) {
         sendCommand(`$/${M}_vertical=${machineOrientation === 'horizontal' ? 'false' : 'true'}`);
     }
-    if (machineWidth != loadedValues['machineWidth'] || machineHeight != loadedValues['machineHeight']) {
+    if (machineWidth !== loadedValues.machineWidth || machineHeight !== loadedValues.machineHeight) {
         sendCommand(`$/${M}_tlX=0`);
         sendCommand(`$/${M}_tlY=${machineHeight}`);
         sendCommand(`$/${M}_trX=${machineWidth}`);
@@ -199,7 +201,7 @@ function saveConfigValues() {
         sendCommand(`$/${M}_brX=${machineWidth}`);
     }
 
-    refreshSettings(current_setting_filter);
+    refreshSettings(common.current_setting_filter);
     saveMaslowYaml();
     loadCornerValues();
 

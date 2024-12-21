@@ -1,5 +1,4 @@
 let interval_position = -1;
-var control_macrolist = [];
 
 /** Set up the macro list for the Controls Panel */
 const init_controls_panel = () => {
@@ -8,10 +7,11 @@ const init_controls_panel = () => {
 
 /** Set up the event handlers for the Controls Panel */
 const ControlsPanel = () => {
+	const common = new Common();
 	id("autocheck_position").addEventListener("click", (event) => on_autocheck_position());
 	id("controlpanel_interval_positions").addEventListener("change", (event) => onPosIntervalChange());
 
-	id("zero_xyz_btn").addEventListener("click", (event) => SendZerocommand(grblzerocmd));
+	id("zero_xyz_btn").addEventListener("click", (event) => SendZerocommand(common.grblzerocmd));
 	id("zero_x_btn").addEventListener("click", (event) => SendZerocommand("X0"));
 	id("zero_y_btn").addEventListener("click", (event) => SendZerocommand("Y0"));
 	id("zero_z_btn").addEventListener("click", (event) => SendZerocommand("Z0"));
@@ -44,22 +44,24 @@ function showAxiscontrols() {
 }
 
 function loadmacrolist() {
-	control_macrolist = [];
-	var url = "/macrocfg.json";
+	const common = new Common();
+	common.control_macrolist = [];
+	const url = "/macrocfg.json";
 	SendGetHttp(url, processMacroGetSuccess, processMacroGetFailed);
 }
 
 function Macro_build_list(response_text) {
-	var response = [];
+	const common = new Common();
+	let response = [];
 	try {
-		if (response_text.length != 0) {
+		if (response_text.length !== 0) {
 			response = JSON.parse(response_text);
 		}
 	} catch (e) {
 		console.error("Parsing error:", e);
 	}
-	for (var i = 0; i < 9; i++) {
-		var entry;
+	for (let i = 0; i < 9; i++) {
+		let entry;
 		if (
 			response.length !== 0 &&
 			typeof response[i].name !== "undefined" &&
@@ -87,12 +89,12 @@ function Macro_build_list(response_text) {
 				index: i
 			};
 		}
-		control_macrolist.push(entry);
+		common.control_macrolist.push(entry);
 	}
 	control_build_macro_ui();
 }
 
-const processMacroGetSuccess = (response) => Macro_build_list(response.indexOf("<HTML>") == -1 ? response : "");
+const processMacroGetSuccess = (response) => Macro_build_list(response.indexOf("<HTML>") === -1 ? response : "");
 
 function processMacroGetFailed(error_code, response) {
 	conErr(error_code, response);
@@ -167,15 +169,17 @@ function SendHomecommand(cmd) {
 	if (id('lock_UI').checked) {
 		return;
 	}
+	const common = new Common();
+	let hCmd = "";
 	switch (cmd) {
-		case 'G28': cmd = '$H'; break;
-		case 'G28 X0': cmd = '$HX'; break;
-		case 'G28 Y0': cmd = '$HY'; break;
-		case 'G28 Z0': cmd = (grblaxis > 3) ? `$H${id("control_select_axis").value}` : '$HZ'; break;
-		default: cmd = '$H'; break;
+		case 'G28': hCmd = '$H'; break;
+		case 'G28 X0': hCmd = '$HX'; break;
+		case 'G28 Y0': hCmd = '$HY'; break;
+		case 'G28 Z0': hCmd = (common.grblaxis > 3) ? `$H${id("control_select_axis").value}` : '$HZ'; break;
+		default: hCmd = '$H'; break;
 	}
 
-	SendPrinterCommand(cmd, true, get_Position);
+	SendPrinterCommand(hCmd, true, get_Position);
 }
 
 function SendZerocommand(cmd) {
@@ -212,16 +216,18 @@ function SendJogcommand(cmd, feedrate) {
 		return;
 	}
 
+	const common = new Common();
+
 	const controlName = feedrate.startsWith("Z") ? "controlpanel_z_feedrate" : "controlpanel_xy_feedrate";
 	const prefName = feedrate.startsWith("Z") ? "z_feedrate" : "xy_feedrate";
 	const valueDef = buildFeedRateValueDef(feedrate);
 
 	let letter = "Z";
-	let cmd = "";
-	if (grblaxis > 3) {
+	let jCmd = "";
+	if (common.grblaxis > 3) {
 		letter = "Axis";
 		valueDef.label = valueDef.label.replace("Z axis", letter);
-		cmd = cmd.replace("Z", id("control_select_axis").value);
+		jCmd = cmd.replace("Z", id("control_select_axis").value);
 	}
 
 	const feedrateValue = id(controlName).value;
@@ -234,7 +240,7 @@ function SendJogcommand(cmd, feedrate) {
 		return;
 	}
 
-	let command = `$J=G91 G21 F${feedrateValue} ${cmd}`;
+	const command = `$J=G91 G21 F${feedrateValue} ${jCmd}`;
 	console.log(command);
 	SendPrinterCommand(command, true, get_Position);
 }
@@ -274,9 +280,10 @@ function control_build_macro_button(index, entry) {
 }
 
 function control_build_macro_ui() {
+	const common = new Common();
 	const actions = [];
 
-	var content = "<div class='tooltip'>";
+	let content = "<div class='tooltip'>";
 	content += "<span class='tooltip-text'>Manage macros</span>"
 	content += "<button id='control_btn_show_macro_dlg' class='btn btn-primary'>";
 	actions.push({ id: "control_btn_show_macro_dlg", type: "click", method: (event) => showmacrodlg(processMacroSave) });
@@ -294,12 +301,13 @@ function control_build_macro_ui() {
 	content += "</span>";
 	content += "</button>";
 	content += "</div>";
-	for (var i = 0; i < 9; i++) {
-		const entry = control_macrolist[i];
+	for (let i = 0; i < 9; i++) {
+		const entry = common.control_macrolist[i];
 		content += control_build_macro_button(i, entry);
 		actions.push({ id: `control_macro_${i}`, type: "click", method: (event) => macro_command(entry.target, entry.filename) });
 	}
 	id("Macro_list").innerHTML = content;
+	// biome-ignore lint/complexity/noForEach: <explanation>
 	actions.forEach((action) => {
 		id(action.id).addEventListener(action.type, (event) => action.method);
 	});

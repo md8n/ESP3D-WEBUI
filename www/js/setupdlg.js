@@ -1,17 +1,11 @@
 //setup dialog
 
-var active_wizard_page = 0;
-var maz_page_wizard = 5;
+let active_wizard_page = 0;
 
-function td(value) {
-    return "<td>" + value + "</td>";
-}
-function table(value) {
-    return "<table><tr>" + value + "</tr></table>";
-}
-function heading(label) {
-    return "<h4>" + translate_text_item(label) + "</h4><hr>";
-}
+const td = (value) => `<td>${value}</td>`;
+const table = (value) => `<table><tr>${value}</tr></table>`;
+const heading = (label) => `<h4>${translate_text_item(label)}</h4><hr>`;
+
 function item(label, pos, extra) {
     return translate_text_item(label) + table(build_control_from_pos(pos, extra));
 }
@@ -30,23 +24,21 @@ function openStep(wizard, step) {
     id(step).className = id(step).className.replace(" disabled", "");
 }
 function closeStep(step) {
-    if (id(step).className.indexOf(" wizard_done") == -1) {
+    const common = new Common();
+    if (id(step).className.indexOf(" wizard_done") === -1) {
         id(step).className += " wizard_done";
-        if (!can_revert_wizard) id(step).className += " no_revert_wizard";
+        if (!common.can_revert_wizard) {
+            id(step).className += " no_revert_wizard";
+        }
     }
 }
-function spacer() {
-    return "<hr>\n";
-}
-function div(name) {
-    return "<div id='" + name + "'>";
-}
-function endDiv() {
-    return "</div>";
-}
+const spacer = () => "<hr>\n";
+const div = (name) => `<div id='${name}'>`;
+const endDiv = () => "</div>";
 
 function setupdlg() {
-    setup_is_done = false;
+    const common = new Common();
+    common.setup_is_done = false;
     language_save = language;
     displayNone('main_ui');
     id('settings_list_data').innerHTML = "";
@@ -64,20 +56,24 @@ function setupdlg() {
     displayNone("wizard_line4")
     disableStep("wizard_line4", "endsteplink");
 
-    var content = table( td(get_icon_svg("flag") + "&nbsp;") + td(build_language_list("language_selection")));
+    const content = table( td(`${get_icon_svg("flag")}&nbsp;`) + td(build_language_list("language_selection")));
     id("setup_langage_list").innerHTML = content;
 
-    var modal = setactiveModal('setupdlg.html', setupdone);
-    if (modal == null) return;
+    const modal = setactiveModal('setupdlg.html', setupdone);
+    if (modal == null) {
+        return;
+    }
     showModal();
     id("startsteplink", true).click();
 }
 
 
 function setupdone(response) {
-    setup_is_done = true;
+    const common = new Common();
+
+    common.setup_is_done = true;
     do_not_build_settings = false;
-    build_HTML_setting_list(current_setting_filter);
+    build_HTML_setting_list(common.current_setting_filter);
     translate_text(language_save);
     displayUndoNone('main_ui');
     closeModal("setup done");
@@ -112,7 +108,7 @@ function continue_setup_wizard() {
 }
 
 function enablestep1() {
-    var content = "";
+    let content = "";
     closeStep("startsteplink")
     id("wizard_button").innerHTML = translate_text_item("Continue");
     openStep("wizard_line1", "step1link");
@@ -124,19 +120,19 @@ function enablestep1() {
 }
 
 function enablestep2() {
-    var content = "";
+    let content = "";
     closeStep("step1link");
     openStep("wizard_line2", "step2link");
     content += heading("WiFi Configuration");
 
     content += item("Define ESP role:", EP_WIFI_MODE, "define_esp_role");
-    content += translate_text_item("AP define access point / STA allows to join existing network") + "<br>";
+    content += `${translate_text_item("AP define access point / STA allows to join existing network")}<br>`;
     content += spacer();
 
     content += div("setup_STA");
 
     content += item("What access point ESP need to be connected to:", EP_STA_SSID);
-    content += translate_text_item("You can use scan button, to list available access points.") + "<br>";
+    content += `${translate_text_item("You can use scan button, to list available access points.")}<br>`;
     content += spacer();
 
     content += item("Password to join access point:", EP_STA_PASSWORD);
@@ -157,7 +153,7 @@ function enablestep2() {
 }
 
 function define_sd_role(index) {
-    if (setting_configList[index].defaultvalue == 1) {
+    if (setting_configList[index].defaultvalue === 1) {
         displayBlock("setup_SD");
         displayNone("setup_primary_SD");;
     } else {
@@ -167,7 +163,7 @@ function define_sd_role(index) {
 }
 
 function enablestep3() {
-    var content = "";
+    let content = "";
     closeStep("step2link");
     openStep("wizard_line3", "step3link");
     content += heading("SD Card Configuration");

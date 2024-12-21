@@ -8,12 +8,14 @@ let ws_source;
 
 const CancelCurrentUpload = () => {
 	xmlhttpupload.abort();
-	//http_communication_locked = false;
+	// const common = new Common();
+	// common.http_communication_locked = false;
 	console.log("Cancel Upload");
 };
 
 const check_ping = () => {
-	if (Date.now() - last_ping > 20000) {
+	const common = new Common();
+	if (Date.now() - common.last_ping > 20000) {
 		Disable_interface(true);
 		console.log("No heart beat for more than 20s");
 	}
@@ -22,12 +24,14 @@ const check_ping = () => {
 let interval_ping = -1;
 /** Turn ping on or off based on its current value */
 const handlePing = () => {
+	const common = new Common();
+
 	if (enable_ping) {
 		// First clear any existing interval
 		if (interval_ping) {
 			clearInterval(interval_ping);
 		}
-		last_ping = Date.now();
+		common.last_ping = Date.now();
 		interval_ping = setInterval(() => check_ping(), 10 * 1000);
 		console.log("enable ping");
 	} else {
@@ -40,9 +44,12 @@ const handlePing = () => {
 let log_off = false;
 const Disable_interface = (lostconnection) => {
 	let lostcon = false;
-	if (typeof lostconnection !== "undefined") lostcon = lostconnection;
+	if (typeof lostconnection !== "undefined") {
+		lostcon = lostconnection;
+	}
 	//block all communication
-	http_communication_locked = true;
+	const common = new Common();
+	common.http_communication_locked = true;
 	log_off = true;
 	if (interval_ping !== -1) clearInterval(interval_ping);
 	//clear all waiting commands
@@ -52,7 +59,7 @@ const Disable_interface = (lostconnection) => {
 	//No auto check
 	on_autocheck_position(false);
 	reportNone();
-	if (async_webcommunication) {
+	if (common.async_webcommunication) {
 		event_source.removeEventListener("ActiveID", ActiveID_events, false);
 		event_source.removeEventListener("InitID", Init_events, false);
 		event_source.removeEventListener("DHT", DHT_events, false);
@@ -63,10 +70,11 @@ const Disable_interface = (lostconnection) => {
 };
 
 const EventListenerSetup = () => {
-	if (!async_webcommunication) {
+	const common = new Common();
+	if (!common.async_webcommunication) {
 		return;
 	}
-	if (!!window.EventSource) {
+	if (window.EventSource) {
 		event_source = new EventSource("/events");
 		event_source.addEventListener("InitID", Init_events, false);
 		event_source.addEventListener("ActiveID", ActiveID_events, false);
@@ -111,16 +119,13 @@ const Handle_DHT = (data) => {
 const process_socket_response = (msg) => msg.split("\n").forEach(grblHandleMessage);
 
 const startSocket = () => {
+	const common = new Common();
 	try {
-		if (async_webcommunication) {
-			ws_source = new WebSocket(`ws://${document.location.host}/ws`, [
-				"arduino",
-			]);
+		if (common.async_webcommunication) {
+			ws_source = new WebSocket(`ws://${document.location.host}/ws`, ["arduino"]);
 		} else {
 			console.log(`Socket is ${websocket_ip}:${websocket_port}`);
-			ws_source = new WebSocket(`ws://${websocket_ip}:${websocket_port}`, [
-				"arduino",
-			]);
+			ws_source = new WebSocket(`ws://${websocket_ip}:${websocket_port}`, ["arduino"]);
 		}
 	} catch (exception) {
 		console.error(exception);
@@ -178,7 +183,7 @@ const startSocket = () => {
 					if (tval[0] === "PING") {
 						page_id = tval[1];
 						// console.log("ping from id = " + page_id);
-						last_ping = Date.now();
+						common.last_ping = Date.now();
 						if (interval_ping === -1)
 							interval_ping = setInterval(() => {
 								check_ping();
@@ -194,8 +199,8 @@ const startSocket = () => {
 					Handle_DHT(tval[1]);
 				}
 				if (tval[0] === "ERROR") {
-					esp_error_message = tval[2];
-					esp_error_code = tval[1];
+					common.esp_error_message = tval[2];
+					common.esp_error_code = tval[1];
 					console.error(`ERROR: ${tval[2]} code:${tval[1]}`);
 					CancelCurrentUpload();
 				}

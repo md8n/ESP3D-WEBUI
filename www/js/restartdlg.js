@@ -20,12 +20,13 @@ const restartdlg = () => {
 };
 
 function restart_esp_success(response) {
+	const common = new Common();
 	let i = 0;
 	const x = id("prgrestart");
-	http_communication_locked = true;
+	common.http_communication_locked = true;
 	x.max = 10;
 	const interval = setInterval(() => {
-		last_ping = Date.now();
+		common.last_ping = Date.now();
 		i = i + 1;
 		const x = id("prgrestart");
 		x.value = i;

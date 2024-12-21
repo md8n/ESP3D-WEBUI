@@ -8,16 +8,10 @@ var WCO = undefined
 var OVR = { feed: undefined, rapid: undefined, spindle: undefined }
 var MPOS = [0, 0, 0]
 var WPOS = [0, 0, 0]
-var grblaxis = 3
-var grblzerocmd = 'X0 Y0 Z0'
 var feedrate = [0, 0, 0, 0, 0, 0]
 var last_axis_letter = 'Z'
 
 var axisNames = ['x', 'y', 'z', 'a', 'b', 'c']
-
-var modal = { modes: '', plane: 'G17', units: 'G21', wcs: 'G54', distance: 'G90' }
-
-let calibrationResults = {}
 
 function setClickability(element, visible) {
   setDisplay(element, visible ? 'table-row' : 'none')
@@ -32,24 +26,26 @@ function setAutocheck(flag) {
 }
 
 function build_axis_selection() {
-  var html = "<select class='form-control wauto' id='control_select_axis' onchange='control_changeaxis()' >"
-  for (var i = 3; i <= grblaxis; i++) {
-    var letter
-    if (i == 3) letter = 'Z'
-    else if (i == 4) letter = 'A'
-    else if (i == 5) letter = 'B'
-    else if (i == 6) letter = 'C'
-    html += "<option value='" + letter + "'"
-    if (i == 3) html += ' selected '
+  const common = new Common();
+
+  let html = "<select class='form-control wauto' id='control_select_axis' onchange='control_changeaxis()' >"
+  for (let i = 3; i <= common.grblaxis; i++) {
+    let letter
+    if (i === 3) letter = 'Z'
+    else if (i === 4) letter = 'A'
+    else if (i === 5) letter = 'B'
+    else if (i === 6) letter = 'C'
+    html += `<option value='${letter}'`
+    if (i === 3) html += ' selected '
     html += '>'
     html += letter
     html += '</option>\n'
   }
 
   html += '</select>\n'
-  if (grblaxis > 3) {
+  if (common.grblaxis > 3) {
     setHTML('axis_selection', html)
-    setHTML('axis_label', translate_text_item('Axis') + ':')
+    setHTML('axis_label', `${translate_text_item('Axis')}:`)
     setClickability('axis_selection', true)
   }
 }
@@ -547,26 +543,30 @@ const modalModes = [
 ]
 
 function grblGetModal(msg) {
-  modal.modes = msg.replace('[GC:', '').replace(']', '')
-  var modes = modal.modes.split(' ')
-  modal.parking = undefined // Otherwise there is no way to turn it off
-  modal.program = '' // Otherwise there is no way to turn it off
-  modes.forEach(function (mode) {
-    if (mode == 'M9') {
-      modal.flood = mode
-      modal.mist = mode
+  const common = new Common();
+  common.modal.modes = msg.replace('[GC:', '').replace(']', '')
+  const modes = common.modal.modes.split(' ')
+  common.modal.parking = undefined // Otherwise there is no way to turn it off
+  common.modal.program = '' // Otherwise there is no way to turn it off
+  // biome-ignore lint/complexity/noForEach: <explanation>
+  modes.forEach((mode) => {
+    if (mode === 'M9') {
+      common.modal.flood = mode
+      common.modal.mist = mode
     } else {
       if (mode.charAt(0) === 'T') {
-        modal.tool = mode.substring(1)
+        common.modal.tool = mode.substring(1)
       } else if (mode.charAt(0) === 'F') {
-        modal.feedrate = mode.substring(1)
+        common.modal.feedrate = mode.substring(1)
       } else if (mode.charAt(0) === 'S') {
-        modal.spindle = mode.substring(1)
+        common.modal.spindle = mode.substring(1)
       } else {
-        modalModes.forEach(function (modeType) {
-          modeType.values.forEach(function (s) {
-            if (mode == s) {
-              modal[modeType.name] = mode
+        // biome-ignore lint/complexity/noForEach: <explanation>
+        modalModes.forEach((modeType) => {
+          // biome-ignore lint/complexity/noForEach: <explanation>
+          modeType.values.forEach((s) => {
+            if (mode === s) {
+              common.modal[modeType.name] = mode
             }
           })
         })
@@ -592,9 +592,10 @@ var collectedSettings = null
 async function handleCalibrationData(measurements) {
   document.querySelector('#messages').textContent += '\nComputing... This may take several minutes'
   sendCommand("$ACKCAL");
-  await sleep(500)
+  const common = new Common();
+  await sleep(500);
   try {
-    calibrationResults = await findMaxFitness(measurements)
+    common.calibrationResults = await findMaxFitness(measurements);
   } catch (error) {
     console.error('An error occurred:', error)
   }
@@ -743,14 +744,14 @@ function StartProbeProcess() {
 }
 
 var spindleSpeedSetTimeout
-var spindleTabSpindleSpeed = 1
 
 function setSpindleSpeed(speed) {
+  const common = new Common();
   if (spindleSpeedSetTimeout) clearTimeout(spindleSpeedSetTimeout)
   if (speed >= 1) {
-    spindleTabSpindleSpeed = speed
+    common.spindleTabSpindleSpeed = speed
     spindleSpeedSetTimeout = setTimeout(
-      () => SendPrinterCommand('S' + spindleTabSpindleSpeed, false, null, null, 1, 1),
+      () => SendPrinterCommand(`S${common.spindleTabSpindleSpeed}`, false, null, null, 1, 1),
       500
     )
   }

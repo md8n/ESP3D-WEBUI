@@ -5,8 +5,7 @@ var scl = [] // setting_configList
 var setting_error_msg = ''
 var setting_lasti = -1
 var setting_lastj = -1
-var current_setting_filter = 'nvs'
-var setup_is_done = false
+
 var do_not_build_settings = false
 const CONFIG_TOOLTIPS = {
   Maslow_vertical: `If the ${M} is oriented horizontally, set this to false`,
@@ -33,11 +32,12 @@ const CONFIG_TOOLTIPS = {
 }
 
 function refreshSettings(hide_setting_list) {
-  if (http_communication_locked) {
+  const common = new Common();
+  if (common.http_communication_locked) {
     id('config_status').innerHTML = translate_text_item('Communication locked by another process, retry later.')
     return
   }
-  do_not_build_settings = typeof hide_setting_list == 'undefined' ? false : !hide_setting_list
+  do_not_build_settings = typeof hide_setting_list === 'undefined' ? false : !hide_setting_list
 
   displayBlock('settings_loader')
   displayNone('settings_list_content')
@@ -45,7 +45,7 @@ function refreshSettings(hide_setting_list) {
   displayNone('settings_refresh_btn')
 
   scl = []
-  var url = '/command?plain=' + encodeURIComponent('[ESP400]')
+  const url = `/command?plain=${encodeURIComponent('[ESP400]')}`
   SendGetHttp(url, getESPsettingsSuccess, getESPsettingsfailed)
 }
 
@@ -205,21 +205,23 @@ function build_HTML_setting_list(filter) {
     return;
   }
 
+  const common = new Common();
+
   const buildTR = (tds) => `<tr>${tds}</tr>`;
 
-  var content = buildTR('<td colspan="2">Click "Set" after changing a value to set it</td>');
+  let content = buildTR('<td colspan="2">Click "Set" after changing a value to set it</td>');
   if (filter === 'tree') {
     content += `<tr>
     <td>Click "Save" after changing all values to save the <br/>whole configuration to maslow.yaml and restart</td>
     <td><button type="button" class="btn btn-success" onclick="saveMaslowYaml();">Save</button></td>
     </tr>`;
   }
-  current_setting_filter = filter;
-  id(current_setting_filter + '_setting_filter').checked = true;
+  common.current_setting_filter = filter;
+  id(`${common.current_setting_filter}_setting_filter`).checked = true;
 
-  for (var i = 0; i < scl.length; i++) {
+  for (let i = 0; i < scl.length; i++) {
     fname = scl[i].F.trim().toLowerCase();
-    if (fname == 'network' || fname == filter || filter == 'all') {
+    if (fname === 'network' || fname === filter || filter === 'all') {
       let tr = `<tr><td style='vertical-align:middle'>${translate_text_item(scl[i].label, true)}`;
       const tooltip = CONFIG_TOOLTIPS[scl[i].label.substring(1)];
       if (tooltip) {
@@ -239,24 +241,24 @@ function build_HTML_setting_list(filter) {
     document.querySelector('#setting_32_0').value = result;
   }
   // set calibration values if exists
-  if (Object.keys(calibrationResults).length) {
-    document.querySelector('#setting_153_0').value = calibrationResults.br.x;
-    document.querySelector('#setting_154_0').value = calibrationResults.br.y;
-    document.querySelector('#setting_155_0').value = calibrationResults.tl.x;
-    document.querySelector('#setting_156_0').value = calibrationResults.tl.y;
-    document.querySelector('#setting_157_0').value = calibrationResults.tr.x;
-    document.querySelector('#setting_158_0').value = calibrationResults.tr.y;
-    document.querySelector('#setting_159_0').value = calibrationResults.bl.x;
-    document.querySelector('#setting_160_0').value = calibrationResults.bl.y;
+  if (Object.keys(common.calibrationResults).length) {
+    document.querySelector('#setting_153_0').value = common.calibrationResults.br.x;
+    document.querySelector('#setting_154_0').value = common.calibrationResults.br.y;
+    document.querySelector('#setting_155_0').value = common.calibrationResults.tl.x;
+    document.querySelector('#setting_156_0').value = common.calibrationResults.tl.y;
+    document.querySelector('#setting_157_0').value = common.calibrationResults.tr.x;
+    document.querySelector('#setting_158_0').value = common.calibrationResults.tr.y;
+    document.querySelector('#setting_159_0').value = common.calibrationResults.bl.x;
+    document.querySelector('#setting_160_0').value = common.calibrationResults.bl.y;
   }
   // set calibration values if exists END
 }
 
 function setting_check_value(value, i) {
-  var valid = true
-  var entry = scl[i]
+  let valid = true
+  const entry = scl[i]
   //console.log("checking value");
-  if (entry.type == 'F') return valid
+  if (entry.type === 'F') return valid
   //does it part of a list?
   if (entry.Options.length > 0) {
     var in_list = false
@@ -298,21 +300,25 @@ function setting_check_value(value, i) {
 }
 
 function process_settings_answer(response_text) {
-  var result = true
+  const common = new Common();
+
+  let result = true
   try {
-    var response = JSON.parse(response_text)
-    if (typeof response.EEPROM == 'undefined') {
+    const response = JSON.parse(response_text)
+    if (typeof response.EEPROM === 'undefined') {
       result = false
       console.log('No EEPROM')
     } else {
       //console.log("EEPROM has " + response.EEPROM.length + " entries");
       if (response.EEPROM.length > 0) {
-        var vi = 0
-        for (var i = 0; i < response.EEPROM.length; i++) {
+        let vi = 0
+        for (let i = 0; i < response.EEPROM.length; i++) {
           vi = create_setting_entry(response.EEPROM[i], vi)
         }
         if (vi > 0) {
-          if (setup_is_done) build_HTML_setting_list(current_setting_filter)
+          if (common.setup_is_done) {
+            build_HTML_setting_list(common.current_setting_filter)
+          }
           update_UI_setting()
         } else result = false
       } else result = false

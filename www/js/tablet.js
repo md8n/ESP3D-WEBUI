@@ -155,9 +155,11 @@ const zeroAxis = (axis) => {
   msgWindow.scrollTop = msgWindow.scrollHeight
 }
 
+const common = new Common();
+
 const toggleUnits = () => {
   tabletClick()
-  sendCommand(modal.units === 'G21' ? 'G20' : 'G21');
+  sendCommand(common.modal.units === 'G21' ? 'G20' : 'G21');
   // The button label will be fixed by the response to $G
   sendCommand('$G');
 }
@@ -175,8 +177,8 @@ const toggleUnits = () => {
 
 const jogTo = (axisAndDistance) => {
   // Always force G90 mode because synchronization of modal reports is unreliable
-  var feedrate = JogFeedrate(axisAndDistance)
-  if (modal.units === 'G20') {
+  let feedrate = JogFeedrate(axisAndDistance)
+  if (common.modal.units === 'G20') {
     feedrate /= 25.4;
     feedrate = feedrate.toFixed(2);
   }
@@ -199,16 +201,16 @@ const setAxis = (axis, field) => {
   tabletClick();
   sendCommand(`G10 L20 P1 ${axis}${id(field).value}`);
 }
-var timeout_id = 0,
-  hold_time = 1000
+const timeout_id = 0
+const hold_time = 1000
 
-var longone = false
+let longone = false
 function long_jog(target) {
   longone = true
   distance = 1000
-  var axisAndDirection = target.value
-  var feedrate = JogFeedrate(axisAndDirection)
-  if (modal.units == 'G20') {
+  const axisAndDirection = target.value
+  let feedrate = JogFeedrate(axisAndDirection)
+  if (common.modal.units === 'G20') {
     distance /= 25.4
     distance = distance.toFixed(3)
     feedrate /= 25.4
@@ -517,11 +519,11 @@ var oldCannotClick = null
 
 function scaleUnits(target) {
   //Scale the units to move when jogging down or up by 25 to keep them reasonable
-  let disMElement = id(target);
-  let currentValue = Number(disMElement.innerText);
+  const disMElement = id(target);
+  const currentValue = Number(disMElement.innerText);
 
-  if (!isNaN(currentValue)) {
-    disMElement.innerText = modal.units == 'G20' ? currentValue / 25 : currentValue * 25;
+  if (!Number.isNaN(currentValue)) {
+    disMElement.innerText = common.modal.units === 'G20' ? currentValue / 25 : currentValue * 25;
   } else {
     console.error('Invalid number in disM element');
   }
@@ -529,20 +531,20 @@ function scaleUnits(target) {
 
 
 function tabletUpdateModal() {
-  const newUnits = modal.units === 'G21' ? 'mm' : 'Inch'
+  const newUnits = common.modal.units === 'G21' ? 'mm' : 'Inch'
   if (getText('units') !== newUnits) {
     setText('units', newUnits)
-    setJogSelector(modal.units)
+    setJogSelector(common.modal.units)
     scaleUnits("disM")
     scaleUnits("disZ")
   }
 }
 function tabletGrblState(grbl, response) {
   // tabletShowResponse(response)
-  var stateName = grbl.stateName
+  const stateName = grbl.stateName
 
   // Unit conversion factor - depends on both $13 setting and parser units
-  var factor = 1.0
+  let factor = 1.0
 
   //  spindleSpeed = grbl.spindleSpeed;
   //  spindleDirection = grbl.spindle;
@@ -551,8 +553,8 @@ function tabletGrblState(grbl, response) {
   //  rapidOverride = OVR.rapid/100.0;
   //  spindleOverride = OVR.spindle/100.0;
 
-  var mmPerInch = 25.4
-  switch (modal.units) {
+  const mmPerInch = 25.4
+  switch (common.modal.units) {
     case 'G20':
       factor = grblReportingUnits === 0 ? 1 / mmPerInch : 1.0
       break
@@ -626,69 +628,55 @@ function tabletGrblState(grbl, response) {
 
   var now = new Date()
   //setText('time-of-day', now.getHours() + ':' + String(now.getMinutes()).padStart(2, '0'));
-  if (stateName == 'Run') {
-    var elapsed = now.getTime() - startTime
+  if (stateName === 'Run') {
+    let elapsed = now.getTime() - startTime
     if (elapsed < 0) elapsed = 0
-    var seconds = Math.floor(elapsed / 1000)
-    var minutes = Math.floor(seconds / 60)
+    let seconds = Math.floor(elapsed / 1000)
+    const minutes = Math.floor(seconds / 60)
     seconds = seconds % 60
-    if (seconds < 10) seconds = '0' + seconds
-    runTime = minutes + ':' + seconds
+    if (seconds < 10) seconds = `0${seconds}`
+    runTime = `${minutes}:${seconds}`
   } else {
     startTime = now.getTime()
   }
 
   //setText('runtime', runTime);
 
-  //setText('wpos-label', modal.wcs);
-  var distanceText = modal.distance == 'G90' ? modal.distance : "<div style='color:red'>" + modal.distance + '</div>'
+  //setText('wpos-label', common.modal.wcs);
+  const distanceText = common.modal.distance === 'G90' ? common.modal.distance : `<div style='color:red'>${common.modal.distance}</div>`
   //setHTML('distance', distanceText);
 
-  var stateText = ''
-  if (stateName == 'Run') {
-    var rateNumber = modal.units == 'G21' ? Number(grbl.feedrate).toFixed(0) : Number(grbl.feedrate / 25.4).toFixed(2)
+  let stateText = ''
+  if (stateName === 'Run') {
+    const rateNumber = common.modal.units === 'G21' ? Number(grbl.feedrate).toFixed(0) : Number(grbl.feedrate / 25.4).toFixed(2)
 
-    var rateText = rateNumber + (modal.units == 'G21' ? ' mm/min' : ' in/min')
+    const rateText = rateNumber + (common.modal.units === 'G21' ? ' mm/min' : ' in/min')
 
-    stateText = rateText + ' ' + spindleSpeed + ' ' + spindleDirection
+    stateText = `${rateText} ${spindleSpeed} ${spindleDirection}`
   } else {
     // var stateText = errorText == 'Error' ? "Error: " + errorMessage : stateName;
     stateText = stateName
   }
   //setText('active-state', stateText);
 
-  var modeText =
-    modal.distance +
-    ' ' +
-    modal.wcs +
-    ' ' +
-    modal.units +
-    ' ' +
-    'T' +
-    modal.tool +
-    ' ' +
-    'F' +
-    modal.feedrate +
-    ' ' +
-    'S' +
-    modal.spindle +
-    ' '
+  const modeText =
+  `${common.modal.distance} ${common.modal.wcs} ${common.modal.units} T${common.modal.tool} F${common.modal.feedrate} S${common.modal.spindle} `;
 
-  if (grbl.lineNumber && (stateName == 'Run' || stateName == 'Hold' || stateName == 'Stop')) {
+  if (grbl.lineNumber && (stateName === 'Run' || stateName === 'Hold' || stateName === 'Stop')) {
     //setText('line', grbl.lineNumber);
     if (gCodeDisplayable) {
       scrollToLine(grbl.lineNumber)
     }
   }
   if (gCodeDisplayable) {
-    displayer.reDrawTool(modal, arrayToXYZ(WPOS))
+    displayer.reDrawTool(common.modal, arrayToXYZ(WPOS))
   }
 
-  var digits = modal.units == 'G20' ? 4 : 2
+  const digits = common.modal.units === 'G20' ? 4 : 2
 
   if (WPOS) {
-    WPOS.forEach(function (pos, index) {
-      setTextContent('mpos-' + axisNames[index], Number(pos * factor).toFixed(index > 2 ? 2 : digits))
+    WPOS.forEach((pos, index) => {
+      setTextContent(`mpos-${axisNames[index]}`, Number(pos * factor).toFixed(index > 2 ? 2 : digits))
     })
   }
 
@@ -706,14 +694,13 @@ function addOption(selector, name, value, isDisabled, isSelected) {
   selector.appendChild(opt)
 }
 
-var gCodeFilename = ''
-
 var filename = 'TEST.NC'
 var watchPath = ''
 
 function tabletGetFileList(path) {
-  gCodeFilename = ''
-  SendGetHttp('/upload?path=' + encodeURI(path), files_list_success)
+  const common = new Common();
+  common.gCodeFilename = "";
+  SendGetHttp(`/upload?path=${encodeURI(path)}`, files_list_success)
 }
 
 function tabletInit() {
@@ -751,20 +738,21 @@ function arrayToXYZ(a) {
 }
 
 function showGCode(gcode) {
-  gCodeLoaded = gcode != ''
+  const common = new Common();
+  gCodeLoaded = gcode !== ''
   if (!gCodeLoaded) {
     id('gcode').value = '(No GCode loaded)'
     displayer.clear()
   } else {
     id('gcode').value = gcode
-    var initialPosition = {
+    const initialPosition = {
       x: WPOS[0],
       y: WPOS[1],
       z: WPOS[2],
     }
 
     if (gCodeDisplayable) {
-      displayer.showToolpath(gcode, modal, arrayToXYZ(WPOS))
+      displayer.showToolpath(gcode, common.modal, arrayToXYZ(WPOS))
     }
   }
 
@@ -796,7 +784,7 @@ function scrollToLine(lineNumber) {
     start = 0
     end = 1
   } else {
-    start = lineNumber == 1 ? 0 : (start = nthLineEnd(gCodeText, lineNumber) + 1)
+    start = lineNumber === 1 ? 0 : (start = nthLineEnd(gCodeText, lineNumber) + 1)
     end = gCodeText.indexOf('\n', start)
   }
 
@@ -805,7 +793,9 @@ function scrollToLine(lineNumber) {
 }
 
 function runGCode() {
-  gCodeFilename && sendCommand(`$sd/run=${gCodeFilename}`)
+  const common = new Common();
+
+  common.gCodeFilename && sendCommand(`$sd/run=${common.gCodeFilename}`)
   setTimeout(() => {
     SendRealtimeCmd(0x7e)
   }, 1500)
@@ -813,20 +803,21 @@ function runGCode() {
 }
 
 function tabletSelectGCodeFile(filename) {
-  var selector = id('filelist')
-  var options = Array.from(selector.options)
-  var option = options.find((item) => item.text == filename)
-  option.selected = true
+  const selector = id('filelist')
+  const options = Array.from(selector.options)
+  const option = options.find((item) => item.text === filename)
+  option.selected = true;
 }
 function tabletLoadGCodeFile(path, size) {
-  gCodeFilename = path
-  if ((isNaN(size) && size.endsWith('GB')) || size > 10000000) {
+  const common = new Common();
+  common.gCodeFilename = path;
+  if ((Number.isNaN(size) && size.endsWith('GB')) || size > 10000000) {
     showGCode('GCode file too large to display (> 1MB)')
     gCodeDisplayable = false
     displayer.clear()
   } else {
     gCodeDisplayable = true
-    fetch(encodeURIComponent('SD' + gCodeFilename))
+    fetch(encodeURIComponent(`SD${common.gCodeFilename}`))
       .then((response) => response.text())
       .then((gcode) => showGCode(gcode))
   }
@@ -834,8 +825,8 @@ function tabletLoadGCodeFile(path, size) {
 
 function selectFile() {
   tabletClick()
-  var filelist = id('filelist')
-  var index = Number(filelist.options[filelist.selectedIndex].value)
+  const filelist = id('filelist')
+  const index = Number(filelist.options[filelist.selectedIndex].value)
   if (index === -3) {
     // No files
     return
@@ -844,16 +835,17 @@ function selectFile() {
     // Blank entry selected
     return
   }
+  const common = new Common();
   if (index === -1) {
     // Go up
-    gCodeFilename = ''
+    common.gCodeFilename = "";
     files_go_levelup()
     return
   }
-  var file = files_file_list[index]
-  var filename = file.name
+  const file = files_file_list[index]
+  const filename = file.name
   if (file.isdir) {
-    gCodeFilename = ''
+    common.gCodeFilename = "";
     files_enter_dir(filename)
   } else {
     tabletLoadGCodeFile(files_currentPath + filename, file.size)
@@ -1100,7 +1092,7 @@ function setBottomHeight() {
   if (!tabletIsActive()) {
     return
   }
-  var residue = bodyHeight() - heightId('navbar') - controlHeight()
+  const residue = bodyHeight() - heightId('navbar') - controlHeight()
   const tStyle = getComputedStyle(id('tablettab'))
   let tPad = Number.parseFloat(tStyle.paddingTop) + Number.parseFloat(tStyle.paddingBottom)
   tPad += 20
@@ -1108,8 +1100,9 @@ function setBottomHeight() {
 window.onresize = setBottomHeight
 
 function updateGcodeViewerAngle() {
-  const gcode = id('gcode').value
-  displayer.cycleCameraAngle(gcode, modal, arrayToXYZ(WPOS))
+  const gcode = id('gcode').value;
+  const common = new Common();
+  displayer.cycleCameraAngle(gcode, common.modal, arrayToXYZ(WPOS))
 }
 
 function fullscreenIfMobile() {

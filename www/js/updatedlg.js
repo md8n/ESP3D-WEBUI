@@ -75,11 +75,9 @@ function StartUploadUpdatefile(response) {
 	if (response !== "yes") {
 		return;
 	}
-	if (http_communication_locked) {
-		alertdlg(
-			translate_text_item("Busy..."),
-			translate_text_item("Communications are currently locked, please wait and retry."),
-		);
+	const common = new Common();
+	if (common.http_communication_locked) {
+		alertdlg(translate_text_item("Busy..."), translate_text_item("Communications are currently locked, please wait and retry."));
 		return;
 	}
 	const files = id("fw-select").files;
@@ -128,16 +126,18 @@ function updatesuccess(response) {
 }
 
 function updatefailed(error_code, response) {
+	const common = new Common();
+
 	displayBlock("fw-select_form");
 	displayNone("prgfw");
 	setHTML("fw_file_name", translate_text_item("No file chosen"));
 	displayNone("uploadfw-button");
 	//setHTML('updatemsg', "");
 	id("fw-select").value = "";
-	if (esp_error_code !== 0) {
-		alertdlg(translate_text_item("Error"), stdErrMsg(`(${esp_error_code})`, esp_error_message));
-		setHTML("updatemsg", translate_text_item("Upload failed : ") + esp_error_message);
-		esp_error_code = 0;
+	if (common.esp_error_code !== 0) {
+		alertdlg(translate_text_item("Error"), stdErrMsg(`(${common.esp_error_code})`, common.esp_error_message));
+		setHTML("updatemsg", translate_text_item("Upload failed : ") + common.esp_error_message);
+		common.esp_error_code = 0;
 	} else {
 		alertdlg(translate_text_item("Error"), stdErrMsg(error_code, response));
 		setHTML("updatemsg", stdErrMsg(error_code, response, translate_text_item("Upload failed")));

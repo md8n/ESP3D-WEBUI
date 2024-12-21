@@ -358,7 +358,8 @@ const populateTabletFileSelector = (files, path) => {
 
 	selector.length = 0;
 	selector.selectedIndex = 0;
-	const selectedFile = gCodeFilename.split("/").slice(-1)[0];
+	const common = new Common();
+	const selectedFile = common.gCodeFilename.split("/").slice(-1)[0];
 
 	if (!files.length) {
 		addOption(selector, "No files found", -3, true, selectedFile === "");
@@ -382,7 +383,7 @@ const populateTabletFileSelector = (files, path) => {
 		}
 	});
 	if (!gCodeFileFound) {
-		gCodeFilename = "";
+		common.gCodeFilename = "";
 		gCodeDisplayable = false;
 		showGCode("");
 	}
@@ -451,13 +452,16 @@ const files_list_success = (response_text) => {
 
 /** Shows an alert dialog for the ESP error, and then clears the ESP error_code */
 const alertEspError = () => {
-	alertdlg(translate_text_item("Error"), stdErrMsg(`(${esp_error_code})`, esp_error_message));
-	esp_error_code = 0;
+	const common = new Common();
+	alertdlg(translate_text_item("Error"), stdErrMsg(`(${common.esp_error_code})`, common.esp_error_message));
+	common.esp_error_code = 0;
 };
 
 function files_list_failed(error_code, response) {
+	const common = new Common();
+
 	displayBlock("files_navigation_buttons");
-	if (esp_error_code !== 0) {
+	if (common.esp_error_code !== 0) {
 		alertEspError();
 	} else {
 		alertdlg(translate_text_item("Error"), translate_text_item("No connection"));
@@ -466,7 +470,9 @@ function files_list_failed(error_code, response) {
 }
 
 function files_directSD_upload_failed(error_code, response) {
-	if (esp_error_code !== 0) {
+	const common = new Common();
+
+	if (common.esp_error_code !== 0) {
 		alertEspError();
 	} else {
 		alertdlg(translate_text_item("Error"), translate_text_item("Upload failed"));
@@ -527,6 +533,7 @@ function files_build_display_filelist(displaylist = true) {
 		}
 
 		fileListElem.innerHTML = content;
+		// biome-ignore lint/complexity/noForEach: <explanation>
 		actions.forEach((action) => {
 			id(action.id).addEventListener(action.type, (event) => action.method);
 		});
@@ -603,7 +610,8 @@ function process_check_sd_presence(answer) {
 }
 
 function files_start_upload() {
-	if (http_communication_locked) {
+	const common = new Common();
+	if (common.http_communication_locked) {
 		alertdlg(translate_text_item("Busy..."), translate_text_item("Communications are currently locked, please wait and retry."));
 		console.log("communication locked");
 		return;

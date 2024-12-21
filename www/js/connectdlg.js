@@ -17,6 +17,7 @@ const connectdlg = (getFw = true) => {
 };
 
 const getFWdata = (response) => {
+	const common = new Common();
 	const tlist = response.split("#");
 	//FW version:0.9.200 # FW target:smoothieware # FW HW:Direct SD # primary sd:/ext/ # secondary sd:/sd/ # authentication: yes
 	if (tlist.length < 3) {
@@ -60,7 +61,7 @@ const getFWdata = (response) => {
 	if (sublist.length !== 2) {
 		return false;
 	}
-	ESP3D_authentication = sublist[0].trim() === "authentication" && sublist[1].trim() === "yes";
+	common.ESP3D_authentication = sublist[0].trim() === "authentication" && sublist[1].trim() === "yes";
 	//async communications
 	if (tlist.length > 6) {
 		sublist = tlist[6].split(":");
@@ -68,9 +69,9 @@ const getFWdata = (response) => {
 			sublist[0].trim() === "webcommunication" &&
 			sublist[1].trim() === "Async"
 		) {
-			async_webcommunication = true;
+			common.async_webcommunication = true;
 		} else {
-			async_webcommunication = false;
+			common.async_webcommunication = false;
 			websocket_port = sublist[2].trim();
 			if (sublist.length > 3) {
 				websocket_ip = sublist[3].trim();
@@ -88,7 +89,7 @@ const getFWdata = (response) => {
 	if (tlist.length > 8) {
 		sublist = tlist[8].split(":");
 		if (sublist[0].trim() === "axis") {
-			grblaxis = Number.parseInt(sublist[1].trim());
+			common.grblaxis = Number.parseInt(sublist[1].trim());
 		}
 	}
 
@@ -106,9 +107,11 @@ const connectfailed = (error_code, response) => {
 };
 
 const connectsuccess = (response) => {
+	const common = new Common();
+
 	if (getFWdata(response)) {
 		console.log(`Fw identification:${response}`);
-		if (ESP3D_authentication) {
+		if (common.ESP3D_authentication) {
 			closeModal("Connection successful");
 			displayInline("menu_authentication");
 			logindlg(initUI, true);
