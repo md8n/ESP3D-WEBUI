@@ -7,6 +7,12 @@ class Common {
 			// biome-ignore lint/correctness/noConstructorReturn: <explanation>
 			return Common.instance;
 		}
+
+		/** See connectdlg.js */
+		this.esp_hostname = "ESP3D WebUI";
+		this.websocket_port = 0;
+		this.websocket_ip = "";
+
 		/** See controls.js */
 		this.control_macrolist = [];
 
@@ -28,13 +34,25 @@ class Common {
 
 		/** See http.js */
 		this.http_communication_locked = false;
+		this.page_id = "";
+		this.xmlhttpupload;
 
 		/** See loadHTML.js - coming soon */
 		this.loadedHTML = [];
 
+		/** See preferencesdlg.js */
+		this.enable_ping = true;
+
 		/** See settings.js */
 		this.current_setting_filter = "nvs";
 		this.setup_is_done = false;
+
+		this.SETTINGS_AP_MODE = 1;
+		this.SETTINGS_STA_MODE = 2;
+		this.SETTINGS_FALLBACK_MODE = 3;
+
+		/** See setupdlg.js */
+		this.EP_STA_SSID = "Sta/SSID";
 
 		/** See socket.js */
 		this.async_webcommunication = false;

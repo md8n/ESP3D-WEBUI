@@ -78,6 +78,7 @@ const SPIFFSnavbar = () => {
 	}
 
 	setHTML("SPIFFS_path", buildTable(buildTr(content)));
+	// biome-ignore lint/complexity/noForEach: <explanation>
 	actions.forEach((action) => {
 		id(action.id).addEventListener("click", (event) => action.method(action.path));
 	});
@@ -160,6 +161,7 @@ function SPIFFSSendCommand(action, filename) {
 	SPIFFSsuccess(testResponse.join(""));
 	return;
 	//endRemoveIf(production)
+	// biome-ignore lint/correctness/noUnreachable: <explanation>
 	const common = new Common();
 
 	const url = `/files?action=${action}&filename=${encodeURI(filename)}&path=${encodeURI(common.SPIFFS_currentpath)}`;
@@ -269,6 +271,7 @@ function SPIFFSdispatchfilestatus(jsonresponse) {
 	}
 
 	setHTML("SPIFFS_file_list", content);
+	// biome-ignore lint/complexity/noForEach: <explanation>
 	actions.forEach((action) => {
 		id(action.id).addEventListener("click", (event) => action.method(action.filename));
 	});
@@ -287,6 +290,7 @@ function refreshSPIFFS() {
 	SPIFFSsuccess(testResponse.join(""));
 	return;
 	//endRemoveIf(production)
+	// biome-ignore lint/correctness/noUnreachable: <explanation>
 	SPIFFSSendCommand("list", "all");
 }
 

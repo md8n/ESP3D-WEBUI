@@ -1,6 +1,6 @@
 //removeIf(tr_lang_disabled)
 //Turkish
-var turkishtrans = {
+const turkishtrans = {
 "tr":"T&uuml;rk&ccedil;e",
 "ESP3D for":"ESP3D i&ccedil;in",
 "Value of auto-check must be between 0s and 99s !!":"Otomatik kontrol de&gbreve;eri 0s ile 99s aras&inodot;nda olmal&inodot;d&inodot;r !!",
@@ -27,7 +27,6 @@ var turkishtrans = {
 "Feed rate":"ilerleme h&inodot;z&inodot;",
 "Touch plate thickness":"Touch plate kal&inodot;nl&inodot;&gbreve;&inodot;",
 "Redundant":"Gereksiz",
-"Probe":"Probe",
 "Bed":"Yatak",
 "Chamber":"Hazne",
 "Board":"Kart",
@@ -375,7 +374,6 @@ var turkishtrans = {
 "error:63":"SD Card directory not found",
 "error:64":"SD Card file empty",
 "error:70":"Bluetooth failed to start",
-"Max travel":"Max travel",
 "Plate thickness":"Touch plate thickness",
 "Show probe panel":"Show probe panel",
 "Probe":"Probe",

@@ -1,6 +1,6 @@
 //removeIf(fl_lang_disabled)
 //english for FluidNC
-var fltrans = {
+const fltrans = {
     "ESP3D Filesystem":"FluidNC Local Filesystem",
     "ESP3D Settings":"FluidNC Settings",
     "ESP3D Status":"FluidNC Status",
@@ -66,6 +66,6 @@ var fltrans = {
     "error:62":"SD card failed to open directory",
     "error:63":"SD Card directory not found",
     "error:64":"SD Card file empty",
-    "error:70":"Bluetooth failed to start",
+    "error:70":"Bluetooth failed to start"
 };
 //endRemoveIf(en_lang_disabled)

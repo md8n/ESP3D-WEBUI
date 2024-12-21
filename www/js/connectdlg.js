@@ -72,18 +72,20 @@ const getFWdata = (response) => {
 			common.async_webcommunication = true;
 		} else {
 			common.async_webcommunication = false;
-			websocket_port = sublist[2].trim();
+			common.websocket_port = sublist[2].trim();
 			if (sublist.length > 3) {
-				websocket_ip = sublist[3].trim();
+				common.websocket_ip = sublist[3].trim();
 			} else {
 				console.log("No IP for websocket, use default");
-				websocket_ip = document.location.hostname;
+				common.websocket_ip = document.location.hostname;
 			}
 		}
 	}
 	if (tlist.length > 7) {
 		sublist = tlist[7].split(":");
-		if (sublist[0].trim() === "hostname") esp_hostname = sublist[1].trim();
+		if (sublist[0].trim() === "hostname") {
+			common.esp_hostname = sublist[1].trim();
+		}
 	}
 
 	if (tlist.length > 8) {

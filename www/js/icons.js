@@ -1,5 +1,5 @@
 //bootstrap icons
-var list_icon = {
+const list_icon = {
   cloud:
     'M503 1089q110 0 200.5 -59.5t134.5 -156.5q44 14 90 14q120 0 205 -86.5t85 -206.5q0 -121 -85 -207.5t-205 -86.5h-750q-79 0 -135.5 57t-56.5 137q0 69 42.5 122.5t108.5 67.5q-2 12 -2 37q0 153 108 260.5t260 107.5z',
   star: 'M407 800l131 353q7 19 17.5 19t17.5 -19l129 -353h421q21 0 24 -8.5t-14 -20.5l-342 -249l130 -401q7 -20 -0.5 -25.5t-24.5 6.5l-343 246l-342 -247q-17 -12 -24.5 -6.5t-0.5 25.5l130 400l-347 251q-17 12 -14 20.5t23 8.5h429z',
@@ -34,31 +34,21 @@ var list_icon = {
   'triangle-right':
     'M865 565l-494 -494q-23 -23 -41 -23q-14 0 -22 13.5t-8 38.5v1000q0 25 8 38.5t22 13.5q18 0 41 -23l494 -494q14 -14 14 -35t-14 -35z',
   'triangle-left':
-    'M335 635l494 494q29 29 50 20.5t21 -49.5v-1000q0 -41 -21 -49.5t-50 20.5l-494 494q-14 14 -14 35t14 35z',
-}
+    'M335 635l494 494q29 29 50 20.5t21 -49.5v-1000q0 -41 -21 -49.5t-50 20.5l-494 494q-14 14 -14 35t14 35z'
+};
 
-function get_icon_svg(name, w, h, color) {
-  var content = ''
-  if (typeof w == 'undefined') w = '1.3em'
-  if (typeof h == 'undefined') h = '1.2em'
-  if (typeof color == 'undefined') color = 'currentColor'
-  var has_error = false
+function get_icon_svg(name, w = '1.3em', h = '1.2em', color = 'currentColor') {
+  let content = "";
+
+  let has_error = false;
   try {
-    content = list_icon[name]
+    content = list_icon[name];
   } catch (e) {
-    console.error('Parsing error:', e)
-    has_error = true
+    console.error('Parsing error:', e);
+    has_error = true;
   }
-  if (has_error) return ''
-  var icon =
-    "<svg width='" +
-    w +
-    "' height='" +
-    h +
-    "' viewBox='0 0 1300 1200'><g transform='translate(30,1200) scale(1, -1)'><path  fill='" +
-    color +
-    "' d='"
-  icon += content
-  icon += "'></path></g></svg>"
-  return icon
+  if (has_error) {
+    return '';
+  }
+  return `<svg width='${w}' height='${h}' viewBox='0 0 1300 1200'><g transform='translate(30,1200) scale(1, -1)'><path  fill='${color}' d='${content}'></path></g></svg>`;
 }

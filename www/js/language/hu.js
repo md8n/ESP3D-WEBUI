@@ -1,7 +1,7 @@
 //removeIf(hu_lang_disabled)
 //hungarian
 //Hungary by kondorzs
-var hungariantrans = {
+const hungariantrans = {
 "hu":"Magyar",
 "ESP3D for":"ESP3D hez",
 "Value of auto-check must be between 0s and 99s !!":"Az automatikus ellenőrzés értékének 0 és 99 s között kell lennie!",
@@ -28,7 +28,6 @@ var hungariantrans = {
 "Feed rate":"Előtolás",
 "Touch plate thickness":"Érintőlemez vastagsága",
 "Redundant":"Redundant",
-"Probe":"Probe",
 "Bed":"Fűtött ágy",
 "Chamber":"Chamber",
 "Board":"Board",
@@ -375,7 +374,6 @@ var hungariantrans = {
 "error:63":"Az SD kártya könyvtára nem található",
 "error:64":"SD Kártya fájl üres",
 "error:70":"Bluetooth nem indult el!",
-"Max travel":"Max utazás",
 "Plate thickness":"Érintőlemez vastagsága",
 "Show probe panel":"Mutassa a szonda panelt",
 "Probe":"Szonda",

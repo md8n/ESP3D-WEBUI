@@ -13,7 +13,7 @@ function store_localdata(key, value) {
 
 function get_localdata(key) {
     if (typeof localStorage !== 'undefined') {
-        var r = "";
+        let r = "";
         try {
             r = localStorage.getItem(key);
         } catch (exception) {

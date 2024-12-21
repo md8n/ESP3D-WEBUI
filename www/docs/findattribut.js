@@ -1,6 +1,6 @@
 function FindByAttributeValue(attribute, value)    {
-  var All = document.getElementsByTagName('*');
-  for (var i = 0; i < All.length; i++)       {
-    if (All[i].getAttribute(attribute) == value) { return All[i]; }
+  const All = document.getElementsByTagName('*');
+  for (let i = 0; i < All.length; i++)       {
+    if (All[i].getAttribute(attribute) === value) { return All[i]; }
   }
 }

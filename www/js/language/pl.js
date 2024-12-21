@@ -1,6 +1,6 @@
 //removeIf(pl_lang_disabled)
 //Polish
-var polishtrans = {
+const polishtrans = {
 "pl":"Polski",
 "ESP3D for":"ESP3D dla",
 "Value of auto-check must be between 0s and 99s !!":"Warto&sacute;&cacute; automatycznego spawdzania musi by&cacute; z zakresu 0-99s !",
@@ -287,7 +287,6 @@ var polishtrans = {
 "Web Update":"Aktualizacja przez Web",
 "Pin Recovery":"Odzyskiwanie pinu",
 "Disabled":"Wy&lstrok;&aogon;czone",
-"Authentication":"Autoryzacja",
 "Target Firmware":"Typ oprogramowania drukarki",
 "SD Card Support":"Wsparcie dla karty SD",
 "Time Support":"Czas",

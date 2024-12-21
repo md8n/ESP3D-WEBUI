@@ -1,6 +1,6 @@
 //removeIf(it_lang_disabled)
 //italian
-var italiantrans = {
+const italiantrans = {
 "it":"Italiano",
 "ESP3D for":"ESP3D per",
 "Value of auto-check must be between 0s and 99s !!":"Il valore di controllo deve essere tra 0 e 99 secondi!!",
@@ -286,7 +286,6 @@ var italiantrans = {
 "Web Update":"Aggiorna via Web",
 "Pin Recovery":"Pin Ripristino",
 "Disabled":"Disattivato",
-"Authentication":"Autenticazione",
 "Target Firmware":"Target Firmware",
 "SD Card Support":"Supporto scheda SD",
 "Time Support":"Server di tempo",

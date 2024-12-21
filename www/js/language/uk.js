@@ -1,6 +1,6 @@
 //removeIf(uk_lang_disabled)
 //Ukrainian
-var ukrtrans = {
+const ukrtrans = {
 "uk": "Українська",
 "ESP3D for": "ESP3D для",
 "Value of auto-check must be between 0s and 99s !!": "Значення автоматичної перевірки має бути від 0 до 99 секунд !!",

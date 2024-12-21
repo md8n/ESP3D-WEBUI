@@ -7,8 +7,9 @@ let wsmsg = "";
 let ws_source;
 
 const CancelCurrentUpload = () => {
-	xmlhttpupload.abort();
-	// const common = new Common();
+	const common = new Common();
+	common.xmlhttpupload.abort();
+
 	// common.http_communication_locked = false;
 	console.log("Cancel Upload");
 };
@@ -26,7 +27,7 @@ let interval_ping = -1;
 const handlePing = () => {
 	const common = new Common();
 
-	if (enable_ping) {
+	if (common.enable_ping) {
 		// First clear any existing interval
 		if (interval_ping) {
 			clearInterval(interval_ping);
@@ -83,12 +84,14 @@ const EventListenerSetup = () => {
 };
 
 const Init_events = (e) => {
-	page_id = e.data;
-	console.log(`connection id = ${page_id}`);
+	const common = new Common();
+	common.page_id = e.data;
+	console.log(`connection id = ${common.page_id}`);
 };
 
 const ActiveID_events = (e) => {
-	if (page_id === e.data) {
+	const common = new Common();
+	if (common.page_id === e.data) {
 		return;
 	}
 
@@ -124,8 +127,8 @@ const startSocket = () => {
 		if (common.async_webcommunication) {
 			ws_source = new WebSocket(`ws://${document.location.host}/ws`, ["arduino"]);
 		} else {
-			console.log(`Socket is ${websocket_ip}:${websocket_port}`);
-			ws_source = new WebSocket(`ws://${websocket_ip}:${websocket_port}`, ["arduino"]);
+			console.log(`Socket is ${common.websocket_ip}:${common.websocket_port}`);
+			ws_source = new WebSocket(`ws://${common.websocket_ip}:${common.websocket_port}`, ["arduino"]);
 		}
 	} catch (exception) {
 		console.error(exception);
@@ -176,13 +179,13 @@ const startSocket = () => {
 			const tval = msg.split(":");
 			if (tval.length >= 2) {
 				if (tval[0] === "CURRENT_ID") {
-					page_id = tval[1];
-					console.log(`connection id = ${page_id}`);
+					common.page_id = tval[1];
+					console.log(`connection id = ${common.page_id}`);
 				}
-				if (enable_ping) {
+				if (common.enable_ping) {
 					if (tval[0] === "PING") {
-						page_id = tval[1];
-						// console.log("ping from id = " + page_id);
+						common.page_id = tval[1];
+						// console.log("ping from id = " + common.page_id);
 						common.last_ping = Date.now();
 						if (interval_ping === -1)
 							interval_ping = setInterval(() => {
@@ -191,7 +194,7 @@ const startSocket = () => {
 					}
 				}
 				if (tval[0] === "ACTIVE_ID") {
-					if (page_id !== tval[1]) {
+					if (common.page_id !== tval[1]) {
 						Disable_interface();
 					}
 				}

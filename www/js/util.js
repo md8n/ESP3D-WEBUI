@@ -136,7 +136,7 @@ const HTMLEncode = (value) => {
 const HTMLDecode = (value) => {
   const tmpelement = document.createElement('div');
   tmpelement.innerHTML = value;
-  value = tmpelement.textContent;
+  const decValue = tmpelement.textContent;
   tmpelement.textContent = '';
-  return value;
+  return decValue;
 }

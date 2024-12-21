@@ -21,7 +21,7 @@ const navbar = () => {
 
 	cameratab();
 	configtab();
-	// settingstab();
+	settingstab();
 };
 
 const enableItem = (itemName) => {

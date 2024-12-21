@@ -1,5 +1,5 @@
 //french
-var frenchtrans = {
+const frenchtrans = {
 "fr":"Fran&ccedil;ais",
 "ESP3D for":"ESP3D pour",
 "Value of auto-check must be between 0s and 99s !!":"La valeur de contr&ocirc;le doit &ecirc;tre entre 0s et 99s !!",
@@ -285,7 +285,6 @@ var frenchtrans = {
 "Web Update":"M.A.J. Internet",
 "Pin Recovery":"Bouton de R.A.Z.",
 "Disabled":"D&eacute;sactiv&eacute;",
-"Authentication":"Authentification",
 "Target Firmware":"Firmware cible",
 "SD Card Support":"Support Carte SD",
 "Time Support":"Serveur NTP",
@@ -370,5 +369,5 @@ var frenchtrans = {
 "error:62":"Impossible d'ouvrir un r&eacute;pertoire sur la carte SD",
 "error:63":"R&eacute;pertoire non trouv&eacute; sur la carte SD",
 "error:64":"Fichier vide sur la carte SD",
-"error:70":"Echec de d&eacute;marrage du Bluetooth",
+"error:70":"Echec de d&eacute;marrage du Bluetooth"
 };

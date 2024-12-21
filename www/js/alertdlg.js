@@ -1,4 +1,4 @@
-// This uses: closeModal, setactiveModal, showModal, id
+// import - closeModal, setactiveModal, showModal, id
 
 /** alert dialog */
 const alertdlg = (titledlg, textdlg, closefunc) => {

@@ -184,15 +184,14 @@ function create_config_entry(sentry, vindex) {
         config_entry.help = get_config_help(ssentry);
         config_entry.defaultvalue = get_config_value(ssentry);
         config_entry.cmd = get_config_command(ssentry);
-        config_entry.is_override: is_override_config;
+        config_entry.is_override = is_override_config;
     }
     if (is_override_config) {
         config_override_List.push(config_entry);
     } else {
         config_configList.push(config_entry);
     }
-    vindex++;
-    return vindex;
+    return vindex + 1;
 }
 //check it is valid entry
 function is_config_entry(sline) {

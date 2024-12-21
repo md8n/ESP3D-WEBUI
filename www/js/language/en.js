@@ -1,6 +1,6 @@
 //removeIf(en_lang_disabled)
 //english
-var englishtrans = {
+const englishtrans = {
 "en":"English",
 "STA":"Client Station",
 "AP":"Access Point",
@@ -61,6 +61,6 @@ var englishtrans = {
 "error:62":"SD card failed to open directory",
 "error:63":"SD Card directory not found",
 "error:64":"SD Card file empty",
-"error:70":"Bluetooth failed to start",
+"error:70":"Bluetooth failed to start"
 };
 //endRemoveIf(en_lang_disabled)

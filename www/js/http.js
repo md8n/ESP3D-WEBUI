@@ -1,9 +1,7 @@
-var http_cmd_list = [];
-var processing_cmd = false;
-var xmlhttpupload;
-var page_id = ""
+let http_cmd_list = [];
+let processing_cmd = false;
 
-var max_cmd = 20;
+const max_cmd = 20;
 
 function clear_cmd_list() {
     http_cmd_list = [];
@@ -11,8 +9,8 @@ function clear_cmd_list() {
 }
 
 function http_resultfn(response_text) {
-    if ((http_cmd_list.length > 0) && (typeof http_cmd_list[0].resultfn != 'undefined')) {
-        var fn = http_cmd_list[0].resultfn;
+    if ((http_cmd_list.length > 0) && (typeof http_cmd_list[0].resultfn !== 'undefined')) {
+        const fn = http_cmd_list[0].resultfn;
         fn(response_text);
     } //else console.log ("No resultfn");
     http_cmd_list.shift();
@@ -21,9 +19,9 @@ function http_resultfn(response_text) {
 }
 
 function http_errorfn(error_code, response_text) {
-    var fn = http_cmd_list[0].errorfn;
-    if ((http_cmd_list.length > 0) && (typeof http_cmd_list[0].errorfn != 'undefined') && http_cmd_list[0].errorfn != null) {
-        if (error_code == 401) {
+    const fn = http_cmd_list[0].errorfn;
+    if ((http_cmd_list.length > 0) && (typeof http_cmd_list[0].errorfn !== 'undefined') && http_cmd_list[0].errorfn != null) {
+        if (error_code === 401) {
             logindlg();
             console.log("Authentication issue pls log");
         }
@@ -64,13 +62,14 @@ function process_cmd() {
                 ProcessFileHttp(http_cmd_list[0].cmd, http_cmd_list[0].data, http_cmd_list[0].progressfn, http_resultfn, http_errorfn);
             }
             break;
-        case "CMD":
-            var fn = http_cmd_list[0].cmd;
+        case "CMD": {
+            const fn = http_cmd_list[0].cmd;
             fn();
             http_cmd_list.shift();
             processing_cmd = false;
             process_cmd();
             break;
+        }
     }
 }
 
@@ -81,7 +80,7 @@ function AddCmd(cmd_fn, id) {
     }
     const cmd_id = (typeof id !== 'undefined') ? id : 0;
     //console.log("adding command");
-    var cmd = {
+    const cmd = {
         cmd: cmd_fn,
         type: "CMD",
         id: cmd_id
@@ -92,33 +91,33 @@ function AddCmd(cmd_fn, id) {
 }
 
 function SendGetHttp(url, result_fn, error_fn, id, max_id) {
-    if ((http_cmd_list.length > max_cmd) && (max_cmd != -1)) {
+    if ((http_cmd_list.length > max_cmd) && (max_cmd !== -1)) {
         error_fn(999, translate_text_item("Server not responding"));
         return;
     }
-    var cmd_id = 0;
-    var cmd_max_id = 1;
+    let cmd_id = 0;
+    let cmd_max_id = 1;
     //console.log("ID = " + id);
     //console.log("Max ID = " + max_id);
     //console.log("+++ " + url);
-    if (typeof id != 'undefined') {
+    if (typeof id !== 'undefined') {
         cmd_id = id;
-        if (typeof max_id != 'undefined') cmd_max_id = max_id;
+        if (typeof max_id !== 'undefined') cmd_max_id = max_id;
         //else console.log("No Max ID defined");
         for (p = 0; p < http_cmd_list.length; p++) {
             //console.log("compare " + (max_id - cmd_max_id));
-            if (http_cmd_list[p].id == cmd_id) {
+            if (http_cmd_list[p].id === cmd_id) {
                 cmd_max_id--;
                 //console.log("found " + http_cmd_list[p].id + " and " + cmd_id);
             }
             if (cmd_max_id <= 0) {
-                console.log("Limit reached for " + id);
+                console.log(`Limit reached for ${id}`);
                 return;
             }
         }
     } //else console.log("No ID defined");
     //console.log("adding " + url);
-    var cmd = {
+    const cmd = {
         cmd: url,
         type: "GET",
         isupload: false,
@@ -151,27 +150,28 @@ function ProcessGetHttp(url, resultfn, errorfn) {
         }
     }
 
+    let gUrl = url;
     if (url.startsWith("/command")) {
-        url += (url.indexOf("?") == -1) ? "?" : "&";
-        url += "PAGEID=" + page_id;
+        gUrl += (url.indexOf("?") === -1) ? "?" : "&";
+        gUrl += `PAGEID=${common.page_id}`;
     }
-    //console.log("GET:" + url);
-    xmlhttp.open("GET", url, true);
+    //console.log("GET:" + gUrl);
+    xmlhttp.open("GET", gUrl, true);
     xmlhttp.send();
 }
 
 function SendPostHttp(url, postdata, result_fn, error_fn, id, max_id) {
-    if ((http_cmd_list.length > max_cmd) && (max_cmd != -1)) {
+    if ((http_cmd_list.length > max_cmd) && (max_cmd !== -1)) {
         error_fn(999, translate_text_item("Server not responding"));
         return;
     }
-    var cmd_id = 0;
-    var cmd_max_id = 1;
-    if (typeof id != 'undefined') {
+    let cmd_id = 0;
+    let cmd_max_id = 1;
+    if (typeof id !== 'undefined') {
         cmd_id = id;
-        if (typeof max_id != 'undefined') cmd_max_id = max_id;
+        if (typeof max_id !== 'undefined') cmd_max_id = max_id;
         for (p = 0; p < http_cmd_list.length; p++) {
-            if (http_cmd_list[p].id == cmd_id) cmd_max_id--;
+            if (http_cmd_list[p].id === cmd_id) cmd_max_id--;
             if (cmd_max_id <= 0) return;
         }
     }
@@ -208,7 +208,7 @@ function ProcessPostHttp(url, postdata, resultfn, errorfn) {
             }
         }
     }
-    const pUrl = (url.indexOf("?") === -1) ? "?" : `&PAGEID=${page_id}`;
+    const pUrl = (url.indexOf("?") === -1) ? "?" : `&PAGEID=${common.page_id}`;
     //console.log(url);
     xmlhttp.open("POST", pUrl, true);
     xmlhttp.send(postdata);
@@ -219,7 +219,9 @@ function SendFileHttp(url, postdata, progress_fn, result_fn, error_fn) {
         error_fn(999, translate_text_item("Server not responding"));
         return;
     }
-    if (http_cmd_list.length !== 0) process = false;
+    if (http_cmd_list.length !== 0) {
+        process = false;
+    }
     const cmd = {
         cmd: url,
         type: "POST",
@@ -241,22 +243,22 @@ function ProcessFileHttp(url, postdata, progressfn, resultfn, errorfn) {
         return;
     }
     common.http_communication_locked = true;
-    xmlhttpupload = new XMLHttpRequest();
-    xmlhttpupload.onreadystatechange = () => {
-        if (xmlhttpupload.readyState === 4) {
+    common.xmlhttpupload = new XMLHttpRequest();
+    common.xmlhttpupload.onreadystatechange = () => {
+        if (common.xmlhttpupload.readyState === 4) {
             common.http_communication_locked = false;
-            if (xmlhttpupload.status === 200) {
-                if (typeof resultfn !== 'undefined' && resultfn != null) resultfn(xmlhttpupload.responseText);
+            if (common.xmlhttpupload.status === 200) {
+                if (typeof resultfn !== 'undefined' && resultfn != null) resultfn(common.xmlhttpupload.responseText);
             } else {
-                if (xmlhttpupload.status === 401) GetIdentificationStatus();
-                if (typeof errorfn !== 'undefined' && errorfn != null) errorfn(xmlhttpupload.status, xmlhttpupload.responseText);
+                if (common.xmlhttpupload.status === 401) GetIdentificationStatus();
+                if (typeof errorfn !== 'undefined' && errorfn != null) errorfn(common.xmlhttpupload.status, common.xmlhttpupload.responseText);
             }
         }
     }
     //console.log(url);
-    xmlhttpupload.open("POST", url, true);
+    common.xmlhttpupload.open("POST", url, true);
     if (typeof progressfn !== 'undefined' && progressfn != null) {
-        xmlhttpupload.upload.addEventListener("progress", progressfn, false);
+        common.xmlhttpupload.upload.addEventListener("progress", progressfn, false);
     }
-    xmlhttpupload.send(postdata);
+    common.xmlhttpupload.send(postdata);
 }

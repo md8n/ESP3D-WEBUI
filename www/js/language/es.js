@@ -1,6 +1,6 @@
 //removeIf(es_lang_disabled)
 //Spanish
-var spanishtrans = {
+const spanishtrans = {
 "es":"Espa&ntilde;ol",
 "ESP3D for":"ESP3D para",
 "Value of auto-check must be between 0s and 99s !!":"&iexcl;El valor del auto-control tiene que estar entre 0s y 99s !",
@@ -286,7 +286,6 @@ var spanishtrans = {
 "Web Update":"Actualizaci&oacute;n web",
 "Pin Recovery":"Bot&oacute;n restablecer",
 "Disabled":"Desactivado",
-"Authentication":"Autenticaci&oacute;n",
 "Target Firmware":"Firmware de destino",
 "SD Card Support":"Soporte de tarjeta SD",
 "Time Support":"Servidor de tiempo",
@@ -371,6 +370,6 @@ var spanishtrans = {
 "error:62":"SD card failed to open directory",
 "error:63":"SD Card directory not found",
 "error:64":"SD Card file empty",
-"error:70":"Bluetooth failed to start",
+"error:70":"Bluetooth failed to start"
 };
 //endRemoveIf(es_lang_disabled)

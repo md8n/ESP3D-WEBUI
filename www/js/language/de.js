@@ -1,6 +1,6 @@
 //removeIf(de_lang_disabled)
 //german
-var germantrans = {
+const germantrans = {
 "de":"Deutsch",
 "ESP3D for":"ESP3D f&uuml;r",
 "Value of auto-check must be between 0s and 99s !!":"Der Wert des Auto-Checks muss zwischen 0s und 99s liegen!!",
@@ -286,7 +286,6 @@ var germantrans = {
 "Web Update":"Webupate",
 "Pin Recovery":"Reset-Taste",
 "Disabled":"Deaktiviert",
-"Authentication":"Authentifizierung",
 "Target Firmware":"Firmware",
 "SD Card Support":"SD-Karten-Unterstützung",
 "Time Support":"Zeitserver",

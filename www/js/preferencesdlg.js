@@ -1,8 +1,8 @@
 //Preferences dialog
-var preferenceslist = [];
-var language_save = language;
-var default_preferenceslist = [];
-var defaultpreferenceslist = "[{\
+let preferenceslist = [];
+let language_save = language;
+let default_preferenceslist = [];
+let defaultpreferenceslist = "[{\
                                             \"language\":\"en\",\
                                             \"enable_lock_UI\":\"false\",\
                                             \"enable_ping\":\"true\",\
@@ -37,7 +37,7 @@ var defaultpreferenceslist = "[{\
                                             \"proberetract\":\"1.0\",\
                                             \"probetouchplatethickness\":\"0.5\"\
                                             }]";
-var preferences_file_name = '/preferences.json';
+const preferences_file_name = '/preferences.json';
 
 function initpreferences() {
     defaultpreferenceslist = "[{\
@@ -87,10 +87,10 @@ function initpreferences() {
 }
 
 function getpreferenceslist() {
-    var url = preferences_file_name;
+    const url = preferences_file_name;
     preferenceslist = [];
     //removeIf(production)
-    var response = defaultpreferenceslist;
+    const response = defaultpreferenceslist;
     processPreferencesGetSuccess(response);
     return;
     //endRemoveIf(production)
@@ -98,7 +98,7 @@ function getpreferenceslist() {
 }
 
 function prefs_toggledisplay(id_source, forcevalue) {
-    if (typeof forcevalue != 'undefined') {
+    if (typeof forcevalue !== 'undefined') {
         id(id_source).checked = forcevalue;
     }
     switch (id_source) {
@@ -130,7 +130,7 @@ function prefs_toggledisplay(id_source, forcevalue) {
 }
 
 function processPreferencesGetSuccess(response) {
-    if (response.indexOf("<HTML>") == -1) Preferences_build_list(response);
+    if (response.indexOf("<HTML>") === -1) Preferences_build_list(response);
     else Preferences_build_list(defaultpreferenceslist);
 }
 
@@ -142,7 +142,7 @@ function processPreferencesGetFailed(error_code, response) {
 function Preferences_build_list(response_text) {
     preferenceslist = [];
     try {
-        if (response_text.length != 0) {
+        if (response_text.length !== 0) {
             //console.log(response_text);  
             preferenceslist = JSON.parse(response_text);
         } else {
@@ -157,9 +157,8 @@ function Preferences_build_list(response_text) {
 
 function ontogglePing(forcevalue) {
     const common = new Common();
-    if (typeof forcevalue !== 'undefined') enable_ping = forcevalue
-    else enable_ping = !enable_ping
-    if (enable_ping) {
+    common.enable_ping = (typeof forcevalue !== 'undefined') ? forcevalue : !enable_ping;
+    if (common.enable_ping) {
         if (interval_ping !== -1) clearInterval(interval_ping)
         common.last_ping = Date.now()
         interval_ping = setInterval(() => { check_ping() }, 10 * 1000)
@@ -609,7 +608,7 @@ function SavePreferences(current_preferences) {
         return;
     }
     console.log("save prefs");
-    if (((typeof (current_preferences) !== 'undefined') && !current_preferences) || (typeof (current_preferences) == 'undefined')) {
+    if (((typeof (current_preferences) !== 'undefined') && !current_preferences) || (typeof (current_preferences) === 'undefined')) {
         if (!Checkvalues("preferences_autoReport_Interval") ||
             !Checkvalues("preferences_pos_Interval_check") ||
             !Checkvalues("preferences_status_Interval_check") ||
@@ -669,23 +668,23 @@ function SavePreferences(current_preferences) {
         preferenceslist = JSON.parse(saveprefs);
     }
     const blob = new Blob([JSON.stringify(preferenceslist, null, " ")], { type: 'application/json' });
-    var file;
+    let file;
     if (browser_is("IE") || browser_is("Edge")) {
         file = blob;
         file.name = preferences_file_name;
         file.lastModifiedDate = new Date();
     } else file = new File([blob], preferences_file_name);
-    var formData = new FormData();
-    var url = "/files";
+    const formData = new FormData();
+    const url = "/files";
     formData.append('path', '/');
     formData.append('myfile[]', file, preferences_file_name);
-    if ((typeof (current_preferences) != 'undefined') && current_preferences) SendFileHttp(url, formData);
+    if ((typeof (current_preferences) !== 'undefined') && current_preferences) SendFileHttp(url, formData);
     else SendFileHttp(url, formData, preferencesdlgUploadProgressDisplay, preferencesUploadsuccess, preferencesUploadfailed);
 }
 
 function preferencesdlgUploadProgressDisplay(oEvent) {
     if (oEvent.lengthComputable) {
-        var percentComplete = (oEvent.loaded / oEvent.total) * 100;
+        const percentComplete = (oEvent.loaded / oEvent.total) * 100;
         id('preferencesdlg_prg').value = percentComplete;
         id('preferencesdlg_upload_percent').innerHTML = percentComplete.toFixed(0);
         displayBlock('preferencesdlg_upload_msg');

@@ -1,7 +1,7 @@
 //zh_CN
 //removeIf(zh_cn_lang_disabled)
 //use https://www.mobilefish.com/services/unicode_converter/unicode_converter.php
-var zh_CN_trans = {
+const zh_CN_trans = {
 "zh_cn":"&#31616;&#20307;&#20013;&#25991;",
 "ESP3D for":"ESP3D for",
 "Value of auto-check must be between 0s and 99s !!":"&#33258;&#21160;&#26816;&#26597;&#30340;&#20540;&#24517;&#39035;&#22312;0s&#21040;99s&#20043;&#38388;!!",
@@ -28,7 +28,6 @@ var zh_CN_trans = {
 "Feed rate":"&#36827;&#32473;&#29575;",
 "Touch plate thickness":"Touch plate thickness",
 "Redundant":"Redundant",
-"Probe":"Probe",
 "Bed":"&#28909;&#24202;",
 "Chamber":"Chamber",
 "Board":"&#20027;&#26495;",
@@ -376,7 +375,6 @@ var zh_CN_trans = {
 "error:63":"&#25214;&#19981;&#21040;SD&#21345;&#30446;&#24405;",
 "error:64":"SD&#21345;&#25991;&#20214;&#20026;&#31354;",
 "error:70":"&#34013;&#29273;&#26080;&#27861;&#21551;&#21160;",
-"Max travel":"&#26368;&#22823;&#34892;&#31243;",
 "Plate thickness":"&#25506;&#38024;&#25968;&#25454;&#20462;&#27491;",
 "Show probe panel":"&#26174;&#31034;&#25506;&#38024;&#38754;&#26495;",
 "Probe":"&#25506;&#38024;",

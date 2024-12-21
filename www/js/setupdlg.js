@@ -1,5 +1,23 @@
 //setup dialog
 
+const EP_HOSTNAME = 'Hostname';
+
+const EP_STA_PASSWORD = 'Sta/Password';
+const EP_STA_IP_MODE = 'Sta/IPMode';
+// const EP_STA_IP_VALUE = 'Sta/IP';
+// const EP_STA_GW_VALUE = 'Sta/Gateway';
+// const EP_STA_MK_VALUE = 'Sta/Netmask';
+const EP_WIFI_MODE = 'WiFi/Mode';
+
+const EP_AP_SSID = "AP/SSID";
+const EP_AP_PASSWORD = 'AP/Password';
+const EP_AP_IP_VALUE = 'AP/IP';
+
+const EP_IS_DIRECT_SD = 850;
+const EP_PRIMARY_SD = 851;
+const EP_SECONDARY_SD = 852;
+const EP_DIRECT_SD_CHECK = 853;
+
 let active_wizard_page = 0;
 
 const td = (value) => `<td>${value}</td>`;
@@ -120,6 +138,7 @@ function enablestep1() {
 }
 
 function enablestep2() {
+    const common = new Common();
     let content = "";
     closeStep("step1link");
     openStep("wizard_line2", "step2link");
@@ -131,7 +150,7 @@ function enablestep2() {
 
     content += div("setup_STA");
 
-    content += item("What access point ESP need to be connected to:", EP_STA_SSID);
+    content += item("What access point ESP need to be connected to:", common.EP_STA_SSID);
     content += `${translate_text_item("You can use scan button, to list available access points.")}<br>`;
     content += spacer();
 
