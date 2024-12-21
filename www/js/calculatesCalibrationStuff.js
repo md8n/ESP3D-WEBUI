@@ -173,25 +173,25 @@ function magneticallyAttractedLinesFitness(measurement, individual) {
   }
 
   //Define the four lines with starting points and lengths
-  const tlLine = computeLineEndPoint({
+  let tlLine = computeLineEndPoint({
     xBegin: individual.tl.x,
     yBegin: individual.tl.y,
     theta: measurement.tlTheta,
     length: measurement.tl,
   });
-  const trLine = computeLineEndPoint({
+  let trLine = computeLineEndPoint({
     xBegin: individual.tr.x,
     yBegin: individual.tr.y,
     theta: measurement.trTheta,
     length: measurement.tr,
   });
-  const blLine = computeLineEndPoint({
+  let blLine = computeLineEndPoint({
     xBegin: individual.bl.x,
     yBegin: individual.bl.y,
     theta: measurement.blTheta,
     length: measurement.bl,
   });
-  const brLine = computeLineEndPoint({
+  let brLine = computeLineEndPoint({
     xBegin: individual.br.x,
     yBegin: individual.br.y,
     theta: measurement.brTheta,
