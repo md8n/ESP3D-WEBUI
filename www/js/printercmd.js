@@ -1,52 +1,59 @@
-var grbl_processfn = null;
-var grbl_errorfn = null;
-
 function noop() {}
 function SendPrinterCommand(cmd, echo_on, processfn, errorfn, id, max_id, extra_arg) {
-    var url = "/command?commandText=";
-    var push_cmd = true;
-    if (typeof echo_on !== 'undefined') {
-        push_cmd = echo_on;
+    if (cmd.length === 0) {
+        return;
     }
-    if (cmd.length == 0) return;
-    if (push_cmd) Monitor_output_Update("[#]" + cmd + "\n");
+
+    const url = "/command?commandText=";
+    const push_cmd = (typeof echo_on !== 'undefined') ? echo_on : true;
+    if (push_cmd) {
+        Monitor_output_Update(`[#]${cmd}\n`);
+    }
+
+    let procFn = (typeof processfn === 'undefined' || processfn == null) ? SendPrinterCommandSuccess : processfn;
+    let errFn = (typeof errorfn === 'undefined' || errorfn == null) ? SendPrinterCommandFailed : errorfn;
+
     //removeIf(production)
     console.log(cmd);
-    if (typeof processfn !== 'undefined') processfn("Test response");
-    else SendPrinterCommandSuccess("Test response");
+    procFn("Test response");
     return;
     //endRemoveIf(production)
-    if (typeof processfn === 'undefined' || processfn == null) processfn = SendPrinterCommandSuccess;
-    if (typeof errorfn === 'undefined' || errorfn == null) errorfn = SendPrinterCommandFailed;
+
+    // biome-ignore lint/correctness/noUnreachable: <explanation>
+    const common = new Common();
     if (!cmd.startsWith("[ESP")) {
-        grbl_processfn = processfn;
-        grbl_errorfn = errorfn;
-        processfn = noop;
-        errorfn = noop;
+        common.grbl_processfn = procFn;
+        common.grbl_errorfn = errFn;
+        procFn = noop;
+        errFn = noop;
     }
-    cmd = encodeURI(cmd);
-    cmd = cmd.replace("#", "%23");
+    let encCmd = encodeURI(cmd).replace("#", "%23");
     if (extra_arg) {
-        cmd += "&" + extra_arg;
+        encCmd += `&${extra_arg}`;
     }
-    SendGetHttp(url + cmd, processfn, errorfn, id, max_id);
+    SendGetHttp(url + encCmd, procFn, errFn, id, max_id);
     //console.log(cmd);
 }
 
 function SendPrinterSilentCommand(cmd, processfn, errorfn, id, max_id) {
-    var url = "/command_silent?commandText=";
-    if (cmd.length == 0) return;
+    if (cmd.length === 0) {
+        return;
+    }
+    const url = "/command_silent?commandText=";
+
+    const procFn = (typeof processfn === 'undefined' || processfn == null) ? SendPrinterSilentCommandSuccess : processfn;
+    const errFn = (typeof errorfn === 'undefined' || errorfn == null) ? SendPrinterCommandFailed : errorfn;
+
     //removeIf(production)
     console.log(cmd);
-    if (typeof processfn !== 'undefined') processfn("Test response");
-    else SendPrinterCommandSuccess("Test response");
+    // This might not show up
+    procFn("Test response");
     return;
     //endRemoveIf(production)
-    if (typeof processfn === 'undefined' || processfn == null) processfn = SendPrinterSilentCommandSuccess;
-    if (typeof errorfn === 'undefined' || errorfn == null) errorfn = SendPrinterCommandFailed;
-    cmd = encodeURI(cmd);
-    cmd = cmd.replace("#", "%23");
-    SendGetHttp(url + cmd, processfn, errorfn, id, max_id);
+
+    // biome-ignore lint/correctness/noUnreachable: <explanation>
+    const encCmd = encodeURI(cmd).replace("#", "%23");
+    SendGetHttp(url + encCmd, procFn, errFn, id, max_id);
     //console.log(cmd);
 }
 

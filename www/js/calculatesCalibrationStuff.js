@@ -9,7 +9,7 @@ var brZ = 78
 var acceptableCalibrationThreshold = 0.5
 
 //Establish initial guesses for the corners
-var initialGuess = {
+let initialGuess = {
   tl: { x: 0, y: 2000 },
   tr: { x: 3000, y: 2000 },
   bl: { x: 0, y: 0 },
@@ -40,9 +40,9 @@ let result
  * @returns {number} - The distance between the two points.
  */
 function distanceBetweenPoints(a, b, c, d) {
-  var dx = c - a
-  var dy = d - b
-  return Math.sqrt(dx * dx + dy * dy)
+  const dx = c - a;
+  const dy = d - b;
+  return Math.sqrt(dx * dx + dy * dy);
 }
 
 /**
@@ -54,8 +54,8 @@ function distanceBetweenPoints(a, b, c, d) {
  * @returns {Object} - An object containing the x and y coordinates of the line's end point.
  */
 function getEndPoint(startX, startY, angle, length) {
-  var endX = startX + length * Math.cos(angle)
-  var endY = startY + length * Math.sin(angle)
+  const endX = startX + length * Math.cos(angle)
+  const endY = startY + length * Math.sin(angle)
   return { x: endX, y: endY }
 }
 
@@ -113,7 +113,7 @@ function walkLines(tlLine, trLine, blLine, brLine, stepSize) {
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i];
 
-      for (let direction of [-1, 1]) {
+      for (const direction of [-1, 1]) {
         const newLine = computeLineEndPoint({
           xBegin: line.xBegin,
           yBegin: line.yBegin,
@@ -173,25 +173,25 @@ function magneticallyAttractedLinesFitness(measurement, individual) {
   }
 
   //Define the four lines with starting points and lengths
-  var tlLine = computeLineEndPoint({
+  const tlLine = computeLineEndPoint({
     xBegin: individual.tl.x,
     yBegin: individual.tl.y,
     theta: measurement.tlTheta,
     length: measurement.tl,
   });
-  var trLine = computeLineEndPoint({
+  const trLine = computeLineEndPoint({
     xBegin: individual.tr.x,
     yBegin: individual.tr.y,
     theta: measurement.trTheta,
     length: measurement.tr,
   });
-  var blLine = computeLineEndPoint({
+  const blLine = computeLineEndPoint({
     xBegin: individual.bl.x,
     yBegin: individual.bl.y,
     theta: measurement.blTheta,
     length: measurement.bl,
   });
-  var brLine = computeLineEndPoint({
+  const brLine = computeLineEndPoint({
     xBegin: individual.br.x,
     yBegin: individual.br.y,
     theta: measurement.brTheta,
@@ -276,6 +276,7 @@ function computeFurthestFromCenterOfMass(lines, lastGuess) {
   let trY = 0;
   let brX = 0;
 
+  // biome-ignore lint/complexity/noForEach: <explanation>
   lines.forEach((line) => {
     const tweaks = generateTweaks(line);
 
@@ -299,7 +300,7 @@ function computeFurthestFromCenterOfMass(lines, lastGuess) {
   const brXAbs = Math.abs(brX);
   const maxError = Math.max(tlXAbs, tlyAbs, trXAbs, tryAbs, brXAbs);
 
-  var scalor = -1;
+  const scalor = -1;
   switch (maxError) {
     case tlXAbs:
       //console.log("Move tlX by: " + tlX/divisor);
@@ -335,10 +336,11 @@ function computeFurthestFromCenterOfMass(lines, lastGuess) {
  * @returns {Object} - An object containing the fitness of the guess and the lines used to calculate the fitness.
  */
 function computeLinesFitness(measurements, lastGuess) {
-  var fitnesses = []
-  var allLines = []
+  const fitnesses = []
+  const allLines = []
 
   //Check each of the measurements against the guess
+  // biome-ignore lint/complexity/noForEach: <explanation>
   measurements.forEach((measurement) => {
     const { fitness, lines } = magneticallyAttractedLinesFitness(measurement, lastGuess)
     fitnesses.push(fitness)
@@ -358,45 +360,40 @@ function computeLinesFitness(measurements, lastGuess) {
 }
 
 function calculateTensions(x, y, guess) {
-  let Xtl = guess.tl.x
-  let Ytl = guess.tl.y
-  let Xtr = guess.tr.x
-  let Ytr = guess.tr.y
-  let Xbl = guess.bl.x
-  let Ybl = guess.bl.y
-  let Xbr = guess.br.x
-  let Ybr = guess.br.y
+  const Xtl = guess.tl.x
+  const Ytl = guess.tl.y
+  const Xtr = guess.tr.x
+  const Ytr = guess.tr.y
+  const Xbl = guess.bl.x
+  const Ybl = guess.bl.y
+  const Xbr = guess.br.x
+  const Ybr = guess.br.y
 
-  let mass = 5.0
+  const mass = 5.0
   const G_CONSTANT = 9.80665
-  let alpha = 0.26
-  let TL, TR
+  const alpha = 0.26
 
-  let A, C, sinD, cosD, sinE, cosE
-  let Fx, Fy
+  const A = Math.abs((Xtl - x) / (Ytl - y))
+  const C = Math.abs((Xtr - x) / (Ytr - y))
 
-  A = (Xtl - x) / (Ytl - y)
-  C = (Xtr - x) / (Ytr - y)
-  A = Math.abs(A)
-  C = Math.abs(C)
-  sinD = x / Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2))
-  cosD = y / Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2))
-  sinE = Math.abs(Xbr - x) / Math.sqrt(Math.pow(Xbr - x, 2) + Math.pow(y, 2))
-  cosE = y / Math.sqrt(Math.pow(Xbr - x, 2) + Math.pow(y, 2))
+  const sinD = x / Math.sqrt(x ** 2 + y ** 2)
+  const cosD = y / Math.sqrt(x ** 2 + y ** 2)
+  const sinE = Math.abs(Xbr - x) / Math.sqrt((Xbr - x) ** 2 + y ** 2)
+  const cosE = y / Math.sqrt((Xbr - x) ** 2 + y ** 2)
 
-  Fx = Ybr * sinE - Ybl * sinD
-  Fy = Ybr * cosE + Ybl * cosD + mass * G_CONSTANT * Math.cos(alpha)
+  const Fx = Ybr * sinE - Ybl * sinD
+  const Fy = Ybr * cosE + Ybl * cosD + mass * G_CONSTANT * Math.cos(alpha)
   // console.log(`Fx = ${Fx.toFixed(1)}, Fy = ${Fy.toFixed(1)}`)
 
-  let TLy = (Fx + C * Fy) / (A + C)
-  let TRy = Fy - TLy
-  let TRx = C * (Fy - TLy)
-  let TLx = A * TLy
+  const TLy = (Fx + C * Fy) / (A + C)
+  const TRy = Fy - TLy
+  const TRx = C * (Fy - TLy)
+  const TLx = A * TLy
 
   // console.log(`TLy = ${TLy.toFixed(1)}, TRy = ${TRy.toFixed(1)}, TRx = ${TRx.toFixed(1)}, TLx = ${TLx.toFixed(1)}`);
 
-  TL = Math.sqrt(Math.pow(TLx, 2) + Math.pow(TLy, 2))
-  TR = Math.sqrt(Math.pow(TRx, 2) + Math.pow(TRy, 2))
+  const TL = Math.sqrt(TLx ** 2 + TLy ** 2)
+  const TR = Math.sqrt(TRx ** 2 + TRy ** 2)
 
   return { TL, TR }
 }
@@ -407,10 +404,10 @@ function calculateTensions(x, y, guess) {
  * @returns {number} - The average of the array.
  */
 function calculateAverage(array) {
-  var total = 0
-  var count = 0
+  let total = 0
+  let count = 0
 
-  array.forEach(function (item, index) {
+  array.forEach((item, index) => {
     total += Math.abs(item)
     count++
   })
@@ -426,10 +423,10 @@ function calculateAverage(array) {
  * @returns {Object} - An object containing the projected measurements
  */
 function projectMeasurement(measurement) {
-  const tl = Math.sqrt(Math.pow(measurement.tl, 2) - Math.pow(tlZ, 2))
-  const tr = Math.sqrt(Math.pow(measurement.tr, 2) - Math.pow(trZ, 2))
-  const bl = Math.sqrt(Math.pow(measurement.bl, 2) - Math.pow(blZ, 2))
-  const br = Math.sqrt(Math.pow(measurement.br, 2) - Math.pow(brZ, 2))
+  const tl = Math.sqrt(measurement.tl ** 2 - tlZ ** 2)
+  const tr = Math.sqrt(measurement.tr ** 2 - trZ ** 2)
+  const bl = Math.sqrt(measurement.bl ** 2 - blZ ** 2)
+  const br = Math.sqrt(measurement.br ** 2 - brZ ** 2)
 
   return { tl: tl, tr: tr, bl: bl, br: br }
 }
@@ -440,8 +437,9 @@ function projectMeasurement(measurement) {
  * @returns {Object[]} - An array of objects containing the projected measurements of the top left, top right, bottom left, and bottom right corners of a rectangle.
  */
 function projectMeasurements(measurements) {
-  var projectedMeasurements = []
+  const projectedMeasurements = []
 
+  // biome-ignore lint/complexity/noForEach: <explanation>
   measurements.forEach((measurement) => {
     projectedMeasurements.push(projectMeasurement(measurement))
   })
@@ -523,7 +521,7 @@ function findMaxFitness(measurements) {
   let currentGuess = JSON.parse(JSON.stringify(initialGuess));
   let stagnantCounter = 0;
   let totalCounter = 0;
-  var bestGuess = JSON.parse(JSON.stringify(initialGuess));
+  let bestGuess = JSON.parse(JSON.stringify(initialGuess));
 
   function iterate() {
     const common = new Common();
@@ -594,7 +592,7 @@ function findMaxFitness(measurements) {
         sendCommand(`$/${M}_blY= ${blyStr}`);
         sendCommand(`$/${M}_brX= ${brxStr}`);
         sendCommand(`$/${M}_brY= ${bryStr}`);
-        
+
         sendCalibrationEvent({
           good: true,
           final: true,

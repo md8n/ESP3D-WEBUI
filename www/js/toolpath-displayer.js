@@ -4,10 +4,10 @@ var root = window;
 
 const canvas = document.getElementById("small-toolpath");
 const scale = window.devicePixelRatio;
-const width = window.innerWidth; 
+const width = window.innerWidth;
 canvas.width = width * scale;
 canvas.height = (width / 2) * scale;
-var tp = canvas.getContext("2d", { willReadFrequently: true });
+const tp = canvas.getContext("2d", { willReadFrequently: true });
 var tpRect;
 
 tp.lineWidth = 0.1;
@@ -18,7 +18,7 @@ var cameraAngle = 0;
 
 var tlX = -8.339;
 var tlY = 2209;
-var trX = 3505; 
+var trX = 3505;
 var trY = 2209;
 var blX = 0;
 var blY = 0;
@@ -93,19 +93,19 @@ upC.fillRect(0, 0, 500, 500);
 upC.beginPath();
 upC.fillStyle = 'white';
 upC.lineWidth = 1;
-upC.rect(60+49.213840, 99.622299, 93.976021, 74.721062);
+upC.rect(60 + 49.213840, 99.622299, 93.976021, 74.721062);
 upC.fill();
-    
+
 // #path608
 upC.beginPath();
 upC.strokeStyle = 'white';
 upC.lineWidth = 1;
 upC.lineCap = 'butt';
 upC.lineJoin = 'miter';
-upC.moveTo(60+5.109692, 104.666810);
-upC.lineTo(60+94.679220, 4.145211);
-upC.lineTo(60+189.305070, 103.959000);
-upC.lineTo(60+5.109692, 104.666810);
+upC.moveTo(60 + 5.109692, 104.666810);
+upC.lineTo(60 + 94.679220, 4.145211);
+upC.lineTo(60 + 189.305070, 103.959000);
+upC.lineTo(60 + 5.109692, 104.666810);
 upC.closePath();
 upC.stroke();
 upC.fill();
@@ -123,7 +123,7 @@ dnC.lineWidth = 1;
 dnC.rect(60 + 49.213840, -75.901474, 93.976021, 74.721062);
 dnC.fill();
 dnC.restore();
-    
+
 // #path608
 dnC.beginPath();
 dnC.strokeStyle = 'white';
@@ -145,22 +145,22 @@ rC.fillRect(0, 0, 500, 500);
 // #g1100
 rC.save();
 rC.transform(0.000000, 1.000000, -1.000000, 0.000000, 187.481000, 0.273690);
-    
+
 // #rect441
 rC.fillStyle = 'white';
 rC.lineWidth = 1;
 rC.rect(-20 + 49.213840, 99.622299 - 80, 93.976021, 74.721062);
 rC.fill();
-    
+
 // #path608
 rC.beginPath();
 rC.strokeStyle = 'white';
 rC.lineWidth = 1;
 rC.lineCap = 'butt';
 rC.lineJoin = 'miter';
-rC.moveTo(-20+5.109692, 104.666810 - 80);
-rC.lineTo(-20+94.679220, 4.145213 - 80);
-rC.lineTo(-20+189.305070, 103.959000 - 80);
+rC.moveTo(-20 + 5.109692, 104.666810 - 80);
+rC.lineTo(-20 + 94.679220, 4.145213 - 80);
+rC.lineTo(-20 + 189.305070, 103.959000 - 80);
 rC.closePath();
 rC.stroke();
 rC.fill();
@@ -173,13 +173,13 @@ lC.fillRect(0, 0, 500, 500);
 // #g1100
 lC.save();
 lC.transform(0.000000, 1.000000, 1.000000, 0.000000, 11.957500, 0.273690);
-    
+
 // #rect441
 lC.fillStyle = 'white';
 lC.lineWidth = 1;
 lC.rect(-20 + 49.213840, 99.622299, 93.976021, 74.721062);
 lC.fill();
-    
+
 // #path608
 lC.beginPath();
 lC.strokeStyle = 'white';
@@ -215,14 +215,14 @@ hC.lineTo(xO + 103.475730, 84.035976 + yO);
 hC.lineTo(xO + 54.341657, 131.433070 + yO);
 hC.fill();
 hC.stroke();
-    
+
 // #rect1898
 hC.beginPath();
 hC.fillStyle = 'rgb(218, 208, 230)';
 hC.lineWidth = 0.472615;
 hC.rect(xO + 74.087212, 146.169600 + yO, 29.847790, 50.981743);
 hC.fill();
-    
+
 // #path13430
 hC.beginPath();
 hC.fillStyle = 'rgb(151, 132, 181)';
@@ -268,7 +268,7 @@ pauseC.fillStyle = 'white';
 pauseC.lineWidth = 1;
 pauseC.rect(75 + 44, 66 - 35, 20, 81);
 pauseC.fill();
-    
+
 // #rect1967-4
 pauseC.beginPath();
 pauseC.fillStyle = 'white';
@@ -291,23 +291,23 @@ stopC.stroke();
 
 var tpUnits = 'G21';
 
-var tpBbox = {
+const tpBbox = {
     min: {
-        x: Infinity,
-        y: Infinity
+        x: Number.POSITIVE_INFINITY,
+        y: Number.POSITIVE_INFINITY
     },
     max: {
-        x: -Infinity,
-        y: -Infinity
+        x: Number.NEGATIVE_INFINITY,
+        y: Number.NEGATIVE_INFINITY
     }
 };
 var bboxIsSet = false;
 
-var resetBbox = function() {
-    tpBbox.min.x = Infinity;
-    tpBbox.min.y = Infinity;
-    tpBbox.max.x = -Infinity;
-    tpBbox.max.y = -Infinity;
+const resetBbox = () => {
+    tpBbox.min.x = Number.POSITIVE_INFINITY;
+    tpBbox.min.y = Number.POSITIVE_INFINITY;
+    tpBbox.max.x = Number.NEGATIVE_INFINITY;
+    tpBbox.max.y = Number.NEGATIVE_INFINITY;
     bboxIsSet = false;
 }
 
@@ -317,10 +317,10 @@ var resetBbox = function() {
 var xx = 0.707;
 var xy = 0.707;
 var xz = 0.0;
-var yx = -0.707/2;
-var yy = 0.707/2;
+var yx = -0.707 / 2;
+var yy = 0.707 / 2;
 var yz = 1.0;
-var isoView = function() {
+const isoView = () => {
     xx = 0.707;
     xy = 0.707;
     xz = 0.0;
@@ -328,15 +328,15 @@ var isoView = function() {
     yy = 0.707;
     yz = 1.0;
 }
-var obliqueView = function() {
+const obliqueView = () => {
     xx = 0.707;
     xy = 0.707;
     xz = 0.0;
-    yx = -0.707/2;
-    yy = 0.707/2;
+    yx = -0.707 / 2;
+    yy = 0.707 / 2;
     yz = 1.0;
 }
-var topView = function() {
+const topView = () => {
     xx = 1.0;
     xy = 0.0;
     xz = 0.0;
@@ -344,60 +344,58 @@ var topView = function() {
     yy = 1.0;
     yz = 0.0;
 }
-var projection = function(wpos) {
+const projection = (wpos) => {
     outpoint = {}
     outpoint.x = wpos.x * xx + wpos.y * xy + wpos.z * xz;
     outpoint.y = wpos.x * yx + wpos.y * yy + wpos.z * yz;
     return outpoint;
 }
 
-var formatLimit = function(mm) {
-    return (tpUnits == 'G20') ? (mm/25.4).toFixed(3)+'"' : mm.toFixed(2)+'mm';
-}
+const formatLimit = (mm) => (tpUnits === 'G20') ? `${(mm / 25.4).toFixed(3)}"` : `${mm.toFixed(2)}mm`
 
 var toolX = null;
 var toolY = null;
 var toolSave = null;
 var toolRadius = 6;
-var toolRectWH = toolRadius*2 + 4;  // Slop to encompass the entire image area
+var toolRectWH = toolRadius * 2 + 4;  // Slop to encompass the entire image area
 
-var drawTool = function(dpos) {
+const drawTool = (dpos) => {
     pp = projection(dpos)
-    toolX = xToPixel(pp.x)-toolRadius-2;
-    toolY = yToPixel(pp.y)-toolRadius-2;
+    toolX = xToPixel(pp.x) - toolRadius - 2;
+    toolY = yToPixel(pp.y) - toolRadius - 2;
     toolSave = tp.getImageData(toolX, toolY, toolRectWH, toolRectWH);
 
     tp.beginPath();
     tp.strokeStyle = 'magenta';
     tp.fillStyle = 'magenta';
-    tp.arc(pp.x, pp.y, toolRadius/scaler, 0, Math.PI*2, true);
+    tp.arc(pp.x, pp.y, toolRadius / scaler, 0, Math.PI * 2, true);
     tp.fill();
     tp.stroke();
 }
 
-var drawOrigin = function(radius) {
-    po = projection({x: 0.0, y:0.0, z:0.0})
+const drawOrigin = (radius) => {
+    po = projection({ x: 0.0, y: 0.0, z: 0.0 })
     tp.beginPath();
     tp.strokeStyle = 'red';
-    tp.arc(po.x, po.y, radius, 0, Math.PI*2, false);
-    tp.moveTo(-radius*1.5, 0);
-    tp.lineTo(radius*1.5, 0);
-    tp.moveTo(0,-radius*1.5);
-    tp.lineTo(0, radius*1.5);
+    tp.arc(po.x, po.y, radius, 0, Math.PI * 2, false);
+    tp.moveTo(-radius * 1.5, 0);
+    tp.lineTo(radius * 1.5, 0);
+    tp.moveTo(0, -radius * 1.5);
+    tp.lineTo(0, radius * 1.5);
     tp.stroke();
 }
 
-var drawMachineBounds = function() {
-    
+const drawMachineBounds = () => {
+
     //Work codinates offset the maxTravel part centers it in the view so 0,0 is the middle of the sheet
-    var woodWidth = 2438;
-    var woodHeight = 2438/2;
+    const woodWidth = 2438;
+    const woodHeight = 2438 / 2;
 
     //Project onto the camera view
-    const p0 = projection({x: -woodWidth/2, y: -woodHeight/2, z: 0});
-    const p1 = projection({x: woodWidth/2, y: -woodHeight/2, z: 0});
-    const p2 = projection({x: woodWidth/2, y: woodHeight/2, z: 0});
-    const p3 = projection({x: -woodWidth/2, y: woodHeight/2, z: 0});
+    const p0 = projection({ x: -woodWidth / 2, y: -woodHeight / 2, z: 0 });
+    const p1 = projection({ x: woodWidth / 2, y: -woodHeight / 2, z: 0 });
+    const p2 = projection({ x: woodWidth / 2, y: woodHeight / 2, z: 0 });
+    const p3 = projection({ x: -woodWidth / 2, y: woodHeight / 2, z: 0 });
 
     //This is used to fit everything in the camera view later
     tpBbox.min.x = Math.min(tpBbox.min.x, p0.x);
@@ -419,13 +417,13 @@ var drawMachineBounds = function() {
 
 }
 
-var drawMachineBelts = function() {
+const drawMachineBelts = () => {
     console.log("Draw belts");
 
-    const tl = projection({x: tlX - trX/2, y: tlY/2, z: 0});
-    const tr = projection({x: trX/2, y: trY/2, z: 0});
-    const bl = projection({x: blX - brX/2, y: blY - tlY/2, z: 0});
-    const br = projection({x: brX/2, y: brY - trY/2, z: 0});
+    const tl = projection({ x: tlX - trX / 2, y: tlY / 2, z: 0 });
+    const tr = projection({ x: trX / 2, y: trY / 2, z: 0 });
+    const bl = projection({ x: blX - brX / 2, y: blY - tlY / 2, z: 0 });
+    const br = projection({ x: brX / 2, y: brY - trY / 2, z: 0 });
 
     tpBbox.min.x = Math.min(tpBbox.min.x, bl.x);
     tpBbox.min.y = Math.min(tpBbox.min.y, bl.y);
@@ -461,16 +459,16 @@ var drawMachineBelts = function() {
     tp.arc(bl.x, bl.y, 10, 0, 2 * Math.PI);
     tp.closePath();
     tp.fill();
-    
-
-    const squareSize = projection({x: 50, y: 0, z: 0});
 
 
-    var i = bl.x;
-    var j = bl.y;
-    while(i < tr.x){
-        while(j < tr.y){
-            drawARect(i,j,squareSize.x, computPositonGradient(i, j, tl, tr, bl, br));
+    const squareSize = projection({ x: 50, y: 0, z: 0 });
+
+
+    let i = bl.x;
+    let j = bl.y;
+    while (i < tr.x) {
+        while (j < tr.y) {
+            drawARect(i, j, squareSize.x, computPositonGradient(i, j, tl, tr, bl, br));
             j = j + squareSize.x;
         }
         j = bl.y;
@@ -478,48 +476,46 @@ var drawMachineBelts = function() {
     }
 }
 
-var checkMinBeltLength = function(x1, y1, x2, y2){
-    const dist = Math.sqrt((x1-x2)*(x1-x2) + (y1-y2)*(y1-y2));
-    if(dist < 1200){
-        return 1 - dist/1200;
+const checkMinBeltLength = (x1, y1, x2, y2) => {
+    const dist = Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
+    if (dist < 1200) {
+        return 1 - dist / 1200;
     }
-    else{
-        return 0;
-    }
+
+    return 0;
 }
 
-var computPositonGradient = function(x,y, tl, tr, bl, br){
-    var opacity = 0;
-    
-    //Check distance from the mounting points
-    opacity = opacity + checkMinBeltLength(x,y,tl.x, tl.y);
-    opacity = opacity + checkMinBeltLength(x,y,tr.x, tr.y);
-    opacity = opacity + checkMinBeltLength(x,y,bl.x, bl.y);
-    opacity = opacity + checkMinBeltLength(x,y,br.x, br.y);
+const computPositonGradient = (x, y, tl, tr, bl, br) => {
+    let opacity = 0;
 
-    opacity = Math.max(opacity, computeTension(x,y, tl, tr, bl, br));
+    //Check distance from the mounting points
+    opacity = opacity + checkMinBeltLength(x, y, tl.x, tl.y);
+    opacity = opacity + checkMinBeltLength(x, y, tr.x, tr.y);
+    opacity = opacity + checkMinBeltLength(x, y, bl.x, bl.y);
+    opacity = opacity + checkMinBeltLength(x, y, br.x, br.y);
+
+    opacity = Math.max(opacity, computeTension(x, y, tl, tr, bl, br));
 
     return opacity;
 }
 
-var computeTension = function(x,y, tl, tr, bl, br){
-    const A = Math.atan((y-tl.y)/(tr.x - x));
-    const B = Math.atan((y-tl.y)/(x-tl.x));
+const computeTension = (x, y, tl, tr, bl, br) => {
+    const A = Math.atan((y - tl.y) / (tr.x - x));
+    const B = Math.atan((y - tl.y) / (x - tl.x));
 
     const T1 = 1 / (Math.cos(A) * Math.sin(B) / Math.cos(B) + Math.sin(A));
     const T2 = 1 / (Math.cos(B) * Math.sin(A) / Math.cos(A) + Math.sin(B));
 
-    const T1Scaled = T1/-3;
-    const T2Scaled = T2/-3; //This is some arbitrary scaling to make it look right in terms of color
+    const T1Scaled = T1 / -3;
+    const T2Scaled = T2 / -3; //This is some arbitrary scaling to make it look right in terms of color
 
     const max = Math.max(T1Scaled, T2Scaled);
 
-    if(max > .15){
+    if (max > .15) {
         return max;
     }
-    else{
-        return 0;
-    }
+
+    return 0;
 }
 
 // License: MIT - https://opensource.org/licenses/MIT
@@ -527,26 +523,21 @@ var computeTension = function(x,y, tl, tr, bl, br){
 // Source: https://gist.github.com/mlocati/7210513
 function perc2color(perc) {
     console.log(perc);
-    var r, g, b = 0;
-    if(perc < 50) {
-        r = 255;
-        g = Math.round(5.1 * perc);
-    }
-    else {
-        g = 255;
-        r = Math.round(510 - 5.10 * perc);
-    }
-    var h = r * 0x10000 + g * 0x100 + b * 0x1;
+    const r = (perc < 50) ? 255 : Math.round(510 - 5.10 * perc);
+    const g = (perc < 50) ? Math.round(5.1 * perc) : 255;
+    const b = 0;
 
-    console.log(r + " " + g + " " + b)
-    return "rgba("+r+", "+g+", "+b+", .3)";//'#' + ('000000' + h.toString(16)).slice(-6);
+    const h = r * 0x10000 + g * 0x100 + b * 0x1;
+
+    console.log(`${r} ${g} ${b}`)
+    return `rgba(${r}, ${g}, ${b}, .3)`;//'#' + ('000000' + h.toString(16)).slice(-6);
 }
 
-var drawARect = function(x,y,size, opacity){
+const drawARect = (x, y, size, opacity) => {
 
-    const posP = projection({x: x - size/2, y: y - size/2, z: 0});
+    const posP = projection({ x: x - size / 2, y: y - size / 2, z: 0 });
     tp.beginPath();
-    tp.fillStyle = perc2color(100 - 100*opacity);//"rgba(255, 0, 0, " + opacity + ")";
+    tp.fillStyle = perc2color(100 - 100 * opacity);//"rgba(255, 0, 0, " + opacity + ")";
     tp.rect(posP.x, posP.y, size, size);
     tp.fill();
 }
@@ -554,31 +545,29 @@ var drawARect = function(x,y,size, opacity){
 var xOffset = 0;
 var yOffset = 0;
 var scaler = 1;
-var xToPixel = function(x) { return scaler * x + xOffset; }
-var yToPixel = function(y) { return -scaler * y + yOffset; }
+const xToPixel = (x) => scaler * x + xOffset
+const yToPixel = (y) => -scaler * y + yOffset
 
-var clearCanvas = function() {
+const clearCanvas = () => {
     // Reset the transform and clear the canvas
-    tp.setTransform(1,0,0,1,0,0);
+    tp.setTransform(1, 0, 0, 1, 0, 0);
 
-//    if (tpRect == undefined) {
-        var tpRect = canvas.parentNode.getBoundingClientRect();
-        // canvas.width = tpRect.width ? tpRect.width : 400;
-        // canvas.height = tpRect.height ? tpRect.height : 400;
-//    }
+    //    if (tpRect == undefined) {
+    const tpRect = canvas.parentNode.getBoundingClientRect();
+    // canvas.width = tpRect.width ? tpRect.width : 400;
+    // canvas.height = tpRect.height ? tpRect.height : 400;
+    //    }
 
     tp.fillStyle = "white";
     tp.fillRect(0, 0, canvas.width, canvas.height);
 }
 
-var transformCanvas = function() {
+const transformCanvas = () => {
     toolSave = null;
 
     clearCanvas();
 
-    var imageWidth;
-    var imageHeight;
-    var inset;
+    let inset;
     if (!bboxIsSet) {
         // imageWidth = canvas.width;
         // imageHeight = canvas.height;
@@ -589,30 +578,30 @@ var transformCanvas = function() {
         return;
     }
 
-    var imageWidth = tpBbox.max.x - tpBbox.min.x;
-    var imageHeight = tpBbox.max.y - tpBbox.min.y;
-    if (imageWidth == 0) {
+    let imageWidth = tpBbox.max.x - tpBbox.min.x;
+    let imageHeight = tpBbox.max.y - tpBbox.min.y;
+    if (imageWidth === 0) {
         imageWidth = 1;
     }
-    if (imageHeight == 0) {
+    if (imageHeight === 0) {
         imageHeight = 1;
     }
-    var shrink = 0.90;
+    const shrink = 0.90;
     inset = 5;
-    var scaleX = (canvas.width - inset*2) / imageWidth;
-    var scaleY = (canvas.height - inset*2) / imageHeight;
-    var minScale = Math.min(scaleX, scaleY);
+    const scaleX = (canvas.width - inset * 2) / imageWidth;
+    const scaleY = (canvas.height - inset * 2) / imageHeight;
+    const minScale = Math.min(scaleX, scaleY);
 
     scaler = minScale * shrink;
     if (scaler < 0) {
         scaler = -scaler;
     }
     xOffset = inset - tpBbox.min.x * scaler;
-    yOffset = (canvas.height-inset) - tpBbox.min.y * (-scaler);
+    yOffset = (canvas.height - inset) - tpBbox.min.y * (-scaler);
 
     // Canvas coordinates of image bounding box top and right
-    var imageTop = scaler * imageHeight;
-    var imageRight = scaler * imageWidth;
+    const imageTop = scaler * imageHeight;
+    const imageRight = scaler * imageWidth;
 
     // Show the X and Y limit coordinates of the GCode program.
     // We do this before scaling because after we invert the Y coordinate,
@@ -646,14 +635,14 @@ var transformCanvas = function() {
 
     drawOrigin(imageWidth * 0.04);
 }
-var wrappedDegrees = function(radians) {
-    var degrees = radians * 180 / Math.PI;
+const wrappedDegrees = (radians) => {
+    const degrees = radians * 180 / Math.PI;
     return degrees >= 0 ? degrees : degrees + 360;
 }
 
 const bboxHandlers = {
     addLine: (modal, start, end) => {
-	// Update tpUnits in case it changed in a previous line
+        // Update tpUnits in case it changed in a previous line
         tpUnits = modal.units;
 
         ps = projection(start);
@@ -667,11 +656,11 @@ const bboxHandlers = {
     },
     addArcCurve: (modal, start, end, center, extraRotations) => {
         // To determine the precise bounding box of a circular arc we
-	// must account for the possibility that the arc crosses one or
-	// more axes.  If so, the bounding box includes the "bulges" of
-	// the arc across those axes.
+        // must account for the possibility that the arc crosses one or
+        // more axes.  If so, the bounding box includes the "bulges" of
+        // the arc across those axes.
 
-	// Update units in case it changed in a previous line
+        // Update units in case it changed in a previous line
         tpUnits = modal.units;
 
         if (modal.motion === 'G2') {  // clockwise
@@ -684,115 +673,115 @@ const bboxHandlers = {
         pc = projection(center);
         pe = projection(end);
 
-	// Coordinates relative to the center of the arc
-	const sx = ps.x - pc.x;
-	const sy = ps.y - pc.y;
-	const ex = pe.x - pc.x;
-	const ey = pe.y - pc.y;
+        // Coordinates relative to the center of the arc
+        const sx = ps.x - pc.x;
+        const sy = ps.y - pc.y;
+        const ex = pe.x - pc.x;
+        const ey = pe.y - pc.y;
 
         const radius = Math.hypot(sx, sy);
 
-	// Axis crossings - plus and minus x and y
-	let px = false;
-	let py = false;
-	let mx = false;
-	let my = false;
+        // Axis crossings - plus and minus x and y
+        let px = false;
+        let py = false;
+        let mx = false;
+        let my = false;
 
-	// There are ways to express this decision tree in fewer lines
-	// of code by converting to alternate representations like angles,
-	// but this way is probably the most computationally efficient.
-	// It avoids any use of transcendental functions.  Every path
-	// through this decision tree is either 4 or 5 simple comparisons.
-	if (ey >= 0) {              // End in upper half plane
-	    if (ex > 0) {             // End in quadrant 0 - X+ Y+
-		if (sy >= 0) {          // Start in upper half plane
-		    if (sx > 0) {         // Start in quadrant 0 - X+ Y+
-			if (sx <= ex) {     // wraparound
-			    px = py = mx = my = true;
-			}
-		    } else {              // Start in quadrant 1 - X- Y+
-			mx = my = px = true;
-		    }
-		} else {                // Start in lower half plane
-		    if (sx > 0) {         // Start in quadrant 3 - X+ Y-
-			px = true;
-		    } else {              // Start in quadrant 2 - X- Y-
-			my = px = true;
-		    }
-		}
-	    } else {                  // End in quadrant 1 - X- Y+
-		if (sy >= 0) {          // Start in upper half plane
-		    if (sx > 0) {         // Start in quadrant 0 - X+ Y+
-			py = true;
-		    } else {              // Start in quadrant 1 - X- Y+
-			if (sx <= ex) {     // wraparound
-			    px = py = mx = my = true;
-			}
-		    }
-		} else {                // Start in lower half plane
-		    if (sx > 0) {         // Start in quadrant 3 - X+ Y-
-			px = py = true;
-		    } else {              // Start in quadrant 2 - X- Y-
-			my = px = py = true;
-		    }
-		}
-	    }
-	} else {                    // ey < 0 - end in lower half plane
-	    if (ex > 0) {             // End in quadrant 3 - X+ Y+
-		if (sy >= 0) {          // Start in upper half plane
-		    if (sx > 0) {         // Start in quadrant 0 - X+ Y+
-			py = mx = my = true;
-		    } else {              // Start in quadrant 1 - X- Y+
-			mx = my = true;
-		    }
-		} else {                // Start in lower half plane
-		    if (sx > 0) {         // Start in quadrant 3 - X+ Y-
-			if (sx >= ex) {      // wraparound
-			    px = py = mx = my = true;
-			}
-		    } else {              // Start in quadrant 2 - X- Y-
-			my = true;
-		    }
-		}
-	    } else {                  // End in quadrant 2 - X- Y+
-		if (sy >= 0) {          // Start in upper half plane
-		    if (sx > 0) {         // Start in quadrant 0 - X+ Y+
-			py = mx = true;
-		    } else {              // Start in quadrant 1 - X- Y+
-			mx = true;
-		    }
-		} else {                // Start in lower half plane
-		    if (sx > 0) {         // Start in quadrant 3 - X+ Y-
-			px = py = mx = true;
-		    } else {              // Start in quadrant 2 - X- Y-
-			if (sx >= ex) {      // wraparound
-			    px = py = mx = my = true;
-			}
-		    }
-		}
-	    }
-	}
-	const maxX = px ? pc.x + radius : Math.max(ps.x, pe.x);
-	const maxY = py ? pc.y + radius : Math.max(ps.y, pe.y);
-	const minX = mx ? pc.x - radius : Math.min(ps.x, pe.x);
-	const minY = my ? pc.y - radius : Math.min(ps.y, pe.y);
+        // There are ways to express this decision tree in fewer lines
+        // of code by converting to alternate representations like angles,
+        // but this way is probably the most computationally efficient.
+        // It avoids any use of transcendental functions.  Every path
+        // through this decision tree is either 4 or 5 simple comparisons.
+        if (ey >= 0) {              // End in upper half plane
+            if (ex > 0) {             // End in quadrant 0 - X+ Y+
+                if (sy >= 0) {          // Start in upper half plane
+                    if (sx > 0) {         // Start in quadrant 0 - X+ Y+
+                        if (sx <= ex) {     // wraparound
+                            px = py = mx = my = true;
+                        }
+                    } else {              // Start in quadrant 1 - X- Y+
+                        mx = my = px = true;
+                    }
+                } else {                // Start in lower half plane
+                    if (sx > 0) {         // Start in quadrant 3 - X+ Y-
+                        px = true;
+                    } else {              // Start in quadrant 2 - X- Y-
+                        my = px = true;
+                    }
+                }
+            } else {                  // End in quadrant 1 - X- Y+
+                if (sy >= 0) {          // Start in upper half plane
+                    if (sx > 0) {         // Start in quadrant 0 - X+ Y+
+                        py = true;
+                    } else {              // Start in quadrant 1 - X- Y+
+                        if (sx <= ex) {     // wraparound
+                            px = py = mx = my = true;
+                        }
+                    }
+                } else {                // Start in lower half plane
+                    if (sx > 0) {         // Start in quadrant 3 - X+ Y-
+                        px = py = true;
+                    } else {              // Start in quadrant 2 - X- Y-
+                        my = px = py = true;
+                    }
+                }
+            }
+        } else {                    // ey < 0 - end in lower half plane
+            if (ex > 0) {             // End in quadrant 3 - X+ Y+
+                if (sy >= 0) {          // Start in upper half plane
+                    if (sx > 0) {         // Start in quadrant 0 - X+ Y+
+                        py = mx = my = true;
+                    } else {              // Start in quadrant 1 - X- Y+
+                        mx = my = true;
+                    }
+                } else {                // Start in lower half plane
+                    if (sx > 0) {         // Start in quadrant 3 - X+ Y-
+                        if (sx >= ex) {      // wraparound
+                            px = py = mx = my = true;
+                        }
+                    } else {              // Start in quadrant 2 - X- Y-
+                        my = true;
+                    }
+                }
+            } else {                  // End in quadrant 2 - X- Y+
+                if (sy >= 0) {          // Start in upper half plane
+                    if (sx > 0) {         // Start in quadrant 0 - X+ Y+
+                        py = mx = true;
+                    } else {              // Start in quadrant 1 - X- Y+
+                        mx = true;
+                    }
+                } else {                // Start in lower half plane
+                    if (sx > 0) {         // Start in quadrant 3 - X+ Y-
+                        px = py = mx = true;
+                    } else {              // Start in quadrant 2 - X- Y-
+                        if (sx >= ex) {      // wraparound
+                            px = py = mx = my = true;
+                        }
+                    }
+                }
+            }
+        }
+        const maxX = px ? pc.x + radius : Math.max(ps.x, pe.x);
+        const maxY = py ? pc.y + radius : Math.max(ps.y, pe.y);
+        const minX = mx ? pc.x - radius : Math.min(ps.x, pe.x);
+        const minY = my ? pc.y - radius : Math.min(ps.y, pe.y);
 
-	const minZ = Math.min(start.z, end.z);
-	const maxZ = Math.max(start.z, end.z);
+        const minZ = Math.min(start.z, end.z);
+        const maxZ = Math.max(start.z, end.z);
 
-        const p0 = projection({x: minX, y: minY, z: minZ});
-        const p1 = projection({x: minX, y: maxY, z: minZ});
-        const p2 = projection({x: maxX, y: maxY, z: minZ});
-        const p3 = projection({x: maxX, y: minY, z: minZ});
-        const p4 = projection({x: minX, y: minY, z: maxZ});
-        const p5 = projection({x: minX, y: maxY, z: maxZ});
-        const p6 = projection({x: maxX, y: maxY, z: maxZ});
-        const p7 = projection({x: maxX, y: minY, z: maxZ});
+        const p0 = projection({ x: minX, y: minY, z: minZ });
+        const p1 = projection({ x: minX, y: maxY, z: minZ });
+        const p2 = projection({ x: maxX, y: maxY, z: minZ });
+        const p3 = projection({ x: maxX, y: minY, z: minZ });
+        const p4 = projection({ x: minX, y: minY, z: maxZ });
+        const p5 = projection({ x: minX, y: maxY, z: maxZ });
+        const p6 = projection({ x: maxX, y: maxY, z: maxZ });
+        const p7 = projection({ x: maxX, y: minY, z: maxZ });
 
-	tpBbox.min.x = Math.min(tpBbox.min.x, p0.x, p1.x, p2.x, p3.x, p4.x, p5.x, p6.x, p7.x);
-	tpBbox.min.y = Math.min(tpBbox.min.y, p0.y, p1.y, p2.y, p3.y, p4.y, p5.y, p6.y, p7.y);
-	tpBbox.max.x = Math.max(tpBbox.max.x, p0.x, p1.x, p2.x, p3.x, p4.x, p5.x, p6.x, p7.x);
-	tpBbox.max.y = Math.max(tpBbox.max.y, p0.y, p1.y, p2.y, p3.y, p4.y, p5.y, p6.y, p7.y);
+        tpBbox.min.x = Math.min(tpBbox.min.x, p0.x, p1.x, p2.x, p3.x, p4.x, p5.x, p6.x, p7.x);
+        tpBbox.min.y = Math.min(tpBbox.min.y, p0.y, p1.y, p2.y, p3.y, p4.y, p5.y, p6.y, p7.y);
+        tpBbox.max.x = Math.max(tpBbox.max.x, p0.x, p1.x, p2.x, p3.x, p4.x, p5.x, p6.x, p7.x);
+        tpBbox.max.y = Math.max(tpBbox.max.y, p0.y, p1.y, p2.y, p3.y, p4.y, p5.y, p6.y, p7.y);
         bboxIsSet = true;
     }
 };
@@ -836,11 +825,11 @@ const displayHandlers = {
         } else if (cw && theta2 > theta1) {
             theta2 -= Math.PI * 2;
         }
-	if (theta1 === theta2) {
-	    theta2 += Math.PI * ((cw) ? -2 : 2);
-	}
+        if (theta1 === theta2) {
+            theta2 += Math.PI * ((cw) ? -2 : 2);
+        }
         if (extraRotations > 1) {
-            theta2 += (extraRotations-1) * Math.PI * ((cw) ? -2 : 2);;
+            theta2 += (extraRotations - 1) * Math.PI * ((cw) ? -2 : 2);;
         }
 
         initialMoves = false;
@@ -868,7 +857,8 @@ const displayHandlers = {
     },
 };
 
-const ToolpathDisplayer = () => {};
+// biome-ignore lint/style/noVar: This has to be a `var` so it will get immediately instantiated
+var ToolpathDisplayer = () => { };
 
 // var offset;
 
@@ -880,40 +870,40 @@ ToolpathDisplayer.prototype.showToolpath = (gcode, modal, initialPosition) => {
     cameraAngle = cameraAngle;
 
     var drawBounds = false;
-    var drawBelts  = false;
+    var drawBelts = false;
 
     switch (cameraAngle) {
-      case 0:
-        obliqueView();
-        break;
-      case 1:
-        obliqueView();
-        drawBounds = true;
-        break;
-      case 2:
-        topView();
-        break;
-      case 3:
-        topView();
-        drawBounds = true;
-        break;
-      case 4:
-        topView();
-        drawBounds = true;
-        drawBelts  = true;
-        break;
-      default:
-        obliqueView();
+        case 0:
+            obliqueView();
+            break;
+        case 1:
+            obliqueView();
+            drawBounds = true;
+            break;
+        case 2:
+            topView();
+            break;
+        case 3:
+            topView();
+            drawBounds = true;
+            break;
+        case 4:
+            topView();
+            drawBounds = true;
+            drawBelts = true;
+            break;
+        default:
+            obliqueView();
     }
 
     resetBbox();
     bboxHandlers.position = initialPosition;
     bboxHandlers.modal = modal;
 
-    if(drawBounds){
+    if (drawBounds) {
         drawMachineBounds(); //Adds the machine bounds to the bounding box...this does not draw
     }
-    if(drawBelts){
+    if (drawBelts) {
         drawMachineBelts(); //Adds the belts to the bounding box...does not draw yet
     }
 
@@ -930,10 +920,10 @@ ToolpathDisplayer.prototype.showToolpath = (gcode, modal, initialPosition) => {
 
     drawTool(initialPosition);
 
-    if(drawBounds){
+    if (drawBounds) {
         drawMachineBounds(); //Actually draws the bounding box
     }
-    if(drawBelts){
+    if (drawBelts) {
         drawMachineBelts(); //Actually draws the belts
     }
 };
@@ -949,14 +939,14 @@ displayer = new ToolpathDisplayer();
 
 ToolpathDisplayer.prototype.cycleCameraAngle = (gcode, modal, position) => {
     cameraAngle = cameraAngle + 1;
-    if(cameraAngle > 4){
+    if (cameraAngle > 4) {
         cameraAngle = 0;
     }
 
     displayer.showToolpath(gcode, modal, position);
 }
 
-canvas.addEventListener("mouseup", updateGcodeViewerAngle); 
+canvas.addEventListener("mouseup", updateGcodeViewerAngle);
 const refreshGcode = () => {
     const gcode = id('gcode').value;
     displayer.showToolpath(gcode, WPOS, MPOS, cameraAngle);

@@ -43,6 +43,10 @@ class Common {
 		/** See preferencesdlg.js */
 		this.enable_ping = true;
 
+		/** See printercmd.js */
+		this.grbl_errorfn = null;
+		this.grbl_processfn = null;
+
 		/** See settings.js */
 		this.current_setting_filter = "nvs";
 		this.setup_is_done = false;

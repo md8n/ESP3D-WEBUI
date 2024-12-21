@@ -73,7 +73,7 @@ describe('maslowMsgHandling', () => {
   const setDim = (key, value, outDim, outValue) => {
     noErrorResult(key, value);
     if (typeof outValue === "undefined") {
-      outValue = parseFloat(value);
+      outValue = Number.parseFloat(value);
     }
     if (Array.isArray(outDim)) {
       expect(global.initialGuess[outDim[0]][outDim[1]]).toBe(outValue);

@@ -1,7 +1,7 @@
-var language = 'en';
+let language = 'en';
 
 
-var language_list = [
+const language_list = [
 //removeIf(de_lang_disabled)
     ['de', 'Deutsch', 'germantrans'],
 //endRemoveIf(de_lang_disabled)
@@ -44,39 +44,40 @@ var language_list = [
 ];
 
 //removeIf(production)
-var translated_list = [];
+const translated_list = [];
 //endRemoveIf(production)
 
 function build_language_list(id_item) {
-    var content = "<select class='form-control'  id='" + id_item + "' onchange='translate_text(this.value)'>\n";
-    for (var lang_i = 0; lang_i < language_list.length; lang_i++) {
-        content += "<option value='" + language_list[lang_i][0] + "'";
-        if (language_list[lang_i][0] == language) content += " selected";
-        content += ">" + language_list[lang_i][1] + "</option>\n";
+    let content = `<select class='form-control'  id='${id_item}' onchange='translate_text(this.value)'>\n`;
+    for (let lang_i = 0; lang_i < language_list.length; lang_i++) {
+        content += `<option value='${language_list[lang_i][0]}'`;
+        if (language_list[lang_i][0] === language) content += " selected";
+        content += `>${language_list[lang_i][1]}</option>\n`;
     }
     content += "</select>\n";
     return content;
 }
 
 function translate_text(lang) {
-    var currenttrans = {};
-    var translated_content = "";
+    let currenttrans = {};
+    let translated_content = "";
     language = lang;
-    for (var lang_i = 0; lang_i < language_list.length; lang_i++) {
-        if (language_list[lang_i][0] == lang) {
+    for (let lang_i = 0; lang_i < language_list.length; lang_i++) {
+        if (language_list[lang_i][0] === lang) {
+            // biome-ignore lint/security/noGlobalEval: <explanation>
             currenttrans = eval(language_list[lang_i][2]);
         }
     }
-    var All = document.getElementsByTagName('*');
-    for (var i = 0; i < All.length; i++) {
+    const All = document.getElementsByTagName('*');
+    for (let i = 0; i < All.length; i++) {
         if (All[i].hasAttribute('translate')) {
-            var content = "";
+            let content = "";
             if (!All[i].hasAttribute('english_content')) {
                 content = All[i].innerHTML;
                 content.trim();
                 All[i].setAttribute('english_content', content);
                 //removeIf(production)        
-                var item = {
+                const item = {
                     content: content
                 };
                 translated_list.push(item);
@@ -110,19 +111,20 @@ function translate_text(lang) {
 };
 
 function translate_text_item(item_text, withtag) {
-    var currenttrans = {};
-    var translated_content;
-    var with_tag = false;
-    if (typeof withtag != "undefined") with_tag = withtag;
-    for (var lang_i = 0; lang_i < language_list.length; lang_i++) {
-        if (language_list[lang_i][0] == language) {
+    let currenttrans = {};
+    let translated_content;
+    let with_tag = false;
+    if (typeof withtag !== "undefined") with_tag = withtag;
+    for (let lang_i = 0; lang_i < language_list.length; lang_i++) {
+        if (language_list[lang_i][0] === language) {
+            // biome-ignore lint/security/noGlobalEval: <explanation>
             currenttrans = eval(language_list[lang_i][2]);
         }
     }
     translated_content = currenttrans[item_text];
     if (typeof translated_content === 'undefined') translated_content = item_text;
     if (with_tag) {
-        var translated_content_tmp = "<span english_content=\"" + item_text + "\" translate>" + translated_content + "</span>";
+        const translated_content_tmp = `<span english_content=\"${item_text}\" translate>${translated_content}</span>`;
         translated_content = translated_content_tmp;
     }
     return translated_content;

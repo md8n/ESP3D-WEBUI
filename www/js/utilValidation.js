@@ -98,11 +98,12 @@ const checkValue = (value, valueDef, errorList = []) => {
     case "select":
       // This is effectively an enum - no specific test for this yet
       break;
-    default:
+    default: {
       const valueDefError = `'${valueDef.label}' ${translate_text_item("is an unknown value type")} '${valueDef.valueType}'`;
       console.error(`${valueDefError}: ${JSON.stringify(value)}`);
       errorList.push(valueDefError); 
       break;
+    }
   }
   return errorList.filter((err) => err);
 }

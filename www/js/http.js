@@ -220,6 +220,8 @@ function SendFileHttp(url, postdata, progress_fn, result_fn, error_fn) {
         return;
     }
     if (http_cmd_list.length !== 0) {
+        // TODO: figure out what, if anything this did
+        // biome-ignore lint/suspicious/noGlobalAssign: <explanation>
         process = false;
     }
     const cmd = {

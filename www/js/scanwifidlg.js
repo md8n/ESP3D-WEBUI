@@ -46,6 +46,7 @@ function refresh_scanwifi() {
 	getscanWifiSuccess(testResponse.join(""));
 	return;
 	//endRemoveIf(production)
+	// biome-ignore lint/correctness/noUnreachable: <explanation>
 	const url = `/command?plain=${encodeURIComponent("[ESP410]")}`;
 	SendGetHttp(url, getscanWifiSuccess, getscanWififailed);
 }
@@ -83,6 +84,7 @@ function process_scanWifi_answer(response_text) {
 	}
 	setHTML("AP_scan_data", content);
 
+	// biome-ignore lint/complexity/noForEach: <explanation>
 	actions.forEach((action) => {
 		id(action.id).addEventListener(action.type, (event) => action.method);
 	});

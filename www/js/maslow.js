@@ -59,7 +59,7 @@ const maslowErrorMsgHandling = (msg) => {
 const maslowMsgHandling = (msg) => {
     const keyValue = msg.split("=");
     const errMsgSuffix = `${MaslowErrMsgKeyValueSuffix}${msg}`;
-    if (keyValue.length != 2) {
+    if (keyValue.length !== 2) {
         return maslowErrorMsgHandling(`${MaslowErrMsgKeyValueCantUse} ${errMsgSuffix}`);
     }
     const key = keyValue[0] || "";
@@ -79,7 +79,7 @@ const maslowMsgHandling = (msg) => {
         stdAction(id, value);
         return stdDimensionAction(value);
     }
-    const stdDimensionAction = (value) => parseFloat(value);
+    const stdDimensionAction = (value) => Number.parseFloat(value);
     const nullAction = () => { };
 
     const msgExtra = {

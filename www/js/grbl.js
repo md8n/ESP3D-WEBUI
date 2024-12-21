@@ -259,7 +259,7 @@ function get_status() {
 }
 
 function parseGrblStatus(response) {
-  var grbl = {
+  const grbl = {
     stateName: '',
     message: '',
     wco: undefined,
@@ -274,12 +274,12 @@ function parseGrblStatus(response) {
     mist: undefined,
     pins: undefined,
   }
-  response = response.replace('<', '').replace('>', '')
-  var fields = response.split('|')
-  fields.forEach(function (field) {
-    var tv = field.split(':')
-    var tag = tv[0]
-    var value = tv[1]
+  const fields = response.replace('<', '').replace('>', '').split('|')
+  // biome-ignore lint/complexity/noForEach: <explanation>
+  fields.forEach((field) => {
+    const tv = field.split(':')
+    const tag = tv[0]
+    const value = tv[1]
     switch (tag) {
       case 'Door':
         grbl.stateName = tag
@@ -298,41 +298,37 @@ function parseGrblStatus(response) {
       case 'Sleep':
         grbl.stateName = tag
         break
-
       case 'Ln':
-        grbl.lineNumber = parseInt(value)
+        grbl.lineNumber = Number.parseInt(value)
         break
       case 'MPos':
-        grbl.mpos = value.split(',').map(function (v) {
-          return parseFloat(v)
-        })
+        grbl.mpos = value.split(',').map((v) => Number.parseFloat(v))
         break
       case 'WPos':
-        grbl.wpos = value.split(',').map(function (v) {
-          return parseFloat(v)
-        })
+        grbl.wpos = value.split(',').map((v) => Number.parseFloat(v))
         break
       case 'WCO':
-        grbl.wco = value.split(',').map(function (v) {
-          return parseFloat(v)
-        })
+        grbl.wco = value.split(',').map((v) => Number.parseFloat(v))
         break
-      case 'FS':
-        var rates = value.split(',')
-        grbl.feedrate = parseFloat(rates[0])
-        grbl.spindleSpeed = parseInt(rates[1])
+      case 'FS': {
+        const rates = value.split(',')
+        grbl.feedrate = Number.parseFloat(rates[0])
+        grbl.spindleSpeed = Number.parseInt(rates[1])
         break
-      case 'Ov':
-        var rates = value.split(',')
+      }
+      case 'Ov': {
+        const rates = value.split(',')
         grbl.ovr = {
-          feed: parseInt(rates[0]),
-          rapid: parseInt(rates[1]),
-          spindle: parseInt(rates[2]),
+          feed: Number.parseInt(rates[0]),
+          rapid: Number.parseInt(rates[1]),
+          spindle: Number.parseInt(rates[2]),
         }
         break
+      }
       case 'A':
         grbl.spindleDirection = 'M5'
-        Array.from(value).forEach(function (v) {
+        // biome-ignore lint/complexity/noForEach: <explanation>
+        Array.from(value).forEach((v) => {
           switch (v) {
             case 'S':
               grbl.spindleDirection = 'M3'
@@ -349,11 +345,12 @@ function parseGrblStatus(response) {
           }
         })
         break
-      case 'SD':
-        var sdinfo = value.split(',')
-        grbl.sdPercent = parseFloat(sdinfo[0])
+      case 'SD': {
+        const sdinfo = value.split(',')
+        grbl.sdPercent = Number.parseFloat(sdinfo[0])
         grbl.sdName = sdinfo[1]
         break
+      }
       case 'Pn':
         // pin status
         grbl.pins = value
@@ -367,7 +364,7 @@ function parseGrblStatus(response) {
 }
 
 function clickableFromStateName(state, hasSD) {
-  var clickable = {
+  const clickable = {
     resume: false,
     pause: false,
     reset: false,
@@ -399,14 +396,14 @@ function clickableFromStateName(state, hasSD) {
 
 function show_grbl_position(wpos, mpos) {
   if (wpos) {
-    wpos.forEach(function (pos, axis) {
-      var element = 'control_' + axisNames[axis] + '_position'
+    wpos.forEach((pos, axis) => {
+      const element = `control_${axisNames[axis]}_position`
       setHTML(element, pos.toFixed(3))
     })
   }
   if (mpos) {
-    mpos.forEach(function (pos, axis) {
-      var element = 'control_' + axisNames[axis] + 'm_position'
+    mpos.forEach((pos, axis) => {
+      const element = `control_${axisNames[axis]}m_position`
       setHTML(element, pos.toFixed(3))
     })
   }
@@ -414,7 +411,7 @@ function show_grbl_position(wpos, mpos) {
 
 function show_grbl_status(stateName, message, hasSD) {
   if (stateName) {
-    var clickable = clickableFromStateName(stateName, hasSD)
+    const clickable = clickableFromStateName(stateName, hasSD)
     setHTML('grbl_status', stateName)
     setHTML('systemStatus', stateName)
     if (stateName === 'Alarm') {
@@ -425,13 +422,13 @@ function show_grbl_status(stateName, message, hasSD) {
     setClickability('sd_resume_btn', clickable.resume)
     setClickability('sd_pause_btn', clickable.pause)
     setClickability('sd_reset_btn', clickable.reset)
-    if (stateName == 'Hold' && probe_progress_status != 0) {
+    if (stateName === 'Hold' && probe_progress_status !== 0) {
       probe_failed_notification()
     }
   }
 
   setHTML('grbl_status_text', translate_text_item(message))
-  setClickability('clear_status_btn', stateName == 'Alarm')
+  setClickability('clear_status_btn', stateName === 'Alarm')
 }
 
 function finalize_probing() {
@@ -457,7 +454,7 @@ function show_grbl_probe_status(probed) {
 }
 
 function SendRealtimeCmd(code) {
-  var cmd = String.fromCharCode(code)
+  const cmd = String.fromCharCode(code)
   SendPrinterCommand(cmd, false, null, null, code, 1)
 }
 
@@ -474,7 +471,7 @@ function stopGCode() {
 }
 
 function grblProcessStatus(response) {
-  var grbl = parseGrblStatus(response)
+  const grbl = parseGrblStatus(response)
   // Record persistent values of data
   if (grbl.wco) {
     WCO = grbl.wco
@@ -581,13 +578,13 @@ function grblGetModal(msg) {
 // is called, if it is defined.
 // To run a command that generates such data, first set collectHandler
 // to a callback function to receive the data, then issue the command.
-var collecting = false
-var collectedData = ''
-var collectHandler = undefined
+let collecting = false
+let collectedData = ''
+let collectHandler = undefined
 
 // Settings are collected separately because they bracket the data with
 // the legacy protocol messages  $0= ... ok
-var collectedSettings = null
+let collectedSettings = null
 
 async function handleCalibrationData(measurements) {
   document.querySelector('#messages').textContent += '\nComputing... This may take several minutes'
@@ -649,35 +646,36 @@ function grblHandleMessage(msg) {
   }
 
   // Setting collection
+  const common = new Common();
   if (collectedSettings) {
     if (msg.startsWith('ok')) {
-      // Finish collecting settings
+      // Finish collecting settings;
       getESPconfigSuccess(collectedSettings)
-      collectedSettings = null
-      if (grbl_errorfn) {
-        grbl_errorfn()
-        grbl_errorfn = null
-        grbl_processfn = null
+      collectedSettings = null;
+      if (common.grbl_errorfn) {
+        common.grbl_errorfn();
+        common.grbl_errorfn = null;
+        common.grbl_processfn = null;
       }
     } else {
       // Continue collecting settings
-      collectedSettings += msg
+      collectedSettings += msg;
     }
-    return
+    return;
   }
   if (msg.startsWith('$0=') || msg.startsWith('$10=')) {
     // Start collecting settings
-    collectedSettings = msg
-    return
+    collectedSettings = msg;
+    return;
   }
 
   // Handlers for standard Grbl protocol messages
 
   if (msg.startsWith('ok')) {
-    if (grbl_processfn) {
-      grbl_processfn()
-      grbl_processfn = null
-      grbl_errorfn = null
+    if (common.grbl_processfn) {
+      common.grbl_processfn();
+      common.grbl_processfn = null;
+      common.grbl_errorfn = null;
     }
     return
   }
@@ -689,10 +687,10 @@ function grblHandleMessage(msg) {
     return
   }
   if (msg.startsWith('error:')) {
-    if (grbl_errorfn) {
-      grbl_errorfn()
-      grbl_errorfn = null
-      grbl_processfn = null
+    if (common.grbl_errorfn) {
+      common.grbl_errorfn()
+      common.grbl_errorfn = null
+      common.grbl_processfn = null;
     }
   }
   if (msg.startsWith('error:') || msg.startsWith('ALARM:') || msg.startsWith('Hold:') || msg.startsWith('Door:')) {
@@ -715,7 +713,7 @@ function StartProbeProcess() {
   // are always G21 units, i.e. mm in the usual case, and distance is
   // always incremental.  This avoids problems with probing when in G20
   // inches mode and undoing a preexisting G91 incremental mode
-  var cmd = 'G38.2 Z-'
+  let cmd = 'G38.2 Z-'
   if (
     !onprobemaxtravelChange() ||
     !onprobefeedrateChange() ||
@@ -743,7 +741,7 @@ function StartProbeProcess() {
   }
 }
 
-var spindleSpeedSetTimeout
+let spindleSpeedSetTimeout
 
 function setSpindleSpeed(speed) {
   const common = new Common();

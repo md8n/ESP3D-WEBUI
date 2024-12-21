@@ -7,7 +7,7 @@
 	},
 	"files": {
 		"ignoreUnknown": false,
-		"ignore": []
+		"ignore": ["gulpfile.js", "www/js/tests/*"]
 	},
 	"formatter": {
 		"enabled": true,

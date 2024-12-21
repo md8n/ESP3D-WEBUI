@@ -106,22 +106,22 @@ function on_autocheck_position(use_value) {
 		id('autocheck_position').checked = use_value;
 	}
 	if (id('autocheck_position').checked) {
-		var interval = parseInt(id('controlpanel_interval_positions').value);
+		const interval = Number.parseInt(id('controlpanel_interval_positions').value);
 		if (!Number.isNaN(interval) && interval > 0 && interval < 100) {
-			if (interval_position != -1) {
+			if (interval_position !== -1) {
 				clearInterval(interval_position);
 			}
-			interval_position = setInterval(function () { get_Position() }, interval * 1000);
+			interval_position = setInterval(() => { get_Position() }, interval * 1000);
 		} else {
 			id('autocheck_position').checked = false;
 			id('controlpanel_interval_positions').value = 0;
-			if (interval_position != -1) {
+			if (interval_position !== -1) {
 				clearInterval(interval_position);
 			}
 			interval_position = -1;
 		}
 	} else {
-		if (interval_position != -1) {
+		if (interval_position !== -1) {
 			clearInterval(interval_position);
 		}
 		interval_position = -1;
@@ -129,13 +129,13 @@ function on_autocheck_position(use_value) {
 }
 
 function onPosIntervalChange() {
-	var interval = parseInt(id('controlpanel_interval_positions').value);
+	const interval = Number.parseInt(id('controlpanel_interval_positions').value);
 	if (!Number.isNaN(interval) && interval > 0 && interval < 100) {
 		on_autocheck_position();
 	} else {
 		id('autocheck_position').checked = false;
 		id('controlpanel_interval_positions').value = 0;
-		if (interval != 0) {
+		if (interval !== 0) {
 			alertdlg(translate_text_item("Out of range"), translate_text_item("Value of auto-check must be between 0s and 99s !!"));
 		}
 		on_autocheck_position();
@@ -145,11 +145,11 @@ function onPosIntervalChange() {
 const get_Position = () => SendPrinterCommand("?", false, null, null, 114, 1);
 
 function Control_get_position_value(label, result_data) {
-	var result = "";
-	var pos1 = result_data.indexOf(label, 0);
+	let result = "";
+	let pos1 = result_data.indexOf(label, 0);
 	if (pos1 > -1) {
 		pos1 += label.length;
-		var pos2 = result_data.indexOf(" ", pos1);
+		const pos2 = result_data.indexOf(" ", pos1);
 		if (pos2 > -1) {
 			result = result_data.substring(pos1, pos2);
 		} else result = result_data.substring(pos1);
@@ -246,14 +246,14 @@ function SendJogcommand(cmd, feedrate) {
 }
 
 function onXYvelocityChange() {
-	var feedratevalue = parseFloat(id('control_xy_velocity').value);
+	const feedratevalue = Number.parseFloat(id('control_xy_velocity').value);
 	if (feedratevalue < 1 || feedratevalue > 9999 || Number.isNaN(feedratevalue) || (feedratevalue === null)) {
 		//we could display error but we do not
 	}
 }
 
 function onZvelocityChange() {
-	var feedratevalue = parseFloat(id('control_z_velocity').value);
+	const feedratevalue = Number.parseFloat(id('control_z_velocity').value);
 	if (feedratevalue < 1 || feedratevalue > 999 || Number.isNaN(feedratevalue) || (feedratevalue === null)) {
 		//we could display error but we do not
 	}
@@ -261,7 +261,7 @@ function onZvelocityChange() {
 
 
 function processMacroSave(answer) {
-	if (answer == "ok") {
+	if (answer === "ok") {
 		//console.log("now rebuild list");
 		control_build_macro_ui();
 	}

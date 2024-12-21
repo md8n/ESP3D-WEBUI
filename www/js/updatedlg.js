@@ -105,10 +105,9 @@ function updatesuccess(response) {
 	setHTML("updatemsg", translate_text_item("Restarting, please wait...."));
 	setHTML("fw_file_name", "");
 	let i = 0;
-	let interval;
 	const x = id("prgfw");
 	x.max = 10;
-	interval = setInterval(() => {
+	const interval = setInterval(() => {
 		i = i + 1;
 		const x = id("prgfw");
 		x.value = i;

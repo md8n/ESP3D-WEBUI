@@ -272,13 +272,14 @@ function files_click_file(index) {
 		files_enter_dir(entry.name);
 		return;
 	}
-	if (false && direct_sd) {
-		// Don't download on click; use the button
-		//console.log("file on direct SD");
-		const url = `SD/${files_currentPath}${entry.sdname}`;
-		window.location.href = encodeURIComponent(url.replace("//", "/"));
-		return;
-	}
+
+	// if (false && direct_sd) {
+	// 	// Don't download on click; use the button
+	// 	//console.log("file on direct SD");
+	// 	const url = `SD/${files_currentPath}${entry.sdname}`;
+	// 	window.location.href = encodeURIComponent(url.replace("//", "/"));
+	// 	return;
+	// }
 }
 
 function files_isgcode(filename, isdir) {
@@ -311,13 +312,13 @@ function files_showdeletebutton(index) {
 	return true;
 }
 
-function files_refreshFiles(path, usecache) {
+function files_refreshFiles(path, usecache = false) {
 	//console.log("refresh requested " + path);
 	const cmdpath = path;
 	files_currentPath = path;
 	if (current_source !== last_source) {
 		files_currentPath = "/";
-		path = "/";
+		// path = "/";
 		last_source = current_source;
 	}
 	if (current_source === tft_sd || current_source === tft_usb) {
@@ -325,9 +326,7 @@ function files_refreshFiles(path, usecache) {
 	} else {
 		displayBlock("print_upload_btn");
 	}
-	if (typeof usecache === "undefined") {
-		usecache = false;
-	}
+
 	setHTML("files_currentPath", files_currentPath);
 	files_file_list = [];
 	files_status_list = [];

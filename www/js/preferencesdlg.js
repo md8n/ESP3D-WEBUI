@@ -678,8 +678,11 @@ function SavePreferences(current_preferences) {
     const url = "/files";
     formData.append('path', '/');
     formData.append('myfile[]', file, preferences_file_name);
-    if ((typeof (current_preferences) !== 'undefined') && current_preferences) SendFileHttp(url, formData);
-    else SendFileHttp(url, formData, preferencesdlgUploadProgressDisplay, preferencesUploadsuccess, preferencesUploadfailed);
+    if ((typeof (current_preferences) !== 'undefined') && current_preferences) {
+        SendFileHttp(url, formData);
+    } else {
+        SendFileHttp(url, formData, preferencesdlgUploadProgressDisplay, preferencesUploadsuccess, preferencesUploadfailed);
+    }
 }
 
 function preferencesdlgUploadProgressDisplay(oEvent) {
