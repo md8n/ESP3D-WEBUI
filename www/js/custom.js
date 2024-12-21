@@ -10,22 +10,23 @@
 //      the call.
 
 function process_Custom(response) {
-    var vol = 3;  // beep volume
-    var freq = 440;  // beep frequency on end of print
-    var dur = 100;  // beep duration on end of print
-    response = response.replace("[esp3d]","");
-    if (response.startsWith("eop")) {
+    const vol = 3;  // beep volume
+    const freq = 440;  // beep frequency on end of print
+    const dur = 100;  // beep duration on end of print
+    const resp = response.replace("[esp3d]", "");
+    if (resp.startsWith("eop")) {
         // Example 1
         // Sound to play on end of print
         // Triggered by message on serial terminal
         // [ESP3D]eop
         beep(vol, dur, freq);
     }
-    if (response.startsWith("beep(")) {
+    if (resp.startsWith("beep(")) {
         // Example 2
         // Call a function within webUI, in this case beep()
         // Triggered by message on serial terminal
         // [ESP3D]beep(100, 261)
-        eval(response);
+        // biome-ignore lint/security/noGlobalEval: <explanation>
+        eval(resp);
     }
 }
