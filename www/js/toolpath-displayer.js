@@ -655,7 +655,7 @@ const bboxHandlers = {
         tpBbox.max.y = Math.max(tpBbox.max.y, ps.y, pe.y);
         bboxIsSet = true;
     },
-    addArcCurve: (modal, start, end, center, extraRotations) => {
+    addArcCurve: (modal, bgn, end, center, extraRotations) => {
         // To determine the precise bounding box of a circular arc we
         // must account for the possibility that the arc crosses one or
         // more axes.  If so, the bounding box includes the "bulges" of
@@ -664,15 +664,12 @@ const bboxHandlers = {
         // Update units in case it changed in a previous line
         tpUnits = modal.units;
 
-        if (modal.motion === 'G2') {  // clockwise
-            const tmp = start;
-            start = end;
-            end = tmp;
-        }
+        const start = (modal.motion === 'G2') ? end : bgn;
+        const finish = (modal.motion === 'G2') ? bgn : end;
 
         ps = projection(start);
         pc = projection(center);
-        pe = projection(end);
+        pe = projection(finish);
 
         // Coordinates relative to the center of the arc
         const sx = ps.x - pc.x;
@@ -727,7 +724,7 @@ const bboxHandlers = {
                     }
                 }
             }
-        } else {                    // ey < 0 - end in lower half plane
+        } else {                    // ey < 0 - finish in lower half plane
             if (ex > 0) {             // End in quadrant 3 - X+ Y+
                 if (sy >= 0) {          // Start in upper half plane
                     if (sx > 0) {         // Start in quadrant 0 - X+ Y+
@@ -767,8 +764,8 @@ const bboxHandlers = {
         const minX = mx ? pc.x - radius : Math.min(ps.x, pe.x);
         const minY = my ? pc.y - radius : Math.min(ps.y, pe.y);
 
-        const minZ = Math.min(start.z, end.z);
-        const maxZ = Math.max(start.z, end.z);
+        const minZ = Math.min(start.z, finish.z);
+        const maxZ = Math.max(start.z, finish.z);
 
         const p0 = projection({ x: minX, y: minY, z: minZ });
         const p1 = projection({ x: minX, y: maxY, z: minZ });

@@ -4,9 +4,9 @@ const _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symb
     ? ((obj) => typeof obj)
     : ((obj) => obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj);
 
-const _extends = Object.assign || ((target) => {
-    for (let i = 1; i < arguments.length; i++) {
-        const source = arguments[i];
+const _extends = Object.assign || ((target, ...sources) => {
+    for (let i = 0; i < sources.length; i++) {
+        const source = sources[i];
         for (const key in source) {
             if (Object.prototype.hasOwnProperty.call(source, key)) {
                 target[key] = source[key];
@@ -728,7 +728,7 @@ const Toolpath = (() => {
         const toolpath = new Interpreter({ handlers: this.handlers });
         toolpath.getPosition = () => _extends({}, _this.position);
         toolpath.getModal = () => _extends({}, _this.modal);
-        toolpath.setPosition = () => _this.setPosition.apply(_this, arguments);
+        toolpath.setPosition = (...args) => _this.setPosition(...args);
         toolpath.setModal = (modal) => _this.setModal(modal);
 
         return toolpath;
@@ -779,10 +779,7 @@ const Toolpath = (() => {
         }
     }, {
         key: 'setPosition',
-        value: function setPosition() {
-            for (let _len = arguments.length, pos = Array(_len), _key = 0; _key < _len; _key++) {
-                pos[_key] = arguments[_key];
-            }
+        value: function setPosition(...pos) {
 
             if (_typeof(pos[0]) === 'object') {
                 const _pos$ = _extends({}, pos[0]);

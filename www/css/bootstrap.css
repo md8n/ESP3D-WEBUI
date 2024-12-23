@@ -2314,7 +2314,7 @@ input[type="search"] {
     -webkit-appearance: none;
 }
 
-@media screen and (-webkit-min-device-pixel-ratio: 0) {
+@media screen and (min-resolution: 0dppx) {
 
     input[type="date"].form-control,
     input[type="time"].form-control,

@@ -40,26 +40,31 @@ window.onload = () => {
 	let navbarLoaded = "";
 
 	let failSafe = 10;
-
 	let startUpInt = setInterval(() => {
-		// Check for various key HTML panels and load them up
-		if (!connectDlg && id("connectdlg.html")) {
-			connectDlg = "loading";
-			connectdlg();
-			connectDlg = "loaded";
-		}
+		if (typeof displayNone !== "undefined" && typeof id !== "undefined") {
+			//to check if javascript is disabled like in android preview
+			displayNone("loadingmsg");
+			console.log("Connect to board");
 
-		if (!controlsPanel && id("controlPanel")) {
-			controlsPanel = "loading";
-			ControlsPanel();
-			controlsPanel = "loaded";
-		}
+			// Check for various key HTML panels and load them up
+			if (!connectDlg && id("connectdlg.html") && typeof connectdlg !== "undefined") {
+				connectDlg = "loading";
+				connectdlg();
+				connectDlg = "loaded";
+			}
 
-		if (!navbarLoaded && id("navbar")) {
-			navbarLoaded = "loading";
-			navbar();
-			tabletInit();
-			navbarLoaded = "loaded";
+			if (!controlsPanel && id("controlPanel") && typeof ControlsPanel !== "undefined") {
+				controlsPanel = "loading";
+				ControlsPanel();
+				controlsPanel = "loaded";
+			}
+
+			if (!navbarLoaded && id("navbar") && typeof navbar !== "undefined") {
+				navbarLoaded = "loading";
+				navbar();
+				tabletInit();
+				navbarLoaded = "loaded";
+			}
 		}
 
 		if ((connectDlg && controlsPanel && navbarLoaded) || failSafe <= 0) {
@@ -174,7 +179,7 @@ function initUI() {
 	}
 	AddCmd(display_boot_progress);
 	//initial check
-	if (typeof target_firmware === 'undefined' || typeof web_ui_version === 'undefined' || typeof direct_sd === 'undefined'){
+	if (typeof target_firmware === 'undefined' || typeof web_ui_version === 'undefined' || typeof direct_sd === 'undefined') {
 		alert('Missing init data!');
 	}
 	//check FW

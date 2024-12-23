@@ -6,13 +6,14 @@ const parseLine = (() => {
     // The checksum "cs" for a GCode string "cmd" (including its line number) is computed
     // by exor-ing the bytes in the string up to and not including the * character.
     const computeChecksum = function computeChecksum(s = "") {
+        let newStr = s;
         if (s.lastIndexOf('*') >= 0) {
-            s = s.substr(0, s.lastIndexOf('*'));
+            newStr = s.slice(0, s.lastIndexOf('*'));
         }
 
         let cs = 0;
-        for (let i = 0; i < s.length; ++i) {
-            const c = s[i].charCodeAt(0);
+        for (let i = 0; i < newStr.length; ++i) {
+            const c = newStr[i].charCodeAt(0);
             cs ^= c;
         }
         return cs;
@@ -91,10 +92,14 @@ const parseLine = (() => {
         }
 
         // Line number
-        typeof ln !== 'undefined' && (result.ln = ln);
+        if (typeof ln !== 'undefined') {
+            result.ln = ln;
+        }
 
         // Checksum
-        typeof cs !== 'undefined' && (result.cs = cs);
+        if (typeof cs !== 'undefined') {
+            result.cs = cs;
+        }
         if (result.cs && computeChecksum(line) !== result.cs) {
             result.err = true; // checksum failed
         }

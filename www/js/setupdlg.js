@@ -57,7 +57,7 @@ const endDiv = () => "</div>";
 function setupdlg() {
     const common = new Common();
     common.setup_is_done = false;
-    language_save = language;
+    language_save = language || "en";
     displayNone('main_ui');
     id('settings_list_data').innerHTML = "";
     active_wizard_page = 0;
@@ -102,9 +102,9 @@ function continue_setup_wizard() {
     switch (active_wizard_page) {
         case 1:
             enablestep1();
-            preferenceslist[0].language = language;
+            preferenceslist[0].language = language || "en";
             SavePreferences(true);
-            language_save = language;
+            language_save = language || "en";
             break;
         case 2:
             enablestep2();

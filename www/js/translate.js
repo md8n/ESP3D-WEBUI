@@ -50,9 +50,8 @@ const translated_list = [];
 function build_language_list(id_item) {
     let content = `<select class='form-control'  id='${id_item}' onchange='translate_text(this.value)'>\n`;
     for (let lang_i = 0; lang_i < language_list.length; lang_i++) {
-        content += `<option value='${language_list[lang_i][0]}'`;
-        if (language_list[lang_i][0] === language) content += " selected";
-        content += `>${language_list[lang_i][1]}</option>\n`;
+        const isSelected = language_list[lang_i][0] === language ? " selected" : "";
+        content += `<option value='${language_list[lang_i][0]}'${isSelected}>${language_list[lang_i][1]}</option>\n`;
     }
     content += "</select>\n";
     return content;

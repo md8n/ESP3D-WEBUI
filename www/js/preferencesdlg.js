@@ -1,6 +1,6 @@
 //Preferences dialog
 let preferenceslist = [];
-let language_save = language;
+let language_save = language || "en";
 let default_preferenceslist = [];
 let defaultpreferenceslist = "[{\
                                             \"language\":\"en\",\
@@ -327,8 +327,10 @@ function applypreferenceslist() {
 
 function showpreferencesdlg() {
     const modal = setactiveModal('preferencesdlg.html');
-    if (modal == null) return;
-    language_save = language;
+    if (modal == null) {
+        return;
+    }
+    language_save = language || "en";
     build_dlg_preferences_list();
     displayNone('preferencesdlg_upload_msg');
     showModal();
@@ -583,7 +585,9 @@ function closePreferencesDialog() {
         if (id('preferences_probetouchplatethickness').value !== Number.parseFloat(preferenceslist[0].probetouchplatethickness)) modified = true;
     }
 
-    if (language_save !== language) modified = true;
+    if (language_save !== language) {
+        modified = true;
+    }
     if (modified) {
         confirmdlg(translate_text_item("Data mofified"), translate_text_item("Do you want to save?"), process_preferencesCloseDialog)
     } else {
