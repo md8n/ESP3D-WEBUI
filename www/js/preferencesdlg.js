@@ -1,6 +1,5 @@
 //Preferences dialog
 let preferenceslist = [];
-let language_save = language || "en";
 let default_preferenceslist = [];
 let defaultpreferenceslist = "[{\
                                             \"language\":\"en\",\
@@ -40,6 +39,9 @@ let defaultpreferenceslist = "[{\
 const preferences_file_name = '/preferences.json';
 
 function initpreferences() {
+    const common = new Common();
+    common.language_save = common.language;
+
     defaultpreferenceslist = "[{\
                                             \"language\":\"en\",\
                                             \"enable_lock_UI\":\"false\",\
@@ -330,7 +332,8 @@ function showpreferencesdlg() {
     if (modal == null) {
         return;
     }
-    language_save = language || "en";
+    const common = new Common();
+    common.language_save = common.language;
     build_dlg_preferences_list();
     displayNone('preferencesdlg_upload_msg');
     showModal();
@@ -585,7 +588,7 @@ function closePreferencesDialog() {
         if (id('preferences_probetouchplatethickness').value !== Number.parseFloat(preferenceslist[0].probetouchplatethickness)) modified = true;
     }
 
-    if (language_save !== language) {
+    if (common.language_save !== common.language) {
         modified = true;
     }
     if (modified) {
@@ -596,9 +599,10 @@ function closePreferencesDialog() {
 }
 
 function process_preferencesCloseDialog(answer) {
+    const common = new Common();
     if (answer === 'no') {
         //console.log("Answer is no so exit");
-        translate_text(language_save);
+        translate_text(common.language_save);
         closeModal('cancel');
     } else {
         // console.log("Answer is yes so let's save");
@@ -632,7 +636,7 @@ function SavePreferences(current_preferences) {
         if ((common.grblaxis > 5) && (!Checkvalues("preferences_control_c_velocity"))) return;
 
         preferenceslist = [];
-        let saveprefs = `[{\"language\":\"${language}`;
+        let saveprefs = `[{\"language\":\"${common.language}`;
         saveprefs += `\",\"enable_camera\":\"${id('show_camera_panel').checked}`;
         saveprefs += `\",\"auto_load_camera\":\"${id('autoload_camera_panel').checked}`;
         saveprefs += `\",\"camera_address\":\"${HTMLEncode(id('preferences_camera_webaddress').value)}`;

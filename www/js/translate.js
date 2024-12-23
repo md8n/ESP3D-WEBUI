@@ -1,6 +1,3 @@
-let language = 'en';
-
-
 const language_list = [
 //removeIf(de_lang_disabled)
     ['de', 'Deutsch', 'germantrans'],
@@ -48,9 +45,11 @@ const translated_list = [];
 //endRemoveIf(production)
 
 function build_language_list(id_item) {
+    const common = new Common();
+
     let content = `<select class='form-control'  id='${id_item}' onchange='translate_text(this.value)'>\n`;
     for (let lang_i = 0; lang_i < language_list.length; lang_i++) {
-        const isSelected = language_list[lang_i][0] === language ? " selected" : "";
+        const isSelected = language_list[lang_i][0] === common.language ? " selected" : "";
         content += `<option value='${language_list[lang_i][0]}'${isSelected}>${language_list[lang_i][1]}</option>\n`;
     }
     content += "</select>\n";
@@ -60,7 +59,9 @@ function build_language_list(id_item) {
 function translate_text(lang) {
     let currenttrans = {};
     let translated_content = "";
-    language = lang;
+    const common = new Common();
+
+    common.language = lang;
     for (let lang_i = 0; lang_i < language_list.length; lang_i++) {
         if (language_list[lang_i][0] === lang) {
             // biome-ignore lint/security/noGlobalEval: <explanation>
@@ -109,20 +110,23 @@ function translate_text(lang) {
     }
 };
 
-function translate_text_item(item_text, withtag) {
+function translate_text_item(item_text, withtag = false) {
     let currenttrans = {};
     let translated_content;
-    let with_tag = false;
-    if (typeof withtag !== "undefined") with_tag = withtag;
+    const common = new Common();
+
     for (let lang_i = 0; lang_i < language_list.length; lang_i++) {
-        if (language_list[lang_i][0] === language) {
+        if (language_list[lang_i][0] === common.language) {
             // biome-ignore lint/security/noGlobalEval: <explanation>
             currenttrans = eval(language_list[lang_i][2]);
         }
     }
+
     translated_content = currenttrans[item_text];
-    if (typeof translated_content === 'undefined') translated_content = item_text;
-    if (with_tag) {
+    if (typeof translated_content === 'undefined') {
+        translated_content = item_text;
+    }
+    if (withtag) {
         const translated_content_tmp = `<span english_content=\"${item_text}\" translate>${translated_content}</span>`;
         translated_content = translated_content_tmp;
     }

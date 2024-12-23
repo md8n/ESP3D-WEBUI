@@ -57,7 +57,7 @@ const endDiv = () => "</div>";
 function setupdlg() {
     const common = new Common();
     common.setup_is_done = false;
-    language_save = language || "en";
+    common.language_save = common.language;
     displayNone('main_ui');
     id('settings_list_data').innerHTML = "";
     active_wizard_page = 0;
@@ -92,19 +92,21 @@ function setupdone(response) {
     common.setup_is_done = true;
     common.do_not_build_settings = false;
     build_HTML_setting_list(common.current_setting_filter);
-    translate_text(language_save);
+    translate_text(common.language_save);
     displayUndoNone('main_ui');
     closeModal("setup done");
 }
 
 function continue_setup_wizard() {
+    const common = new Common();
+
     active_wizard_page++;
     switch (active_wizard_page) {
         case 1:
             enablestep1();
-            preferenceslist[0].language = language || "en";
+            preferenceslist[0].language = common.language;
             SavePreferences(true);
-            language_save = language || "en";
+            common.language_save = common.language;
             break;
         case 2:
             enablestep2();

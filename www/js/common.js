@@ -45,6 +45,8 @@ class Common {
 
 		/** See preferencesdlg.js */
 		this.enable_ping = true;
+		/** This clunker piece of code works with/against `this.language` below */
+		this.language_save = "en";
 
 		/** See printercmd.js */
 		this.grbl_errorfn = null;
@@ -70,6 +72,10 @@ class Common {
 
 		/** see tablet.js */
 		this.gCodeDisplayable = false;
+
+		/** see translate.js */
+		/** This clunker piece of code works with/against `this.language_save` above */
+		this.language = 'en';
 
 		/** See util.js */
 		this.last_ping = 0;
