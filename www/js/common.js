@@ -1,4 +1,166 @@
-/** Has its own class `common` that can function as an alternative to globals */
+/** Imports everything else, and re-exports them, helping to flatten out all of the myriad circular dependencies
+ * Also has its own class `common` that can funtion as an alternative to globals
+ */
+// The following must be imported first, and in this order
+import { M } from "./constants.js";
+import {
+	classes,
+	conErr,
+	stdErrMsg,
+	disable_items,
+	displayBlock,
+	displayFlex,
+	displayInline,
+	displayNone,
+	getChecked,
+	setChecked,
+	getValue,
+	setValue,
+	setHTML,
+	setDisabled,
+	HTMLEncode,
+	HTMLDecode,
+	id,
+} from "./util.js";
+import { numpad } from "./numpad.js";
+import { checkValue, valueIsFloat } from "./utilValidation.js";
+
+import { alertdlg } from "./alertdlg.js";
+import {
+	CALIBRATION_EVENT_NAME,
+	findMaxFitness,
+} from "./calculatesCalibrationStuff.js";
+import { cameratab, camera_GetAddress } from "./camera.js";
+import {
+	init_command_panel,
+	Monitor_check_autoscroll,
+	Monitor_check_verbose_mode,
+	Monitor_output_Update,
+} from "./commands.js";
+import {
+	Apply_config_override,
+	Delete_config_override,
+	refreshconfig,
+} from "./config.js";
+import { configtab } from "./configtab.js";
+import { confirmdlg } from "./confirmdlg.js";
+import { connectdlg } from "./connectdlg.js";
+import {
+	ControlsPanel,
+	get_Position,
+	init_controls_panel,
+	JogFeedrate,
+	on_autocheck_position,
+} from "./controls.js";
+import { creditsdlg } from "./creditsdlg.js";
+import { clear_drop_menu, hide_drop_menu, showhide_drop_menu } from "./dropmenu.js";
+import {
+	build_file_filter_list,
+	files_list_success,
+	files_select_upload,
+	init_files_panel,
+} from "./files.js";
+import {
+	build_axis_selection,
+	grblHandleMessage,
+	grbl_reset,
+	onAutoReportIntervalChange,
+	onstatusIntervalChange,
+	onprobemaxtravelChange,
+	onprobefeedrateChange,
+	onproberetractChange,
+	onprobetouchplatethicknessChange,
+	reportNone,
+	tryAutoReport,
+	reportPolled,
+	SendRealtimeCmd,
+	StartProbeProcess,
+	MPOS,
+	WPOS,
+} from "./grbl.js";
+import { grblpanel } from "./grblpanel.js";
+import { clear_cmd_list, SendFileHttp, SendGetHttp } from "./http.js";
+import { get_icon_svg } from "./icons.js";
+import { inputdlg } from "./inputdlg.js";
+import { DisconnectLogin, logindlg } from "./logindlg.js";
+import { showmacrodlg } from "./macrodlg.js";
+import {
+	MaslowErrMsgKeyValueCantUse,
+	MaslowErrMsgNoKey,
+	MaslowErrMsgNoValue,
+	MaslowErrMsgNoMatchingKey,
+	MaslowErrMsgKeyValueSuffix,
+	maslowInfoMsgHandling,
+	maslowErrorMsgHandling,
+	maslowMsgHandling,
+	checkHomed,
+	sendCommand,
+	loadConfigValues,
+	loadCornerValues,
+	saveConfigValues,
+} from "./maslow.js";
+import {
+	listmodal,
+	closeModal,
+	getactiveModal,
+	setactiveModal,
+	showModal,
+} from "./modaldlg.js";
+import { navbar, ontoggleLock } from "./navbar.js";
+import { changepassworddlg } from "./passworddlg.js";
+import { prefDefs } from "./prefDefs.js";
+import {
+	buildFieldId,
+	enable_ping,
+	getPref,
+	preferences,
+} from "./prefUtils.js";
+import {
+	getpreferenceslist,
+	initpreferences,
+	preferenceslist,
+	showpreferencesdlg,
+	SavePreferences,
+} from "./preferencesdlg.js";
+import { SendPrinterCommand } from "./printercmd.js";
+import { restartdlg } from "./restartdlg.js";
+import { scanwifidlg } from "./scanwifidlg.js";
+import {
+	build_control_from_pos,
+	build_HTML_setting_list,
+	define_esp_role,
+	define_esp_role_from_pos,
+	refreshSettings,
+	restart_esp,
+	saveMaslowYaml,
+} from "./settings.js";
+import { settingstab } from "./settingstab.js";
+import { setupdlg } from "./setupdlg.js";
+import { Toolpath } from "./simple-toolpath.js";
+import {
+	CancelCurrentUpload,
+	handlePing,
+	EventListenerSetup,
+	pageID,
+	process_socket_response,
+	startSocket,
+} from "./socket.js";
+import { SPIFFSdlg } from "./SPIFFSdlg.js";
+import { statusdlg } from "./statusdlg.js";
+import { opentab } from "./tabs.js";
+import {
+	loadedValues,
+	openModal,
+	hideModal,
+	goAxisByValue,
+	onCalibrationButtonsClick,
+	saveSerialMessages,
+	tabletInit,
+} from "./tablet.js";
+import { build_language_list, translate_text, translate_text_item } from "./translate.js";
+import { UIdisableddlg } from "./UIdisableddlg.js";
+import { updatedlg } from "./updatedlg.js";
+import { openstep } from "./wizard.js";
 
 /** Selected values that were globals, now set up as members of a singleton */
 class Common {
@@ -92,3 +254,194 @@ class Common {
 		Common.instance = this;
 	}
 }
+
+export {
+	Common,
+	// from alertdlg.js
+	alertdlg,
+	// from calculatesCalibrationStuff.js
+	CALIBRATION_EVENT_NAME,
+	findMaxFitness,
+	// from camera.js
+	cameratab,
+	camera_GetAddress,
+	// from commands.js
+	init_command_panel,
+	Monitor_check_autoscroll,
+	Monitor_check_verbose_mode,
+	Monitor_output_Update,
+	// from config.js
+	Apply_config_override,
+	Delete_config_override,
+	refreshconfig,
+	// from configtab.js
+	configtab,
+	// from confirmdlg.js
+	confirmdlg,
+	// from connectdlg.js
+	connectdlg,
+	// from constants.js
+	M,
+	// from controls.js
+	ControlsPanel,
+	get_Position,
+	init_controls_panel,
+	JogFeedrate,
+	on_autocheck_position,
+	// from creditsdlg.js
+	creditsdlg,
+	// from dropmenu.js
+	clear_drop_menu,
+	hide_drop_menu,
+	showhide_drop_menu,
+	// files.js
+	build_file_filter_list,
+	files_list_success,
+	files_select_upload,
+	init_files_panel,
+	// from grbl.js
+	build_axis_selection,
+	grblHandleMessage,
+	grbl_reset,
+	onAutoReportIntervalChange,
+	onstatusIntervalChange,
+	onprobemaxtravelChange,
+	onprobefeedrateChange,
+	onproberetractChange,
+	onprobetouchplatethicknessChange,
+	reportNone,
+	tryAutoReport,
+	reportPolled,
+	SendRealtimeCmd,
+	StartProbeProcess,
+	MPOS,
+	WPOS,
+	// from grblpanel.js
+	grblpanel,
+	// from http.js
+	clear_cmd_list,
+	SendFileHttp,
+	SendGetHttp,
+	// from icons.js
+	get_icon_svg,
+	// from inputdlg.js
+	inputdlg,
+	// from langUtils.js
+	build_language_list,
+	translate_text_item,
+	// from logindlg.js
+	DisconnectLogin,
+	logindlg,
+	// from macrodlg.js
+	showmacrodlg,
+	// from maslow.js
+	MaslowErrMsgKeyValueCantUse,
+	MaslowErrMsgNoKey,
+	MaslowErrMsgNoValue,
+	MaslowErrMsgNoMatchingKey,
+	MaslowErrMsgKeyValueSuffix,
+	maslowInfoMsgHandling,
+	maslowErrorMsgHandling,
+	maslowMsgHandling,
+	checkHomed,
+	sendCommand,
+	loadConfigValues,
+	loadCornerValues,
+	saveConfigValues,
+	// from modaldlg.js
+	listmodal,
+	closeModal,
+	getactiveModal,
+	setactiveModal,
+	showModal,
+	// from navbar.js
+	navbar,
+	ontoggleLock,
+	// from numpad.js
+	numpad,
+	// from passworddlg.js
+	changepassworddlg,
+	// from prefDefs.js
+	prefDefs,
+	// from prefUtils.js
+	buildFieldId,
+	enable_ping,
+	getPref,
+	preferences,
+	// from preferencesdlg.js
+	getpreferenceslist,
+	initpreferences,
+	preferenceslist,
+	showpreferencesdlg,
+	SavePreferences,
+	// from printercmd.js
+	SendPrinterCommand,
+	// from restartdlg.js
+	restartdlg,
+	// from scanwifidlg.js
+	scanwifidlg,
+	// from settings.js
+	build_control_from_pos,
+	build_HTML_setting_list,
+	define_esp_role,
+	define_esp_role_from_pos,
+	refreshSettings,
+	restart_esp,
+	saveMaslowYaml,
+	// from setupdlg.js
+	setupdlg,
+	// from settingstab.js
+	settingstab,
+	// from simple-toolpath.js
+	Toolpath,
+	// from socket.js
+	CancelCurrentUpload,
+	handlePing,
+	EventListenerSetup,
+	pageID,
+	process_socket_response,
+	startSocket,
+	// from SPIFFSdlg.js
+	SPIFFSdlg,
+	// from statusdlg.js
+	statusdlg,
+	// from tabs.js
+	opentab,
+	// from tablet.js
+	loadedValues,
+	openModal,
+	hideModal,
+	goAxisByValue,
+	onCalibrationButtonsClick,
+	saveSerialMessages,
+	tabletInit,
+	// from translate.js
+	translate_text,
+	// from UIdisableddlg.js
+	UIdisableddlg,
+	// from updatedlg.js
+	updatedlg,
+	// from util.js
+	classes,
+	conErr,
+	stdErrMsg,
+	disable_items,
+	displayBlock,
+	displayFlex,
+	displayInline,
+	displayNone,
+	getChecked,
+	setChecked,
+	getValue,
+	setValue,
+	setHTML,
+	setDisabled,
+	HTMLEncode,
+	HTMLDecode,
+	id,
+	// from utilValidation.js
+	checkValue,
+	valueIsFloat,
+	// from wizard.js
+	openstep,
+};

@@ -1,4 +1,6 @@
-// Create the modal
+import { id } from "./common.js";
+
+/** A list of currently opened modals */
 const listmodal = [];
 
 function setactiveModal(html_template, closefunc) {
@@ -43,3 +45,5 @@ function closeModal(response) {
 function myfnclose(value) {
     //console.log("modale closed: " + value);
 }
+
+export { listmodal, closeModal, getactiveModal, setactiveModal, showModal };

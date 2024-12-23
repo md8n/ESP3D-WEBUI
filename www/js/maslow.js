@@ -1,5 +1,13 @@
-// When we can change to proper ESM - uncomment this
-// import M from "constants";
+import {
+	Common,
+	M,
+	get_Position,
+	SendPrinterCommand,
+	refreshSettings,
+	saveMaslowYaml,
+	hideModal,
+	loadedValues,
+} from "./common.js";
 
 /** Maslow Status */
 let maslowStatus = { homed: false, extended: false };
@@ -208,3 +216,18 @@ function saveConfigValues() {
     hideModal('configuration-popup');
 }
 
+export {
+	MaslowErrMsgKeyValueCantUse,
+	MaslowErrMsgNoKey,
+	MaslowErrMsgNoValue,
+	MaslowErrMsgNoMatchingKey,
+	MaslowErrMsgKeyValueSuffix,
+	maslowInfoMsgHandling,
+	maslowErrorMsgHandling,
+	maslowMsgHandling,
+	checkHomed,
+	sendCommand,
+	loadConfigValues,
+	loadCornerValues,
+	saveConfigValues,
+};

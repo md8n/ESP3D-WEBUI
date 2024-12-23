@@ -1,3 +1,5 @@
+import { classes, displayBlock, id } from "./common.js";
+
 function opentab(evt, tabname, tabcontentid, tablinkid) {
     let i;
     const tabcontent = classes("tabcontent");
@@ -20,3 +22,5 @@ function opentab(evt, tabname, tabcontentid, tablinkid) {
     displayBlock(tabname);
     evt.currentTarget.className += " active";
 }
+
+export { opentab };

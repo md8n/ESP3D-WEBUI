@@ -1,6 +1,13 @@
-// import translate_text_item, id, setHTML, setactiveModal, showModal, saveSerialMessages
+import {
+	translate_text_item,
+	id,
+	setHTML,
+	setactiveModal,
+	showModal,
+	saveSerialMessages,
+} from "./common.js";
 
-//UIdisabled dialog
+/** UIdisabled dialog */
 const UIdisableddlg = (lostcon) => {
 	const modal = setactiveModal("UIdisableddlg.html");
 	if (modal == null) {
@@ -15,3 +22,5 @@ const UIdisableddlg = (lostcon) => {
 	}
 	showModal();
 };
+
+export { UIdisableddlg };

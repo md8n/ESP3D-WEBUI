@@ -1,4 +1,12 @@
-// import - Common, id, refreshSettings, restart_esp, SPIFFSdlg, statusdlg, updatedlg
+import {
+	Common,
+	id,
+	refreshSettings,
+	restart_esp,
+	SPIFFSdlg,
+	statusdlg,
+	updatedlg,
+} from "./common.js";
 
 /** Set up the event handlers for the settings tab */
 const settingstab = () => {
@@ -13,3 +21,5 @@ const settingstab = () => {
 	const common = new Common();
 	id("settings_refresh_btn").addEventListener("click", (event) => refreshSettings(common.current_setting_filter) );
 };
+
+export { settingstab };

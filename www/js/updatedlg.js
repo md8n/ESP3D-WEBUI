@@ -1,4 +1,21 @@
-// import - conErr, stdErrMsg, id, displayBlock, displayNone, setValue, setHTML, closeModal, setactiveModal, showModal, alertdlg, confirmdlg, SendFileHttp, SendGetHttp, translate_text_item
+import {
+	Common,
+	conErr,
+	stdErrMsg,
+	id,
+	displayBlock,
+	displayNone,
+	setValue,
+	setHTML,
+	closeModal,
+	setactiveModal,
+	showModal,
+	alertdlg,
+	confirmdlg,
+	SendFileHttp,
+	SendGetHttp,
+	translate_text_item,
+} from "./common.js";
 
 let update_ongoing = false;
 let current_update_filename = "";
@@ -145,3 +162,5 @@ function updatefailed(error_code, response) {
 	update_ongoing = false;
 	SendGetHttp("/updatefw");
 }
+
+export { updatedlg };

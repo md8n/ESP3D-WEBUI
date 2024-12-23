@@ -1,4 +1,17 @@
-// import conErr, stdErrMsg, displayBlock, displayNone, id, setHTML, closeModal, setactiveModal, showModal, SendPrinterCommand, translate_text_item 
+import {
+	Common,
+	conErr,
+	stdErrMsg,
+	displayBlock,
+	displayNone,
+	id,
+	setHTML,
+	closeModal,
+	setactiveModal,
+	showModal,
+	SendPrinterCommand,
+	translate_text_item,
+} from "./common.js";
 
 /** Restart dialog */
 const restartdlg = () => {
@@ -51,3 +64,5 @@ function restart_esp_failed(error_code, response) {
 	conErr(error_code, response);
 	closeModal("Cancel");
 }
+
+export { restartdlg };

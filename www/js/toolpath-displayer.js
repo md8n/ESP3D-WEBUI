@@ -1,4 +1,5 @@
 // Display the XY-plane projection of a GCode toolpath on a 2D canvas
+import { Common, id, Toolpath } from "./common.js";
 
 const canvas = document.getElementById("small-toolpath");
 const scale = window.devicePixelRatio;
@@ -950,3 +951,5 @@ const refreshGcode = () => {
 }
 
 // id("small-toolpath").addEventListener("mouseup", updateGcodeViewerAngle); 
+
+export { arrayToXYZ, displayer, refreshGcode };

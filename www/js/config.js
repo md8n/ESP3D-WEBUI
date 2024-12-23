@@ -1,12 +1,26 @@
+// removeIf(gulpCantMergeImpExp)
+import {
+	Common,
+	get_icon_svg,
+	conErr,
+	stdErrMsg,
+	displayBlock,
+	displayNone,
+	id,
+	alertdlg,
+	SendGetHttp,
+	translate_text_item,
+} from "./common.js";
+// endRemoveIf(gulpCantMergeImpExp)
+
 let config_configList = [];
 let config_override_List = [];
-let config_lastindex = -1
+let config_lastindex = -1;
 let config_error_msg = "";
 let config_lastindex_is_override = false;
 const commandtxt = "$$";
 let is_override_config = false;
 const config_file_name = "/sd/config";
-
 
 function refreshconfig(is_override) {
     const common = new Common();
@@ -403,3 +417,7 @@ function getESPconfigfailed(error_code, response) {
     id('config_status').innerHTML = stdErrMsg(error_code, response, translate_text_item("Failed"));
     displayBlock('config_refresh_btn');
 }
+
+// removeIf(gulpCantMergeImpExp)
+export { Apply_config_override, Delete_config_override, refreshconfig };
+// endRemoveIf(gulpCantMergeImpExp)

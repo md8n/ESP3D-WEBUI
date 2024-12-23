@@ -1,5 +1,19 @@
-// When we can change to proper ESM - uncomment this
-// import M from "constants";
+import {
+	Common,
+	get_icon_svg,
+	M,
+	conErr,
+	stdErrMsg,
+	displayBlock,
+	displayNone,
+	id,
+	alertdlg,
+	confirmdlg,
+	init_files_panel,
+	SendGetHttp,
+	translate_text_item,
+	restartdlg,
+} from "./common.js";
 
 let scl = []; // setting_configList
 let setting_error_msg = '';
@@ -577,3 +591,13 @@ function define_esp_role(index) {
 function define_esp_role_from_pos(pos) {
   define_esp_role(get_index_from_eeprom_pos(pos))
 }
+
+export {
+	build_control_from_pos,
+	build_HTML_setting_list,
+	define_esp_role,
+	define_esp_role_from_pos,
+	refreshSettings,
+	restart_esp,
+	saveMaslowYaml,
+};

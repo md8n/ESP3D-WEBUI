@@ -1,3 +1,31 @@
+import {
+	Monitor_check_autoscroll,
+	Monitor_check_verbose_mode,
+	Common,
+	get_icon_svg,
+	conErr,
+	displayBlock,
+	displayFlex,
+	displayNone,
+	id,
+	closeModal,
+	setactiveModal,
+	showModal,
+	alertdlg,
+	confirmdlg,
+	camera_GetAddress,
+	build_file_filter_list,
+	onAutoReportIntervalChange,
+	reportNone,
+	SendFileHttp,
+	SendGetHttp,
+	build_language_list,
+	ontoggleLock,
+	translate_text_item,
+	build_HTML_setting_list,
+	translate_text,
+} from "./common.js";
+
 //Preferences dialog
 let preferenceslist = [];
 let default_preferenceslist = [];
@@ -815,3 +843,11 @@ function Checkvalues(id_2_check) {
     }
     return status;
 }
+
+export {
+	getpreferenceslist,
+	initpreferences,
+    preferenceslist,
+	showpreferencesdlg,
+	SavePreferences,
+};

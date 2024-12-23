@@ -1,4 +1,15 @@
-// import - conErr, stdErrMsg, getChecked, id, HTMLDecode, SendGetHttp, translate_text_item, process_socket_response
+// removeIf(gulpCantMergeImpExp)
+import {
+	conErr,
+	stdErrMsg,
+	getChecked,
+	id,
+	HTMLDecode,
+	SendGetHttp,
+	translate_text_item,
+	process_socket_response,
+} from "./common.js";
+// endRemoveIf(gulpCantMergeImpExp)
 
 const CustomCommand_history = [];
 let CustomCommand_history_index = -1;
@@ -173,4 +184,11 @@ function SendCustomCommandFailed(error_code, response) {
 	conErr(error_code, HTMLDecode(response), "cmd Error");
 }
 
-// export - init_command_panel, Monitor_check_autoscroll, Monitor_check_verbose_mode, Monitor_output_Update
+// removeIf(gulpCantMergeImpExp)
+export {
+	init_command_panel,
+	Monitor_check_autoscroll,
+	Monitor_check_verbose_mode,
+	Monitor_output_Update,
+};
+// endRemoveIf(gulpCantMergeImpExp)

@@ -1,6 +1,13 @@
-// When we can change to proper ESM - uncomment this
-// import M from "constants";
-// import { sendCommand } from "./maslow";
+// removeIf(gulpCantMergeImpExp)
+import {
+	Common,
+	M,
+	sendCommand,
+	refreshSettings,
+	saveMaslowYaml,
+	onCalibrationButtonsClick,
+} from "./common.js";
+// endRemoveIf(gulpCantMergeImpExp)
 
 const tlZ = 100;
 const trZ = 56;
@@ -32,17 +39,17 @@ let result
 
 
 /**
- * Computes the distance between two points.
- * @param {number} a - The x-coordinate of the first point.
- * @param {number} b - The y-coordinate of the first point.
- * @param {number} c - The x-coordinate of the second point.
- * @param {number} d - The y-coordinate of the second point.
+ * Computes the distance between two points. Standard Pythagorean theorem
+ * @param {number} ax - The x-coordinate of the first point.
+ * @param {number} ay - The y-coordinate of the first point.
+ * @param {number} bx - The x-coordinate of the second point.
+ * @param {number} by - The y-coordinate of the second point.
  * @returns {number} - The distance between the two points.
  */
-function distanceBetweenPoints(a, b, c, d) {
-  const dx = c - a;
-  const dy = d - b;
-  return Math.sqrt((dx ** 2) + (dy ** 2));
+function distanceBetweenPoints(ax, ay, bx, by) {
+	const dx = bx - ax;
+	const dy = by - ay;
+	return Math.sqrt((dx ** 2) + (dy ** 2));
 }
 
 /**
@@ -623,3 +630,7 @@ const CALIBRATION_EVENT_NAME = 'calibration-data';
 
 //Once we've figured out how good our guess was we try a different guess. We keep the good guesses and throw away the bad guesses
 //using a genetic algorithm
+
+// removeIf(gulpCantMergeImpExp)
+export { CALIBRATION_EVENT_NAME, findMaxFitness };
+// endRemoveIf(gulpCantMergeImpExp)

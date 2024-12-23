@@ -1,5 +1,19 @@
-// When we can change to proper ESM - uncomment this
-// import { sendCommand } from "./maslow";
+import {
+	CALIBRATION_EVENT_NAME,
+	findMaxFitness,
+	Common,
+	get_icon_svg,
+	getChecked,
+	getValue,
+	setValue,
+	id,
+	setChecked,
+	setHTML,
+	alertdlg,
+	SendPrinterCommand,
+	translate_text_item,
+	sendCommand,
+} from "./common.js";
 
 let interval_status = -1;
 let probe_progress_status = 0;
@@ -758,3 +772,22 @@ function setSpindleSpeed(speed) {
     )
   }
 }
+
+export {
+	build_axis_selection,
+	grblHandleMessage,
+	grbl_reset,
+	onAutoReportIntervalChange,
+	onstatusIntervalChange,
+	onprobemaxtravelChange,
+	onprobefeedrateChange,
+	onproberetractChange,
+	onprobetouchplatethicknessChange,
+	reportNone,
+	tryAutoReport,
+	reportPolled,
+	SendRealtimeCmd,
+	StartProbeProcess,
+	MPOS,
+	WPOS,
+};

@@ -1,3 +1,28 @@
+import {
+	connectdlg,
+	Common,
+	displayBlock,
+	displayFlex,
+	displayNone,
+	id,
+	setHTML,
+	closeModal,
+	init_command_panel,
+	ControlsPanel,
+	init_controls_panel,
+	getpreferenceslist,
+	initpreferences,
+	init_files_panel,
+	build_axis_selection,
+	tryAutoReport,
+	grblpanel,
+	build_HTML_setting_list,
+	refreshSettings,
+	navbar,
+	setupdlg,
+	tabletInit,
+} from "./common.js";
+
 // var EP_BAUD_RATE = 112;
 // var EP_AUTH_TYPE = 119;
 // var EP_TARGET_FW = 461;
@@ -8,20 +33,20 @@
 function browser_is(bname) {
 	const ua = navigator.userAgent;
 	switch (bname) {
-		case 'IE':
-			if (ua.indexOf('Trident/') !== -1) return true;
+		case "IE":
+			if (ua.indexOf("Trident/") !== -1) return true;
 			break;
-		case 'Edge':
-			if (ua.indexOf('Edge') !== -1) return true;
+		case "Edge":
+			if (ua.indexOf("Edge") !== -1) return true;
 			break;
-		case 'Chrome':
-			if (ua.indexOf('Chrome') !== -1) return true;
+		case "Chrome":
+			if (ua.indexOf("Chrome") !== -1) return true;
 			break;
-		case 'Firefox':
-			if (ua.indexOf('Firefox') !== -1) return true;
+		case "Firefox":
+			if (ua.indexOf("Firefox") !== -1) return true;
 			break;
-		case 'MacOSX':
-			if (ua.indexOf('Mac OS X') !== -1) return true;
+		case "MacOSX":
+			if (ua.indexOf("Mac OS X") !== -1) return true;
 			break;
 		default:
 			return false;
@@ -41,30 +66,24 @@ window.onload = () => {
 
 	let failSafe = 10;
 	let startUpInt = setInterval(() => {
-		if (typeof displayNone !== "undefined" && typeof id !== "undefined") {
-			//to check if javascript is disabled like in android preview
-			displayNone("loadingmsg");
-			console.log("Connect to board");
+		// Check for various key HTML panels and load them up
+		if (!connectDlg && id("connectdlg.html") && typeof connectdlg !== "undefined") {
+			connectDlg = "loading";
+			connectdlg();
+			connectDlg = "loaded";
+		}
 
-			// Check for various key HTML panels and load them up
-			if (!connectDlg && id("connectdlg.html") && typeof connectdlg !== "undefined") {
-				connectDlg = "loading";
-				connectdlg();
-				connectDlg = "loaded";
-			}
+		if (!controlsPanel && id("controlPanel") && typeof ControlsPanel !== "undefined") {
+			controlsPanel = "loading";
+			ControlsPanel();
+			controlsPanel = "loaded";
+		}
 
-			if (!controlsPanel && id("controlPanel") && typeof ControlsPanel !== "undefined") {
-				controlsPanel = "loading";
-				ControlsPanel();
-				controlsPanel = "loaded";
-			}
-
-			if (!navbarLoaded && id("navbar") && typeof navbar !== "undefined") {
-				navbarLoaded = "loading";
-				navbar();
-				tabletInit();
-				navbarLoaded = "loaded";
-			}
+		if (!navbarLoaded && id("navbar") && typeof navbar !== "undefined") {
+			navbarLoaded = "loading";
+			navbar();
+			tabletInit();
+			navbarLoaded = "loaded";
 		}
 
 		if ((connectDlg && controlsPanel && navbarLoaded) || failSafe <= 0) {
@@ -94,9 +113,9 @@ function display_boot_progress(step) {
 function update_UI_firmware_target() {
 	const common = new Common();
 	initpreferences();
-	id('control_x_position_label').innerHTML = 'X';
-	id('control_y_position_label').innerHTML = 'Y';
-	id('control_z_position_label').innerHTML = 'Z';
+	setHTML("control_x_position_label", "X");
+	setHTML("control_y_position_label", "Y");
+	setHTML("control_z_position_label", "Z");
 	showAxiscontrols();
 
 	const fwName = 'FluidNC';
@@ -112,9 +131,9 @@ function update_UI_firmware_target() {
 	if (fif) {
 		fif.accept = " .g, .gco, .gcode, .txt, .ncc, .G, .GCO, .GCODE, .TXT, .NC";
 	}
-	displayInitial('zero_xyz_btn');
-	displayInitial('zero_x_btn');
-	displayInitial('zero_y_btn');
+	displayInitial("zero_xyz_btn");
+	displayInitial("zero_x_btn");
+	displayInitial("zero_y_btn");
 	if (common.grblaxis > 2) {
 		//displayInitial('control_z_position_display');
 		setHTML("control_z_position_label", "Zw");
@@ -147,8 +166,8 @@ function update_UI_firmware_target() {
 	grblpanel();
 	// id('FW_github').href = 'https://github.com/bdring/FluidNC';
 	displayBlock('settings_filters'); // TODO: Or should this be 'preferences_filters'?
-	id('control_x_position_label').innerHTML = 'Xw';
-	id('control_y_position_label').innerHTML = 'Yw';
+	setHTML("control_x_position_label", "Xw");
+	setHTML("control_y_position_label", "Yw");
 
 	// Swap these two 'settings'
 	common.SETTINGS_AP_MODE = 2;

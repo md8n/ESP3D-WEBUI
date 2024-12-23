@@ -1,4 +1,6 @@
-// import - closeModal, setactiveModal, showModal, id
+// removeIf(gulpCantMergeImpExp)
+import { closeModal, setactiveModal, showModal, id } from "./common.js";
+// endRemoveIf(gulpCantMergeImpExp)
 
 /** alert dialog */
 const alertdlg = (titledlg, textdlg, closefunc) => {
@@ -16,3 +18,7 @@ const alertdlg = (titledlg, textdlg, closefunc) => {
 	body.innerHTML = textdlg;
 	showModal();
 };
+
+// removeIf(gulpCantMergeImpExp)
+export { alertdlg };
+// endRemoveIf(gulpCantMergeImpExp)

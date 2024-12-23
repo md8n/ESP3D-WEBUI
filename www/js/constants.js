@@ -2,3 +2,5 @@
 
 // When we can change to proper ESM - prefix this with 'export' (minus the quotes of course)
 const M = "Maslow";
+
+export { M };

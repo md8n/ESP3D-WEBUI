@@ -52,3 +52,5 @@ function get_icon_svg(name, w = '1.3em', h = '1.2em', color = 'currentColor') {
   }
   return `<svg width='${w}' height='${h}' viewBox='0 0 1300 1200'><g transform='translate(30,1200) scale(1, -1)'><path  fill='${color}' d='${content}'></path></g></svg>`;
 }
+
+export { get_icon_svg };

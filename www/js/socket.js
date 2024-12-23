@@ -1,4 +1,16 @@
-// import - Monitor_output_Update, id, HTMLDecode, setHTML, on_autocheck_position, enable_ping, grblHandleMessage, reportNone, clear_cmd_list, translate_text_item, UIdisableddlg
+import {
+	Monitor_output_Update,
+	Common,
+	id,
+	HTMLDecode,
+	setHTML,
+	on_autocheck_position,
+	grblHandleMessage,
+	reportNone,
+	clear_cmd_list,
+	translate_text_item,
+	UIdisableddlg,
+} from "./common.js";
 
 const convertDHT2Fahrenheit = false;
 let event_source;
@@ -214,4 +226,13 @@ const startSocket = () => {
 		}
 		//console.log(msg);
 	};
+};
+
+export {
+	CancelCurrentUpload,
+	handlePing,
+	EventListenerSetup,
+	pageID,
+	process_socket_response,
+	startSocket,
 };

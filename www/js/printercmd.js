@@ -1,3 +1,12 @@
+import {
+	conErr,
+	HTMLDecode,
+	stdErrMsg,
+	Monitor_output_Update,
+	SendGetHttp,
+	translate_text_item,
+} from "./common.js";
+
 function noop() {}
 function SendPrinterCommand(cmd, echo_on, processfn, errorfn, id, max_id, extra_arg) {
     if (cmd.length === 0) {
@@ -72,3 +81,5 @@ function SendPrinterCommandFailed(error_code, response) {
 
     conErr(error_code, HTMLDecode(response), "printer cmd Error");
 }
+
+export { SendPrinterCommand };

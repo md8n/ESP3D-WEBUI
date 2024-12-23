@@ -1,3 +1,5 @@
+import { goAxisByValue } from "./common.js";
+
 const numpad = {
   // (A) CREATE NUMPAD HTML
   hwrap: null, // numpad wrapper container
@@ -247,4 +249,7 @@ const numpad = {
   // (E) HIDE NUMPAD
   hide: ()=> { numpad.hwrap.classList.remove("open"); },
 };
+
 window.addEventListener("DOMContentLoaded", numpad.init);
+
+export { numpad };

@@ -1,3 +1,5 @@
+import { Common, classes, displayBlock } from "./common.js";
+
 function openstep(evt, stepname) {
     const common = new Common();
 
@@ -18,3 +20,5 @@ function openstep(evt, stepname) {
     displayBlock(stepname);
     evt.currentTarget.className += " active";
 }
+
+export { openstep };

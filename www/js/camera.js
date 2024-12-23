@@ -1,4 +1,11 @@
-// import: displayBlock, displayNone, id, SavePreferences
+// removeIf(gulpCantMergeImpExp)
+import {
+	displayBlock,
+	displayNone,
+	id,
+	SavePreferences,
+} from "./common.js";
+// endRemoveIf(gulpCantMergeImpExp)
 
 /** Set up the event handlers for the camera tab */
 const cameratab = () => {
@@ -70,3 +77,7 @@ function camera_GetAddress() {
 			? HTMLDecode(preferenceslist[0].camera_address)
 			: "";
 }
+
+// removeIf(gulpCantMergeImpExp)
+export { cameratab, camera_GetAddress };
+// endRemoveIf(gulpCantMergeImpExp)

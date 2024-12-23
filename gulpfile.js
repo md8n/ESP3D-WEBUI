@@ -47,6 +47,7 @@ function Copytest() {
       .src(['www/index.html'])
       .pipe(removeCode({ production: false }))
       .pipe(removeCode({ cleanheader: true }))
+      .pipe(removeCode({ gulpCantMergeImpExp: true }))
       .pipe(gulp.dest('dist')),
     gulp.src(['www/images/**/*.*']).pipe(gulp.dest('dist/images'))
   )
@@ -58,6 +59,7 @@ function Copy() {
       .src(['www/index.html'])
       .pipe(removeCode({ production: true }))
       .pipe(removeCode({ cleanheader: true }))
+      .pipe(removeCode({ gulpCantMergeImpExp: true }))
       .pipe(gulp.dest('dist')),
     gulp.src(['www/images/**/*.*']).pipe(gulp.dest('dist/images'))
   )
@@ -70,6 +72,7 @@ function concatApptest() {
       .pipe(concat('app.js'))
       .pipe(removeCode({ production: false }))
       .pipe(removeCode({ cleanheader: true }))
+      .pipe(removeCode({ gulpCantMergeImpExp: true }))
       .pipe(gulp.dest('./dist/js')),
 
     gulp.src(['www/css/**/*.css']).pipe(concat('style.css')).pipe(gulp.dest('./dist/css/'))
@@ -83,6 +86,7 @@ function concatApp() {
       .pipe(concat('app.js'))
       .pipe(removeCode({ production: true }))
       .pipe(removeCode({ cleanheader: true }))
+      .pipe(removeCode({ gulpCantMergeImpExp: true }))
       .pipe(gulp.dest('./dist/js')),
 
     gulp.src(['www/css/**/*.css']).pipe(concat('style.css')).pipe(gulp.dest('./dist/css/'))
@@ -365,7 +369,7 @@ var packageSeries = gulp.series(
   replaceVersion,
   replaceSVG,
   clearlang,
-  minifyApp,
+  // minifyApp,
   smoosh,
   compress,
   clean2

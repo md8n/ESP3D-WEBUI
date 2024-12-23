@@ -851,3 +851,5 @@ const Toolpath = (() => {
 
     return Toolpath;
 })();
+
+export { Toolpath };

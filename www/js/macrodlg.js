@@ -1,4 +1,21 @@
-// import get_icon_svg, displayBlock, displayNone, id, setHTML, clear_drop_menu, hide_drop_menu, showhide_drop_menu, closeModal, setactiveModal, showModal, alertdlg, confirmdlg, SendFileHttp, translate_text_item 
+import {
+	Common,
+	get_icon_svg,
+	displayBlock,
+	displayNone,
+	id,
+	setHTML,
+	clear_drop_menu,
+	hide_drop_menu,
+	showhide_drop_menu,
+	closeModal,
+	setactiveModal,
+	showModal,
+	alertdlg,
+	confirmdlg,
+	SendFileHttp,
+	translate_text_item,
+} from "./common.js";
 
 //Macro dialog
 let macrodlg_macrolist = [];
@@ -377,3 +394,5 @@ function macroUploadfailed(error_code, response) {
 	);
 	displayNone("macrodlg_upload_msg");
 }
+
+export { showmacrodlg };

@@ -1,4 +1,21 @@
-// import - get_icon_svg, displayBlock, displayInline, displayNone, id, stdErrMsg, setHTML, alertdlg, confirmdlg, inputdlg, SendPrinterCommand, tryAutoReport, SendFileHttp, SendGetHttp, translate_text_item
+import {
+	Common,
+	get_icon_svg,
+	displayBlock,
+	displayInline,
+	displayNone,
+	id,
+	stdErrMsg,
+	setHTML,
+	alertdlg,
+	confirmdlg,
+	inputdlg,
+	SendPrinterCommand,
+	tryAutoReport,
+	SendFileHttp,
+	SendGetHttp,
+	translate_text_item,
+} from "./common.js";
 
 let files_currentPath = "/";
 let files_filter_sd_list = false;
@@ -658,3 +675,10 @@ function FilesUploadProgressDisplay(oEvent) {
 		// Impossible because size is unknown
 	}
 }
+
+export {
+	build_file_filter_list,
+	files_list_success,
+	files_select_upload,
+	init_files_panel,
+};

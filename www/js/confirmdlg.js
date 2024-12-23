@@ -1,4 +1,4 @@
-// import - closeModal, setactiveModal, showModal, id
+import {closeModal, setactiveModal, showModal, id} from "./common.js";
 
 /** confirm dialog */
 const confirmdlg = (titledlg, textdlg, closefunc) => {
@@ -17,3 +17,5 @@ const confirmdlg = (titledlg, textdlg, closefunc) => {
 	body.innerHTML = textdlg;
 	showModal();
 };
+
+export { confirmdlg };

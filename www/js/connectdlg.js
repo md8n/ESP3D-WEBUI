@@ -1,4 +1,18 @@
-// import conErr, displayBlock, displayInline, displayNone, id, closeModal, setactiveModal, showModal, SendGetHttp, logindlg, EventListenerSetup, startSocket,
+import {
+	Common,
+	conErr,
+	displayBlock,
+	displayInline,
+	displayNone,
+	id,
+	closeModal,
+	setactiveModal,
+	showModal,
+	SendGetHttp,
+	logindlg,
+	EventListenerSetup,
+	startSocket,
+} from "./common.js";
 
 /** Connect Dialog */
 const connectdlg = (getFw = true) => {
@@ -134,3 +148,5 @@ const retryconnect = () => {
 	const url = `/command?plain=${encodeURIComponent("[ESP800]")}`;
 	SendGetHttp(url, connectsuccess, connectfailed);
 };
+
+export { connectdlg };

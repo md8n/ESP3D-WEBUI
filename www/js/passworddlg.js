@@ -1,4 +1,15 @@
-// import conErr, displayBlock, displayNone, id, setHTML, closeModal, setactiveModal, showModal, SendGetHttp, translate_text_item 
+import {
+	conErr,
+	displayBlock,
+	displayNone,
+	id,
+	setHTML,
+	closeModal,
+	setactiveModal,
+	showModal,
+	SendGetHttp,
+	translate_text_item,
+} from "./common.js";
 
 /** Change Password dialog */
 const changepassworddlg = () => {
@@ -67,3 +78,5 @@ function SubmitChangePassword() {
 	displayNone("change_password_content");
 	SendGetHttp(url, ChangePasswordsuccess, ChangePasswordfailed);
 }
+
+export { changepassworddlg };

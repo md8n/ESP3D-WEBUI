@@ -140,3 +140,17 @@ const HTMLDecode = (value) => {
   tmpelement.textContent = '';
   return decValue;
 }
+
+export {
+  classes,
+  conErr,
+  stdErrMsg,
+  disable_items,
+  displayBlock, displayFlex, displayInline, displayNone, displayUndoNone,
+  getChecked, setChecked,
+  getValue, setValue,
+  setHTML,
+  setDisabled,
+  HTMLEncode, HTMLDecode,
+  id
+};

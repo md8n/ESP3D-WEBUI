@@ -1,3 +1,22 @@
+import {
+    Common,
+    get_icon_svg,
+    displayBlock,
+    displayNone,
+    displayUndoNone,
+    id,
+    closeModal,
+    setactiveModal,
+    showModal,
+    SavePreferences,
+    build_language_list,
+    translate_text_item,
+    build_control_from_pos,
+    build_HTML_setting_list,
+    define_esp_role_from_pos,
+    translate_text,
+} from "./common.js";
+
 //setup dialog
 
 const EP_HOSTNAME = 'Hostname';
@@ -216,3 +235,5 @@ function enablestep4() {
     openStep("wizard_line4", "endsteplink");
     id("endsteplink").click();
 }
+
+export { setupdlg };

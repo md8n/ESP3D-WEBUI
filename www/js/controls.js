@@ -1,3 +1,19 @@
+import {
+	Common,
+	get_icon_svg,
+	conErr,
+	displayBlock,
+	displayInline,
+	displayNone,
+	getChecked,
+	id,
+	alertdlg,
+	SendPrinterCommand,
+	SendGetHttp,
+	translate_text_item,
+	showmacrodlg,
+} from "./common.js";
+
 let interval_position = -1;
 
 /** Set up the macro list for the Controls Panel */
@@ -321,3 +337,10 @@ function macro_command(target, filename) {
 		default: break; // do nothing
 	}
 }
+
+export {
+	ControlsPanel,
+	get_Position,
+	init_controls_panel,
+	on_autocheck_position,
+};

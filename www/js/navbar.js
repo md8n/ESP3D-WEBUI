@@ -1,4 +1,21 @@
-// import - disable_items, displayNone, getChecked, id, setChecked, setHTML, opentab, creditsdlg, cameratab, configtab, changepassworddlg, showpreferencesdlg, translate_text_item, DisconnectLogin, setupdlg, settingstab
+import {
+	disable_items,
+	displayNone,
+	getChecked,
+	id,
+	setChecked,
+	setHTML,
+	opentab,
+	creditsdlg,
+	cameratab,
+	configtab,
+	changepassworddlg,
+	showpreferencesdlg,
+	translate_text_item,
+	DisconnectLogin,
+	setupdlg,
+	settingstab,
+} from "./common.js";
 
 /** Set up the event handlers for the navbar */
 const navbar = () => {
@@ -64,3 +81,5 @@ const ontoggleLock = (forcevalue) => {
 		}
 	}
 };
+
+export { navbar, ontoggleLock };

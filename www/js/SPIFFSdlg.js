@@ -1,4 +1,23 @@
-//import - get_icon_svg, conErr, stdErrMsg, displayBlock, displayNone, id, setValue, setHTML, closeModal, setactiveModal, showModal, alertdlg, confirmdlg, inputdlg, SendFileHttp, SendGetHttp, translate_text_item
+import {
+	Common,
+	get_icon_svg,
+	conErr,
+	stdErrMsg,
+	displayBlock,
+	displayNone,
+	id,
+	setValue,
+	setHTML,
+	closeModal,
+	setactiveModal,
+	showModal,
+	alertdlg,
+	confirmdlg,
+	inputdlg,
+	SendFileHttp,
+	SendGetHttp,
+	translate_text_item,
+} from "./common.js";
 
 let SPIFFS_currentfile = "";
 let SPIFFS_upload_ongoing = false;
@@ -383,3 +402,5 @@ function SPIFFSUploadfailed(error_code, response) {
 	SPIFFS_upload_ongoing = false;
 	refreshSPIFFS();
 }
+
+export { SPIFFSdlg };

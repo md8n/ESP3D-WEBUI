@@ -140,3 +140,5 @@ Interpreter.prototype.loadFromLinesSync = function(lines) {
         }
     }
 }
+
+export { Interpreter };

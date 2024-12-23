@@ -1,4 +1,4 @@
-// import - Apply_config_override, Delete_config_override, refreshconfig, id
+import { Apply_config_override, Delete_config_override, refreshconfig, id } from "./common.js";
 
 /** Set up the event handlers for the config tab */
 const configtab = () => {
@@ -6,3 +6,5 @@ const configtab = () => {
 	id("config_apply_override").addEventListener("click", (event) => Apply_config_override());
 	id("config_delete_override").addEventListener("click", (event) => Delete_config_override());
 };
+
+export { configtab };

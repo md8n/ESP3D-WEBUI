@@ -1,4 +1,21 @@
-// import - id, opentab, SendPrinterCommand, grbl_reset, reportNone, tryAutoReport, reportPolled, onAutoReportIntervalChange, onstatusIntervalChange, onprobemaxtravelChange, onprobefeedrateChange, onproberetractChange, onprobetouchplatethicknessChange, SendRealtimeCmd, StartProbeProcess
+import {
+	Common,
+	id,
+	opentab,
+	SendPrinterCommand,
+	grbl_reset,
+	reportNone,
+	tryAutoReport,
+	reportPolled,
+	onAutoReportIntervalChange,
+	onstatusIntervalChange,
+	onprobemaxtravelChange,
+	onprobefeedrateChange,
+	onproberetractChange,
+	onprobetouchplatethicknessChange,
+	SendRealtimeCmd,
+	StartProbeProcess,
+} from "./common.js";
 
 /** Set up the event handlers for the grblpanel */
 const grblpanel = () => {
@@ -64,3 +81,5 @@ const onReportType = (e) => {
             break;
     }
 };
+
+export { grblpanel };

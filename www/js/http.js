@@ -1,3 +1,5 @@
+import { Common, setHTML, translate_text_item, logindlg, pageID } from "./common.js";
+
 let http_cmd_list = [];
 let processing_cmd = false;
 
@@ -264,3 +266,5 @@ function ProcessFileHttp(url, postdata, progressfn, resultfn, errorfn) {
     }
     common.xmlhttpupload.send(postdata);
 }
+
+export { clear_cmd_list, SendFileHttp, SendGetHttp };

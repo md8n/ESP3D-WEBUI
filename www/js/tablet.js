@@ -1,5 +1,20 @@
-// When we can change to proper ESM - uncomment this
-// import { checkHomed, maslowErrorMsgHandling, maslowInfoMsgHandling, maslowMsgHandling, sendCommand } from "maslow";
+import {
+  Common,
+  id,
+  setDisabled,
+  numpad,
+  SendPrinterCommand,
+  files_list_success,
+  SendRealtimeCmd,
+  SendGetHttp,
+  checkHomed,
+  loadConfigValues,
+  loadCornerValues,
+  maslowErrorMsgHandling,
+  maslowInfoMsgHandling,
+  maslowMsgHandling,
+  sendCommand,
+} from "./common.js";
 
 let gCodeLoaded = false;
 
@@ -1176,4 +1191,14 @@ const onCalibrationButtonsClick = async (command, msg) => {
   }
 }
 
+
+export {
+  loadedValues,
+  openModal,
+  hideModal,
+  goAxisByValue,
+  onCalibrationButtonsClick,
+  saveSerialMessages,
+  tabletInit,
+};
 /* Calibration modal END */

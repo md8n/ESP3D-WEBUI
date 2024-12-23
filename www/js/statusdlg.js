@@ -1,4 +1,18 @@
-// import get_icon_svg, conErr, stdErrMsg, displayBlock, displayNone, id, setHTML, closeModal, getactiveModal, setactiveModal, showModal, SendGetHttp, translate_text_item
+import {
+	get_icon_svg,
+	conErr,
+	stdErrMsg,
+	displayBlock,
+	displayNone,
+	id,
+	setHTML,
+	closeModal,
+	getactiveModal,
+	setactiveModal,
+	showModal,
+	SendGetHttp,
+	translate_text_item,
+} from "./common.js";
 
 let statuspage = 0;
 let statuscontent = "";
@@ -101,3 +115,5 @@ function refreshstatus() {
 	const url = `/command?plain=${encodeURIComponent("[ESP420]plain")}`;
 	SendGetHttp(url, statussuccess, statusfailed);
 }
+
+export { statusdlg };

@@ -1,4 +1,19 @@
-// import get_icon_svg, conErr, stdErrMsg, displayBlock, displayNone, id, getValue, setValue, setHTML, closeModal, setactiveModal, showModal, SendGetHttp, translate_text_item
+import {
+	get_icon_svg,
+	conErr,
+	stdErrMsg,
+	displayBlock,
+	displayNone,
+	id,
+	getValue,
+	setValue,
+	setHTML,
+	closeModal,
+	setactiveModal,
+	showModal,
+	SendGetHttp,
+	translate_text_item,
+} from "./common.js";
 
 let ssid_item_scanwifi = -1;
 let ssid_subitem_scanwifi = -1;
@@ -128,3 +143,5 @@ function getscanWififailed(error_code, response) {
 function scanwifidlg_close(response) {
 	//console.log(response);
 }
+
+export { scanwifidlg };

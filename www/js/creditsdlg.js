@@ -1,4 +1,4 @@
-// import - closeModal, setactiveModal, showModal, id
+import { closeModal, setactiveModal, showModal, id } from "./common.js";
 
 //Credits dialog
 const creditsdlg = () => {
@@ -12,3 +12,5 @@ const creditsdlg = () => {
 
 	showModal();
 };
+
+export { creditsdlg };

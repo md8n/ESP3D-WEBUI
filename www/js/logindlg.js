@@ -1,4 +1,15 @@
-// import translate_text_item, conErr, displayBlock, displayNone, id, setHTML, closeModal, setactiveModal, showModal, SendGetHttp 
+import {
+	translate_text_item,
+	conErr,
+	displayBlock,
+	displayNone,
+	id,
+	setHTML,
+	closeModal,
+	setactiveModal,
+	showModal,
+	SendGetHttp,
+} from "./common.js";
 
 /** login dialog */
 const logindlg = (closefunc, check_first = false) => {
@@ -118,3 +129,5 @@ function DisconnectLogin(answer) {
 		SendGetHttp(url, DisconnectionSuccess, DisconnectionFailed);
 	}
 }
+
+export { DisconnectLogin, logindlg };

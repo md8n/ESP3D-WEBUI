@@ -1,3 +1,5 @@
+import { classes } from "./common.js";
+
 function clear_drop_menu(event) {
     const item = get_parent_by_class(event.target, "dropdownselect");
     let ignore_id = "-1";
@@ -40,3 +42,5 @@ function showhide_drop_menu(event) {
         menu.classList.toggle("show");
     }
 }
+
+export { clear_drop_menu, hide_drop_menu, showhide_drop_menu };

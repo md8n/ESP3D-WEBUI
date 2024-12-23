@@ -1,4 +1,4 @@
-// import - closeModal, setactiveModal, showModal, id
+import { closeModal, setactiveModal, showModal, id } from "./common.js";
 
 //input dialog
 const inputdlg = (titledlg, textdlg, closefunc, preset = "") => {
@@ -28,3 +28,5 @@ function closeInputModal(response) {
 	}
 	closeModal(answer);
 }
+
+export { inputdlg };

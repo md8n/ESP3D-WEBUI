@@ -1,3 +1,5 @@
+import { Common, HTMLDecode } from "./common.js";
+
 const language_list = [
 //removeIf(de_lang_disabled)
     ['de', 'Deutsch', 'germantrans'],
@@ -44,16 +46,21 @@ const language_list = [
 const translated_list = [];
 //endRemoveIf(production)
 
-function build_language_list(id_item) {
+/** Build a language list select element */
+const build_language_list = (id_item) => {
     const common = new Common();
 
-    let content = `<select class='form-control'  id='${id_item}' onchange='translate_text(this.value)'>\n`;
+    const content = [`<select class='form-control' id='${id_item}'>`];
     for (let lang_i = 0; lang_i < language_list.length; lang_i++) {
-        const isSelected = language_list[lang_i][0] === common.language ? " selected" : "";
-        content += `<option value='${language_list[lang_i][0]}'${isSelected}>${language_list[lang_i][1]}</option>\n`;
+        const langCode = language_list[lang_i][0];
+        const langName = language_list[lang_i][1];
+        const langEnabled = language_list[lang_i][2] ? "" : "disabled";
+        const isSelected = (langCode === common.language) ? "selected" : "";
+
+        content.push(`<option value='${langCode}' ${isSelected} ${langEnabled}>${langName}</option>`);
     }
-    content += "</select>\n";
-    return content;
+    content.push("</select>");
+    return content.join("\n");
 }
 
 function translate_text(lang) {
@@ -77,9 +84,7 @@ function translate_text(lang) {
                 content.trim();
                 All[i].setAttribute('english_content', content);
                 //removeIf(production)        
-                const item = {
-                    content: content
-                };
+                const item = { content: content };
                 translated_list.push(item);
                 //endRemoveIf(production)
             }
@@ -95,9 +100,7 @@ function translate_text(lang) {
                 content = All[i].getAttribute('placeholder');
                 content.trim();
                 //removeIf(production) 
-                const item = {
-                    content: content
-                };
+                const item = { content: content  };
                 translated_list.push(item);
                 //endRemoveIf(production)
                 All[i].setAttribute('english_content', content);
@@ -110,25 +113,19 @@ function translate_text(lang) {
     }
 };
 
-function translate_text_item(item_text, withtag = false) {
-    let currenttrans = {};
-    let translated_content;
-    const common = new Common();
+/** Translate the supplied item_text, putting it into a `<span>` tag if required */
+const translate_text_item = (item_text, withtag = false) => {
+    const currenttrans = getCurrentTrans();
 
-    for (let lang_i = 0; lang_i < language_list.length; lang_i++) {
-        if (language_list[lang_i][0] === common.language) {
-            // biome-ignore lint/security/noGlobalEval: <explanation>
-            currenttrans = eval(language_list[lang_i][2]);
-        }
-    }
-
-    translated_content = currenttrans[item_text];
+    let translated_content = currenttrans[item_text];
     if (typeof translated_content === 'undefined') {
         translated_content = item_text;
     }
     if (withtag) {
-        const translated_content_tmp = `<span english_content=\"${item_text}\" translate>${translated_content}</span>`;
-        translated_content = translated_content_tmp;
+        return `<span english_content="${item_text}" translate>${translated_content}</span>`;
     }
+
     return translated_content;
 }
+
+export { build_language_list, translate_text, translate_text_item };
