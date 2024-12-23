@@ -260,39 +260,35 @@ function get_config_label(sline) {
 }
 
 function get_config_value(sline) {
-	var tline = sline.trim().split(" ");
-	var tline2 = sline.trim().split("=");
+	const tline = sline.trim().split(" ");
+	const tline2 = sline.trim().split("=");
 	return tline2.length > 1 ? tline2[1] : "???";
 }
 
-function get_config_help(sline) {
-	if (is_override_config) return "";
-	return inline_help(get_config_label(sline));
-}
+const get_config_help = (sline) => (is_override_config) ? "" : inline_help(get_config_label(sline));
 
 function get_config_command(sline) {
-	return get_config_label(sline) + "=";
+	return `${get_config_label(sline)}=`;
 }
 
 function is_config_commented(sline) {
-	var line = sline.trim();
-	if (line.length == 0) return false;
-	if (is_override_config) return line.startsWith(";");
-	return false;
+    const line = sline.trim();
+    if (!line.length) return false;
+    return (is_override_config) ? line.startsWith(";") : false;
 }
 
 function config_revert_to_default(index, is_override) {
-	var prefix = "";
-	var item = config_configList[index];
+	let prefix = "";
+	let item = config_configList[index];
 	if (is_override) {
 		prefix = "_override";
 		item = config_override_List[index];
 	}
 	console.log();
-	id("config_" + prefix + index).value = item.defaultvalue;
-	id("btn_config_" + prefix + index).className = "btn btn-default";
-	id("status_config_" + prefix + index).className = "form-group has-feedback";
-	setHTML("icon_config_" + prefix + index, "");
+	id(`config_${prefix}${index}`).value = item.defaultvalue;
+	id(`btn_config_${prefix}${index}`).className = "btn btn-default";
+	id(`status_config_${prefix}${index}`).className = "form-group has-feedback";
+	setHTML(`icon_config_${prefix}${index}`, "");
 }
 
 function is_config_override_file() {
@@ -376,7 +372,7 @@ function config_checkchange(index, is_override) {
 function setESPconfigSuccess(response) {
 	//console.log(response);
 }
-var grbl_help = {
+const grbl_help = {
 	$0: "Step pulse, microseconds",
 	$1: "Step idle delay, milliseconds",
 	$2: "Step port invert, mask",

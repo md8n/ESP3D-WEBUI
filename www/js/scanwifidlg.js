@@ -76,9 +76,10 @@ function process_scanWifi_answer(response_text) {
 	}
 	setHTML("AP_scan_data", content);
 
-	for (const action in actions) {
+	// biome-ignore lint/complexity/noForEach: <explanation>
+	actions.forEach((action) => {
 		id(action.id).addEventListener(action.type, (event) => action.method);
-	};
+	});
 
 	return result;
 }

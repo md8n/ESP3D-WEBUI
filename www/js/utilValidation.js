@@ -82,7 +82,6 @@ const valueIsText = (value, valueDef) => {
  * success is an empty array,
  * failure is an array of one or more error messages  */
 const checkValue = (value, valueDef, errorList = []) => {
-  const errorList = [];
   switch (valueDef.valueType) {
     case "int": errorList.push(valueIsInt(value, valueDef)); break;
     case "float": errorList.push(valueIsFloat(value, valueDef)); break;
@@ -99,11 +98,12 @@ const checkValue = (value, valueDef, errorList = []) => {
     case "select":
       // This is effectively an enum - no specific test for this yet
       break;
-    default:
+    default: {
       const valueDefError = `'${valueDef.label}' ${translate_text_item("is an unknown value type")} '${valueDef.valueType}'`;
       console.error(`${valueDefError}: ${JSON.stringify(value)}`);
       errorList.push(valueDefError); 
       break;
+    }
   }
   return errorList.filter((err) => err);
 }

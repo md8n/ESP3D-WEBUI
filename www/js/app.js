@@ -79,39 +79,42 @@ window.onload = () => {
 	//to check if javascript is disabled like in android preview
 	displayNone("loadingmsg");
 	console.log("Connect to board");
-	let connectLoaded = false;
-	let controlsLoaded = false;
-	let navbarLoaded = false;
-	const common = new Common();
-	if (!common.loadedHTML.includes("In dev mode")) {
-		// we assume built and bundled mode
-		common.loadedHTML.push("./sub/connectdlg.html");
-		common.loadedHTML.push("./sub/controlspanel.html");
-		common.loadedHTML.push("./sub/navbar.html");
-	}
+
+	// These are all falsey, indicating nothing has been loaded
+	let connectDlg = "";
+	let controlsPanel = "";
+	let navbarLoaded = "";
+
+	let failSafe = 10;
+
 	let startUpInt = setInterval(() => {
 		// Check for various key HTML panels and load them up
-		if (!connectLoaded && common.loadedHTML.includes("./sub/connectdlg.html")) {
+		if (!connectDlg && id("connectdlg.html")) {
+			connectDlg = "loading";
 			connectdlg();
-			connectLoaded = true;
+			connectDlg = "loaded";
 		}
 
-		if (!controlsLoaded &&
-			common.loadedHTML.includes("./sub/controlspanel.html")) {
+		if (!controlsPanel && id("controlPanel")) {
+			controlsPanel = "loading";
 			ControlsPanel();
-			controlsLoaded = true;
+			controlsPanel = "loaded";
 		}
 
-		if (!navbarLoaded && common.loadedHTML.includes("./sub/navbar.html")) {
+		if (!navbarLoaded && id("navbar")) {
+			navbarLoaded = "loading";
 			navbar();
 			tabletInit();
-			navbarLoaded = true;
+			navbarLoaded = "loaded";
 		}
 
-		if (connectLoaded && controlsLoaded && navbarLoaded) {
+		if ((connectDlg && controlsPanel && navbarLoaded) || failSafe <= 0) {
 			clearInterval(startUpInt);
 			startUpInt = null;
 		}
+
+		// Ensure that we always break out of this
+		failSafe--;
 	}, 500);
 };
 

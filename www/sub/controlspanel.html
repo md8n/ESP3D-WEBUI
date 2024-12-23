@@ -12,7 +12,7 @@
                                 <td>&nbsp;&nbsp;</td>
                                 <td>
                                     <label>
-                                        <input id="autocheck_position" type="checkbox" />
+                                        <input id="autocheck_position" type="checkbox"/>
                                         <span translate>auto-check position every:</span>
                                     </label>
                                 </td>
@@ -22,7 +22,7 @@
                             <tr>
                                 <td>
                                     <input id="controlpanel_interval_positions" class="form-control w4" type="number"
-                                        min="1" max="99" />
+                                        min="1" max="99"/>
                                     <span class="input-group-addon form_control" translate>sec</span>
                                 </td>
                             </tr>
@@ -46,10 +46,10 @@
             </div>
         </div>
         <div>
-            <button id="zero_xyz_btn" class="btn btn-xs btn-default">&Oslash;<span id="zero_xyz_btn_txt"
-                    style="font-size:8px;">XYZ</span></button>
+            <button id="zero_xyz_btn" class="btn btn-xs btn-default">&Oslash;<span id="zero_xyz_btn_txt" style="font-size:8px;">XYZ</span>
+            </button>
         </div><br>
-        <div class="position-container" id="positions_labels">
+        <div id="positions_labels" class="position-container">
             <div class="position_text">
                 <table>
                     <tr>
@@ -57,9 +57,9 @@
                             <button id="zero_x_btn" class="btn btn-xs btn-default">&Oslash;</button>
                         </td>
                         <td>
-                            <span class="label label-default" style="padding: 5px 5px 3px 5px;"><span
-                                    id="control_x_position_label">X</span>:<span
-                                    id="control_x_position">&nbsp;</span></span>
+                            <span class="label label-default" style="padding: 5px 5px 3px 5px;">
+                                <span id="control_x_position_label">X</span>:<span id="control_x_position">&nbsp;</span>
+                            </span>
                         </td>
                         <td>
                         </td>
@@ -72,9 +72,10 @@
                                 </tr>
                                 <tr>
                                     <td>
-                                        <span class="label label-default" style="padding: 5px 5px 3px 5px;"><span
-                                                id="control_xm_position_label">Xm</span>:<span
-                                                id="control_xm_position">&nbsp;</span></span>
+                                        <span class="label label-default" style="padding: 5px 5px 3px 5px;">
+                                            <span id="control_xm_position_label">Xm</span>:<span
+                                                id="control_xm_position">&nbsp;</span>
+                                        </span>
                                     </td>
                                 </tr>
                             </table>
@@ -89,9 +90,9 @@
                             <button id="zero_y_btn" class="btn btn-xs btn-default">&Oslash;</button>
                         </td>
                         <td>
-                            <span class="label label-default" style="padding: 5px 5px 3px 5px;"><span
-                                    id="control_y_position_label">Y</span>:<span
-                                    id="control_y_position">&nbsp;</span></span>
+                            <span class="label label-default" style="padding: 5px 5px 3px 5px;">
+                                <span id="control_y_position_label">Y</span>:<span id="control_y_position">&nbsp;</span>
+                            </span>
                         </td>
                         <td>
                         </td>
@@ -104,9 +105,10 @@
                                 </tr>
                                 <tr>
                                     <td>
-                                        <span class="label label-default" style="padding: 5px 5px 3px 5px;"><span
-                                                id="control_yt_position_label">Ym</span>:<span
-                                                id="control_ym_position">&nbsp;</span></span>
+                                        <span class="label label-default" style="padding: 5px 5px 3px 5px;">
+                                            <span id="control_yt_position_label">Ym</span>:<span
+                                                id="control_ym_position">&nbsp;</span>
+                                        </span>
                                     </td>
                                 </tr>
                             </table>
@@ -114,7 +116,7 @@
                     </tr>
                 </table>
             </div>
-            <div class="position_text" id="control_z_position_display">
+            <div id="control_z_position_display" class="position_text">
                 <table>
                     <tr>
                         <td>
@@ -134,8 +136,8 @@
                                 </tr>
                                 <tr>
                                     <td>
-                                        <span class="label label-default" style="padding: 5px 5px 3px 5px;"><span
-                                                id="control_zm_position_label">Zm</span>:<span
+                                        <span class="label label-default" style="padding: 5px 5px 3px 5px;">
+                                            <span id="control_zm_position_label">Zm</span>:<span
                                                 id="control_zm_position">&nbsp;</span></span>
                                     </td>
                                 </tr>
@@ -146,17 +148,18 @@
             </div>
         </div>
         <br>
-        <div class="position-container hide_it" id="positions_labels2">
-            <div class="position_text hide_it" id="control_a_position_display">
+        <div id="positions_labels2" class="position-container hide_it">
+            <div id="control_a_position_display" class="position_text hide_it">
                 <table>
                     <tr>
                         <td>
                             <button id="zero_a_btn" class="btn btn-xs btn-default">&Oslash;</button>
                         </td>
                         <td>
-                            <span class="label label-default" style="padding: 5px 5px 3px 5px;"><span
-                                    id="control_a_position_label">Aw</span>:<span
-                                    id="control_a_position">&nbsp;</span></span>
+                            <span class="label label-default" style="padding: 5px 5px 3px 5px;">
+                                <span id="control_a_position_label">Aw</span>:<span
+                                    id="control_a_position">&nbsp;</span>
+                            </span>
                         </td>
                         <td>
                         </td>
@@ -169,9 +172,10 @@
                                 </tr>
                                 <tr>
                                     <td>
-                                        <span class="label label-default" style="padding: 5px 5px 3px 5px;"><span
-                                                id="control_am_position_label">Am</span>:<span
-                                                id="control_am_position">&nbsp;</span></span>
+                                        <span class="label label-default" style="padding: 5px 5px 3px 5px;">
+                                            <span id="control_am_position_label">Am</span>:<span
+                                                id="control_am_position">&nbsp;</span>
+                                        </span>
                                     </td>
                                 </tr>
                             </table>
@@ -179,16 +183,17 @@
                     </tr>
                 </table>
             </div>
-            <div class="position_text hide_it" id="control_b_position_display">
+            <div id="control_b_position_display" class="position_text hide_it">
                 <table>
                     <tr>
                         <td>
                             <button id="zero_b_btn" class="btn btn-xs btn-default">&Oslash;</button>
                         </td>
                         <td>
-                            <span class="label label-default" style="padding: 5px 5px 3px 5px;"><span
-                                    id="control_b_position_label">Bw</span>:<span
-                                    id="control_b_position">&nbsp;</span></span>
+                            <span class="label label-default" style="padding: 5px 5px 3px 5px;">
+                                <span id="control_b_position_label">Bw</span>:<span
+                                    id="control_b_position">&nbsp;</span>
+                            </span>
                         </td>
                         <td>
                         </td>
@@ -201,9 +206,10 @@
                                 </tr>
                                 <tr>
                                     <td>
-                                        <span class="label label-default" style="padding: 5px 5px 3px 5px;"><span
-                                                id="control_bt_position_label">Bm</span>:<span
-                                                id="control_bm_position">&nbsp;</span></span>
+                                        <span class="label label-default" style="padding: 5px 5px 3px 5px;">
+                                            <span id="control_bt_position_label">Bm</span>:<span
+                                                id="control_bm_position">&nbsp;</span>
+                                        </span>
                                     </td>
                                 </tr>
                             </table>
@@ -218,9 +224,10 @@
                             <button id="zero_c_btn" class="btn btn-xs btn-default">&Oslash;</button>
                         </td>
                         <td>
-                            <span class="label label-default" style="padding: 5px 5px 3px 5px;"><span
-                                    id="control_c_position_label">Cw</span>:<span
-                                    id="control_c_position">&nbsp;</span></span>
+                            <span class="label label-default" style="padding: 5px 5px 3px 5px;">
+                                <span id="control_c_position_label">Cw</span>:<span
+                                    id="control_c_position">&nbsp;</span>
+                            </span>
                         </td>
                     </tr>
                     <tr id="control_zm_position_row">
@@ -231,9 +238,10 @@
                                 </tr>
                                 <tr>
                                     <td>
-                                        <span class="label label-default" style="padding: 5px 5px 3px 5px;"><span
-                                                id="control_cm_position_label">Cm</span>:<span
-                                                id="control_cm_position">&nbsp;</span></span>
+                                        <span class="label label-default" style="padding: 5px 5px 3px 5px;">
+                                            <span id="control_cm_position_label">Cm</span>:<span
+                                                id="control_cm_position">&nbsp;</span>
+                                        </span>
                                     </td>
                                 </tr>
                             </table>
@@ -254,7 +262,7 @@
                     </td>
                     <td>
                         <span class="input-group-addon hide_it"></span>
-                        <input id="controlpanel_xy_feedrate" class="form-control w8" type="number" min="1" />
+                        <input id="controlpanel_xy_feedrate" class="form-control w8" type="number" min="0.00001" />
                         <span class="input-group-addon form_control" translate>mm/min</span>
                     </td>
                 </tr>
@@ -264,21 +272,21 @@
             <table id="z_velocity_display" class="input-group">
                 <tr>
                     <td>
-                        <span class="input-group-addon form_control" id="axis_label">Z:</span>
+                        <span id="axis_label" class="input-group-addon form_control">Z:</span>
                         <input class="hide_it"></input>
                     </td>
-                    <td class="hide_it" id="axis_selection">
+                    <td id="axis_selection" class="hide_it">
                     </td>
                     <td>
                         <span class="input-group-addon hide_it"></span>
-                        <input id="controlpanel_z_feedrate" class="form-control w5" type="number" min="1" />
+                        <input id="controlpanel_z_feedrate" class="form-control w5" type="number" min="0.00001" />
                         <span class="input-group-addon form_control" translate>mm/min</span>
                     </td>
                 </tr>
             </table>
 
             &nbsp;
-            <button id='motor_off_control' class="btn btn-primary" translate>Motors off</button>
+            <button id="motor_off_control" class="btn btn-primary" translate>Motors off</button>
         </div>
     </div>
 </div>
