@@ -171,6 +171,12 @@ class Common {
 			// biome-ignore lint/correctness/noConstructorReturn: <explanation>
 			return Common.instance;
 		}
+
+		/** See connectdlg.js */
+		this.esp_hostname = "ESP3D WebUI";
+		this.websocket_port = 0;
+		this.websocket_ip = "";
+
 		/** See controls.js */
 		this.control_macrolist = [];
 
@@ -181,6 +187,7 @@ class Common {
 		this.calibrationResults = {};
 		this.grblaxis = 3;
 		this.grblzerocmd = "X0 Y0 Z0";
+		this.reportType = 'none';
 		this.spindleTabSpindleSpeed = 1;
 		this.modal = {
 			modes: "",
@@ -189,22 +196,50 @@ class Common {
 			wcs: "G54",
 			distance: "G90",
 		};
+		this.MPOS = [0, 0, 0];
+		this.WPOS = [0, 0, 0];
 
 		/** See http.js */
 		this.http_communication_locked = false;
+		this.page_id = "";
+		this.xmlhttpupload;
 
-		/** See loadHTML.js */
+		/** See loadHTML.js - coming soon */
 		this.loadedHTML = [];
+
+		/** See preferencesdlg.js */
+		this.enable_ping = true;
+		/** This clunker piece of code works with/against `this.language` below */
+		this.language_save = "en";
+
+		/** See printercmd.js */
+		this.grbl_errorfn = null;
+		this.grbl_processfn = null;
 
 		/** See settings.js */
 		this.current_setting_filter = "nvs";
 		this.setup_is_done = false;
+		this.do_not_build_settings = false;
+
+		this.SETTINGS_AP_MODE = 1;
+		this.SETTINGS_STA_MODE = 2;
+		this.SETTINGS_FALLBACK_MODE = 3;
+
+		/** See setupdlg.js */
+		this.EP_STA_SSID = "Sta/SSID";
 
 		/** See socket.js */
 		this.async_webcommunication = false;
 
 		/** See SPIFFSdlg.js */
 		this.SPIFFS_currentpath = "/";
+
+		/** see tablet.js */
+		this.gCodeDisplayable = false;
+
+		/** see translate.js */
+		/** This clunker piece of code works with/against `this.language_save` above */
+		this.language = 'en';
 
 		/** See util.js */
 		this.last_ping = 0;
