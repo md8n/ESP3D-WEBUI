@@ -4,6 +4,7 @@ import {
 	displayBlock,
 	displayNone,
 	id,
+	browser_is,
 	setHTML,
 	clear_drop_menu,
 	hide_drop_menu,
@@ -165,6 +166,7 @@ function build_dlg_macrolist_line(index) {
 	}
 
 	setHTML(`macro_line_${index}`, content);
+	// biome-ignore lint/complexity/noForEach: <explanation>
 	actions.forEach((action) => {
 		id(action.id).addEventListener(action.type, action.method);
 	});
@@ -311,7 +313,9 @@ function SaveNewMacroList() {
 		file = blob;
 		file.name = "/macrocfg.json";
 		file.lastModifiedDate = new Date();
-	} else file = new File([blob], "/macrocfg.json");
+	} else {
+		file = new File([blob], "/macrocfg.json");
+	}
 	const formData = new FormData();
 	const url = "/files";
 	formData.append("path", "/");

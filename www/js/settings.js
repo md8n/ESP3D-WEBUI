@@ -7,6 +7,7 @@ import {
 	displayBlock,
 	displayNone,
 	id,
+	browser_is,
 	setChecked,
 	setHTML,
 	alertdlg,
@@ -19,11 +20,10 @@ import {
 
 /** setting_configList */
 let scl = [];
-var setting_error_msg = "";
-var setting_lasti = -1;
-var setting_lastj = -1;
+let setting_error_msg = "";
+let setting_lasti = -1;
+let setting_lastj = -1;
 
-var do_not_build_settings = false;
 const CONFIG_TOOLTIPS = {
 	Maslow_vertical: `If the ${M} is oriented horizontally, set this to false`,
 	Maslow_calibration_offset_X: "mm offset from the edge of the frame, X",
@@ -56,8 +56,7 @@ const refreshSettings = (hide_setting_list) => {
 		setHTML("config_status", translate_text_item("Communication locked by another process, retry later."));
 		return;
 	}
-	do_not_build_settings =
-		typeof hide_setting_list === "undefined" ? false : !hide_setting_list;
+	common.do_not_build_settings = typeof hide_setting_list === "undefined" ? false : !hide_setting_list;
 
 	displayBlock("settings_loader");
 	displayNone("settings_list_content");
@@ -84,11 +83,11 @@ const bOpt = (value, isSelected, label) =>
 	`<option value='${value}' ${isSelected ? "selected " : ""}translate="yes">${label}${browser_is("MacOSX") ? "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" : ""}</option>\n`;
 
 function build_select_flag_for_setting_list(i, j) {
-	var html = `<select class='form-control' id='${sId(i, j)}'>`;
-	var tmp = scl[i].defaultvalue | getFlag(i, j);
-	html += bOpt("1", tmp == defval(i), "Disable");
+	let html = `<select class='form-control' id='${sId(i, j)}'>`;
+	let tmp = scl[i].defaultvalue | getFlag(i, j);
+	html += bOpt("1", tmp === defval(i), "Disable");
 	tmp = defval(i) & ~getFlag(i, j);
-	html += bOpt("0", tmp == defval(i), "Enable");
+	html += bOpt("0", tmp === defval(i), "Enable");
 	html += "</select>";
 	//console.log("default:" + defval(i));
 	//console.log(html);
@@ -96,11 +95,11 @@ function build_select_flag_for_setting_list(i, j) {
 }
 
 function build_select_for_setting_list(i, j) {
-	var html = `<select class='form-control input-min wauto' id='${sId(i, j)}'>`;
-	for (var oi = 0; oi < scl[i].Options.length; oi++) {
+	let html = `<select class='form-control input-min wauto' id='${sId(i, j)}'>`;
+	for (let oi = 0; oi < scl[i].Options.length; oi++) {
 		html += bOpt(
 			scl[i].Options[oi].id,
-			scl[i].Options[oi].id == defval(i),
+			scl[i].Options[oi].id === defval(i),
 			scl[i].Options[oi].display,
 		);
 	}
@@ -111,11 +110,10 @@ function build_select_for_setting_list(i, j) {
 }
 
 function update_UI_setting() {
-	for (var i = 0; i < scl.length; i++) {
+	for (let i = 0; i < scl.length; i++) {
 		switch (scl[i].pos) {
-			//EP_TARGET_FW		461
 			case "850":
-				direct_sd = defval(i) == 1 ? true : false;
+				direct_sd = defval(i) === 1;
 				update_UI_firmware_target();
 				init_files_panel(false);
 				break;
@@ -131,6 +129,7 @@ function update_UI_setting() {
 const build_control_from_index = (i, actions, extra_set_function = (i) => { }) => {
 	let content = "<table>";
 	if (i < scl.length && i > -1) {
+		const common = new Common();
 		nbsub = scl[i].type === "F" ? scl[i].Options.length : 1;
 		for (let j = 0; j < nbsub; j++) {
 			if (j > 0) {
@@ -160,7 +159,7 @@ const build_control_from_index = (i, actions, extra_set_function = (i) => { }) =
 			content += "<div class='input-group'>";
 			content += "<span class='input-group-addon hide_it' ></span>";
 			const sfId = sId(i, j);
-			if (scl[i].type == "F") {
+			if (scl[i].type === "F") {
 				//flag
 				//console.log(scl[i].label + " " + scl[i].type);
 				//console.log(scl[i].Options.length);
@@ -205,7 +204,7 @@ const build_control_from_index = (i, actions, extra_set_function = (i) => { }) =
 					extra_set_function(i);
 				},
 			});
-			if (scl[i].pos === EP_STA_SSID) {
+			if (scl[i].pos === common.EP_STA_SSID) {
 				const btnId = sId(i, j, "scanwifi_");
 				content += `<button id='${btnId}' class='btn btn-default btn-svg'>${get_icon_svg("search")}</button>`;
 				actions.push({ id: btnId, type: "click", method: scanwifidlg(i, j) });
@@ -224,7 +223,7 @@ const build_control_from_index = (i, actions, extra_set_function = (i) => { }) =
 /** get setting UI for specific component instead of parse all */
 function get_index_from_eeprom_pos(pos) {
 	for (let i = 0; i < scl.length; i++) {
-		if (pos == scl[i].pos) {
+		if (pos === scl[i].pos) {
 			return i;
 		}
 	}
@@ -244,8 +243,10 @@ const build_control_from_pos = (pos, actions, extra) => build_control_from_index
 const saveMaslowYaml = () => SendGetHttp(`/command?plain=${encodeURIComponent("$CO")}`);
 
 const build_HTML_setting_list = (filter) => {
-	//this to prevent concurrent process to update after we clean content
-	if (do_not_build_settings) {
+	const common = new Common();
+
+	// this to prevent concurrent process to update after we clean content
+	if (common.do_not_build_settings) {
 		return;
 	}
 
@@ -264,7 +265,7 @@ const build_HTML_setting_list = (filter) => {
     </tr>`;
 		actions.push({ id: btnId, type: "click", method: saveMaslowYaml() });
 	}
-	const common = new Common();
+
 	common.current_setting_filter = filter;
 	setChecked(`${common.current_setting_filter}_setting_filter`, true);
 
@@ -287,6 +288,7 @@ const build_HTML_setting_list = (filter) => {
 	}
 	// From settingstab
 	setHTML("settings_list_data", content);
+	// biome-ignore lint/complexity/noForEach: <explanation>
 	actions.forEach((action) => {
 		id(action.id).addEventListener(action.type, (event) => action.method);
 	});
@@ -309,46 +311,48 @@ const build_HTML_setting_list = (filter) => {
 };
 
 function setting_check_value(value, i) {
-	var valid = true;
-	var entry = scl[i];
+	let valid = true;
+	const entry = scl[i];
 	//console.log("checking value");
-	if (entry.type == "F") return valid;
+	if (entry.type === "F") {
+		return valid;
+	}
 	//does it part of a list?
 	if (entry.Options.length > 0) {
-		var in_list = false;
-		for (var oi = 0; oi < entry.Options.length; oi++) {
+		let in_list = false;
+		for (let oi = 0; oi < entry.Options.length; oi++) {
 			//console.log("checking *" + entry.Options[oi].id + "* and *"+ value + "*" );
-			if (entry.Options[oi].id == value) in_list = true;
+			if (entry.Options[oi].id === value) {
+				in_list = true;
+			}
 		}
 		valid = in_list;
-		if (!valid) setting_error_msg = " in provided list";
+		if (!valid) {
+			setting_error_msg = " in provided list";
+		}
 	}
 	//check byte / integer
-	if (entry.type == "B" || entry.type == "I") {
+	if (entry.type === "B" || entry.type === "I") {
 		//cannot be empty
 		value.trim();
-		if (value.length == 0) valid = false;
+		if (value.length === 0) valid = false;
 		//check minimum?
-		if (parseInt(entry.min_val) > parseInt(value)) valid = false;
+		if (Number.parseInt(entry.min_val) > Number.parseInt(value)) valid = false;
 		//check maximum?
-		if (parseInt(entry.max_val) < parseInt(value)) valid = false;
+		if (Number.parseInt(entry.max_val) < Number.parseInt(value)) valid = false;
 		if (!valid)
-			setting_error_msg = " between " + entry.min_val + " and " + entry.max_val;
-		if (isNaN(value)) valid = false;
-	} else if (entry.type == "S") {
+			setting_error_msg = ` between ${entry.min_val} and ${entry.max_val}`;
+		if (Number.isNaN(value)) valid = false;
+	} else if (entry.type === "S") {
 		if (entry.min_val > value.length) valid = false;
 		if (entry.max_val < value.length) valid = false;
-		if (value == "********") valid = false;
-		if (!valid)
-			setting_error_msg =
-				" between " +
-				entry.min_val +
-				" char(s) and " +
-				entry.max_val +
-				" char(s) long, and not '********'";
-	} else if (entry.type == "A") {
+		if (value === "********") valid = false;
+		if (!valid) {
+			setting_error_msg = ` between ${entry.min_val} char(s) and ${entry.max_val} char(s) long, and not '********'`;
+		}
+	} else if (entry.type === "A") {
 		//check ip address
-		var ipformat =
+		const ipformat =
 			/^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
 		if (!value.match(ipformat)) {
 			valid = false;
@@ -362,7 +366,7 @@ function process_settings_answer(response_text) {
 	let result = true;
 	try {
 		const response = JSON.parse(response_text);
-		if (typeof response.EEPROM == "undefined") {
+		if (typeof response.EEPROM === "undefined") {
 			result = false;
 			console.log("No EEPROM");
 		} else {
@@ -393,8 +397,8 @@ function create_setting_entry(sentry, vi) {
 		return vi;
 	}
 
-	var scmd = `[ESP401]P=${sentry.P} T=${sentry.T} V=`;
-	var options = [];
+	const scmd = `[ESP401]P=${sentry.P} T=${sentry.T} V=`;
+	const options = [];
 	let min;
 	let max;
 	if (typeof sentry.M !== "undefined") {
@@ -440,10 +444,10 @@ function create_setting_entry(sentry, vi) {
 
 	//list possible options if defined
 	if (typeof sentry.O !== "undefined") {
-		for (var i in sentry.O) {
-			var val = sentry.O[i];
-			for (var j in val) {
-				var option = {
+		for (const i in sentry.O) {
+			const val = sentry.O[i];
+			for (const j in val) {
+				const option = {
 					id: val[j].trim(),
 					display: j.trim(),
 				};
@@ -454,7 +458,7 @@ function create_setting_entry(sentry, vi) {
 	}
 
 	//create entry in list
-	var config_entry = {
+	const config_entry = {
 		index: vi,
 		F: sentry.F,
 		label: sentry.H,
@@ -486,7 +490,7 @@ function is_setting_entry(sline) {
 const getFlag = (i, j) =>
 	scl[i].type !== "F" || scl[i].Options.length <= j
 		? -1
-		: parseInt(scl[i].Options[j].id);
+		: Number.parseInt(scl[i].Options[j].id);
 
 const setting = (i, j) => id(sId(i, j));
 
@@ -552,11 +556,11 @@ function settingsetvalue(i, j = 0) {
 
 function setting_checkchange(i, j) {
 	//console.log("list value changed");
-	var val = setting(i, j).value.trim();
-	if (scl[i].type == "F") {
+	let val = setting(i, j).value.trim();
+	if (scl[i].type === "F") {
 		//console.log("it is flag value");
-		var tmp = defval(i);
-		if (val == "1") {
+		let tmp = defval(i);
+		if (val === "1") {
 			tmp |= getFlag(i, j);
 		} else {
 			tmp &= ~getFlag(i, j);

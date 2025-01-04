@@ -135,10 +135,37 @@ const HTMLEncode = (value) => {
 const HTMLDecode = (value) => {
   const tmpelement = document.createElement('div');
   tmpelement.innerHTML = value;
-  value = tmpelement.textContent;
+  const decValue = tmpelement.textContent;
   tmpelement.textContent = '';
-  return value;
+  return decValue;
 }
+
+/** Super basic browser check,
+ * TODO: Fix this, it is extremely naive */
+const browser_is = (bname) => {
+	const ua = navigator.userAgent;
+	switch (bname) {
+		case "IE":
+			if (ua.indexOf("Trident/") !== -1) return true;
+			break;
+		case "Edge":
+			if (ua.indexOf("Edge") !== -1) return true;
+			break;
+		case "Chrome":
+			if (ua.indexOf("Chrome") !== -1) return true;
+			break;
+		case "Firefox":
+			if (ua.indexOf("Firefox") !== -1) return true;
+			break;
+		case "MacOSX":
+			if (ua.indexOf("Mac OS X") !== -1) return true;
+			break;
+		default:
+			return false;
+	}
+	return false;
+}
+
 
 export {
   classes,
@@ -151,5 +178,6 @@ export {
   setHTML,
   setDisabled,
   HTMLEncode, HTMLDecode,
-  id
+  id,
+  browser_is,
 };

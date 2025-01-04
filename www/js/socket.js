@@ -34,33 +34,32 @@ const check_ping = () => {
 	}
 };
 
-let interval_ping = -1;
 /** Turn ping on or off based on its current value */
 const handlePing = () => {
+	const common = new Common();
+
+	// First clear any existing interval
+	clearInterval(common.interval_ping);
+
 	if (enable_ping()) {
-		// First clear any existing interval
-		if (interval_ping) {
-			clearInterval(interval_ping);
-		}
-		const common = new Common();
 		common.last_ping = Date.now();
-		interval_ping = setInterval(() => check_ping(), 10 * 1000);
+		common.interval_ping = setInterval(() => check_ping(), 10 * 1000);
 		console.log("enable ping");
 	} else {
-		clearInterval(interval_ping);
-		interval_ping = -1;
 		console.log("disable ping");
 	}
 };
 
 const Disable_interface = (lostconnection) => {
-	let lostcon = false;
-	if (typeof lostconnection !== "undefined") lostcon = lostconnection;
+	const lostcon = typeof lostconnection !== "undefined" ? lostconnection : false;
+
 	//block all communication
 	const common = new Common();
 	common.http_communication_locked = true;
 	log_off = true;
-	if (interval_ping !== -1) clearInterval(interval_ping);
+
+	clearInterval(common.interval_ping);
+
 	//clear all waiting commands
 	clear_cmd_list();
 	//no camera
@@ -135,23 +134,16 @@ const process_socket_response = (msg) => msg.split("\n").forEach(grblHandleMessa
 const startSocket = () => {
 	const common = new Common();
 	try {
-		if (common.async_webcommunication) {
-			ws_source = new WebSocket(`ws://${document.location.host}/ws`, [
-				"arduino",
-			]);
-		} else {
-			console.log(`Socket is ${websocket_ip}:${websocket_port}`);
-			ws_source = new WebSocket(`ws://${websocket_ip}:${websocket_port}`, [
-				"arduino",
-			]);
+		const wsUrl = common.async_webcommunication ? `${document.location.host}/ws` : `${common.websocket_ip}:${common.websocket_port}`;
+		ws_source = new WebSocket(`ws://${wsUrl}`, ["arduino"]);
+		if (!common.async_webcommunication) {
+			console.log(`Socket is ${wsUrl}`);
 		}
 	} catch (exception) {
 		console.error(exception);
 	}
 	ws_source.binaryType = "arraybuffer";
-	ws_source.onopen = (e) => {
-		console.log("Connected");
-	};
+	ws_source.onopen = (e) => { console.log("Connected"); };
 	ws_source.onclose = (e) => {
 		console.log("Disconnected");
 		//seems sometimes it disconnect so wait 3s and reconnect
@@ -201,10 +193,9 @@ const startSocket = () => {
 						pageID(tval[1]);
 						// console.log("ping from id = " + pageID());
 						common.last_ping = Date.now();
-						if (interval_ping === -1)
-							interval_ping = setInterval(() => {
-								check_ping();
-							}, 10 * 1000);
+						if (common.interval_ping === -1) {
+							common.interval_ping = setInterval(() => { check_ping(); }, 10 * 1000);
+						}
 					}
 				}
 				if (tval[0] === "ACTIVE_ID") {
@@ -216,7 +207,6 @@ const startSocket = () => {
 					Handle_DHT(tval[1]);
 				}
 				if (tval[0] === "ERROR") {
-					const common = new Common();
 					common.esp_error_message = tval[2];
 					common.esp_error_code = tval[1];
 					console.error(`ERROR: ${tval[2]} code:${tval[1]}`);

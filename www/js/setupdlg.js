@@ -25,8 +25,8 @@ import {
 //setup dialog
 const common = new Common();
 
-var active_wizard_page = 0;
-var EP_HOSTNAME = "Hostname";
+let active_wizard_page = 0;
+
 
 const td = (content) => `<td>${content}</td>`;
 const table = (content) => `<table><tr>${content}</tr></table>`;
@@ -111,7 +111,7 @@ const setupdlg = () => {
 
 function setupdone(response) {
     common.setup_is_done = true;
-    do_not_build_settings = false;
+    common.do_not_build_settings = false;
     build_HTML_setting_list(common.current_setting_filter);
     translate_text(getPrefValue("language_list"));
     displayUndoNone("main_ui");
@@ -148,6 +148,7 @@ function continue_setup_wizard() {
 }
 
 const addActions = (actions) => {
+    // biome-ignore lint/complexity/noForEach: <explanation>
     actions.forEach((action) => {
         id(action.id).addEventListener(action.type, (event) => action.method);
     });
@@ -161,6 +162,7 @@ function enablestep1() {
     const actions = [];
 
     let content = heading("FluidNC Settings");
+    const EP_HOSTNAME = "Hostname";
     content += buildControlItem("Define ESP name:", EP_HOSTNAME, actions);
 
     setHTML("step1", content);
@@ -172,38 +174,38 @@ function enablestep1() {
 function enablestep2() {
     const actions = [];
 
-    var content = "";
+    let content = "";
     closeStep("step1link");
     openStep("wizard_line2", "step2link");
     content += heading("WiFi Configuration");
 
-    content += buildControlItem("Define ESP role:", EP_WIFI_MODE, actions, define_esp_role);
+    content += buildControlItem("Define ESP role:", common.EP_WIFI_MODE, actions, define_esp_role);
     content += `${translate_text_item("AP define access point / STA allows to join existing network")}<br>`;
 
     content += hardRule();
 
     content += div("setup_STA");
-    content += buildControlItem("What access point ESP need to be connected to:", EP_STA_SSID, actions);
+    content += buildControlItem("What access point ESP need to be connected to:", common.EP_STA_SSID, actions);
     content += `${translate_text_item("You can use scan button, to list available access points.")}<br>`;
     content += hardRule();
-    content += buildControlItem("Password to join access point:", EP_STA_PASSWORD, actions);
+    content += buildControlItem("Password to join access point:", common.EP_STA_PASSWORD, actions);
     content += endDiv();
 
     content += div("setup_AP");
-    content += buildControlItem("What is ESP access point SSID:", EP_AP_SSID, actions);
+    content += buildControlItem("What is ESP access point SSID:", common.EP_AP_SSID, actions);
     content += hardRule();
-    content += buildControlItem("Password for access point:", EP_AP_PASSWORD, actions);
+    content += buildControlItem("Password for access point:", common.EP_AP_PASSWORD, actions);
     content += endDiv();
 
     setHTML("step2", content);
     addActions(actions);
-    define_esp_role_from_pos(EP_WIFI_MODE);
+    define_esp_role_from_pos(common.EP_WIFI_MODE);
 
     id("step2link").click();
 }
 
 const define_sd_role = (index) => {
-    if (setting_configList[index].defaultvalue == 1) {
+    if (setting_configList[index].defaultvalue === 1) {
         displayBlock("setup_SD");
         displayNone("setup_primary_SD");
     } else {
@@ -215,21 +217,21 @@ const define_sd_role = (index) => {
 function enablestep3() {
     const actions = [];
 
-    var content = "";
+    let content = "";
     closeStep("step2link");
     openStep("wizard_line3", "step3link");
     content += heading("SD Card Configuration");
-    content += buildControlItem("Is ESP connected to SD card:", EP_IS_DIRECT_SD, actions, define_sd_role);
+    content += buildControlItem("Is ESP connected to SD card:", common.EP_IS_DIRECT_SD, actions, define_sd_role);
     content += hardRule();
 
     content += div("setup_SD");
-    content += buildControlItem("Check update using direct SD access:", EP_DIRECT_SD_CHECK, actions);
+    content += buildControlItem("Check update using direct SD access:", common.EP_DIRECT_SD_CHECK, actions);
     content += hardRule();
 
     content += div("setup_primary_SD");
-    content += buildControlItem("SD card connected to ESP", EP_PRIMARY_SD, actions);
+    content += buildControlItem("SD card connected to ESP", common.EP_PRIMARY_SD, actions);
     content += hardRule();
-    content += buildControlItem("SD card connected to printer", EP_SECONDARY_SD, actions);
+    content += buildControlItem("SD card connected to printer", common.EP_SECONDARY_SD, actions);
     content += hardRule();
     content += endDiv();
 
@@ -237,7 +239,7 @@ function enablestep3() {
 
     setHTML("step3", content);
     addActions(actions);
-    define_sd_role(get_index_from_eeprom_pos(EP_IS_DIRECT_SD));
+    define_sd_role(get_index_from_eeprom_pos(common.EP_IS_DIRECT_SD));
 
     id("step3link").click();
 }

@@ -21,6 +21,7 @@ import {
 	HTMLEncode,
 	HTMLDecode,
 	id,
+	browser_is,
 } from "./util.js";
 import { numpad } from "./numpad.js";
 import { checkValue, valueIsFloat } from "./utilValidation.js";
@@ -227,9 +228,29 @@ class Common {
 
 		/** See setupdlg.js */
 		this.EP_STA_SSID = "Sta/SSID";
+		this.EP_STA_PASSWORD = "Sta/Password";
+		this.EP_WIFI_MODE = "WiFi/Mode";
+		this.EP_AP_SSID = "AP/SSID";
+		this.EP_AP_PASSWORD = "AP/Password";
+		this.EP_IS_DIRECT_SD = 850;
+		this.EP_PRIMARY_SD = 851;
+		this.EP_SECONDARY_SD = 852;
+		this.EP_DIRECT_SD_CHECK = 853;
+
+		/** Apparently unused ? */
+		this.EP_STA_IP_MODE = "Sta/IPMode";
+		this.EP_STA_IP_VALUE = "Sta/IP";
+		this.EP_STA_GW_VALUE = "Sta/Gateway";
+		this.EP_STA_MK_VALUE = "Sta/Netmask";
+		this.EP_AP_IP_VALUE = "AP/IP";
+		this.EP_BAUD_RATE = 112;
+		this.EP_AUTH_TYPE = 119;
+		this.EP_TARGET_FW = 461;
 
 		/** See socket.js */
 		this.async_webcommunication = false;
+		/** Id of the interval timer */
+		this.interval_ping = -1;
 
 		/** See SPIFFSdlg.js */
 		this.SPIFFS_currentpath = "/";
@@ -442,6 +463,7 @@ export {
 	HTMLEncode,
 	HTMLDecode,
 	id,
+	browser_is,
 	// from utilValidation.js
 	checkValue,
 	valueIsFloat,

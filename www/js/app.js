@@ -23,58 +23,6 @@ import {
 	tabletInit,
 } from "./common.js";
 
-var websocket_port = 0;
-var websocket_ip = "";
-var esp_hostname = "ESP3D WebUI";
-var EP_STA_SSID;
-var EP_STA_PASSWORD;
-var EP_STA_IP_MODE;
-var EP_STA_IP_VALUE;
-var EP_STA_GW_VALUE;
-var EP_STA_MK_VALUE;
-var EP_WIFI_MODE;
-var EP_AP_SSID;
-var EP_AP_PASSWORD;
-var EP_AP_IP_VALUE;
-var EP_BAUD_RATE = 112;
-var EP_AUTH_TYPE = 119;
-var EP_TARGET_FW = 461;
-var EP_IS_DIRECT_SD = 850;
-var EP_PRIMARY_SD = 851;
-var EP_SECONDARY_SD = 852;
-var EP_DIRECT_SD_CHECK = 853;
-var SETTINGS_AP_MODE = 1;
-var SETTINGS_STA_MODE = 2;
-var SETTINGS_FALLBACK_MODE = 3;
-var interval_ping = -1;
-
-//Check for IE
-//Edge
-//Chrome
-function browser_is(bname) {
-	const ua = navigator.userAgent;
-	switch (bname) {
-		case "IE":
-			if (ua.indexOf("Trident/") !== -1) return true;
-			break;
-		case "Edge":
-			if (ua.indexOf("Edge") !== -1) return true;
-			break;
-		case "Chrome":
-			if (ua.indexOf("Chrome") !== -1) return true;
-			break;
-		case "Firefox":
-			if (ua.indexOf("Firefox") !== -1) return true;
-			break;
-		case "MacOSX":
-			if (ua.indexOf("Mac OS X") !== -1) return true;
-			break;
-		default:
-			return false;
-	}
-	return false;
-}
-
 window.onload = () => {
 	//to check if javascript is disabled like in android preview
 	displayNone("loadingmsg");
@@ -138,14 +86,13 @@ function display_boot_progress(step) {
 
 function update_UI_firmware_target() {
 	const common = new Common();
-	let fwName;
 	initpreferences();
 	setHTML("control_x_position_label", "X");
 	setHTML("control_y_position_label", "Y");
 	setHTML("control_z_position_label", "Z");
 	showAxiscontrols();
 
-	fwName = "FluidNC";
+	const fwName = "FluidNC";
 	last_grbl_pos = "";
 	displayNone("configtablink");
 	displayNone("auto_check_control");
@@ -199,18 +146,9 @@ function update_UI_firmware_target() {
 	setHTML("control_x_position_label", "Xw");
 	setHTML("control_y_position_label", "Yw");
 
-	EP_STA_SSID = "Sta/SSID";
-	EP_STA_PASSWORD = "Sta/Password";
-	EP_STA_IP_MODE = "Sta/IPMode";
-	EP_STA_IP_VALUE = "Sta/IP";
-	EP_STA_GW_VALUE = "Sta/Gateway";
-	EP_STA_MK_VALUE = "Sta/Netmask";
-	EP_WIFI_MODE = "WiFi/Mode";
-	EP_AP_SSID = "AP/SSID";
-	EP_AP_PASSWORD = "AP/Password";
-	EP_AP_IP_VALUE = "AP/IP";
-	SETTINGS_AP_MODE = 2;
-	SETTINGS_STA_MODE = 1;
+	// Swap AP Mode and STA Mode
+	common.SETTINGS_AP_MODE = 2;
+	common.SETTINGS_STA_MODE = 1;
 
 	setHTML("fwName", fwName);
 	//SD image or not
@@ -225,8 +163,11 @@ function update_UI_firmware_target() {
 }
 
 function Set_page_title(page_title) {
-	if (typeof page_title !== "undefined") esp_hostname = page_title;
-	document.title = esp_hostname;
+	const common = new Common();
+	if (typeof page_title !== "undefined") {
+		common.esp_hostname = page_title;
+	}
+	document.title = common.esp_hostname;
 }
 
 function initUI() {
@@ -297,7 +238,7 @@ function initUI_4() {
 		//wizard is done UI can be updated
 		const common = new Common();
 		common.setup_is_done = true;
-		do_not_build_settings = false;
+		common.do_not_build_settings = false;
 		AddCmd(display_boot_progress);
 		build_HTML_setting_list(common.current_setting_filter);
 		AddCmd(closeModal);
