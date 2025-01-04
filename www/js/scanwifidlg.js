@@ -36,11 +36,9 @@ const scanwifidlg = (item, subitem) => {
 };
 
 function refresh_scanwifi() {
-	displayBlock("AP_scan_loader");
-	displayNone("AP_scan_list");
-	displayBlock("AP_scan_status");
+	displayBlock(["AP_scan_loader", "AP_scan_status"]);
+	displayNone(["AP_scan_list", "refresh_scanwifi_btn"]);
 	setHTML("AP_scan_status", translate_text_item("Scanning"));
-	displayNone("refresh_scanwifi_btn");
 	const url = `/command?plain=${encodeURIComponent("[ESP410]")}`;
 	SendGetHttp(url, getscanWifiSuccess, getscanWififailed);
 }
@@ -100,18 +98,16 @@ function getscanWifiSuccess(response) {
 		getscanWififailed(406, translate_text_item("Wrong data"));
 		return;
 	}
-	displayNone("AP_scan_loader");
-	displayBlock("AP_scan_list");
-	displayNone("AP_scan_status");
-	displayBlock("refresh_scanwifi_btn");
+	displayNone(["AP_scan_loader", "AP_scan_status"]);
+	displayBlock(["AP_scan_list", "refresh_scanwifi_btn"]);
 }
 
 function getscanWififailed(error_code, response) {
 	conErr(error_code, response);
 	displayNone("AP_scan_loader");
-	displayBlock("AP_scan_status");
+	displayBlock(["AP_scan_status", "refresh_scanwifi_btn"]);
 	setHTML("AP_scan_status", stdErrMsg(error_code, response, translate_text_item("Failed")));
-	displayBlock("refresh_scanwifi_btn");
+
 }
 
 function scanwifidlg_close(response) {

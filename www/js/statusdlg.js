@@ -93,17 +93,15 @@ function statussuccess(response) {
 }
 
 function statusfailed(error_code, response) {
-	displayBlock("refreshstatusbtn");
+	displayBlock(["refreshstatusbtn", "status_msg"]);
 	displayNone("status_loader");
-	displayBlock("status_msg");
 	const errMsg = stdErrMsg(error_code, response);
 	conErr(errMsg);
 	setHTML("status_msg", errMsg);
 }
 
 function refreshstatus() {
-	displayNone("refreshstatusbtn");
-	displayBlock("status_loader");
+	displayNone(["refreshstatusbtn", "status_loader"]);
 	const modal = getactiveModal();
 	if (modal == null) {
 		return;

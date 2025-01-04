@@ -94,11 +94,7 @@ function update_UI_firmware_target() {
 
 	const fwName = "FluidNC";
 	last_grbl_pos = "";
-	displayNone("configtablink");
-	displayNone("auto_check_control");
-	displayNone("progress_btn");
-	displayNone("abort_btn");
-	displayNone("motor_off_control");
+	displayNone(["configtablink", "auto_check_control", "progress_btn", "abort_btn", "motor_off_control"]);
 	setHTML(
 		"tab_title_configuration",
 		"<span translate>GRBL configuration</span>",
@@ -122,20 +118,17 @@ function update_UI_firmware_target() {
 		id("zero_xyz_btn_txt").innerHTML += "A";
 		common.grblzerocmd += " A0";
 		build_axis_selection();
-		displayBlock("a_feedrate_group");
+		displayBlock(["a_feedrate_group", "control_a_position_display"]);
 		id("positions_labels2").style.display = "inline-grid";
-		displayBlock("control_a_position_display");
 	}
 	if (common.grblaxis > 4) {
-		displayBlock("control_b_position_display");
+		displayBlock(["control_b_position_display", "b_feedrate_group"]);
 		id("zero_xyz_btn_txt").innerHTML += "B";
 		common.grblzerocmd += " B0";
-		displayBlock("b_feedrate_group");
 	}
 	if (common.grblaxis > 5) {
-		displayBlock("control_c_position_display");
+		displayBlock(["control_c_position_display", "c_feedrate_group"]);
 		id("zero_xyz_btn_txt").innerHTML += "C";
-		displayBlock("c_feedrate_group");
 	} else {
 		displayNone("control_c_position_display");
 	}

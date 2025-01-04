@@ -3,7 +3,6 @@ import {
   getValue,
   id,
   setValue,
-  setDisabled,
   JogFeedrate,
   numpad,
   SendPrinterCommand,
@@ -569,8 +568,8 @@ var oldCannotClick = null;
 
 function scaleUnits(target) {
   //Scale the units to move when jogging down or up by 25 to keep them reasonable
-  let disMElement = id(target);
-  let currentValue = Number(disMElement.innerText);
+  const disMElement = id(target);
+  const currentValue = Number(disMElement.innerText);
 
   const common = new Common();
 
@@ -581,6 +580,16 @@ function scaleUnits(target) {
     console.error("Invalid number in disM element");
   }
 }
+
+/** Set the disabled value for the elements matching the selector */
+const setDisabled = (selector, value) => {
+  for ((element) of document.querySelectorAll(selector)) {
+    element.disabled = value;
+  }
+}
+const setTextContent = (name, val) => { id(name).textContent = val; }
+const setText = (name, val) => { id(name).innerText = val; }
+const getText = (name) => { return id(name).innerText; }
 
 function tabletUpdateModal() {
   const common = new Common();

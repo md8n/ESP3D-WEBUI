@@ -59,9 +59,7 @@ const refreshSettings = (hide_setting_list) => {
 	common.do_not_build_settings = typeof hide_setting_list === "undefined" ? false : !hide_setting_list;
 
 	displayBlock("settings_loader");
-	displayNone("settings_list_content");
-	displayNone("settings_status");
-	displayNone("settings_refresh_btn");
+	displayNone(["settings_list_content", "settings_status", "settings_refresh_btn"]);
 
 	scl = [];
 	const url = `/command?plain=${encodeURIComponent("[ESP400]")}`;
@@ -620,18 +618,16 @@ function getESPsettingsSuccess(response) {
 		console.log(response);
 		return;
 	}
-	displayNone("settings_loader");
-	displayBlock("settings_list_content");
-	displayNone("settings_status");
-	displayBlock("settings_refresh_btn");
+	displayNone(["settings_loader", "settings_status"]);
+	displayBlock(["settings_list_content", "settings_refresh_btn"]);
 }
 
 function getESPsettingsfailed(error_code, response) {
 	conErr(error_code, response);
 	displayNone("settings_loader");
-	displayBlock("settings_status");
+	displayBlock(["settings_status", "settings_refresh_btn"]);
 	setHTML("settings_status", stdErrMsg(error_code, response, translate_text_item("Failed")));
-	displayBlock("settings_refresh_btn");
+
 }
 
 const restart_esp = () => {
@@ -647,8 +643,7 @@ function process_restart_esp(answer) {
 const define_esp_role = (index) => {
 	switch (Number(defval(index))) {
 		case SETTINGS_FALLBACK_MODE:
-			displayBlock("setup_STA");
-			displayBlock("setup_AP");
+			displayBlock(["setup_STA", "setup_AP"]);
 			break;
 		case SETTINGS_AP_MODE:
 			displayNone("setup_STA");
@@ -659,8 +654,7 @@ const define_esp_role = (index) => {
 			displayNone("setup_AP");
 			break;
 		default:
-			displayNone("setup_STA");
-			displayNone("setup_AP");
+			displayNone(["setup_STA", "setup_AP"]);
 			break;
 	}
 };

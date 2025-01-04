@@ -69,11 +69,8 @@ function loginfailed(error_code, response_text) {
 	);
 	conErr(error_code, response_text);
 	displayBlock("login_content");
-	displayNone("login_loader");
 	setHTML("current_ID", translate_text_item("guest"));
-	displayNone("logout_menu");
-	displayNone("logout_menu_divider");
-	displayNone("password_menu");
+	displayNone(["login_loader", "logout_menu", "logout_menu_divider", "password_menu"]);
 }
 
 function loginsuccess(response_text) {
@@ -82,9 +79,7 @@ function loginsuccess(response_text) {
 		setHTML("current_auth_level", `(${translate_text_item(response.authentication_lvl)})`);
 	}
 	displayNone("login_loader");
-	displayBlock("logout_menu");
-	displayBlock("logout_menu_divider");
-	displayBlock("password_menu");
+	displayBlock(["logout_menu", "logout_menu_divider", "password_menu"]);
 	closeModal("Connection successful");
 }
 
@@ -103,17 +98,13 @@ function SubmitLogin() {
 function DisconnectionSuccess(response_text) {
 	setHTML("current_ID", translate_text_item("guest"));
 	setHTML("current_auth_level", "");
-	displayNone("logout_menu");
-	displayNone("logout_menu_divider");
-	displayNone("password_menu");
+	displayNone(["logout_menu", "logout_menu_divider", "password_menu"]);
 }
 
 function DisconnectionFailed(error_code, response) {
 	setHTML("current_ID", translate_text_item("guest"));
 	setHTML("current_auth_level", "");
-	displayNone("logout_menu");
-	displayNone("logout_menu_divider");
-	displayNone("password_menu");
+	displayNone(["logout_menu", "logout_menu_divider", "password_menu"]);
 	conErr(error_code, response);
 }
 

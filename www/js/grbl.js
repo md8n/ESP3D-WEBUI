@@ -13,6 +13,7 @@ import {
 	SendPrinterCommand,
 	translate_text_item,
 	sendCommand,
+	displayNone,
 } from "./common.js";
 
 /** interval timer ID */
@@ -44,7 +45,11 @@ let last_axis_letter = "Z";
 const axisNames = ["x", "y", "z", "a", "b", "c"];
 
 function setClickability(element, visible) {
-	setDisplay(element, visible ? "table-row" : "none");
+	if (visible) {
+		displayTable(element);
+	} else {
+		displayNone(element);
+	}
 }
 
 const autocheck = "report_auto";

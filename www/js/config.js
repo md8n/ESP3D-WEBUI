@@ -34,9 +34,7 @@ const refreshconfig = (is_override) => {
 	}
 	config_display_override(is_override_config);
 	displayBlock("config_loader");
-	displayNone("config_list_content");
-	displayNone("config_status");
-	displayNone("config_refresh_btn");
+	displayNone(["config_list_content", "config_status", "config_refresh_btn"]);
 	if (!is_override) {
 		config_configList = [];
 	}
@@ -57,25 +55,25 @@ function config_display_override(display_it) {
 }
 
 function getprinterconfig(is_override) {
-	var cmd = commandtxt;
-	if (typeof is_override != "undefined" && is_override) {
+	let cmd = commandtxt;
+	if (typeof is_override !== "undefined" && is_override) {
 		cmd = "M503";
 		config_override_List = [];
 		is_override_config = true;
 	} else {
 		is_override_config = false;
 	}
-	var url = "/command?plain=" + encodeURIComponent(cmd);
+	const url = `/command?plain=${encodeURIComponent(cmd)}`;
 	SendGetHttp(url);
 }
 
 const Apply_config_override = () => {
-	var url = "/command?plain=" + encodeURIComponent("M500");
+	const url = `/command?plain=${encodeURIComponent("M500")}`;
 	SendGetHttp(url, getESPUpdateconfigSuccess);
 };
 
 const Delete_config_override = () => {
-	var url = "/command?plain=" + encodeURIComponent("M502");
+	const url = `/command?plain=${encodeURIComponent("M502")}`;
 	SendGetHttp(url, getESPUpdateconfigSuccess);
 };
 
@@ -84,18 +82,18 @@ function getESPUpdateconfigSuccess(response) {
 }
 
 function build_HTML_config_list() {
-	var content = "";
+	let content = "";
 	const array_len = is_override_config
 		? config_override_List.length
 		: config_configList.length;
 	const prefix = is_override_config ? "override" : "";
 	const actions = [];
-	for (var i = 0; i < array_len; i++) {
-		let item = is_override_config
+	for (let i = 0; i < array_len; i++) {
+		const item = is_override_config
 			? config_override_List[i]
 			: config_configList[i];
 		content += "<tr>";
-		let fullpref = `${prefix}${i}`;
+		const fullpref = `${prefix}${i}`;
 		if (item.showcomment) {
 			content += "<td colspan='3' class='info'>";
 			content += item.comment;
@@ -154,14 +152,13 @@ function build_HTML_config_list() {
 	}
 	if (content.length > 0) {
 		setHTML("config_list_data", content);
+		// biome-ignore lint/complexity/noForEach: <explanation>
 		actions.forEach((action) => {
 			id(action.id).addEventListener(action.type, (event) => action.method);
 		});
 	}
-	displayNone("config_loader");
-	displayBlock("config_list_content");
-	displayNone("config_status");
-	displayBlock("config_refresh_btn");
+	displayNone(["config_loader", "config_status"]);
+	displayBlock(["config_list_content", "config_refresh_btn"]);
 }
 
 function config_check_value(value, index, is_override) {
@@ -178,12 +175,12 @@ function config_check_value(value, index, is_override) {
 }
 
 function process_config_answer(response_text) {
-	var result = true;
-	var tlines = response_text.split("\n");
+	let result = true;
+	const tlines = response_text.split("\n");
 	//console.log(tlines.length);
 	//console.log("Config has " + tlines.length + " entries");
-	var vindex = 0;
-	for (var i = 0; i < tlines.length; i++) {
+	let vindex = 0;
+	for (let i = 0; i < tlines.length; i++) {
 		vindex = create_config_entry(tlines[i], vindex);
 	}
 	if (vindex > 0) build_HTML_config_list();
@@ -443,10 +440,8 @@ function getESPconfigSuccess(response) {
 	//console.log(response);
 	if (!process_config_answer(response)) {
 		getESPconfigfailed(406, translate_text_item("Wrong data"));
-		displayNone("config_loader");
-		displayBlock("config_list_content");
-		displayNone("config_status");
-		displayBlock("config_refresh_btn");
+		displayNone(["config_loader", "config_status"]);
+		displayBlock(["config_list_content", "config_refresh_btn"]);
 		return;
 	}
 }
@@ -454,9 +449,8 @@ function getESPconfigSuccess(response) {
 function getESPconfigfailed(error_code, response) {
 	conErr(error_code, response);
 	displayNone("config_loader");
-	displayBlock("config_status");
+	displayBlock(["config_status", "config_refresh_btn"]);
 	setHTML("config_status", stdErrMsg(error_code, response, translate_text_item("Failed")));
-	displayBlock("config_refresh_btn");
 }
 
 export { Apply_config_override, Delete_config_override, refreshconfig };

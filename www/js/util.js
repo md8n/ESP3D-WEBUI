@@ -14,9 +14,6 @@ const setValue = (name, val) => {
 /** Return an element's `value` value. If the element does not exist or does not have a `value` value `undefined` is returned */
 const getValue = (name) => id(name)?.value;
 
-function setTextContent(name, val) {
-  id(name).textContent = val
-}
 /** Set the innerHTML if the element with an id matching the supplied name.
  * If the element cannot be found - nothing happens
  */
@@ -24,59 +21,6 @@ const setHTML = (name, val) => {
   const elem = id(name);
   if (elem) {
     elem.innerHTML = val;
-  }
-}
-function setText(name, val) {
-  id(name).innerText = val
-}
-function getText(name) {
-  return id(name).innerText
-}
-
-/** Set the display style of the element identified by name to the supplied value */
-const setDisplay = (name, val) => {
-  const elem = id(name);
-  if (!elem) {
-    return;
-  }
-  id(name).style.display = val;
-}
-
-/** Set the display style of the element identified by name to 'none' */
-const displayNone = (name) => setDisplay(name, 'none');
-
-/** Set the display style of the element identified by name to 'block' */
-const displayBlock = (name) => setDisplay(name, 'block');
-
-const disable_items = (item, state) => {
-  if (!item) {
-    return;
-  }
-  const liste = item.getElementsByTagName('*');
-  for (let i = 0; i < liste.length; i++) {
-    liste[i].disabled = state;
-  }
-}
-
-function displayFlex(name) {
-  setDisplay(name, 'flex')
-}
-function displayTable(name) {
-  setDisplay(name, 'table-row')
-}
-function displayInline(name) {
-  setDisplay(name, 'inline')
-}
-function displayInitial(name) {
-  setDisplay(name, 'initial')
-}
-function displayUndoNone(name) {
-  setDisplay(name, '')
-}
-/** Set the disabled value for the elements matching the selector */
-function setDisabled(selector, value) {
-  for ((element) of document.querySelectorAll(selector)) {
-    element.disabled = value;
   }
 }
 
@@ -97,7 +41,6 @@ const getChecked = (name) => {
   const checkBox = id(name);
   return checkBox?.value || "false";
 }
-
 
 const sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay));
 
@@ -171,12 +114,9 @@ export {
   classes,
   conErr,
   stdErrMsg,
-  disable_items,
-  displayBlock, displayFlex, displayInline, displayNone, displayUndoNone,
   getChecked, setChecked,
   getValue, setValue,
   setHTML,
-  setDisabled,
   HTMLEncode, HTMLDecode,
   id,
   browser_is,

@@ -36,8 +36,7 @@ const updatedlg = () => {
 	id("uploadfw-button").addEventListener("click", (event) => UploadUpdatefile());
 
 	setHTML("fw_file_name", translate_text_item("No file chosen"));
-	displayNone("prgfw");
-	displayNone("uploadfw-button");
+	displayNone(["prgfw", "uploadfw-button"]);
 	setHTML("updatemsg", "");
 	setValue("fw-select", "");
 	setHTML("fw_update_dlg_title", translate_text_item("ESP3D Update").replace("ESP3D", "FluidNC"));
@@ -107,13 +106,10 @@ function StartUploadUpdatefile(response) {
 		formData.append(arg, file.size);
 		formData.append("myfile[]", file, `/${file.name}`);
 	}
-	displayNone("fw-select_form");
-	displayNone("uploadfw-button");
+	displayNone(["fw-select_form", "uploadfw-button"]);
 	update_ongoing = true;
-	displayBlock("updatemsg");
-	displayBlock("prgfw");
-	if (files.length === 1) current_update_filename = files[0].name;
-	else current_update_filename = "";
+	displayBlock(["updatemsg", "prgfw"]);
+	current_update_filename = files.length === 1 ? files[0].name : "";
 	setHTML("updatemsg", `${translate_text_item("Uploading")} ${current_update_filename}`);
 	SendFileHttp(url, formData, UpdateProgressDisplay, updatesuccess, updatefailed);
 }
@@ -144,9 +140,8 @@ function updatesuccess(response) {
 
 function updatefailed(error_code, response) {
 	displayBlock("fw-select_form");
-	displayNone("prgfw");
+	displayNone(["prgfw", "uploadfw-button"]);
 	setHTML("fw_file_name", translate_text_item("No file chosen"));
-	displayNone("uploadfw-button");
 	//setHTML('updatemsg', "");
 	id("fw-select").value = "";
 	const common = new Common();

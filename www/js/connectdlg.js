@@ -118,8 +118,7 @@ const getFWdata = (response) => {
 };
 
 const connectfailed = (error_code, response) => {
-	displayBlock("connectbtn");
-	displayBlock("failed_connect_msg");
+	displayBlock(["connectbtn", "failed_connect_msg"]);
 	displayNone("connecting_msg");
 	conErr(error_code, response, "Fw identification error");
 };
@@ -143,8 +142,7 @@ const connectsuccess = (response) => {
 };
 
 const retryconnect = () => {
-	displayNone("connectbtn");
-	displayNone("failed_connect_msg");
+	displayNone(["connectbtn", "failed_connect_msg"]);
 	displayBlock("connecting_msg");
 	const url = `/command?plain=${encodeURIComponent("[ESP800]")}`;
 	SendGetHttp(url, connectsuccess, connectfailed);

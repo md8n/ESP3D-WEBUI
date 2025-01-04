@@ -43,7 +43,6 @@ import {
 
 //Preferences dialog
 
-const prefFile = "/preferences.json";
 
 const buildElem = (elem, contents, classVal) => {
     const elemPanel = document.createElement(elem);
@@ -219,15 +218,13 @@ const setDialog = (prefs) => {
                     // The actual value is in the checkbox `value`
                     fElem.checked =
                         "defValue" in value
-                            ? typeof value.defValue === "string" &&
-                                value.defValue.toLowerCase() === "false"
+                            ? typeof value.defValue === "string" && value.defValue.toLowerCase() === "false"
                                 ? false
                                 : !!value.defValue
                             : false;
                     // Because `click`ing the checkbox will toggle it (one way or another) we click it twice
                     fElem.value =
-                        typeof value.value === "string" &&
-                            value.value.toLowerCase() === "false"
+                        typeof value.value === "string" && value.value.toLowerCase() === "false"
                             ? "false"
                             : `${!!value.value}`;
                     fElem.click();
@@ -276,7 +273,7 @@ const initpreferences = () => {
     setupCommands();
 };
 
-const elemBlockOrNone = (elemName, enable) => {
+const displayBlockOrNone = (elemName, enable) => {
     if (enable) {
         displayBlock(elemName);
     } else {
@@ -285,13 +282,13 @@ const elemBlockOrNone = (elemName, enable) => {
 };
 
 const navbar_lockUI = (enable) => {
-    elemBlockOrNone("lock_ui_btn", enable);
+    displayBlockOrNone("lock_ui_btn", enable);
     ontoggleLock(enable);
 };
 
 const navbar_enableDHT = (enable) => {
-    elemBlockOrNone("DHT_humidity", enable);
-    elemBlockOrNone("DHT_temperature", enable);
+    displayBlockOrNone("DHT_humidity", enable);
+    displayBlockOrNone("DHT_temperature", enable);
 };
 
 const navbar_enableCamTab = (enable) => {
@@ -301,7 +298,7 @@ const navbar_enableCamTab = (enable) => {
 
     let camoutput = false;
 
-    elemBlockOrNone("camtablink", enable);
+    displayBlockOrNone("camtablink", enable);
     if (enable) {
         camera_GetAddress();
         if (getPrefValue("auto_load_camera")) {
@@ -314,8 +311,7 @@ const navbar_enableCamTab = (enable) => {
 
     if (!camoutput) {
         id("camera_frame").src = "";
-        displayNone("camera_frame_display");
-        displayNone("camera_detach_button");
+        displayNone(["camera_frame_display", "camera_detach_button"]);
     }
 };
 
@@ -346,7 +342,7 @@ const setupPreferenceHandlers = () => {
 };
 
 const controls_showControlsPanel = (enable) => {
-    elemBlockOrNone("control_preferences", enable);
+    displayBlockOrNone("control_preferences", enable);
 };
 
 /** Initial setup of the Controls Panel from the preferences coming from the file */
@@ -359,7 +355,7 @@ const setupControlsHandlers = () => {
 };
 
 const grbl_showGRBLPanel = (enable) => {
-    elemBlockOrNone("grblPanel", enable);
+    displayBlockOrNone("grblPanel", enable);
     if (enable) {
         grblpanel();
     } else {
@@ -374,7 +370,7 @@ const grbl_ReportIntervalChange = (changed) => {
 };
 
 const grbl_showProbeTab = (enable) => {
-    elemBlockOrNone("grblprobetablink", enable);
+    displayBlockOrNone("grblprobetablink", enable);
     if (!enable) {
         id("grblcontroltablink").click();
     }
@@ -394,7 +390,7 @@ const setupGRBLHandlers = () => {
     id("show_grbl_probe_tab").addEventListener("change", (event) => grbl_showProbeTab(getPrefValue("show_grbl_probe_tab")));
 };
 
-const files_showFilesPanel = (enable) => elemBlockOrNone("filesPanel", enable);
+const files_showFilesPanel = (enable) => displayBlockOrNone("filesPanel", enable);
 
 const files_refreshBtns = (enableSD, enableUSB) => {
     if (enableSD || enableUSB) {
@@ -407,12 +403,12 @@ const files_refreshBtns = (enableSD, enableUSB) => {
 };
 
 const files_TFTSD = (enableSD, enableUSB) => {
-    elemBlockOrNone("files_refresh_tft_sd", enableSD, enableUSB);
+    displayBlockOrNone("files_refresh_tft_sd", enableSD || enableUSB);
     files_refreshBtns(enableSD, enableUSB);
 };
 
 const files_TFTUSB = (enableSD, enableUSB) => {
-    elemBlockOrNone("files_refresh_tft_usb", enableSD, enableUSB);
+    displayBlockOrNone("files_refresh_tft_usb", enableSD || enableUSB);
     files_refreshBtns(enableSD, enableUSB);
 };
 
@@ -434,7 +430,7 @@ const setupFilesHandlers = () => {
     id("f_filters").addEventListener("change", (event) => files_filterList(getPrefValue("f_filters")));
 };
 
-const commands_showCommandsPanel = (enable) => elemBlockOrNone("commandsPanel", enable);
+const commands_showCommandsPanel = (enable) => displayBlockOrNone("commandsPanel", enable);
 
 const commands_autoScroll = (enable) => {
     setChecked("monitor_enable_autoscroll", enable);
@@ -463,6 +459,7 @@ const setupCommandsHandlers = () => {
     id("enable_verbose_mode").addEventListener("change", (event) => commands_verboseMode(getPrefValue("enable_verbose_mode")));
 };
 
+const prefFile = "/preferences.json";
 function getpreferenceslist() {
     const url = prefFile;
     SendGetHttp(url, processPreferencesGetSuccess, processPreferencesGetFailed);
@@ -490,13 +487,7 @@ const handleCheckboxClick = (checkboxId) => {
     return newValue;
 };
 
-const togglePanel = (checkboxId, panelId) => {
-    if (handleCheckboxClick(checkboxId)) {
-        displayBlock(panelId);
-    } else {
-        displayNone(panelId);
-    }
-};
+const togglePanel = (checkboxId, panelId) => displayBlockOrNone(panelId, handleCheckboxClick(checkboxId));
 
 function processPreferencesGetSuccess(response) {
     Preferences_build_list((response.indexOf("<HTML>") === -1) ? response : defaultpreferenceslist);

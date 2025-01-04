@@ -7,22 +7,17 @@ import {
 	classes,
 	conErr,
 	stdErrMsg,
-	disable_items,
-	displayBlock,
-	displayFlex,
-	displayInline,
-	displayNone,
 	getChecked,
 	setChecked,
 	getValue,
 	setValue,
 	setHTML,
-	setDisabled,
 	HTMLEncode,
 	HTMLDecode,
 	id,
 	browser_is,
 } from "./util.js";
+import { displayBlock, displayFlex, displayTable, displayInline, displayNone, displayUndoNone } from "./utilDisplay.js";
 import { numpad } from "./numpad.js";
 import { checkValue, valueIsFloat } from "./utilValidation.js";
 
@@ -449,21 +444,17 @@ export {
 	classes,
 	conErr,
 	stdErrMsg,
-	disable_items,
-	displayBlock,
-	displayFlex,
-	displayInline,
-	displayNone,
 	getChecked,
 	setChecked,
 	getValue,
 	setValue,
 	setHTML,
-	setDisabled,
 	HTMLEncode,
 	HTMLDecode,
 	id,
 	browser_is,
+	// from utilDisplay.js
+	displayBlock, displayFlex, displayTable, displayInline, displayNone, displayUndoNone,
 	// from utilValidation.js
 	checkValue,
 	valueIsFloat,

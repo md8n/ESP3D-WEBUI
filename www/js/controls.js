@@ -46,19 +46,13 @@ const ControlsPanel = () => {
 };
 
 function hideAxiscontrols() {
-	displayNone("JogBar");
-	displayNone("HomeZ");
+	displayNone(["JogBar", "HomeZ", "control_z_position_display", "control_zm_position_row", "z_velocity_display"]);
 	displayBlock("CornerZ");
-	displayNone("control_z_position_display");
-	displayNone("control_zm_position_row");
-	displayNone("z_velocity_display");
 }
 
 function showAxiscontrols() {
 	displayNone("CornerZ");
-	displayBlock("JogBar");
-	displayBlock("HomeZ");
-	displayBlock("control_z_position_display");
+	displayBlock(["JogBar", "HomeZ", "control_z_position_display"]);
 	displayTable("control_zm_position_row");
 	displayInline("z_velocity_display");
 }

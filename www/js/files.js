@@ -74,8 +74,7 @@ function build_accept(file_filters_list) {
 
 function init_files_panel(dorefresh = true) {
 	displayInline("files_refresh_btn");
-	displayNone("files_refresh_primary_sd_btn");
-	displayNone("files_refresh_secondary_sd_btn");
+	displayNone(["files_refresh_primary_sd_btn", "files_refresh_secondary_sd_btn"]);
 
 	id("files_createdir_btn").addEventListener("click", (event) => files_Createdir());
 	id("files_filter_btn").addEventListener("click", (event) => files_filter_button());
@@ -357,8 +356,7 @@ function files_refreshFiles(path, usecache) {
 	files_file_list = [];
 	files_status_list = [];
 	files_build_display_filelist(false);
-	displayBlock("files_list_loader");
-	displayBlock("files_nav_loader");
+	displayBlock(["files_list_loader", "files_nav_loader"]);
 	//this is pure direct SD
 	if (direct_sd) {
 		const url = `/upload?path=${encodeURI(cmdpath)}`;
@@ -520,15 +518,12 @@ function files_go_levelup() {
 function files_build_display_filelist(displaylist = true) {
 	populateTabletFileSelector(files_file_list, files_currentPath);
 
-	displayNone("files_uploading_msg");
-	displayNone("files_list_loader");
-	displayNone("files_nav_loader");
+	displayNone(["files_uploading_msg", "files_list_loader", "files_nav_loader"]);
 
 	const fileListElem = id("files_fileList");
 
 	if (!displaylist) {
-		displayNone("files_status_sd_status");
-		displayNone("files_space_sd_status");
+		displayNone(["files_status_sd_status", "files_space_sd_status"]);
 		if (fileListElem) {
 			fileListElem.innerHTML = "";
 			displayNone("files_fileList");
@@ -556,6 +551,7 @@ function files_build_display_filelist(displaylist = true) {
 		}
 
 		fileListElem.innerHTML = content;
+		// biome-ignore lint/complexity/noForEach: <explanation>
 		actions.forEach((action) => {
 			id(action.id).addEventListener(action.type, (event) => action.method);
 		});

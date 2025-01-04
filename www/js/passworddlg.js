@@ -24,9 +24,8 @@ const changepassworddlg = () => {
 	id("passwordDlgCancel").addEventListener("click", (event) => closeModal("cancel"));
 	id("change_password_btn").addEventListener("click", (event) => SubmitChangePassword());
 
-	displayNone("password_loader");
+	displayNone(["password_loader", "change_password_btn"]);
 	displayBlock("change_password_content");
-	displayNone("change_password_btn");
 	setHTML("password_content", "");
 	setHTML("password_password_text", "");
 	setHTML("password_password_text1", "");

@@ -97,8 +97,7 @@ const setupdlg = () => {
     disableStep("wizard_line2", "step2link");
     disableStep("wizard_line3", "step3link");
 
-    displayNone("step3link");
-    displayNone("wizard_line4");
+    displayNone(["step3link", "wizard_line4"]);
     disableStep("wizard_line4", "endsteplink");
 
     const content = table(td(`${get_icon_svg("flag")}&nbsp;`) + td(build_language_list("language_selection")));
@@ -209,8 +208,7 @@ const define_sd_role = (index) => {
         displayBlock("setup_SD");
         displayNone("setup_primary_SD");
     } else {
-        displayNone("setup_SD");
-        displayNone("setup_primary_SD");
+        displayNone(["setup_SD", "setup_primary_SD"]);
     }
 };
 
