@@ -42,9 +42,7 @@ const buildPrefsFromDefs = (prefLevel = prefDefs) => {
 
 		if ("prefDefs" in value) {
 			// Transfer the child level values back to this parent level
-			for (const [cKey, cValue] of Object.entries(
-				buildPrefsFromDefs(value.prefDefs),
-			)) {
+			for (const [cKey, cValue] of Object.entries(buildPrefsFromDefs(value.prefDefs))) {
 				prefs[cKey] = cValue;
 			}
 		}
