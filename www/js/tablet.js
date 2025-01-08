@@ -7,16 +7,20 @@ var gCodeDisplayable = false
 var snd = null
 var sndok = true
 
-var versionNumber = 0.87
+var versionNumber = 0.87;
+
+const addMessage = (msg, scroll = true, clear = false) => {
+  const msgWindow = document.getElementById("messages");
+  if (msgWindow) {
+    msgWindow.textContent = clear ? msg : `${msgWindow.textContent}\n${msg}`;
+    if (scroll) {
+      msgWindow.scrollTop = msgWindow.scrollHeight;
+    }
+  }
+}
 
 /** Print the version number to the console */
-const showVersionNumber = () => {
-  const msgWindow = document.getElementById('messages');
-  let text = msgWindow.textContent;
-  text = `${text}\nIndex.html Version: ${versionNumber}`;
-  msgWindow.textContent = text;
-  msgWindow.scrollTop = msgWindow.scrollHeight;
-}
+const showVersionNumber = () => addMessage(`Index.html Version: ${versionNumber}`);
 
 function beep(vol, freq, duration) {
   if (snd == null) {
@@ -147,12 +151,7 @@ const setHomeClickUp = () => {
 const zeroAxis = (axis) => {
   tabletClick()
   setAxisByValue(axis, 0)
-
-  const msgWindow = document.getElementById('messages')
-  let text = msgWindow.textContent
-  text += `\nHome pos set for: ${axis}`
-  msgWindow.textContent = text
-  msgWindow.scrollTop = msgWindow.scrollHeight
+  addMessage(`Home pos set for: ${axis}`);
 }
 
 const toggleUnits = () => {
@@ -175,7 +174,8 @@ const toggleUnits = () => {
 
 const jogTo = (axisAndDistance) => {
   // Always force G90 mode because synchronization of modal reports is unreliable
-  var feedrate = JogFeedrate(axisAndDistance)
+  // JogFeedRate is defined in controls.js
+  let feedrate = JogFeedrate(axisAndDistance);
   if (modal.units === 'G20') {
     feedrate /= 25.4;
     feedrate = feedrate.toFixed(2);
@@ -206,9 +206,10 @@ var longone = false
 function long_jog(target) {
   longone = true
   distance = 1000
-  var axisAndDirection = target.value
-  var feedrate = JogFeedrate(axisAndDirection)
-  if (modal.units == 'G20') {
+  const axisAndDirection = target.value
+  // JogFeedRate is defined in controls.js
+  let feedrate = JogFeedrate(axisAndDirection);
+  if (modal.units === 'G20') {
     distance /= 25.4
     distance = distance.toFixed(3)
     feedrate /= 25.4
@@ -377,15 +378,13 @@ function tabletShowMessage(msg, collecting) {
     return; //We don't want to display these messages
   }
 
-  const msgWindow = document.getElementById('messages')
-  msgWindow.textContent = `${msgWindow.textContent}\n${maslowErrorMsgHandling(msg) || msg}`;
-  msgWindow.scrollTop = msgWindow.scrollHeight;
+  addMessage(`${maslowErrorMsgHandling(msg) || msg}`);
 }
 
 function tabletShowResponse(response) { }
 
 function clearAlarm() {
-  if (id('systemStatus').innerText == 'Alarm') {
+  if (id('systemStatus').innerText === 'Alarm') {
     id('systemStatus').classList.remove('system-status-alarm')
     SendPrinterCommand('$X', true, null, null, 114, 1)
   }
@@ -395,7 +394,7 @@ function setJogSelector(units) {
   var buttonDistances = []
   var menuDistances = []
   var selected = 0
-  if (units == 'G20') {
+  if (units === 'G20') {
     // Inches
     buttonDistances = [0.001, 0.01, 0.1, 1, 0.003, 0.03, 0.3, 3, 0.005, 0.05, 0.5, 5]
     menuDistances = [0.00025, 0.0005, 0.001, 0.003, 0.005, 0.01, 0.03, 0.05, 0.1, 0.3, 0.5, 1, 3, 5, 10, 30]
@@ -464,12 +463,7 @@ function doPlayButton() {
     playButtonHandler()
   }
 
-  const msgWindow = document.getElementById('messages')
-  let text = msgWindow.textContent
-  text += `\nStarting File: ${document.getElementById('filelist').options[selectElement.selectedIndex].text}`
-  msgWindow.textContent = text
-  msgWindow.scrollTop = msgWindow.scrollHeight
-
+  addMessage(`Starting File: ${document.getElementById('filelist').options[selectElement.selectedIndex].text}`);
 }
 
 var pauseButtonHandler
@@ -698,22 +692,22 @@ function tabletGrblState(grbl, response) {
 }
 
 function addOption(selector, name, value, isDisabled, isSelected) {
-  var opt = document.createElement('option')
-  opt.appendChild(document.createTextNode(name))
-  opt.disabled = isDisabled
-  opt.selected = isSelected
-  opt.value = value
-  selector.appendChild(opt)
+  const opt = document.createElement('option');
+  opt.appendChild(document.createTextNode(name));
+  opt.disabled = isDisabled;
+  opt.selected = isSelected;
+  opt.value = value;
+  selector.appendChild(opt);
 }
 
-var gCodeFilename = ''
+var gCodeFilename = '';
 
-var filename = 'TEST.NC'
-var watchPath = ''
+var filename = 'TEST.NC';
+var watchPath = '';
 
 function tabletGetFileList(path) {
   gCodeFilename = ''
-  SendGetHttp('/upload?path=' + encodeURI(path), files_list_success)
+  SendGetHttp(`/upload?path=${encodeURI(path)}`, files_list_success)
 }
 
 function tabletInit() {
@@ -751,17 +745,17 @@ function arrayToXYZ(a) {
 }
 
 function showGCode(gcode) {
-  gCodeLoaded = gcode != ''
+  gCodeLoaded = gcode !== '';
   if (!gCodeLoaded) {
-    id('gcode').value = '(No GCode loaded)'
-    displayer.clear()
+    id('gcode').value = '(No GCode loaded)';
+    displayer.clear();
   } else {
-    id('gcode').value = gcode
-    var initialPosition = {
-      x: WPOS[0],
-      y: WPOS[1],
-      z: WPOS[2],
-    }
+    id('gcode').value = gcode;
+    // const initialPosition = {
+    //   x: WPOS[0],
+    //   y: WPOS[1],
+    //   z: WPOS[2],
+    // }
 
     if (gCodeDisplayable) {
       displayer.showToolpath(gcode, modal, arrayToXYZ(WPOS))
@@ -773,60 +767,62 @@ function showGCode(gcode) {
 }
 
 function nthLineEnd(str, n) {
-  if (n <= 0) return 0
-  var L = str.length,
-    i = -1
-  while (n-- && i++ < L) {
-    i = str.indexOf('\n', i)
-    if (i < 0) break
+  if (n <= 0) {
+    return 0;
   }
-  return i
+  const L = str.length;
+  let i = -1;
+  while (n-- && i++ < L) {
+    i = str.indexOf('\n', i);
+    if (i < 0) {
+      break;
+    }
+  }
+  return i;
 }
 
 function scrollToLine(lineNumber) {
-  var gCodeLines = id('gcode')
-  var lineHeight = parseFloat(getComputedStyle(gCodeLines).getPropertyValue('line-height'))
-  var gCodeText = gCodeLines.value
+  const gCodeLines = id('gcode');
+  const lineHeight = Number.parseFloat(getComputedStyle(gCodeLines).getPropertyValue('line-height'));
+  const gCodeText = gCodeLines.value;
 
   gCodeLines.scrollTop = lineNumber * lineHeight
 
-  var start
-  var end
+  let start;
+  let end;
   if (lineNumber <= 0) {
-    start = 0
-    end = 1
+    start = 0;
+    end = 1;
   } else {
-    start = lineNumber == 1 ? 0 : (start = nthLineEnd(gCodeText, lineNumber) + 1)
-    end = gCodeText.indexOf('\n', start)
+    start = lineNumber === 1 ? 0 : nthLineEnd(gCodeText, lineNumber) + 1;
+    end = gCodeText.indexOf('\n', start);
   }
 
-  gCodeLines.select()
-  gCodeLines.setSelectionRange(start, end)
+  gCodeLines.select();
+  gCodeLines.setSelectionRange(start, end);
 }
 
 function runGCode() {
   gCodeFilename && sendCommand(`$sd/run=${gCodeFilename}`)
-  setTimeout(() => {
-    SendRealtimeCmd(0x7e)
-  }, 1500)
+  setTimeout(() => { SendRealtimeCmd(0x7e); }, 1500)
   // expandVisualizer()
 }
 
 function tabletSelectGCodeFile(filename) {
-  var selector = id('filelist')
-  var options = Array.from(selector.options)
-  var option = options.find((item) => item.text == filename)
-  option.selected = true
+  const selector = id('filelist');
+  const options = Array.from(selector.options);
+  const option = options.find((item) => item.text === filename);
+  option.selected = true;
 }
 function tabletLoadGCodeFile(path, size) {
   gCodeFilename = path
-  if ((isNaN(size) && size.endsWith('GB')) || size > 10000000) {
+  if ((Number.isNaN(size) && size.endsWith('GB')) || size > 10000000) {
     showGCode('GCode file too large to display (> 1MB)')
     gCodeDisplayable = false
     displayer.clear()
   } else {
     gCodeDisplayable = true
-    fetch(encodeURIComponent('SD' + gCodeFilename))
+    fetch(encodeURIComponent(`SD${gCodeFilename}`))
       .then((response) => response.text())
       .then((gcode) => showGCode(gcode))
   }
@@ -850,13 +846,13 @@ function selectFile() {
     files_go_levelup()
     return
   }
-  var file = files_file_list[index]
-  var filename = file.name
+  const file = files_file_list[index];
+  const filename = file.name;
   if (file.isdir) {
-    gCodeFilename = ''
-    files_enter_dir(filename)
+    gCodeFilename = '';
+    files_enter_dir(filename);
   } else {
-    tabletLoadGCodeFile(files_currentPath + filename, file.size)
+    tabletLoadGCodeFile(files_currentPath + filename, file.size);
   }
 }
 function toggleDropdown() {
@@ -931,8 +927,8 @@ function shiftDown() {
   if (newChild) {
     return
   }
-  var sel = id('jog-distance')
-  var distance = sel.value
+  const sel = id('jog-distance');
+  const distance = sel.value;
   oldIndex = sel.selectedIndex
   newChild = addJogDistance(distance * 10)
 }
@@ -940,8 +936,8 @@ function altDown() {
   if (newChild) {
     return
   }
-  var sel = id('jog-distance')
-  var distance = sel.value
+  const sel = id('jog-distance');
+  const distance = sel.value;
   oldIndex = sel.selectedIndex
   newChild = addJogDistance(distance / 10)
 }
@@ -953,7 +949,7 @@ function jogClick(name) {
 // Reports whether a text input box has focus - see the next comment
 var isInputFocused = false
 function tabletIsActive() {
-  return id('tablettab').style.display !== 'none'
+  return id('tablettab').style.display !== 'none';
 }
 function handleKeyDown(event) {
   // When we are in a modal input field like the MDI text boxes
@@ -1038,8 +1034,8 @@ function handleKeyUp(event) {
 
 function mdiEnterKey(event) {
   if (event.key === 'Enter') {
-    MDIcmd(event.target.value)
-    event.target.blur()
+    MDIcmd(event.target.value);
+    event.target.blur();
   }
 }
 
@@ -1075,7 +1071,7 @@ function loadJogDists() {
 
 function fullscreenIfMobile() {
   if (/Mobi|Android/i.test(navigator.userAgent)) {
-    toggleFullscreen()
+    toggleFullscreen();
   }
 }
 
@@ -1085,37 +1081,31 @@ function fullscreenIfMobile() {
 // a) required setting a fixed message window height, or
 // b) the message window would extend past the screen bottom when messages were added
 function height(element) {
-  return element?.getBoundingClientRect()?.height
+  return element?.getBoundingClientRect()?.height;
 }
 function heightId(eid) {
-  return height(id(eid))
+  return height(id(eid));
 }
 function bodyHeight() {
-  return height(document.body)
+  return height(document.body);
 }
 function controlHeight() {
-  return heightId('nav-panel') + heightId('axis-position') + heightId('setAxis')
+  return heightId('nav-panel') + heightId('axis-position') + heightId('setAxis');
 }
 function setBottomHeight() {
   if (!tabletIsActive()) {
-    return
+    return;
   }
-  var residue = bodyHeight() - heightId('navbar') - controlHeight()
-  const tStyle = getComputedStyle(id('tablettab'))
-  let tPad = Number.parseFloat(tStyle.paddingTop) + Number.parseFloat(tStyle.paddingBottom)
-  tPad += 20
+  const residue = bodyHeight() - heightId('navbar') - controlHeight();
+  const tStyle = getComputedStyle(id('tablettab'));
+  let tPad = Number.parseFloat(tStyle.paddingTop) + Number.parseFloat(tStyle.paddingBottom);
+  tPad += 20;
 }
 window.onresize = setBottomHeight
 
 function updateGcodeViewerAngle() {
   const gcode = id('gcode').value
   displayer.cycleCameraAngle(gcode, modal, arrayToXYZ(WPOS))
-}
-
-function fullscreenIfMobile() {
-  if (/Mobi|Android/i.test(navigator.userAgent)) {
-    toggleFullscreen()
-  }
 }
 
 function showCalibrationPopup() {
@@ -1161,7 +1151,7 @@ function openModal(modalId) {
   const modal = document.getElementById(modalId)
 
   if (modal) {
-    modal.style.display = 'flex'
+    modal.style.display = 'flex';
   }
 }
 
@@ -1169,24 +1159,23 @@ function hideModal(modalId) {
   const modal = document.getElementById(modalId)
 
   if (modal) {
-    modal.style.display = 'none'
+    modal.style.display = 'none';
   }
 }
 
-const onCalibrationButtonsClick = async (command, msg) => {
-  sendCommand(command)
+const onCalibrationButtonsClick = async (command, msg = "") => {
+  if (msg) {
+    addMessage(msg);
+  }
+  sendCommand(command);  
 
   //Prints out the index.html version number when test is pressed
   if (command === '$TEST') {
-    const msgWindow = document.getElementById('messages')
-    let text = msgWindow.textContent
-    text = `${text}\nIndex.html Version: ${versionNumber}`
-    msgWindow.textContent = text
-    msgWindow.scrollTop = msgWindow.scrollHeight
+    addMessage(`Index.html Version: ${versionNumber}`);
   }
 
   if (command !== '$MINFO') {
-    setTimeout(() => { sendCommand('$MINFO'); }, 1000)
+    setTimeout(() => { sendCommand('$MINFO'); }, 1000);
   }
 }
 
