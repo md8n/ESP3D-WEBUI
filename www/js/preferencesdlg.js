@@ -460,7 +460,7 @@ const setupCommandsHandlers = () => {
 };
 
 const prefFile = "/preferences.json";
-function getpreferenceslist() {
+const getpreferenceslist = () => {
     const url = prefFile;
     SendGetHttp(url, processPreferencesGetSuccess, processPreferencesGetFailed);
 }
@@ -499,7 +499,7 @@ function processPreferencesGetFailed(error_code, response) {
 }
 
 function Preferences_build_list(response_text) {
-    preferenceslist = [];
+    let preferenceslist = [];
     try {
         if (response_text.length !== 0) {
             //console.log(response_text);
