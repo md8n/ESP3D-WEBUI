@@ -528,7 +528,6 @@ function files_build_display_filelist(displaylist = true) {
 
 		fileListElem.innerHTML = content;
 		actions.forEach((action) => {
-			console.log(action);
 			id(action.id).addEventListener("click", (event) => action.method(action.index));
 		});
 		displayBlock("files_fileList");
