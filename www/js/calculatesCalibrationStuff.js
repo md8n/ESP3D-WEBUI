@@ -523,7 +523,7 @@ function findMaxFitness(measurements) {
   let currentGuess = JSON.parse(JSON.stringify(initialGuess));
   let stagnantCounter = 0;
   let totalCounter = 0;
-  var bestGuess = JSON.parse(JSON.stringify(initialGuess));
+  let bestGuess = JSON.parse(JSON.stringify(initialGuess));
 
   function iterate() {
     const messagesBox = document.getElementById('messages');
@@ -548,7 +548,7 @@ function findMaxFitness(measurements) {
         totalCounter
       });
 
-      if (totalCounter % 100 == 0) {
+      if (totalCounter % 100 === 0) {
         messagesBox.textContent += `Fitness: ${(1 / bestGuess.fitness).toFixed(7)} in ${totalCounter}\n`;
         messagesBox.scrollTop = messagesBox.scrollHeight;
       }
@@ -561,7 +561,7 @@ function findMaxFitness(measurements) {
       }
 
       messagesBox.textContent += '\nCalibration values:';
-      messagesBox.textContent += '\nFitness: ' + 1 / bestGuess.fitness.toFixed(7);
+      messagesBox.textContent += `\nFitness: ${1 / bestGuess.fitness.toFixed(7)}`;
 
       const tlxStr = bestGuess.tl.x.toFixed(1), tlyStr = bestGuess.tl.y.toFixed(1);
       const trxStr = bestGuess.tr.x.toFixed(1), tryStr = bestGuess.tr.y.toFixed(1);
@@ -588,7 +588,7 @@ function findMaxFitness(measurements) {
         sendCommand(`$/${M}_blY= ${blyStr}`);
         sendCommand(`$/${M}_brX= ${brxStr}`);
         sendCommand(`$/${M}_brY= ${bryStr}`);
-        
+
         sendCalibrationEvent({
           good: true,
           final: true,
@@ -604,9 +604,7 @@ function findMaxFitness(measurements) {
         initialGuess.fitness = 100000000;
 
         // This restarts calibration process for the next stage
-        setTimeout(function () {
-          onCalibrationButtonsClick('$CAL', 'Calibrate');
-        }, 2000);
+        setTimeout(() => { onCalibrationButtonsClick('$CAL', 'Calibrate'); }, 2000);
       } else {
         sendCalibrationEvent({
           good: false,
