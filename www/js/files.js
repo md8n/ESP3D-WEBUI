@@ -149,7 +149,7 @@ function files_build_file_line(index, actions) {
 		content += "</tr></table>";
 		content += "</div>";
 		if (is_clickable) {
-			actions.push({ id: fliId, type: "click", method: (event) => files_click_file(index) });
+			actions.push({ id: fliId, method: files_click_file, index: index });
 		}
 		let sizecol = "col-md-2 col-sm-2 filesize";
 		let timecol = "col-md-2 col-sm-2";
@@ -169,19 +169,19 @@ function files_build_file_line(index, actions) {
 		content += "<div class='pull-right'>";
 		if (entry.isprintable) {
 			content += `<button id='${fliId}_print_btn' ${btnCls} ${btnPad}>${get_icon_svg("play", "1em", "1em")}</button>`;
-			actions.push({ id: `${fliId}_print_btn`, type: "click", method: (event) => files_print(index) });
+			actions.push({ id: `${fliId}_print_btn`, method: files_print, index: index });
 		}
 		content += "&nbsp;";
 		if (!entry.isdir) {
 			content += `<button id='${fliId}_download_btn' ${btnCls} ${btnPad}>${get_icon_svg("download", "1em", "1em")}</button>`;
-			actions.push({ id: `${fliId}_download_btn`, type: "click", method: (event) => files_download(index) });
+			actions.push({ id: `${fliId}_download_btn`, method: files_download, index: index });
 		}
 		if (files_showdeletebutton(index)) {
 			content += `<button id='${fliId}_delete_btn' class='btn btn-xs btn-danger' ${btnPad}>${get_icon_svg("trash", "1em", "1em")}</button>`;
-			actions.push({ id: `${fliId}_delete_btn`, type: "click", method: (event) => files_delete(index) });
+			actions.push({ id: `${fliId}_delete_btn`, method: files_delete, index: index });
 		}
 		content += `<button id='${fliId}_rename_btn' ${btnCls} ${btnPad}>${get_icon_svg("wrench", "1em", "1em")}</button>`;
-		actions.push({ id: `${fliId}_rename_btn`, type: "click", method: (event) => files_rename(index) });
+		actions.push({ id: `${fliId}_rename_btn`, method: files_rename, index: index });
 		content += "</div>";
 		content += "</div>";
 		content += "</div>";
@@ -539,7 +539,7 @@ function files_build_display_filelist(displaylist = true) {
 			content += `<li id='${liId}' class='list-group-item list-group-hover' style='cursor:pointer'>`;
 			content += `<span>${get_icon_svg("level-up")}</span>&nbsp;&nbsp;<span translate>Up...</span>`;
 			content += "</li>";
-			actions.push({ id: liId, type: "click", method: (event) => files_go_levelup() });
+			actions.push({ id: liId, type: "click", method: files_go_levelup, index: undefined });
 		}
 		for (let index = 0; index < files_file_list.length; index++) {
 			if (!files_file_list[index].isdir)
@@ -553,7 +553,7 @@ function files_build_display_filelist(displaylist = true) {
 		fileListElem.innerHTML = content;
 		// biome-ignore lint/complexity/noForEach: <explanation>
 		actions.forEach((action) => {
-			id(action.id).addEventListener(action.type, (event) => action.method);
+			id(action.id).addEventListener("click", (event) => action.method(action.index));
 		});
 		displayBlock("files_fileList");
 	}

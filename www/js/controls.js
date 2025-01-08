@@ -296,7 +296,7 @@ function control_build_macro_ui() {
 	let content = "<div class='tooltip'>";
 	content += "<span class='tooltip-text'>Manage macros</span>"
 	content += "<button id='control_btn_show_macro_dlg' class='btn btn-primary'>";
-	actions.push({ id: "control_btn_show_macro_dlg", type: "click", method: (event) => showmacrodlg(processMacroSave) });
+	actions.push({ id: "control_btn_show_macro_dlg", method: (event) => showmacrodlg(processMacroSave) });
 	content += "<span class='badge'>";
 	content += "<svg width='1.3em' height='1.2em' viewBox='0 0 1300 1200'>";
 	content += "<g transform='translate(50,1200) scale(1, -1)'>";
@@ -314,11 +314,11 @@ function control_build_macro_ui() {
 	for (let i = 0; i < 9; i++) {
 		const entry = common.control_macrolist[i];
 		content += control_build_macro_button(i, entry);
-		actions.push({ id: `control_macro_${i}`, type: "click", method: macro_command(entry.target, entry.filename) });
-	}
+actions.push({ id: `control_macro_${i}`, method: (event) => macro_command(entry.target, entry.filename) });
+}
 	setHTML("Macro_list", content);
 	for (const action in actions) {
-		id(action.id).addEventListener(action.type, (event) => action.method);
+		id(action.id).addEventListener("click", action.method);
 	}
 }
 

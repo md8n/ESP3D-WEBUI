@@ -29,18 +29,20 @@ var gCodeDisplayable = false;
 var snd = null;
 var sndok = true;
 
-var versionNumber = 0.87
+var versionNumber = 0.87;
 
-/** Print the version number to the console */
-const showVersionNumber = () => {
-  const msgWindow = document.getElementById('messages');
+const addMessage = (msg, scroll = true, clear = false) => {
+  const msgWindow = document.getElementById("messages");
   if (msgWindow) {
-    let text = msgWindow.textContent;
-    text = `${text}\nIndex.html Version: ${versionNumber}`;
-    msgWindow.textContent = text;
-    msgWindow.scrollTop = msgWindow.scrollHeight;
+    msgWindow.textContent = clear ? msg : `${msgWindow.textContent}\n${msg}`;
+    if (scroll) {
+      msgWindow.scrollTop = msgWindow.scrollHeight;
+    }
   }
 }
+
+/** Print the version number to the console */
+const showVersionNumber = () => addMessage(`Index.html Version: ${versionNumber}`);
 
 function beep(vol, freq, duration) {
   if (snd == null) {
@@ -167,15 +169,10 @@ const setHomeClickUp = () => {
 };
 
 const zeroAxis = (axis) => {
-  tabletClick();
-  setAxisByValue(axis, 0);
-
-  const msgWindow = document.getElementById("messages");
-  let text = msgWindow.textContent;
-  text += `\nHome pos set for: ${axis}`;
-  msgWindow.textContent = text;
-  msgWindow.scrollTop = msgWindow.scrollHeight;
-};
+  tabletClick()
+  setAxisByValue(axis, 0)
+  addMessage(`Home pos set for: ${axis}`);
+}
 
 const toggleUnits = () => {
   tabletClick();
@@ -419,9 +416,7 @@ function tabletShowMessage(msg, collecting) {
     return; //We don't want to display these messages
   }
 
-  const msgWindow = document.getElementById("messages");
-  msgWindow.textContent = `${msgWindow.textContent}\n${maslowErrorMsgHandling(msg) || msg}`;
-  msgWindow.scrollTop = msgWindow.scrollHeight;
+  addMessage(`${maslowErrorMsgHandling(msg) || msg}`);
 }
 
 function tabletShowResponse(response) { }
@@ -515,12 +510,7 @@ function doPlayButton() {
     playButtonHandler();
   }
 
-  // selectElement does not exist anywhere else but here, looks like this code was orphaned a long time ago ...
-  const msgWindow = document.getElementById("messages");
-  let text = msgWindow.textContent;
-  text += `\nStarting File: ${document.getElementById("filelist").options[selectElement.selectedIndex].text}`;
-  msgWindow.textContent = text;
-  msgWindow.scrollTop = msgWindow.scrollHeight;
+  addMessage(`Starting File: ${document.getElementById('filelist').options[selectElement.selectedIndex].text}`);
 }
 
 var pauseButtonHandler;
@@ -758,13 +748,22 @@ function tabletGrblState(grbl, response) {
 
   MPOS().forEach(function (pos, index) {
     //setTextContent('mpos-'+axisNames[index], Number(pos*factor).toFixed(index > 2 ? 2 : digits));
-  });
+  })
 }
 
-var gCodeFilename = ''
+function addOption(selector, name, value, isDisabled, isSelected) {
+  const opt = document.createElement('option');
+  opt.appendChild(document.createTextNode(name));
+  opt.disabled = isDisabled;
+  opt.selected = isSelected;
+  opt.value = value;
+  selector.appendChild(opt);
+}
 
-var filename = 'TEST.NC'
-var watchPath = ''
+var gCodeFilename = '';
+
+var filename = 'TEST.NC';
+var watchPath = '';
 
 function tabletGetFileList(path) {
   const common = new Common();
@@ -889,12 +888,16 @@ function showGCode(gcode) {
 }
 
 function nthLineEnd(str, n) {
-  if (n <= 0) return 0;
+  if (n <= 0) {
+    return 0;
+  }
   const L = str.length;
   let i = -1;
   while (n-- && i++ < L) {
-    i = str.indexOf("\n", i);
-    if (i < 0) break;
+    i = str.indexOf('\n', i);
+    if (i < 0) {
+      break;
+    }
   }
   return i;
 }
@@ -1272,20 +1275,19 @@ const hideModal = (modalId) => {
   }
 };
 
-const onCalibrationButtonsClick = async (command, msg) => {
-  sendCommand(command);
+const onCalibrationButtonsClick = async (command, msg = "") => {
+  if (msg) {
+    addMessage(msg);
+  }
+  sendCommand(command);  
 
   //Prints out the index.html version number when test is pressed
-  if (command === "$TEST") {
-    const msgWindow = document.getElementById("messages");
-    let text = msgWindow.textContent;
-    text = `${text}\nIndex.html Version: ${versionNumber}`;
-    msgWindow.textContent = text;
-    msgWindow.scrollTop = msgWindow.scrollHeight;
+  if (command === '$TEST') {
+    addMessage(`Index.html Version: ${versionNumber}`);
   }
 
-  if (command !== "$MINFO") {
-    setTimeout(() => { sendCommand("$MINFO"); }, 1000);
+  if (command !== '$MINFO') {
+    setTimeout(() => { sendCommand('$MINFO'); }, 1000);
   }
 };
 
