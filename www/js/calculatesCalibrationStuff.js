@@ -11,16 +11,6 @@ var tlZ = 100;
 var trZ = 56;
 var blZ = 34;
 var brZ = 78;
-var acceptableCalibrationThreshold = 0.5;
-
-//Establish initial guesses for the corners
-var initialGuess = {
-  tl: { x: 0, y: 2000 },
-  tr: { x: 3000, y: 2000 },
-  bl: { x: 0, y: 0 },
-  br: { x: 3000, y: 0 },
-  fitness: 100000000,
-};
 
 let result;
 
@@ -576,20 +566,17 @@ function scaleMeasurementsBasedOnTension(measurements, guess) {
 }
 
 const findMaxFitness = (measurements) => {
-  sendCalibrationEvent(
-    {
-      initialGuess,
-    },
-    true,
-  );
+  const common = new Common();
+  const initGuess = common.initialGuess;
+  sendCalibrationEvent({ initGuess }, true);
 
   //Project the measurements into the XY plane...this is now done on the firmware side
   //measurements = projectMeasurements(measurements);
 
-  let currentGuess = JSON.parse(JSON.stringify(initialGuess));
+  let currentGuess = JSON.parse(JSON.stringify(initGuess));
   let stagnantCounter = 0;
   let totalCounter = 0;
-  let bestGuess = JSON.parse(JSON.stringify(initialGuess));
+  let bestGuess = JSON.parse(JSON.stringify(initGuess));
 
   function iterate() {
     const messagesBox = document.getElementById("messages");
@@ -622,7 +609,7 @@ const findMaxFitness = (measurements) => {
       // Schedule the next iteration
       setTimeout(iterate, 0);
     } else {
-      if (1 / bestGuess.fitness < acceptableCalibrationThreshold) {
+      if (1 / bestGuess.fitness < common.acceptableCalibrationThreshold) {
         messagesBox.value +=
           "\nWARNING FITNESS TOO LOW. DO NOT USE THESE CALIBRATION VALUES!";
       }
@@ -630,7 +617,7 @@ const findMaxFitness = (measurements) => {
       messagesBox.textContent += '\nCalibration values:';
       messagesBox.textContent += `\nFitness: ${1 / bestGuess.fitness.toFixed(7)}`;
 
-      if (1 / bestGuess.fitness > acceptableCalibrationThreshold) {
+      if (1 / bestGuess.fitness > common.acceptableCalibrationThreshold) {
         sendCommand(`$/${M}_tlX= ${tlxStr}`);
         sendCommand(`$/${M}_tlY= ${tlyStr}`);
         sendCommand(`$/${M}_trX= ${trxStr}`);
@@ -654,8 +641,8 @@ const findMaxFitness = (measurements) => {
           "\nA command to save these values has been successfully sent for you. Please check for any error messages.";
         messagesBox.scrollTop = messagesBox.scrollHeight;
 
-        initialGuess = bestGuess;
-        initialGuess.fitness = 100000000;
+        common.initialGuess = bestGuess;
+        common.initialGuess.fitness = 100000000;
 
         // This restarts calibration process for the next stage
         setTimeout(() => {

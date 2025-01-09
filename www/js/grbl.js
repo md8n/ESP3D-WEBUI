@@ -14,8 +14,10 @@ import {
 	translate_text_item,
 	sendCommand,
 	displayNone,
+	displayTable,
 	tabletGrblState,
 	tabletShowMessage,
+	tabletUpdateModal,
 } from "./common.js";
 
 /** interval timer ID */
@@ -565,33 +567,36 @@ const modalModes = [
 	{ name: "parking", values: ["M56"] },
 ];
 
-function grblGetModal(msg) {
-	modal("modes", msg.replace("[GC:", "").replace("]", ""));
-	const modes = modal("modes").split(" ");
-	Modal.parking = undefined; // Otherwise there is no way to turn it off
-	modal("program", ""); // Otherwise there is no way to turn it off
-	for (const mode in modes) {
+const grblGetModal = (msg) => {
+	const common = new Common();
+	common.modal.modes = msg.replace("[GC:", "").replace("]", "");
+	const modes = common.modal.modes.split(" ");
+	common.modal.parking = undefined; // Otherwise there is no way to turn it off
+	common.modal.program = ""; // Otherwise there is no way to turn it off
+	// biome-ignore lint/complexity/noForEach: <explanation>
+	modes.forEach((mode) => {
 		if (mode === "M9") {
-			modal("flood", mode);
-			modal("mist", mode);
+			common.modal.flood = mode;
+			common.modal.mist = mode;
 		} else {
-			if (mode.charAt(0) === "T") {
-				modal("tool", mode.substring(1));
-			} else if (mode.charAt(0) === "F") {
-				modal("feedrate", mode.substring(1));
-			} else if (mode.charAt(0) === "S") {
-				modal("spindle", mode.substring(1));
-			} else {
-				for (const modeType in modalModes) {
-					for (const s in modeType.values) {
-						if (mode === s) {
-							modal(modeType.name, mode);
-						}
-					};
-				};
+			switch (mode.charAt(0)) {
+				case "T": common.modal.tool = mode.substring(1); break;
+				case "F": common.modal.feedrate = mode.substring(1); break;
+				case "S": common.modal.spindle = mode.substring(1); break;
+				default:
+					// biome-ignore lint/complexity/noForEach: <explanation>
+					modalModes.forEach((modeType) => {
+						// biome-ignore lint/complexity/noForEach: <explanation>
+						modeType.values.forEach((s) => {
+							if (mode === s) {
+								common.modal[modeType.name] = mode;
+							}
+						});
+					});
+					break;
 			}
 		}
-	};
+	})
 	tabletUpdateModal();
 }
 

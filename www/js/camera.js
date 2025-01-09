@@ -1,6 +1,7 @@
 import {
 	displayBlock,
 	displayNone,
+	displayTable,
 	id,
 	getPrefValue,
 	setPrefValue,

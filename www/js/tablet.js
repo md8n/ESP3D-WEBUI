@@ -1291,5 +1291,6 @@ export {
   tabletInit,
   tabletGrblState,
   tabletShowMessage,
+  tabletUpdateModal,
 };
 /* Calibration modal END */

@@ -4,6 +4,7 @@ import {
 	displayBlock,
 	displayInline,
 	displayNone,
+	displayTable,
 	id,
 	stdErrMsg,
 	setHTML,

@@ -67,9 +67,10 @@ const maslowErrorMsgHandling = (msg) => {
  * These would have all started with `$/Maslow_` which is expected to have been stripped away before calling this function
  */
 const maslowMsgHandling = (msg) => {
+	const common = new Common();
 	const keyValue = msg.split("=");
 	const errMsgSuffix = `${MaslowErrMsgKeyValueSuffix}${msg}`;
-	if (keyValue.length != 2) {
+	if (keyValue.length !== 2) {
 		return maslowErrorMsgHandling(
 			`${MaslowErrMsgKeyValueCantUse} ${errMsgSuffix}`,
 		);
@@ -91,8 +92,8 @@ const maslowMsgHandling = (msg) => {
 		stdAction(id, value);
 		return stdDimensionAction(value);
 	};
-	const stdDimensionAction = (value) => parseFloat(value);
-	const nullAction = () => {};
+	const stdDimensionAction = (value) => Number.parseFloat(value);
+	const nullAction = () => { };
 
 	const msgExtra = {
 		calibration_grid_size: (value) => stdAction("gridSize", value),
@@ -104,38 +105,20 @@ const maslowMsgHandling = (msg) => {
 				"machineOrientation",
 				value === "false" ? "horizontal" : "vertical",
 			),
-		trX: (value) => {
-			initialGuess.tr.x = fullDimensionAction("machineWidth", value);
-		},
-		trY: (value) => {
-			initialGuess.tr.y = fullDimensionAction("machineHeight", value);
-		},
-		trZ: (value) => {
-			initialGuess.tr.z = stdDimensionAction(value);
-		},
-		tlX: (value) => {
-			initialGuess.tl.x = stdDimensionAction(value);
-		},
-		tlY: (value) => {
-			initialGuess.tl.y = stdDimensionAction(value);
-		},
-		tlZ: (value) => {
-			initialGuess.tl.z = stdDimensionAction(value);
-		},
-		brX: (value) => {
-			initialGuess.br.x = stdDimensionAction(value);
-		},
+		trX: (value) => { common.initialGuess.tr.x = fullDimensionAction("machineWidth", value); },
+		trY: (value) => { common.initialGuess.tr.y = fullDimensionAction("machineHeight", value); },
+		trZ: (value) => { common.initialGuess.tr.z = stdDimensionAction(value); },
+		tlX: (value) => { common.initialGuess.tl.x = stdDimensionAction(value); },
+		tlY: (value) => { common.initialGuess.tl.y = stdDimensionAction(value); },
+		tlZ: (value) => { common.initialGuess.tl.z = stdDimensionAction(value); },
+		brX: (value) => { common.initialGuess.br.x = stdDimensionAction(value); },
 		brY: (value) => nullAction(),
-		brZ: (value) => {
-			initialGuess.br.z = stdDimensionAction(value);
-		},
+		brZ: (value) => { common.initialGuess.br.z = stdDimensionAction(value); },
 		blX: (value) => nullAction(),
 		blY: (value) => nullAction(),
-		blZ: (value) => {
-			initialGuess.bl.z = stdDimensionAction(value);
-		},
+		blZ: (value) => { common.initialGuess.bl.z = stdDimensionAction(value); },
 		Acceptable_Calibration_Threshold: (value) => {
-			acceptableCalibrationThreshold = stdDimensionAction(value);
+			common.acceptableCalibrationThreshold = stdDimensionAction(value);
 		},
 	};
 	const action = msgExtra[key] || "";
@@ -197,16 +180,16 @@ const loadCornerValues = () => {
 
 /** Save the Maslow configuration values */
 const saveConfigValues = () => {
-	let gridWidth = document.getElementById("gridWidth").value;
-	let gridHeight = document.getElementById("gridHeight").value;
-	let gridSize = document.getElementById("gridSize").value;
-	let retractionForce = document.getElementById("retractionForce").value;
-	let machineOrientation = document.getElementById("machineOrientation").value;
-	let machineWidth = document.getElementById("machineWidth").value;
-	let machineHeight = document.getElementById("machineHeight").value;
+	const gridWidth = document.getElementById("gridWidth").value;
+	const gridHeight = document.getElementById("gridHeight").value;
+	const gridSize = document.getElementById("gridSize").value;
+	const retractionForce = document.getElementById("retractionForce").value;
+	const machineOrientation = document.getElementById("machineOrientation").value;
+	const machineWidth = document.getElementById("machineWidth").value;
+	const machineHeight = document.getElementById("machineHeight").value;
 
-	var gridSpacingWidth = gridWidth / (gridSize - 1);
-	var gridSpacingHeight = gridHeight / (gridSize - 1);
+	const gridSpacingWidth = gridWidth / (gridSize - 1);
+	const gridSpacingHeight = gridHeight / (gridSize - 1);
 
 	//If the grid spacing is going to be more than 200 don't save the values
 	if (gridSpacingWidth > 260 || gridSpacingHeight > 260) {
@@ -235,7 +218,7 @@ const saveConfigValues = () => {
 	}
 	if (
 		machineWidth !== loadedValues("machineWidth") ||
-		machineHeight != loadedValues("machineHeight")
+		machineHeight !== loadedValues("machineHeight")
 	) {
 		sendCommand(`$/${M}_tlX=0`);
 		sendCommand(`$/${M}_tlY=${machineHeight}`);

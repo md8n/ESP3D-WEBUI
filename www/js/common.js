@@ -163,6 +163,7 @@ import {
 	tabletInit,
 	tabletGrblState,
 	tabletShowMessage,
+	tabletUpdateModal,
 } from "./tablet.js";
 import { arrayToXYZ, displayer, refreshGcode } from "./toolpath-displayer.js";
 import { translate_text } from "./translate.js";
@@ -177,6 +178,17 @@ class Common {
 			// biome-ignore lint/correctness/noConstructorReturn: <explanation>
 			return Common.instance;
 		}
+
+		// See calculatesCalibrationStuff.js
+		this.acceptableCalibrationThreshold = 0.5;
+		/** Establish initial guesses for the corners */
+		this.initialGuess = {
+			tl: { x: 0, y: 2000 },
+			tr: { x: 3000, y: 2000 },
+			bl: { x: 0, y: 0 },
+			br: { x: 3000, y: 0 },
+			fitness: 100000000,
+		};
 
 		/** See connectdlg.js */
 		this.esp_hostname = "ESP3D WebUI";
@@ -456,6 +468,7 @@ export {
 	tabletInit,
 	tabletGrblState,
 	tabletShowMessage,
+	tabletUpdateModal,
 	// from "./toolpath-displayer.js";
 	arrayToXYZ, displayer, refreshGcode,
 	// from translate.js

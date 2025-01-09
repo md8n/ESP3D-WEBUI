@@ -110,7 +110,6 @@ function getscanWififailed(error_code, response) {
 	displayNone("AP_scan_loader");
 	displayBlock(["AP_scan_status", "refresh_scanwifi_btn"]);
 	setHTML("AP_scan_status", stdErrMsg(error_code, response, translate_text_item("Failed")));
-
 }
 
 function scanwifidlg_close(response) {

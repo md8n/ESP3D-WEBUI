@@ -11,6 +11,7 @@ import {
 	setChecked,
 	setHTML,
 	Set_page_title,
+	scanwifidlg,
 	update_UI_firmware_target,
 	alertdlg,
 	confirmdlg,
@@ -130,7 +131,7 @@ const build_control_from_index = (i, actions, extra_set_function = (i) => { }) =
 	let content = "<table>";
 	if (i < scl.length && i > -1) {
 		const common = new Common();
-		nbsub = scl[i].type === "F" ? scl[i].Options.length : 1;
+		const nbsub = scl[i].type === "F" ? scl[i].Options.length : 1;
 		for (let j = 0; j < nbsub; j++) {
 			if (j > 0) {
 				content += "<tr><td style='height:10px;'></td></tr>";
@@ -164,28 +165,16 @@ const build_control_from_index = (i, actions, extra_set_function = (i) => { }) =
 				//console.log(scl[i].label + " " + scl[i].type);
 				//console.log(scl[i].Options.length);
 				content += build_select_flag_for_setting_list(i, j);
-				actions.push({
-					id: sfId,
-					type: "change",
-					method: fCall("setting_checkchange", i, j),
-				});
+				actions.push({ id: sfId, type: "change", method: fCall("setting_checkchange", i, j) });
 			} else if (scl[i].Options.length > 0) {
 				//drop list
 				content += build_select_for_setting_list(i, j);
-				actions.push({
-					id: sfId,
-					type: "change",
-					method: fCall("setting_checkchange", i, j),
-				});
+				actions.push({ id: sfId, type: "change", method: fCall("setting_checkchange", i, j) });
 			} else {
 				//text
-				input_type = defval(i).startsWith("******") ? "password" : "text";
+				const input_type = defval(i).startsWith("******") ? "password" : "text";
 				content += `<form><input id='${sfId}' type='${input_type}' class='form-control input-min' value='${defval(i)}'></form>`;
-				actions.push({
-					id: sfId,
-					type: "keyup",
-					method: setting_checkchange(i, j),
-				});
+				actions.push({ id: sfId, type: "keyup", method: setting_checkchange(i, j) });
 			}
 			content += `<span id='${sId(i, j, "icon_")}' class='form-control-feedback ico_feedback'></span>`;
 			content += "<span class='input-group-addon hide_it' ></span>";
@@ -271,7 +260,7 @@ const build_HTML_setting_list = (filter) => {
 	setChecked(`${common.current_setting_filter}_setting_filter`, true);
 
 	for (let i = 0; i < scl.length; i++) {
-		fname = scl[i].F.trim().toLowerCase();
+		const fname = scl[i].F.trim().toLowerCase();
 		if (fname === "network" || fname === filter || filter === "all") {
 			let tr = `<tr><td style='vertical-align:middle'>${translate_text_item(scl[i].label, true)}`;
 			const tooltip = CONFIG_TOOLTIPS[scl[i].label.substring(1)];
@@ -498,15 +487,24 @@ const getFlag = (i, j) =>
 
 const setting = (i, j) => id(sId(i, j));
 
-function setBtn(i, j, value) {
-	id(sId(i, j, "btn_")).className = `btn ${value}`;
+const getSettingElem = (i, j, pf) => {
+	const elemId = sId(i, j, pf);
+	return id(elemId);
 }
-function setStatus(i, j, value) {
-	id(sId(i, j, "status_")).className = `form-group ${value}`;
+
+const setElemClass = (i, j, pf, pType, className) => {
+	const elem = getSettingElem(i, j, pf);
+	if (elem == null) {
+		console.warn(`Could not find setting ${pType} element for id '${sId(i, j, pf)}'`);
+		return;
+	}
+	elem.className = className;
 }
-function setIcon(i, j, value) {
-	id(sId(i, j, "icon_")).className = `form-control-feedback ${value}`;
-}
+
+const setBtn = (i, j, value) => setElemClass(i, j, "btn_", "button", `btn ${value}`);
+const setStatus = (i, j, value) => setElemClass(i, j, "status_", "status", `form-group ${value}`);
+const setIcon = (i, j, value) => setElemClass(i, j, "icon_", "icon", `form-control-feedback ${value}`);
+
 function setIconHTML(i, j, value) {
 	setHTML(sId(i, j, "icon_"), value);
 }
@@ -560,7 +558,13 @@ function settingsetvalue(i, j = 0) {
 
 function setting_checkchange(i, j) {
 	//console.log("list value changed");
-	let val = setting(i, j).value.trim();
+	const settingElem = setting(i, j);
+	let val = "";
+	if (settingElem === null) {
+		console.warn(`Could not find setting element for id '${sId(i, j)}'`);
+	} else {
+		val = setting(i, j).value.trim();
+	}
 	if (scl[i].type === "F") {
 		//console.log("it is flag value");
 		let tmp = defval(i);
