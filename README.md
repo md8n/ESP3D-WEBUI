@@ -29,6 +29,12 @@ So a full rewrite using pure javascript and resized resources:
 
 The result is a monolithic file with a minimal size allowing almost full control of ESP3D board and your 3D printer / CNC machine
 
+## Build it yourself
+* Package managing, building, bundling, testing all rely on [bun](https://bun.sh/) so start by getting bun.
+* Get a clone of this repository in whatever way suits you best.
+* Package Management: From the command line in your newly cloned copy of this repo, run `bun install` to get all of the dependencies.
+* Build and Bundle: From the command line run `bun build:en` to build and bundle an English language only version. You'll find it in the `dist` folder.
+
 ## Become a sponsor or a supporter
  * A sponsor is a recurent donater [<img src="https://raw.githubusercontent.com/luc-github/ESP3D/3.0/images/sponsors-supporters/sponsor.PNG" />](https://github.com/sponsors/luc-github)
  The github sponsors are automaticaly displayed by github, if your tier is `A big hug` or more, to thank you for your support, your logo / avatar will be also added to the readme page with eventually with a link to your site.    
