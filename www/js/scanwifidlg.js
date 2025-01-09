@@ -65,7 +65,7 @@ function process_scanWifi_answer(response_text) {
 				content += `<td style='text-align:center;vertical-align:middle'>${protIcon}</td>`;
 				content += `<td><button id="${btnId}" class='btn btn-primary'>${get_icon_svg("ok")}</button></td>`;
 				content += "</tr>";
-				actions.push({ id: btnId, type: "click", method:select_ap_ssid, index:escapedSSID });
+				actions.push({ id: btnId, type: "click", method: select_ap_ssid, index: escapedSSID });
 			}
 		}
 	} catch (e) {
@@ -76,7 +76,10 @@ function process_scanWifi_answer(response_text) {
 
 	// biome-ignore lint/complexity/noForEach: <explanation>
 	actions.forEach((action) => {
-		id(action.id).addEventListener("click", (event) => action.method(action.index));
+		const elem = id(action.id);
+		if (elem) {
+			elem.addEventListener("click", (event) => action.method(action.index));
+		}
 	});
 
 	return result;

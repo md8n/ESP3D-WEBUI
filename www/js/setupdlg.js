@@ -50,7 +50,7 @@ function closeStep(step) {
     }
 
     id(step).className += " wizard_done";
-    
+
     const common = new Common();
     if (!common.can_revert_wizard) {
         id(step).className += " no_revert_wizard";
@@ -128,11 +128,11 @@ const continue_setup_wizard = (active_wizard_page) => {
             enablestep2();
             break;
         case 3:
-            // Pre-emptively step over step 3
+        // Pre-emptively step over step 3
 
-            // id("wizard_line3").style.background = "#337AB7";
-            // enablestep4();
-            // break;
+        // id("wizard_line3").style.background = "#337AB7";
+        // enablestep4();
+        // break;
         case 4:
             enablestep4();
             break;
@@ -148,7 +148,10 @@ const continue_setup_wizard = (active_wizard_page) => {
 const addActions = (actions) => {
     // biome-ignore lint/complexity/noForEach: <explanation>
     actions.forEach((action) => {
-        id(action.id).addEventListener(action.type, (event) => action.method);
+        const elem = id(action.id);
+        if (elem) {
+            elem.addEventListener(action.type, (event) => action.method);
+        }
     });
 };
 

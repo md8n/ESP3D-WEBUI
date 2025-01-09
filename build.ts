@@ -151,7 +151,7 @@ const build = async () => {
 		format: "esm",
 		splitting: false,
 		naming: "[dir]/[name].[ext]",
-		minify: {whitespace: true, syntax: true, identifiers: false},
+		minify: { whitespace: true, syntax: true, identifiers: false },
 		plugins: [
 			html({
 				inline: true,
@@ -179,7 +179,9 @@ const build = async () => {
 						console.log(`Processing JS/TS file '${file.path}' as '${jsFile}'`);
 						switch (jsFile) {
 							case "loadHTML.js":
-								console.warn(`Skipping processing of JS/TS file '${file.path}'. This file is only used when doing debug runs.`);
+								console.warn(
+									`Skipping processing of JS/TS file '${file.path}'. This file is only used when doing debug runs.`,
+								);
 								break;
 							case "langUtils.js": {
 								const fcLang = await limitedLanguageImports(await file.content);
@@ -206,13 +208,22 @@ const build = async () => {
 						}
 						console.log(`Processing HTML file '${file.path}'`);
 						const fc = await file.content;
-						processor.writeFile(file.path, await loadAndReplaceHTML(file.path, fc));
+						const fcRep = await loadAndReplaceHTML(file.path, fc);
+						processor.writeFile( file.path, fcRep );
 					}
 				},
 			}),
 		],
 	});
 };
+
+/** One final replacement to effectively merge common.js and app.js together in the html */
+const mergeInlineScript = async () => {
+	const indexFile = Bun.file("./dist/index.html");
+	const data = (await indexFile.text()).replace('</script><script type="module">window.onload', ";window.onload");
+	// Keep a record of our changes
+	Bun.write("./dist/index.html", data);
+}
 
 const compress = async () => {
 	const indexFile = Bun.file("./dist/index.html");
@@ -250,4 +261,5 @@ const compress = async () => {
 console.log("Running the build");
 cleanDist();
 await build();
+await mergeInlineScript();
 await compress();

@@ -554,7 +554,10 @@ function files_build_display_filelist(displaylist = true) {
 		fileListElem.innerHTML = content;
 		// biome-ignore lint/complexity/noForEach: <explanation>
 		actions.forEach((action) => {
-			id(action.id).addEventListener("click", (event) => action.method(action.index));
+			const elem = id(action.id);
+			if (elem) {
+				elem.addEventListener("click", (event) => action.method(action.index));
+			}
 		});
 		displayBlock("files_fileList");
 	}

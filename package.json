@@ -9,7 +9,6 @@
   "scripts": {
     "build": "bun run build.ts",
     "build:en": "bun run build.ts --lang en",
-    "compress": "bun run compress.ts",
     "serve": "bun run --hot serve.ts"
   },
   "devDependencies": {

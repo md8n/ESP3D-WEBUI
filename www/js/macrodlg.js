@@ -168,7 +168,10 @@ function build_dlg_macrolist_line(index) {
 	setHTML(`macro_line_${index}`, content);
 	// biome-ignore lint/complexity/noForEach: <explanation>
 	actions.forEach((action) => {
-		id(action.id).addEventListener(action.type, action.method);
+		const elem = id(action.id);
+		if (elem) {
+			elem.addEventListener(action.type, action.method);
+		}
 	});
 }
 

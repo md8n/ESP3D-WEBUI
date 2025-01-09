@@ -291,7 +291,10 @@ const build_HTML_setting_list = (filter) => {
 	setHTML("settings_list_data", content);
 	// biome-ignore lint/complexity/noForEach: <explanation>
 	actions.forEach((action) => {
-		id(action.id).addEventListener(action.type, (event) => action.method);
+		const elem = id(action.id);
+		if (elem) {
+			elem.addEventListener(action.type, (event) => action.method);
+		}
 	});
 	if (filter === "tree") {
 		document.querySelector("#setting_32_0").value = result;

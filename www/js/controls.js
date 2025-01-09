@@ -302,12 +302,16 @@ function control_build_macro_ui() {
 	for (let i = 0; i < 9; i++) {
 		const entry = common.control_macrolist[i];
 		content += control_build_macro_button(i, entry);
-actions.push({ id: `control_macro_${i}`, method: (event) => macro_command(entry.target, entry.filename) });
-}
-	setHTML("Macro_list", content);
-	for (const action in actions) {
-		id(action.id).addEventListener("click", action.method);
+		actions.push({ id: `control_macro_${i}`, method: (event) => macro_command(entry.target, entry.filename) });
 	}
+	setHTML("Macro_list", content);
+	// biome-ignore lint/complexity/noForEach: <explanation>
+	actions.forEach((action) => {
+		const elem = id(action.id);
+		if (elem) {
+			elem.addEventListener("click", action.method);
+		}
+	});
 }
 
 function macro_command(target, filename) {

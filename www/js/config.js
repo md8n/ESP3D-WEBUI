@@ -154,7 +154,10 @@ function build_HTML_config_list() {
 		setHTML("config_list_data", content);
 		// biome-ignore lint/complexity/noForEach: <explanation>
 		actions.forEach((action) => {
-			id(action.id).addEventListener(action.type, (event) => action.method);
+			const elem = id(action.id);
+			if (elem) {
+				elem.addEventListener(action.type, (event) => action.method);
+			}
 		});
 	}
 	displayNone(["config_loader", "config_status"]);
@@ -269,9 +272,9 @@ function get_config_command(sline) {
 }
 
 function is_config_commented(sline) {
-    const line = sline.trim();
-    if (!line.length) return false;
-    return (is_override_config) ? line.startsWith(";") : false;
+	const line = sline.trim();
+	if (!line.length) return false;
+	return (is_override_config) ? line.startsWith(";") : false;
 }
 
 function config_revert_to_default(index, is_override) {

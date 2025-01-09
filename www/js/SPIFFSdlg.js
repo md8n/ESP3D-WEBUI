@@ -90,8 +90,12 @@ const SPIFFSnavbar = () => {
 	}
 
 	setHTML("SPIFFS_path", buildTable(buildTr(content)));
+	// biome-ignore lint/complexity/noForEach: <explanation>
 	actions.forEach((action) => {
-		id(action.id).addEventListener("click", (event) => action.method(action.path));
+		const elem = id(action.id);
+		if (elem) {
+			elem.addEventListener("click", (event) => action.method(action.path));
+		}
 	});
 };
 
@@ -256,8 +260,12 @@ function SPIFFSdispatchfilestatus(jsonresponse) {
 	}
 
 	setHTML("SPIFFS_file_list", content);
+	// biome-ignore lint/complexity/noForEach: <explanation>
 	actions.forEach((action) => {
-		id(action.id).addEventListener("click", (event) => action.method(action.filename));
+		const elem = id(action.id);
+		if (elem) {
+			elem.addEventListener("click", (event) => action.method(action.filename));
+		}
 	});
 
 	SPIFFSnavbar();
