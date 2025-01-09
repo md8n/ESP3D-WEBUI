@@ -855,7 +855,7 @@ const tabletInit = () => {
   }, 1000);
 };
 
-function showGCode(gcode) {
+const showGCode = (gcode) => {
   gCodeLoaded = gcode !== "";
   if (!gCodeLoaded) {
     setValue("tablettab_gcode", "(No GCode loaded)");
@@ -1283,6 +1283,7 @@ export {
   goAxisByValue,
   onCalibrationButtonsClick,
   saveSerialMessages,
+  showGCode,
   tabletInit,
   tabletShowMessage,
 };

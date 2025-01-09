@@ -1,5 +1,4 @@
 import {
-	Monitor_output_Update,
 	Common,
 	get_icon_svg,
 	displayBlock,
@@ -15,6 +14,7 @@ import {
 	tryAutoReport,
 	SendFileHttp,
 	SendGetHttp,
+	showGCode,
 	translate_text_item,
 } from "./common.js";
 

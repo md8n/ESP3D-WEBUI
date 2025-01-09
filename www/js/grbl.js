@@ -629,6 +629,7 @@ async function handleCalibrationData(measurements) {
 }
 
 const grblHandleMessage = (msg) => {
+	const common = new Common();
 	tabletShowMessage(msg, collecting);
 
 	// We handle these two before collecting data because they can be
@@ -681,10 +682,10 @@ const grblHandleMessage = (msg) => {
 			// Finish collecting settings
 			getESPconfigSuccess(collectedSettings);
 			collectedSettings = null;
-			if (grbl_errorfn) {
-				grbl_errorfn();
-				grbl_errorfn = null;
-				grbl_processfn = null;
+			if (common.grbl_errorfn) {
+				common.grbl_errorfn();
+				common.grbl_errorfn = null;
+				common.grbl_processfn = null;
 			}
 		} else {
 			// Continue collecting settings
@@ -701,10 +702,10 @@ const grblHandleMessage = (msg) => {
 	// Handlers for standard Grbl protocol messages
 
 	if (msg.startsWith("ok")) {
-		if (grbl_processfn) {
-			grbl_processfn();
-			grbl_processfn = null;
-			grbl_errorfn = null;
+		if (common.grbl_processfn) {
+			common.grbl_processfn();
+			common.grbl_processfn = null;
+			common.grbl_errorfn = null;
 		}
 		return;
 	}
@@ -716,10 +717,10 @@ const grblHandleMessage = (msg) => {
 		return;
 	}
 	if (msg.startsWith("error:")) {
-		if (grbl_errorfn) {
-			grbl_errorfn();
-			grbl_errorfn = null;
-			grbl_processfn = null;
+		if (common.grbl_errorfn) {
+			common.grbl_errorfn();
+			common.grbl_errorfn = null;
+			common.grbl_processfn = null;
 		}
 	}
 	if (

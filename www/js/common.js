@@ -159,6 +159,7 @@ import {
 	goAxisByValue,
 	onCalibrationButtonsClick,
 	saveSerialMessages,
+	showGCode,
 	tabletInit,
 	tabletShowMessage,
 } from "./tablet.js";
@@ -448,6 +449,7 @@ export {
 	goAxisByValue,
 	onCalibrationButtonsClick,
 	saveSerialMessages,
+	showGCode,
 	tabletInit,
 	tabletShowMessage,
 	// from translate.js

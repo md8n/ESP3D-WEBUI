@@ -5,16 +5,15 @@ import {
 	Monitor_output_Update,
 	SendGetHttp,
 	translate_text_item,
+	Common,
 } from "./common.js";
-
-let grbl_processfn = null;
-let grbl_errorfn = null;
 
 function noop() { }
 
 const cleanFunc = (fn, cleanFn) => fn instanceof Function ? fn : cleanFn;
 
 const SendPrinterCommand = (cmd, echo_on, processfn, errorfn, id, max_id, extra_arg) => {
+	const common = new Common();
 	if (!cmd.length) {
 		return;
 	}
@@ -28,8 +27,8 @@ const SendPrinterCommand = (cmd, echo_on, processfn, errorfn, id, max_id, extra_
 	let errFn = cleanFunc(errorfn, SendPrinterCommandFailed);
 
 	if (!cmd.startsWith("[ESP")) {
-		grbl_processfn = procFn;
-		grbl_errorfn = errFn;
+		common.grbl_processfn = procFn;
+		common.grbl_errorfn = errFn;
 		procFn = noop;
 		errFn = noop;
 	}
