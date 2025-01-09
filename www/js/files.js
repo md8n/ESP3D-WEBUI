@@ -408,7 +408,7 @@ const populateTabletFileSelector = (files, path) => {
 	});
 	if (!gCodeFileFound) {
 		common.gCodeFilename = "";
-		gCodeDisplayable = false;
+		common.gCodeDisplayable = false;
 		showGCode("");
 	}
 

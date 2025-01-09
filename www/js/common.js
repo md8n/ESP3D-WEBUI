@@ -74,6 +74,7 @@ import {
 	StartProbeProcess,
 	MPOS,
 	WPOS,
+	setSpindleSpeed,
 } from "./grbl.js";
 import { grblpanel } from "./grblpanel.js";
 import { AddCmd, clear_cmd_list, SendFileHttp, SendGetHttp } from "./http.js";
@@ -159,6 +160,7 @@ import {
 	onCalibrationButtonsClick,
 	saveSerialMessages,
 	tabletInit,
+	tabletShowMessage,
 } from "./tablet.js";
 import { translate_text } from "./translate.js";
 import { UIdisableddlg } from "./UIdisableddlg.js";
@@ -340,6 +342,7 @@ export {
 	StartProbeProcess,
 	MPOS,
 	WPOS,
+	setSpindleSpeed,
 	// from grblpanel.js
 	grblpanel,
 	// from http.js
@@ -446,6 +449,7 @@ export {
 	onCalibrationButtonsClick,
 	saveSerialMessages,
 	tabletInit,
+	tabletShowMessage,
 	// from translate.js
 	translate_text,
 	// from UIdisableddlg.js

@@ -23,13 +23,12 @@ import {
 } from "./common.js";
 // import { arrayToXYZ, displayer, refreshGcode } from "./toolpath-displayer.js";
 
-var gCodeLoaded = false;
-var gCodeDisplayable = false;
+let gCodeLoaded = false;
 
-var snd = null;
-var sndok = true;
+let snd = null;
+let sndok = true;
 
-var versionNumber = 0.87;
+const versionNumber = 0.87;
 
 const addMessage = (msg, scroll = true, clear = false) => {
   const msgWindow = document.getElementById("messages");
@@ -388,22 +387,16 @@ const loadedValues = (fieldName, value) => {
   return loaded_values[fieldName];
 };
 
-function tabletShowMessage(msg, collecting) {
-  if (
-    collecting ||
-    msg === "" ||
-    msg.startsWith("<") ||
-    msg.startsWith("ok") ||
-    msg.startsWith("\n") ||
-    msg.startsWith("\r")
-  ) {
+const tabletShowMessage = (msg = "", collecting = false) => {
+  if (collecting || !msg) {
     return;
   }
-
+  if (msg.startsWith("<") || msg.startsWith("ok") || msg.startsWith("\n") || msg.startsWith("\r")) {
+    return;
+  }
   if (maslowInfoMsgHandling(msg)) {
     return;
   }
-
   if (msg.startsWith("[GC")) {
     return;
   }
@@ -423,7 +416,7 @@ function tabletShowResponse(response) { }
 
 const clearAlarm = () => {
   const sysStatus = id("systemStatus");
-  if (sysStatus.innerText == "Alarm") {
+  if (sysStatus.innerText === "Alarm") {
     sysStatus.classList.remove("system-status-alarm");
     SendPrinterCommand("$X", true, null, null, 114, 1);
   }
@@ -703,7 +696,7 @@ function tabletGrblState(grbl, response) {
       : `<div style='color:red'>${common.modal.distance}</div>`;
   //setHTML('distance', distanceText);
 
-  var stateText = "";
+  let stateText = "";
   if (stateName === "Run") {
     const rateNumber =
       common.modal.units === "G21"
@@ -722,16 +715,13 @@ function tabletGrblState(grbl, response) {
 
   const modeText = `${common.modal.distance} ${common.modal.wcs} ${common.modal.units} T${common.modal.tool} F${common.modal.feedrate} S${common.modal.spindle}`;
 
-  if (
-    grbl.lineNumber &&
-    (stateName === "Run" || stateName === "Hold" || stateName === "Stop")
-  ) {
+  if (grbl.lineNumber && ["Run", "Hold", "Stop"].includes(stateName)) {
     //setText('line', grbl.lineNumber);
-    if (gCodeDisplayable) {
+    if (common.gCodeDisplayable) {
       scrollToLine(grbl.lineNumber);
     }
   }
-  if (gCodeDisplayable) {
+  if (common.gCodeDisplayable) {
     displayer.reDrawTool(common.modal, arrayToXYZ(WPOS()));
   }
 
@@ -873,7 +863,7 @@ function showGCode(gcode) {
   } else {
     setValue("tablettab_gcode", gcode);
     const common = new Common();
-    if (gCodeDisplayable) {
+    if (common.gCodeDisplayable) {
       displayer.showToolpath(gcode, common.modal, arrayToXYZ(WPOS()));
     }
   }
@@ -932,10 +922,10 @@ function tabletLoadGCodeFile(path, size) {
   common.gCodeFilename = path;
   if ((Number.isNaN(size) && size.endsWith("GB")) || size > 10000000) {
     showGCode("GCode file too large to display (> 1MB)");
-    gCodeDisplayable = false;
+    common.gCodeDisplayable = false;
     displayer.clear();
   } else {
-    gCodeDisplayable = true;
+    common.gCodeDisplayable = true;
     fetch(encodeURIComponent(`SD${common.gCodeFilename}`))
       .then((response) => response.text())
       .then((gcode) => showGCode(gcode));
@@ -1274,7 +1264,7 @@ const onCalibrationButtonsClick = async (command, msg = "") => {
   if (msg) {
     addMessage(msg);
   }
-  sendCommand(command);  
+  sendCommand(command);
 
   //Prints out the index.html version number when test is pressed
   if (command === '$TEST') {
@@ -1294,5 +1284,6 @@ export {
   onCalibrationButtonsClick,
   saveSerialMessages,
   tabletInit,
+  tabletShowMessage,
 };
 /* Calibration modal END */

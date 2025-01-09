@@ -14,6 +14,7 @@ import {
 	translate_text_item,
 	sendCommand,
 	displayNone,
+	tabletShowMessage,
 } from "./common.js";
 
 /** interval timer ID */
@@ -213,7 +214,7 @@ function enablePolling() {
 		return;
 	}
 	setValue("grblpanel_interval_status", 0);
-	alertdlg( translate_text_item("Out of range"), translate_text_item("Value of auto-check must be between 0s and 99s !!") );
+	alertdlg(translate_text_item("Out of range"), translate_text_item("Value of auto-check must be between 0s and 99s !!"));
 	disablePolling();
 	reportNone();
 }
@@ -294,8 +295,9 @@ function parseGrblStatus(response) {
 		mist: undefined,
 		pins: undefined,
 	};
-	response = response.replace("<", "").replace(">", "");
-	const fields = response.split("|");
+	const clnResp = response.replace("<", "").replace(">", "");
+
+	const fields = clnResp.split("|");
 	for (const field in fields) {
 		const tv = field.split(":");
 		const tag = tv[0];
@@ -568,7 +570,7 @@ function grblGetModal(msg) {
 	const modes = modal("modes").split(" ");
 	Modal.parking = undefined; // Otherwise there is no way to turn it off
 	modal("program", ""); // Otherwise there is no way to turn it off
-	for(const mode in modes) {
+	for (const mode in modes) {
 		if (mode === "M9") {
 			modal("flood", mode);
 			modal("mist", mode);
@@ -774,25 +776,14 @@ const StartProbeProcess = () => {
 
 let spindleSpeedSetTimeout;
 
-function setSpindleSpeed(speed) {
+const setSpindleSpeed = (speed) => {
 	const common = new Common();
 	if (spindleSpeedSetTimeout) {
 		clearTimeout(spindleSpeedSetTimeout);
 	}
 	if (speed >= 1) {
 		common.spindleTabSpindleSpeed = speed;
-		spindleSpeedSetTimeout = setTimeout(
-			() =>
-				SendPrinterCommand(
-					`S${common.spindleTabSpindleSpeed}`,
-					false,
-					null,
-					null,
-					1,
-					1,
-				),
-			500,
-		);
+		spindleSpeedSetTimeout = setTimeout(() => SendPrinterCommand(`S${common.spindleTabSpindleSpeed}`, false, null, null, 1, 1), 500);
 	}
 }
 
@@ -814,4 +805,5 @@ export {
 	StartProbeProcess,
 	MPOS,
 	WPOS,
+	setSpindleSpeed,
 };
