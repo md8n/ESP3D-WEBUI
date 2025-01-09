@@ -56,7 +56,6 @@ const update_UI_firmware_target = () => {
 	showAxiscontrols();
 
 	const fwName = "FluidNC";
-	last_grbl_pos = "";
 	displayNone(["configtablink", "auto_check_control", "progress_btn", "abort_btn", "motor_off_control"]);
 	setHTML("tab_title_configuration", "<span translate>GRBL configuration</span>");
 	setHTML("tab_printer_configuration", "<span translate>GRBL</span>");

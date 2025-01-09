@@ -132,7 +132,7 @@ const build = async () => {
 		format: "esm",
 		splitting: false,
 		naming: "[dir]/[name].[ext]",
-		minify: true,
+		minify: false,
 		plugins: [
 			html({
 				inline: true,
