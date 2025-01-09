@@ -91,7 +91,7 @@ function Macro_build_list(response_text) {
 				index: i
 			};
 		}
-		control_macrolist.push(entry);
+		common.control_macrolist.push(entry);
 	}
 	control_build_macro_ui();
 }

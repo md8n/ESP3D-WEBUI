@@ -24,9 +24,6 @@ import {
 
 //setup dialog
 
-let active_wizard_page = 0;
-
-
 const td = (content) => `<td>${content}</td>`;
 const table = (content) => `<table><tr>${content}</tr></table>`;
 const heading = (label) => `<h4>${translate_text_item(label)}</h4><hr>`;
@@ -68,13 +65,13 @@ const endDiv = () => "</div>";
 const setupdlg = () => {
     const common = new Common();
     common.setup_is_done = false;
+    let active_wizard_page = 0;
     displayNone("main_ui");
     // From settingstab
     const settingstab_list_elem = id("settings_list_data");
     if (settingstab_list_elem) {
         settingstab_list_elem.innerHTML = "";
     }
-    active_wizard_page = 0;
 
     const modal = setactiveModal("setupdlg.html", setupdone);
     if (modal == null) {
@@ -89,7 +86,7 @@ const setupdlg = () => {
     id("step3link").addEventListener("click", (event) => openstep(event, "step3"));
     id("endsteplink").addEventListener("click", (event) => openstep(event, "endstep"));
 
-    id("wizard_button").addEventListener("click", (event) => continue_setup_wizard());
+    id("wizard_button").addEventListener("click", (event) => continue_setup_wizard(active_wizard_page++));
 
     wizardDone("startsteplink");
 
@@ -120,8 +117,7 @@ function setupdone(response) {
     closeModal("setup done");
 }
 
-function continue_setup_wizard() {
-    active_wizard_page++;
+const continue_setup_wizard = (active_wizard_page) => {
     switch (active_wizard_page) {
         case 1:
             enablestep1();
@@ -133,10 +129,10 @@ function continue_setup_wizard() {
             break;
         case 3:
             // Pre-emptively step over step 3
-            active_wizard_page++;
-            id("wizard_line3").style.background = "#337AB7";
-            enablestep4();
-            break;
+
+            // id("wizard_line3").style.background = "#337AB7";
+            // enablestep4();
+            // break;
         case 4:
             enablestep4();
             break;

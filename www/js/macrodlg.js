@@ -204,11 +204,12 @@ function on_macro_name(event, index) {
 	entry.name = macroname.length > 0 ? event.value : "&nbsp;";
 }
 
-function build_dlg_macrolist_ui() {
+const build_dlg_macrolist_ui = () => {
+	const common = new Common();
 	let content = "";
 	macrodlg_macrolist = [];
 	for (let i = 0; i < 9; i++) {
-		macrodlg_macrolist.push(control_macrolist[i]);
+		macrodlg_macrolist.push(common.control_macrolist[i]);
 		content += `<tr style='vertical-align:middle' id='macro_line_${i}'>`;
 		content += "</tr>";
 	}
@@ -259,11 +260,12 @@ function macro_select_glyph(event, glyph, index) {
 }
 
 const closeMacroDialog = () => {
+	const common = new Common();
 	let modified = false;
 	const fieldsTest = ["filename", "name", "glyph", "class", "target"];
 	for (let i = 0; i < 9; i++) {
 		const macEntry = macrodlg_macrolist[i];
-		const conEntry = control_macrolist[i];
+		const conEntry = common.control_macrolist[i];
 		if (
 			fieldsTest.some(
 				(fieldName) => macEntry[fieldName] !== conEntry[fieldName],
@@ -340,8 +342,9 @@ function macrodlgUploadProgressDisplay(oEvent) {
 	}
 }
 
-function macroUploadsuccess(response) {
-	control_macrolist = [];
+const macroUploadsuccess = (response) => {
+	const common = new Common();
+	common.control_macrolist = [];
 	for (let i = 0; i < 9; i++) {
 		let entry;
 		if (macrodlg_macrolist.length !== 0) {
@@ -363,7 +366,7 @@ function macroUploadsuccess(response) {
 				index: i,
 			};
 		}
-		control_macrolist.push(entry);
+		common.control_macrolist.push(entry);
 	}
 	displayNone("macrodlg_upload_msg");
 	closeModal("ok");

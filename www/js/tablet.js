@@ -760,11 +760,6 @@ function addOption(selector, name, value, isDisabled, isSelected) {
   selector.appendChild(opt);
 }
 
-var gCodeFilename = '';
-
-var filename = 'TEST.NC';
-var watchPath = '';
-
 function tabletGetFileList(path) {
   const common = new Common();
   common.gCodeFilename = "";

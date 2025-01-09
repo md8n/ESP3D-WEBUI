@@ -13,7 +13,7 @@ const pathDiv = (path: string) => path.replaceAll("\\", platform() !== "windows"
 
 const limitedLanguageImports = async (fileContents: string, inclLang: string[] = ["en"]) => {
 	const langUtilsFile = [];
-	/** This shgould correspond exactly with `language_list in `langUtils.js` */
+	/** This should correspond exactly with `language_list in `langUtils.js` */
 	const language_list = [
 		["de", "germantrans"],
 		["en", "englishtrans"],
@@ -57,8 +57,27 @@ const absolutifyImports = async (fileContents: string) => {
 		const ir = impResults[ix];
 		const impFilePath = pathDiv(ir[1].replace("./", repPath));
 		fcAbsImp = fcAbsImp.replace(ir[1], impFilePath);
+		console.log(`Replaced '${ir[1]}' with '${impFilePath}'`);
 	}
 	return fcAbsImp;
+};
+
+/** Strip all import filepaths on the assumption that they are already imported */
+const stripImports = async (fileContents: string) => {
+	const regexImp = /^import\s*{(.|\s)*?}\s*from\s*['"].*['"]\;/gm;
+	const impResults = [...fileContents.matchAll(regexImp)];
+	if (!impResults.length) {
+		// Leave the file as-is - and move on
+		return fileContents;
+	}
+
+	let fcImp = fileContents;
+	for (let ix = 0; ix < impResults.length; ix++) {
+		const ir = impResults[ix];
+		console.log(`Removing '${ir[0]}'`);
+		fcImp = fcImp.replace(ir[0], "");
+	}
+	return fcImp;
 };
 
 const loadAndReplaceHTML = async (filePath: string, fileContents: string) => {
@@ -132,7 +151,7 @@ const build = async () => {
 		format: "esm",
 		splitting: false,
 		naming: "[dir]/[name].[ext]",
-		minify: false,
+		minify: {whitespace: true, syntax: true, identifiers: false},
 		plugins: [
 			html({
 				inline: true,
@@ -147,13 +166,36 @@ const build = async () => {
 						if (![".js", ".ts"].includes(file.extension)) {
 							continue;
 						}
-						console.log(`Processing JS/TS file '${file.path}'`);
-						if (file.path.endsWith("langUtils.js")) {
-							const fcLang = await limitedLanguageImports(await file.content);
-							processor.writeFile(file.path, fcLang);
-						} else {
-							const fcAbsImp = await absolutifyImports(await file.content);
-							processor.writeFile(file.path, fcAbsImp);
+						let jsFile = "";
+						// biome-ignore lint/complexity/noForEach: <explanation>
+						["loadHTML.js", "langUtils.js", "common.js", "app.js"].forEach((fileName) => {
+							if (jsFile) {
+								return;
+							}
+							if (file.path.endsWith(fileName)) {
+								jsFile = fileName;
+							}
+						});
+						console.log(`Processing JS/TS file '${file.path}' as '${jsFile}'`);
+						switch (jsFile) {
+							case "loadHTML.js":
+								console.warn(`Skipping processing of JS/TS file '${file.path}'. This file is only used when doing debug runs.`);
+								break;
+							case "langUtils.js": {
+								const fcLang = await limitedLanguageImports(await file.content);
+								processor.writeFile(file.path, fcLang);
+								break;
+							}
+							case "common.js": {
+								const fcAbsImp = await absolutifyImports(await file.content);
+								processor.writeFile(file.path, fcAbsImp);
+								break;
+							}
+							case "app.js": {
+								const fcImp = await stripImports(await file.content);
+								processor.writeFile(file.path, fcImp);
+								break;
+							}
 						}
 					}
 
