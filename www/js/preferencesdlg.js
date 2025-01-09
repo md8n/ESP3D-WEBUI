@@ -36,8 +36,10 @@ import {
     build_language_list,
     ontoggleLock,
     translate_text_item,
-    build_HTML_setting_list,
     handlePing,
+    PreferencesModified,
+    BuildPreferencesJson,
+    LoadPreferencesJson,
     translate_text,
 } from "./common.js";
 
@@ -459,12 +461,6 @@ const setupCommandsHandlers = () => {
     id("enable_verbose_mode").addEventListener("change", (event) => commands_verboseMode(getPrefValue("enable_verbose_mode")));
 };
 
-const prefFile = "/preferences.json";
-const getpreferenceslist = () => {
-    const url = prefFile;
-    SendGetHttp(url, processPreferencesGetSuccess, processPreferencesGetFailed);
-}
-
 /** Gets a Select, Text, Int or Float's new value after a change, and stores it in the preferences */
 const handleInputChange = (fieldId) => {
     const newValue = getValue(fieldId);
@@ -489,36 +485,23 @@ const handleCheckboxClick = (checkboxId) => {
 
 const togglePanel = (checkboxId, panelId) => displayBlockOrNone(panelId, handleCheckboxClick(checkboxId));
 
-function processPreferencesGetSuccess(response) {
-    Preferences_build_list((response.indexOf("<HTML>") === -1) ? response : defaultpreferenceslist);
+const prefFile = "/preferences.json";
+const getpreferenceslist = () => {
+    const url = prefFile;
+    SendGetHttp(url, processPreferencesGetSuccess, processPreferencesGetFailed);
 }
 
-function processPreferencesGetFailed(error_code, response) {
+const processPreferencesGetSuccess = (response) => {
+    Preferences_build_list((response.indexOf("<HTML>") === -1) ? response : "");
+}
+
+const processPreferencesGetFailed = (error_code, response) => {
     conErr(error_code, response);
-    Preferences_build_list(defaultpreferenceslist);
+    Preferences_build_list();
 }
 
-function Preferences_build_list(response_text) {
-    let preferenceslist = [];
-    try {
-        if (response_text.length !== 0) {
-            //console.log(response_text);
-            preferenceslist = JSON.parse(response_text);
-        } else {
-            preferenceslist = JSON.parse(defaultpreferenceslist);
-        }
-    } catch (e) {
-        console.error("Parsing error:", e);
-        preferenceslist = JSON.parse(defaultpreferenceslist);
-    }
-    applypreferenceslist();
-}
-
-function applypreferenceslist() {
-    //Assign each control state
-    const common = new Common();
-    build_HTML_setting_list(common.current_setting_filter);
-
+const Preferences_build_list = (response_text = "") => {
+    LoadPreferencesJson(response_text);
     handlePing();
 }
 
@@ -530,29 +513,17 @@ const showpreferencesdlg = () => {
 
     initpreferences();
 
-    id("preferencesdlg.html").addEventListener("click", (event) => clear_drop_menu(event),);
-    id("PreferencesDialogClose").addEventListener("click", (event) => closePreferencesDialog(),);
-    id("PreferencesDialogCancel").addEventListener("click", (event) => closePreferencesDialog(),);
-    id("PreferencesDialogSave").addEventListener("click", (event) => SavePreferences(),);
+    id("preferencesdlg.html").addEventListener("click", (event) => clear_drop_menu(event));
+    id("PreferencesDialogClose").addEventListener("click", (event) => closePreferencesDialog());
+    id("PreferencesDialogCancel").addEventListener("click", (event) => closePreferencesDialog());
+    id("PreferencesDialogSave").addEventListener("click", (event) => SavePreferences());
 
     displayNone("preferencesdlg_upload_msg");
     showModal();
 };
 
-function closePreferencesDialog() {
-    let modified = false;
-    //check dialog compare to global state
-    if (typeof getPrefValue("enable_ping") === "undefined") {
-        modified = true;
-    } else {
-        //camera address
-        if (getChecked("camera_address") !== getPrefValue("camera_address"))
-            modified = true;
-        //Monitor connection
-        if (getChecked("enable_ping") !== getPrefValue("enable_ping"))
-            modified = true;
-    }
-    if (modified) {
+const closePreferencesDialog = () => {
+    if (PreferencesModified()) {
         confirmdlg(translate_text_item("Data modified"), translate_text_item("Do you want to save?"), process_preferencesCloseDialog);
     } else {
         closeModal("cancel");
@@ -570,7 +541,7 @@ function process_preferencesCloseDialog(answer) {
     }
 }
 
-const SavePreferences = (save_current_preferences = false) => {
+const SavePreferences = () => {
     const common = new Common();
     if (common.http_communication_locked) {
         alertdlg(translate_text_item("Busy..."), translate_text_item("Communications are currently locked, please wait and retry."));
@@ -578,29 +549,21 @@ const SavePreferences = (save_current_preferences = false) => {
     }
     console.log("save prefs");
 
-    if (save_current_preferences) {
-        preferenceslist = [];
-        let saveprefs = `[{"language":"${getPrefValue("language_list")}`;
-        saveprefs += `","enable_ping":"${getChecked("enable_ping")}`;
-        preferenceslist = JSON.parse(saveprefs);
-    }
-    const blob = new Blob([JSON.stringify(preferenceslist, null, " ")], { type: "application/json" });
+    const blob = new Blob([BuildPreferencesJson()], { type: "application/json" });
     const file = new File([blob], prefFile);
+
     const formData = new FormData();
     const url = "/files";
     formData.append("path", "/");
     formData.append("myfile[]", file, prefFile);
-    if (save_current_preferences) {
-        SendFileHttp(url, formData);
-    } else {
-        SendFileHttp(
-            url,
-            formData,
-            preferencesdlgUploadProgressDisplay,
-            preferencesUploadsuccess,
-            preferencesUploadfailed,
-        );
-    }
+
+    SendFileHttp(
+        url,
+        formData,
+        preferencesdlgUploadProgressDisplay,
+        preferencesUploadsuccess,
+        preferencesUploadfailed,
+    );
 };
 
 function preferencesdlgUploadProgressDisplay(oEvent) {
@@ -616,7 +579,7 @@ function preferencesdlgUploadProgressDisplay(oEvent) {
 
 function preferencesUploadsuccess(response) {
     displayNone("preferencesdlg_upload_msg");
-    applypreferenceslist();
+    handlePing();
     closeModal("ok");
 }
 

@@ -122,7 +122,7 @@ const continue_setup_wizard = (active_wizard_page) => {
         case 1:
             enablestep1();
             setPrefValue("language", getPrefValue("language_list"));
-            SavePreferences(true);
+            SavePreferences();
             break;
         case 2:
             enablestep2();

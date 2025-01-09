@@ -16,6 +16,7 @@ window.onload = () => {
 	let connectDlg = "";
 	let controlsPanel = "";
 	let navbarLoaded = "";
+	let tabletTab = "";
 
 	let failSafe = 10;
 
@@ -23,24 +24,49 @@ window.onload = () => {
 		// Check for various key HTML panels and load them up
 		if (!connectDlg && id("connectdlg.html")) {
 			connectDlg = "loading";
-			connectdlg();
-			connectDlg = "loaded";
+			try {
+				connectdlg();
+				connectDlg = "loaded";
+			} catch (err) {
+				console.error("Error loading connect dialog:", err);
+				connectDlg = "failed";
+			}
 		}
 
 		if (!controlsPanel && id("controlPanel")) {
 			controlsPanel = "loading";
-			ControlsPanel();
-			controlsPanel = "loaded";
+			try {
+				ControlsPanel();
+				controlsPanel = "loaded";
+			} catch (err) {
+				console.error("Error loading controls panel:", err);
+				controlsPanel = "failed";
+			}
 		}
 
 		if (!navbarLoaded && id("navbar")) {
 			navbarLoaded = "loading";
-			navbar();
-			tabletInit();
-			navbarLoaded = "loaded";
+			try {
+				navbar();
+				navbarLoaded = "loaded";
+			} catch (err) {
+				console.error("Error loading navigation bar:", err);
+				navbarLoaded = "failed";
+			}
 		}
 
-		if ((connectDlg && controlsPanel && navbarLoaded) || failSafe <= 0) {
+		if (!tabletTab && id("tablettab")) {
+			tabletTab = "loading";
+			try {
+				tabletInit();
+				tabletTab = "loaded";
+			} catch (err) {
+				console.error("Error loading tablet tab:", err);
+				tabletTab = "failed";
+			}
+		}
+
+		if ((connectDlg && controlsPanel && navbarLoaded && tabletTab) || failSafe <= 0) {
 			clearInterval(startUpInt);
 			startUpInt = null;
 		}

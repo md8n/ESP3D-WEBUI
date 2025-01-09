@@ -59,7 +59,7 @@ function camera_OnKeyUp(event) {
 function camera_saveaddress() {
 	cameraformataddress();
 	setPrefValue("camera_address", id("camera_webaddress").value);
-	SavePreferences(true);
+	SavePreferences();
 }
 
 function camera_detachcam() {

@@ -115,6 +115,9 @@ import {
 	getPrefValue,
 	setPrefValue,
 	preferences,
+	PreferencesModified,
+	BuildPreferencesJson,
+	LoadPreferencesJson,
 } from "./prefUtils.js";
 import {
 	getpreferenceslist,
@@ -394,6 +397,9 @@ export {
 	getPrefValue,
 	setPrefValue,
 	preferences,
+	PreferencesModified,
+	BuildPreferencesJson,
+	LoadPreferencesJson,
 	// from preferencesdlg.js
 	getpreferenceslist,
 	initpreferences,

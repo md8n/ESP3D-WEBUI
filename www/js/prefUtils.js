@@ -121,6 +121,103 @@ const preferences = buildPrefsFromDefs(prefDefs);
 /** Helper method to get the `enable_ping` preference value */
 const enable_ping = () => getPrefValue("enable_ping");
 
+/** Determine if the preferences have been modified */
+const PreferencesModified = () => {
+    let isModified = false;
+
+	for (const [prefName, value] of Object.entries(preferences)) {
+		const key = prefName === "language_list" ? "language" : prefName;
+		if (value.fileValue !== value.value) {
+			isModified = true;
+			break;
+		}
+	}
+
+	return isModified;
+}
+
+/** Build the flat preferences json structure from the preferences */
+const BuildPreferencesJson = () => {
+    const preferenceslist = [];
+
+	for (const [prefName, value] of Object.entries(preferences)) {
+		const key = prefName === "language_list" ? "language" : prefName;
+		if (value.fileValue !== value.value) {
+			value.fileValue = value.value;
+		}
+
+		preferenceslist.push(`"${key}":"${value.fileValue}"`);
+	}
+
+	return `[{\n${preferenceslist.join(",\n")}\n}]`;
+}
+
+/** Load the flat preferences json structure into the preferences */
+const LoadPreferencesJson = (preferenceslist = "") => {
+	if (!preferenceslist)	{
+		return;
+	}
+
+	let prefs;
+	
+	try {
+        prefs = JSON.parse(preferenceslist)[0];
+    } catch (e) {
+        console.error("Parsing error:", e);
+		return;
+    }
+
+	for (const [key, value] of Object.entries(preferences)) {
+		if (!(key in prefs)) {
+			continue;
+		}
+		const prefName = (key === "language") ? "language_list" : key;
+		switch (value.valueType) {
+            case "panel":
+            case "bool":
+				if (typeof prefs[key] === "boolean") {
+					setPrefValue(prefName, `${prefs[key]}`);
+				}
+				if (typeof prefs[key] === "string") {
+					setPrefValue(prefName, prefs[key].toLowerCase() === "false" || !prefs[key] ? "false" : "true");
+				}
+                break;
+            case "int":
+				if (typeof prefs[key] === "number") {
+					setPrefValue(prefName, prefs[key]);
+				}
+				if (typeof prefs[key] === "string") {
+					const vInt = Number.parseInt(prefs[key]);
+					if (!Number.isNaN(vInt)) {
+						setPrefValue(prefName, vInt);
+					}
+				}
+				break;
+            case "float":
+				if (typeof prefs[key] === "number") {
+					setPrefValue(prefName, prefs[key]);
+				}
+				if (typeof prefs[key] === "string") {
+					const vFloat = Number.parseFloat(prefs[key]);
+					if (!Number.isNaN(vFloat)) {
+						setPrefValue(prefName, vFloat);
+					}
+				}
+				break;
+            case "text":
+            case "select":
+				setPrefValue(prefName, prefs[key]);
+                break;
+			case "enctext":
+				setPrefValue(prefName, HTMLDecode(prefs[key]));
+                break;
+            default:
+                console.log(`${key}: ${JSON.stringify(value)}`);
+                break;
+        }
+	}
+}
+
 export {
 	buildFieldId,
 	enable_ping,
@@ -128,4 +225,7 @@ export {
 	getPrefValue,
 	setPrefValue,
 	preferences,
+	PreferencesModified,
+	BuildPreferencesJson,
+	LoadPreferencesJson,
 };
