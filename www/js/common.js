@@ -161,8 +161,10 @@ import {
 	saveSerialMessages,
 	showGCode,
 	tabletInit,
+	tabletGrblState,
 	tabletShowMessage,
 } from "./tablet.js";
+import { arrayToXYZ, displayer, refreshGcode } from "./toolpath-displayer.js";
 import { translate_text } from "./translate.js";
 import { UIdisableddlg } from "./UIdisableddlg.js";
 import { updatedlg } from "./updatedlg.js";
@@ -202,6 +204,7 @@ class Common {
 		};
 		this.MPOS = [0, 0, 0];
 		this.WPOS = [0, 0, 0];
+		this.axisNames = ["x", "y", "z", "a", "b", "c"];
 
 		/** See http.js */
 		this.http_communication_locked = false;
@@ -451,7 +454,10 @@ export {
 	saveSerialMessages,
 	showGCode,
 	tabletInit,
+	tabletGrblState,
 	tabletShowMessage,
+	// from "./toolpath-displayer.js";
+	arrayToXYZ, displayer, refreshGcode,
 	// from translate.js
 	translate_text,
 	// from UIdisableddlg.js

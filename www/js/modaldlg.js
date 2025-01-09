@@ -34,7 +34,7 @@ const showModal = () => {
 
 /** Close the modal dialog - normally triggered when the user clicks on <X> */
 const closeModal = (response) => {
-    let currentmodal = listmodal.pop();
+    const currentmodal = listmodal.pop();
     if (!currentmodal) {
         // the list of modals is empty
         return;

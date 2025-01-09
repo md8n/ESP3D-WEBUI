@@ -14,6 +14,7 @@ import {
 	translate_text_item,
 	sendCommand,
 	displayNone,
+	tabletGrblState,
 	tabletShowMessage,
 } from "./common.js";
 
@@ -42,8 +43,6 @@ const WPOS = (value) => {
 
 var feedrate = [0, 0, 0, 0, 0, 0];
 let last_axis_letter = "Z";
-
-const axisNames = ["x", "y", "z", "a", "b", "c"];
 
 function setClickability(element, visible) {
 	if (visible) {
@@ -417,15 +416,16 @@ function clickableFromStateName(state, hasSD) {
 }
 
 function show_grbl_position(wpos, mpos) {
+	const common = new Common();
 	if (wpos) {
 		wpos.forEach((pos, axis) => {
-			const element = `control_${axisNames[axis]}_position`;
+			const element = `control_${common.axisNames[axis]}_position`;
 			setHTML(element, pos.toFixed(3));
 		});
 	}
 	if (mpos) {
 		mpos.forEach((pos, axis) => {
-			const element = `control_${axisNames[axis]}m_position`;
+			const element = `control_${common.axisNames[axis]}m_position`;
 			setHTML(element, pos.toFixed(3));
 		});
 	}

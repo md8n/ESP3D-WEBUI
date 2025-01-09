@@ -546,7 +546,7 @@ function files_build_display_filelist(displaylist = true) {
 			if (!files_file_list[index].isdir)
 				content += files_build_file_line(index, actions);
 		}
-		for (index = 0; index < files_file_list.length; index++) {
+		for (let index = 0; index < files_file_list.length; index++) {
 			if (files_file_list[index].isdir)
 				content += files_build_file_line(index, actions);
 		}

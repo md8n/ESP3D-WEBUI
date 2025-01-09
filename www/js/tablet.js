@@ -20,8 +20,8 @@ import {
   maslowMsgHandling,
   saveConfigValues,
   sendCommand,
+  arrayToXYZ, displayer, refreshGcode,
 } from "./common.js";
-// import { arrayToXYZ, displayer, refreshGcode } from "./toolpath-displayer.js";
 
 let gCodeLoaded = false;
 
@@ -584,7 +584,7 @@ function tabletUpdateModal() {
     scaleUnits("disZ");
   }
 }
-function tabletGrblState(grbl, response) {
+const tabletGrblState = (grbl, response) => {
   // tabletShowResponse(response)
   const stateName = grbl.stateName;
 
@@ -673,16 +673,20 @@ function tabletGrblState(grbl, response) {
   spindleSpeed = grbl.spindleSpeed ? Number(grbl.spindleSpeed) : "";
   //setText('spindle-speed', spindleSpeed);
 
-  var now = new Date();
+  const now = new Date();
   //setText('time-of-day', now.getHours() + ':' + String(now.getMinutes()).padStart(2, '0'));
-  if (stateName == "Run") {
-    var elapsed = now.getTime() - startTime;
-    if (elapsed < 0) elapsed = 0;
-    var seconds = Math.floor(elapsed / 1000);
-    var minutes = Math.floor(seconds / 60);
+  if (stateName === "Run") {
+    let elapsed = now.getTime() - startTime;
+    if (elapsed < 0) {
+      elapsed = 0;
+    }
+    let seconds = Math.floor(elapsed / 1000);
+    const minutes = Math.floor(seconds / 60);
     seconds = seconds % 60;
-    if (seconds < 10) seconds = "0" + seconds;
-    runTime = minutes + ":" + seconds;
+    if (seconds < 10) {
+      seconds = `0${seconds}`;
+    }
+    runTime = `${minutes}:${seconds}`;
   } else {
     startTime = now.getTime();
   }
@@ -730,14 +734,14 @@ function tabletGrblState(grbl, response) {
   if (WPOS()) {
     WPOS().forEach((pos, index) => {
       setTextContent(
-        `mpos-${axisNames[index]}`,
+        `mpos-${common.axisNames[index]}`,
         Number(pos * factor).toFixed(index > 2 ? 2 : digits),
       );
     });
   }
 
-  MPOS().forEach(function (pos, index) {
-    //setTextContent('mpos-'+axisNames[index], Number(pos*factor).toFixed(index > 2 ? 2 : digits));
+  MPOS().forEach((pos, index) => {
+    // setTextContent(`mpos-${common.axisNames[index]}`, Number(pos*factor).toFixed(index > 2 ? 2 : digits));
   })
 }
 
@@ -1285,6 +1289,7 @@ export {
   saveSerialMessages,
   showGCode,
   tabletInit,
+  tabletGrblState,
   tabletShowMessage,
 };
 /* Calibration modal END */
