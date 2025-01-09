@@ -83,13 +83,16 @@ function process_cmd() {
 	}
 }
 
-function AddCmd(cmd_fn, id) {
+/** Add a command to the http_cmd_list */
+const AddCmd = (cmd_fn, id) => {
 	if (http_cmd_list.length > max_cmd) {
 		http_errorfn(999, translate_text_item("Server not responding"));
 		return;
 	}
 	let cmd_id = 0;
-	if (typeof id !== "undefined") cmd_id = id;
+	if (typeof id !== "undefined") {
+		cmd_id = id;
+	}
 	//console.log("adding command");
 	const cmd = {
 		cmd: cmd_fn,
@@ -299,4 +302,4 @@ function ProcessFileHttp(url, postdata, progressfn, resultfn, errorfn) {
 	xmlhttpupload.send(postdata);
 }
 
-export { clear_cmd_list, SendFileHttp, SendGetHttp };
+export { AddCmd, clear_cmd_list, SendFileHttp, SendGetHttp };

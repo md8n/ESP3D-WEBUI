@@ -10,6 +10,8 @@ import {
 	browser_is,
 	setChecked,
 	setHTML,
+	Set_page_title,
+	update_UI_firmware_target,
 	alertdlg,
 	confirmdlg,
 	init_files_panel,
@@ -240,6 +242,7 @@ const build_control_from_pos = (pos, actions, extra) => build_control_from_index
  */
 const saveMaslowYaml = () => SendGetHttp(`/command?plain=${encodeURIComponent("$CO")}`);
 
+/** Build the HTML for the list of settings */
 const build_HTML_setting_list = (filter) => {
 	const common = new Common();
 

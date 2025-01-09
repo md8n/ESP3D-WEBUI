@@ -5,6 +5,7 @@ import {
 	displayInline,
 	displayNone,
 	id,
+	initUI,
 	closeModal,
 	setactiveModal,
 	showModal,

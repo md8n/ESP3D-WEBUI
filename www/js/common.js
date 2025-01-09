@@ -17,7 +17,7 @@ import {
 	id,
 	browser_is,
 } from "./util.js";
-import { displayBlock, displayFlex, displayTable, displayInline, displayNone, displayUndoNone } from "./utilDisplay.js";
+import { displayBlock, displayFlex, displayTable, displayInitial, displayInline, displayNone, displayUndoNone } from "./utilDisplay.js";
 import { numpad } from "./numpad.js";
 import { checkValue, valueIsFloat } from "./utilValidation.js";
 
@@ -60,6 +60,7 @@ import {
 	build_axis_selection,
 	grblHandleMessage,
 	grbl_reset,
+	init_grbl_panel,
 	onAutoReportIntervalChange,
 	onstatusIntervalChange,
 	onprobemaxtravelChange,
@@ -75,8 +76,9 @@ import {
 	WPOS,
 } from "./grbl.js";
 import { grblpanel } from "./grblpanel.js";
-import { clear_cmd_list, SendFileHttp, SendGetHttp } from "./http.js";
+import { AddCmd, clear_cmd_list, SendFileHttp, SendGetHttp } from "./http.js";
 import { get_icon_svg } from "./icons.js";
+import { Set_page_title, update_UI_firmware_target, initUI } from "./initUI.js";
 import { inputdlg } from "./inputdlg.js";
 import { build_language_list, translate_text_item } from "./langUtils.js";
 import { DisconnectLogin, logindlg } from "./logindlg.js";
@@ -321,6 +323,7 @@ export {
 	build_axis_selection,
 	grblHandleMessage,
 	grbl_reset,
+	init_grbl_panel,
 	onAutoReportIntervalChange,
 	onstatusIntervalChange,
 	onprobemaxtravelChange,
@@ -337,11 +340,14 @@ export {
 	// from grblpanel.js
 	grblpanel,
 	// from http.js
+	AddCmd,
 	clear_cmd_list,
 	SendFileHttp,
 	SendGetHttp,
 	// from icons.js
 	get_icon_svg,
+	// from "./initUI.js";
+	Set_page_title, update_UI_firmware_target, initUI,
 	// from inputdlg.js
 	inputdlg,
 	// from langUtils.js
@@ -454,7 +460,7 @@ export {
 	id,
 	browser_is,
 	// from utilDisplay.js
-	displayBlock, displayFlex, displayTable, displayInline, displayNone, displayUndoNone,
+	displayBlock, displayFlex, displayTable, displayInitial, displayInline, displayNone, displayUndoNone,
 	// from utilValidation.js
 	checkValue,
 	valueIsFloat,

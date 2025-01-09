@@ -125,6 +125,7 @@ function control_changeaxis() {
 	}
 }
 
+/** Initialises the GRBL panel - looks for the probe */
 function init_grbl_panel() {
 	grbl_set_probe_detected(false);
 }
@@ -799,6 +800,7 @@ export {
 	build_axis_selection,
 	grblHandleMessage,
 	grbl_reset,
+	init_grbl_panel,
 	onAutoReportIntervalChange,
 	onstatusIntervalChange,
 	onprobemaxtravelChange,

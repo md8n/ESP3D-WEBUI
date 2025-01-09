@@ -72,6 +72,7 @@ function build_accept(file_filters_list) {
 	console.log(accept_txt);
 }
 
+/** Set up the event handlers for the files panel */
 function init_files_panel(dorefresh = true) {
 	displayInline("files_refresh_btn");
 	displayNone(["files_refresh_primary_sd_btn", "files_refresh_secondary_sd_btn"]);

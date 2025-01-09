@@ -23,7 +23,6 @@ import {
 } from "./common.js";
 
 //setup dialog
-const common = new Common();
 
 let active_wizard_page = 0;
 
@@ -55,6 +54,7 @@ function closeStep(step) {
 
     id(step).className += " wizard_done";
     
+    const common = new Common();
     if (!common.can_revert_wizard) {
         id(step).className += " no_revert_wizard";
     }
@@ -64,7 +64,9 @@ const hardRule = () => "<hr>\n";
 const div = (name) => `<div id='${name}'>`;
 const endDiv = () => "</div>";
 
+/** Set up the event handlers and state machine for the setup wizard */
 const setupdlg = () => {
+    const common = new Common();
     common.setup_is_done = false;
     displayNone("main_ui");
     // From settingstab
@@ -109,6 +111,7 @@ const setupdlg = () => {
 };
 
 function setupdone(response) {
+    const common = new Common();
     common.setup_is_done = true;
     common.do_not_build_settings = false;
     build_HTML_setting_list(common.current_setting_filter);
@@ -171,6 +174,7 @@ function enablestep1() {
 }
 
 function enablestep2() {
+    const common = new Common();
     const actions = [];
 
     let content = "";
@@ -213,6 +217,7 @@ const define_sd_role = (index) => {
 };
 
 function enablestep3() {
+    const common = new Common();
     const actions = [];
 
     let content = "";

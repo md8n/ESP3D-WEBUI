@@ -27,7 +27,8 @@ const displayBlock = (name) => setDisplay(name, 'block');
 const displayFlex = (name) => setDisplay(name, 'flex');
 const displayTable = (name) => setDisplay(name, 'table-row');
 const displayInline = (name) => setDisplay(name, 'inline');
-// const displayInitial = (name) => setDisplay(name, 'initial');
+const displayInitial = (name) => setDisplay(name, 'initial');
+/** Clear the display attribute */
 const displayUndoNone = (name) => setDisplay(name, '');
 
-export { displayBlock, displayFlex, displayTable, displayInline, displayNone, displayUndoNone };
+export { displayBlock, displayFlex, displayTable, displayInitial, displayInline, displayNone, displayUndoNone };

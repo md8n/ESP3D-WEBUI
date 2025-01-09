@@ -45,18 +45,6 @@ const ControlsPanel = () => {
 	id("motor_off_control").addEventListener("click", (event) => control_motorsOff());
 };
 
-function hideAxiscontrols() {
-	displayNone(["JogBar", "HomeZ", "control_z_position_display", "control_zm_position_row", "z_velocity_display"]);
-	displayBlock("CornerZ");
-}
-
-function showAxiscontrols() {
-	displayNone("CornerZ");
-	displayBlock(["JogBar", "HomeZ", "control_z_position_display"]);
-	displayTable("control_zm_position_row");
-	displayInline("z_velocity_display");
-}
-
 function loadmacrolist() {
 	const common = new Common();
 	common.control_macrolist = [];
