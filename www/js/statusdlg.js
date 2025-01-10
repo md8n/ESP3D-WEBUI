@@ -14,8 +14,6 @@ import {
 	translate_text_item,
 } from "./common.js";
 
-let statuspage = 0;
-let statuscontent = "";
 //status dialog
 const statusdlg = () => {
 	const modal = setactiveModal("statusdlg.html");
@@ -24,72 +22,47 @@ const statusdlg = () => {
 	}
 
 	id("status_dlg_close").addEventListener("click", (event) => closeModal("cancel"));
-	id("next_status_btn").addEventListener("click", (event) => next_status());
 	id("status_dlg_btn_close").addEventListener("click", (event) => closeModal("cancel"));
 	id("status_dlg_refreshstatus").addEventListener("click", (event) => refreshstatus());
 
 	showModal();
 	refreshstatus();
-	update_btn_status(0);
 };
 
-function next_status() {
-	const modal = getactiveModal();
-	const text = modal.element.getElementsByClassName("modal-text")[0];
-	text.innerHTML =
-		statuspage === 0
-			? statuscontent
-			: `<table><tr><td width='auto' style='vertical-align:top;'><label translate>Browser:</label></td><td>&nbsp;</td><td width='100%'><span class='text-info'><strong>${navigator.userAgent}</strong></span></td></tr></table>`;
-	update_btn_status();
+const buildSettingData = (response) => {
+	const tresponse = response.split("\n").map((item) => item.trim()).filter((item) => item);
+	tresponse.push(`WebUI version:${web_ui_version}`);
+	tresponse.push(`Browser:${navigator.userAgent}`);
+	const dataDef = tresponse.map((item) => {
+		const data = item.split(":").map((d) => d.trim());
+		return {"name": data[0], "value": data.slice(1).join(":")};
+	});
+	return dataDef;
 }
 
-function update_btn_status(forcevalue) {
-	if (typeof forcevalue !== "undefined") {
-		statuspage = forcevalue;
+const buildSettingList = (dataDef) => {
+	const settingList = ["<dl>"];
+	for (let i = 0; i < dataDef.length; i++) {
+		const data = dataDef[i];
+		settingList.push(`<dt>${translate_text_item(data.name)}</dt><dd class='text-info'>${data.value || ""}</dd>`);
 	}
-	setHTML(
-		"next_status_btn",
-		get_icon_svg(
-			statuspage === 0 ? "triangle-right" : "triangle-left",
-			"1em",
-			"1em",
-		),
-	);
-	statuspage = statuspage === 0 ? 1 : 0;
+	settingList.push("</dl>");
+	return settingList.join("\n");
 }
 
 function statussuccess(response) {
 	displayBlock("refreshstatusbtn");
 	displayNone("status_loader");
+
 	const modal = getactiveModal();
 	if (modal == null) {
 		return;
 	}
 	
 	const text = modal.element.getElementsByClassName("modal-text")[0];
-	const tresponse = response.split("\n");
-	statuscontent = "";
-	for (let i = 0; i < tresponse.length; i++) {
-		const data = tresponse[i].split(":");
-		if (data.length >= 2) {
-			statuscontent += `<label>${translate_text_item(data[0])}: </label>&nbsp;<span class='text-info'><strong>`;
-			const data2 = data[1].split(" (");
-			statuscontent += translate_text_item(data2[0].trim());
-			for (v = 1; v < data2.length; v++) {
-				statuscontent += ` (${data2[v]}`;
-			}
-			for (v = 2; v < data.length; v++) {
-				statuscontent += `:${data[v]}`;
-			}
-			statuscontent += "</strong></span><br>";
-		} //else statuscontent += tresponse[i] + "<br>";
-	}
-	statuscontent += `<label>${translate_text_item("WebUI version")}: </label>&nbsp;<span class='text-info'><strong>`;
-	statuscontent += web_ui_version;
-	statuscontent += "</strong></span><br>";
-	text.innerHTML = statuscontent;
-	update_btn_status(0);
-	//console.log(response);
+
+	const dataDef = buildSettingData(response);
+	text.innerHTML = buildSettingList(dataDef);
 }
 
 function statusfailed(error_code, response) {

@@ -378,7 +378,6 @@ function process_settings_answer(response_text) {
 						continue;
 					}
 					const sEntry = create_setting_entry(response.EEPROM[i], vi++);
-					console.log(sEntry.id);
 					scl.push(sEntry);
 				}
 				if (vi > 0) {

@@ -14,14 +14,14 @@ import {
 	CheckForHttpCommLock,
 } from "./common.js";
 
-var config_configList = [];
-var config_override_List = [];
-var config_lastindex = -1;
-var config_error_msg = "";
-var config_lastindex_is_override = false;
-var commandtxt = "$$";
-var is_override_config = false;
-var config_file_name = "/sd/config";
+let config_configList = [];
+let config_override_List = [];
+let config_lastindex = -1;
+let config_error_msg = "";
+let config_lastindex_is_override = false;
+const commandtxt = "$$";
+let is_override_config = false;
+const config_file_name = "/sd/config";
 
 const refreshconfig = (is_override) => {
 	if (CheckForHttpCommLock()) {
@@ -192,8 +192,7 @@ function process_config_answer(response_text) {
 }
 
 function create_config_entry(sentry, vindex) {
-	var iscomment;
-	var ssentry = sentry;
+	let ssentry = sentry;
 	if (!is_config_entry(ssentry)) return vindex;
 	while (ssentry.indexOf("\t") > -1) {
 		ssentry = ssentry.replace("\t", " ");
@@ -205,13 +204,13 @@ function create_config_entry(sentry, vindex) {
 		ssentry = ssentry.replace("##", "#");
 	}
 
-	iscomment = is_config_commented(ssentry);
+	const iscomment = is_config_commented(ssentry);
 	if (iscomment) {
-		while (ssentry.indexOf("<") != -1) {
-			var m = ssentry.replace("<", "&lt;");
+		while (ssentry.indexOf("<") !== -1) {
+			const m = ssentry.replace("<", "&lt;");
 			ssentry = m.replace(">", "&gt;");
 		}
-		var config_entry = {
+		const config_entry = {
 			comment: ssentry,
 			showcomment: true,
 			index: vindex,
@@ -223,11 +222,11 @@ function create_config_entry(sentry, vindex) {
 		if (is_override_config) config_override_List.push(config_entry);
 		else config_configList.push(config_entry);
 	} else {
-		var slabel = get_config_label(ssentry);
-		var svalue = get_config_value(ssentry);
-		var shelp = get_config_help(ssentry);
-		var scmd = get_config_command(ssentry);
-		var config_entry = {
+		const slabel = get_config_label(ssentry);
+		const svalue = get_config_value(ssentry);
+		const shelp = get_config_help(ssentry);
+		const scmd = get_config_command(ssentry);
+		const config_entry = {
 			comment: ssentry,
 			showcomment: false,
 			index: vindex,
@@ -245,16 +244,16 @@ function create_config_entry(sentry, vindex) {
 }
 //check it is valid entry
 function is_config_entry(sline) {
-	var line = sline.trim();
-	if (line.length == 0) return false;
-	return line.indexOf("$") == 0 && line.indexOf("=") != -1;
+	const line = sline.trim();
+	if (line.length === 0) return false;
+	return line.indexOf("$") === 0 && line.indexOf("=") !== -1;
 }
 
 function get_config_label(sline) {
-	var tline = sline.trim().split(" ");
-	var tsize = tline.length;
+	const tline = sline.trim().split(" ");
+	const tsize = tline.length;
 
-	var tline2 = sline.trim().split("=");
+	const tline2 = sline.trim().split("=");
 	return tline2[0];
 }
 
@@ -301,8 +300,8 @@ function is_config_override_file() {
 }
 
 function configGetvalue(index, is_override) {
-	var prefix = "";
-	var item = config_configList[index];
+	let prefix = "";
+	let item = config_configList[index];
 	if (is_override) {
 		prefix = "_override";
 		item = config_override_List[index];
@@ -321,7 +320,7 @@ function configGetvalue(index, is_override) {
 		alertdlg(translate_text_item("Out of range"), `${translate_text_item("Value ") + config_error_msg} !`);
 	} else {
 		//value is ok save it
-		var cmd = item.cmd + value;
+		const cmd = item.cmd + value;
 		config_lastindex = index;
 		config_lastindex_is_override = is_override;
 		item.defaultvalue = value;
@@ -336,34 +335,34 @@ function configGetvalue(index, is_override) {
 
 function config_checkchange(index, is_override) {
 	//console.log("check " + "config_"+index);
-	var prefix = "";
-	var item = config_configList[index];
+	let prefix = "";
+	let item = config_configList[index];
 	if (is_override) {
 		prefix = "_override";
 		item = config_override_List[index];
 	}
-	var val = id("config_" + prefix + index).value.trim();
+	const val = id(`config_${prefix}${index}`).value.trim();
 	//console.log("value: " + val);
-	if (item.defaultvalue == val) {
-		id("btn_config_" + prefix + index).className = "btn btn-default";
-		id("icon_config_" + prefix + index).className = "form-control-feedback";
-		setHTML("icon_config_" + prefix + index, "");
-		id("status_config_" + prefix + index).className = "form-group has-feedback";
+	if (item.defaultvalue === val) {
+		id(`btn_config_${prefix}${index}`).className = "btn btn-default";
+		id(`icon_config_${prefix}${index}`).className = "form-control-feedback";
+		setHTML(`icon_config_${prefix}${index}`, "");
+		id(`status_config_${prefix}${index}`).className = "form-group has-feedback";
 	} else if (config_check_value(val, index, is_override)) {
-		id("status_config_" + prefix + index).className =
+		id(`status_config_${prefix}${index}`).className =
 			"form-group has-feedback has-warning";
-		id("btn_config_" + prefix + index).className = "btn btn-warning";
-		id("icon_config_" + prefix + index).className =
+		id(`btn_config_${prefix}${index}`).className = "btn btn-warning";
+		id(`icon_config_${prefix}${index}`).className =
 			"form-control-feedback has-warning ico_feedback";
-		setHTML("icon_config_" + prefix + index, get_icon_svg("warning-sign"));
+		setHTML(`icon_config_${prefix}${index}`, get_icon_svg("warning-sign"));
 		//console.log("change ok");
 	} else {
 		//console.log("change bad");
-		id("btn_config_" + prefix + index).className = "btn btn-danger";
-		id("icon_config_" + prefix + index).className =
+		id(`btn_config_${prefix}${index}`).className = "btn btn-danger";
+		id(`icon_config_${prefix}${index}`).className =
 			"form-control-feedback has-error ico_feedback";
-		setHTML("icon_config_" + prefix + index, get_icon_svg("remove"));
-		id("status_config_" + prefix + index).className =
+		setHTML(`icon_config_${prefix}${index}`, get_icon_svg("remove"));
+		id(`status_config_${prefix}${index}`).className =
 			"form-group has-feedback has-error";
 	}
 }
@@ -421,8 +420,7 @@ const grbl_help = {
 };
 
 function inline_help(label) {
-	var shelp = "";
-	shelp = grbl_help[label];
+	let shelp = grbl_help[label];
 	if (typeof shelp === "undefined") shelp = "";
 	return translate_text_item(shelp);
 }
