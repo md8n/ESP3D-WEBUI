@@ -28,8 +28,6 @@ let gCodeLoaded = false;
 let snd = null;
 let sndok = true;
 
-const versionNumber = 0.87;
-
 const addMessage = (msg, scroll = true, clear = false) => {
   const msgWindow = document.getElementById("messages");
   if (msgWindow) {
@@ -41,7 +39,10 @@ const addMessage = (msg, scroll = true, clear = false) => {
 }
 
 /** Print the version number to the console */
-const showVersionNumber = () => addMessage(`Index.html Version: ${versionNumber}`);
+const showVersionNumber = () => {
+  const common = new Common();
+  addMessage(`Index.html Version: ${common.web_ui_version}`);
+}
 
 function beep(vol, freq, duration) {
   if (snd == null) {
@@ -1272,7 +1273,8 @@ const onCalibrationButtonsClick = async (command, msg = "") => {
 
   //Prints out the index.html version number when test is pressed
   if (command === '$TEST') {
-    addMessage(`Index.html Version: ${versionNumber}`);
+    const common = new Common();
+    addMessage(`Index.html Version: ${common.web_ui_version}`);
   }
 
   if (command !== '$MINFO') {

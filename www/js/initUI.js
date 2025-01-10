@@ -131,16 +131,12 @@ const initUI = () => {
 	connectdlg(false);
 
 	AddCmd(display_boot_progress);
-	//initial check
-	if (typeof web_ui_version === "undefined") {
-		alert("Missing init data!");
-	}
 	//check FW
 	update_UI_firmware_target();
 	//set title using hostname
 	Set_page_title();
 	//update UI version
-	setHTML("UI_VERSION", web_ui_version);
+	setHTML("UI_VERSION", common.web_ui_version);
 	//update FW version
 	setHTML("FW_VERSION", common.fwData.fw_version);
 	// Get the element with id="defaultOpen" and click on it

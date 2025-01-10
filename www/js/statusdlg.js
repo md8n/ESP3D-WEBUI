@@ -1,5 +1,5 @@
 import {
-	get_icon_svg,
+	Common,
 	conErr,
 	stdErrMsg,
 	displayBlock,
@@ -30,8 +30,9 @@ const statusdlg = () => {
 };
 
 const buildSettingData = (response) => {
+	const common = new Common();
 	const tresponse = response.split("\n").map((item) => item.trim()).filter((item) => item);
-	tresponse.push(`WebUI version:${web_ui_version}`);
+	tresponse.push(`WebUI version:${common.web_ui_version}`);
 	tresponse.push(`Browser:${navigator.userAgent}`);
 	const dataDef = tresponse.map((item) => {
 		const data = item.split(":").map((d) => d.trim());

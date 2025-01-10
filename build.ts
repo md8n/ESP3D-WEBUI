@@ -62,6 +62,12 @@ const absolutifyImports = async (fileContents: string) => {
 	return fcAbsImp;
 };
 
+const addBuildDate = (fileContents: string) => {
+	const regex = /this\.web_ui_version\s*=\s*['"](?<uiversion>.*)['"]/;
+	const subst = `this.web_ui_version="$<uiversion> (BuildDate: ${new Date().toUTCString()})"`;
+	return fileContents.replace(regex, subst);
+}
+
 /** Strip all import filepaths on the assumption that they are already imported */
 const stripImports = async (fileContents: string) => {
 	const regexImp = /^import\s*{(.|\s)*?}\s*from\s*['"].*['"]\;/gm;
@@ -74,7 +80,6 @@ const stripImports = async (fileContents: string) => {
 	let fcImp = fileContents;
 	for (let ix = 0; ix < impResults.length; ix++) {
 		const ir = impResults[ix];
-		console.log(`Removing '${ir[0]}'`);
 		fcImp = fcImp.replace(ir[0], "");
 	}
 	return fcImp;
@@ -190,7 +195,7 @@ const build = async () => {
 							}
 							case "common.js": {
 								const fcAbsImp = await absolutifyImports(await file.content);
-								processor.writeFile(file.path, fcAbsImp);
+								processor.writeFile(file.path, addBuildDate(fcAbsImp));
 								break;
 							}
 							case "app.js": {
