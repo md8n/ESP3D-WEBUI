@@ -290,7 +290,8 @@ const build_HTML_setting_list = (filter) => {
 		}
 	});
 	if (filter === "tree") {
-		document.querySelector("#setting__meta_0)").value = result;
+		// TODO: figure out what the correct 'result' should be here - this is a guess
+		document.querySelector("#setting__meta_0").value = common.fwData.result;
 	}
 	// set calibration values if exists
 	const calRes = common.calibrationResults;
