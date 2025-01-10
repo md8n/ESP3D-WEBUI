@@ -75,6 +75,7 @@ function build_accept(file_filters_list) {
 
 /** Set up the event handlers for the files panel */
 function init_files_panel(dorefresh = true) {
+	const common = new Common();
 	displayInline("files_refresh_btn");
 	displayNone(["files_refresh_primary_sd_btn", "files_refresh_secondary_sd_btn"]);
 
@@ -82,8 +83,8 @@ function init_files_panel(dorefresh = true) {
 	id("files_filter_btn").addEventListener("click", (event) => files_filter_button());
 
 	id("files_refresh_btn").addEventListener("click", (event) => files_refreshFiles(files_currentPath));
-	id("files_refresh_primary_sd_btn").addEventListener("click", (event) => files_refreshFiles(primary_sd));
-	id("files_refresh_secondary_sd_btn").addEventListener("click", (event) => files_refreshFiles(secondary_sd));
+	id("files_refresh_primary_sd_btn").addEventListener("click", (event) => files_refreshFiles(common.fwData.primary_sd));
+	id("files_refresh_secondary_sd_btn").addEventListener("click", (event) => files_refreshFiles(common.fwData.secondary_sd));
 
 	id("files_refresh_printer_sd_btn").addEventListener("click", (event) => {
 		current_source = printer_sd;
@@ -106,7 +107,7 @@ function init_files_panel(dorefresh = true) {
 	id("files_input_file").addEventListener("change", (event) => files_check_if_upload());
 
 	files_set_button_as_filter(files_filter_sd_list);
-	if (direct_sd && dorefresh) {
+	if (common.fwData.direct_sd && dorefresh) {
 		files_refreshFiles(files_currentPath);
 	}
 }
@@ -224,12 +225,15 @@ function process_files_Createdir(answer) {
 }
 
 function files_create_dir(name) {
-	if (direct_sd) {
-		const cmdpath = files_currentPath;
-		const url = `/upload?path=${encodeURIComponent(cmdpath)}&action=createdir&filename=${encodeURIComponent(name)}`;
-		displayBlock("files_nav_loader");
-		SendGetHttp(url, files_list_success, files_list_failed);
+	const common = new Common();
+	if (!common.fwData.direct_sd) {
+		return;
 	}
+
+	const cmdpath = files_currentPath;
+	const url = `/upload?path=${encodeURIComponent(cmdpath)}&action=createdir&filename=${encodeURIComponent(name)}`;
+	displayBlock("files_nav_loader");
+	SendGetHttp(url, files_list_success, files_list_failed);
 }
 
 function files_delete(index) {
@@ -249,8 +253,9 @@ function process_files_Delete(answer) {
 }
 
 function files_delete_file(index) {
+	const common = new Common();
 	files_error_status = `Delete ${files_file_list[index].name}`;
-	if (!direct_sd) {
+	if (!common.fwData.direct_sd) {
 		return;
 	}
 	const cmdpath = `path=${encodeURIComponent(files_currentPath)}`;
@@ -261,7 +266,10 @@ function files_delete_file(index) {
 	SendGetHttp(url, files_list_success, files_list_failed);
 }
 
-const files_is_clickable = (index) => files_file_list[index].isdir ? true : direct_sd;
+const files_is_clickable = (index) => {
+	const common = new Common();
+	files_file_list[index].isdir ? true : common.fwData.direct_sd;
+}
 
 const files_enter_dir = (name) => files_refreshFiles(`${files_currentPath + name}/`, true);
 
@@ -298,7 +306,8 @@ function files_click_file(index) {
 		files_enter_dir(entry.name);
 		return;
 	}
-	if (false && direct_sd) {
+	const common = new Common();
+	if (false && common.fwData.direct_sd) {
 		// Don't download on click; use the button
 		//console.log("file on direct SD");
 		const url = `SD/${files_currentPath}${entry.sdname}`;
@@ -329,15 +338,17 @@ function files_isgcode(filename, isdir) {
 }
 
 function files_showdeletebutton(index) {
+	// const common = new Common();
 	//can always deleted dile or dir ?
 	//if /ext/ is serial it should failed as fw does not support it
 	//var entry = files_file_list[index];
-	//if (direct_sd) return true;
+	//if (common.fwData.direct_sd) return true;
 	//if (!entry.isdir) return true;
 	return true;
 }
 
 function files_refreshFiles(path, usecache) {
+	const common = new Common();
 	//console.log("refresh requested " + path);
 	const cmdpath = path;
 	files_currentPath = path;
@@ -360,7 +371,7 @@ function files_refreshFiles(path, usecache) {
 	files_build_display_filelist(false);
 	displayBlock(["files_list_loader", "files_nav_loader"]);
 	//this is pure direct SD
-	if (direct_sd) {
+	if (common.fwData.direct_sd) {
 		const url = `/upload?path=${encodeURI(cmdpath)}`;
 		SendGetHttp(url, files_list_success, files_list_failed);
 	}
@@ -605,9 +616,10 @@ const files_abort = () => SendPrinterCommand("abort");
 const files_select_upload = () => id("files_input_file").click();
 
 function files_check_if_upload() {
+	const common = new Common();
 	const canupload = true;
 	const files = id("files_input_file").files;
-	if (direct_sd) {
+	if (common.fwData.direct_sd) {
 		SendPrinterCommand("[ESP200]", false, process_check_sd_presence);
 	} else {
 		//no reliable way to know SD is present or not so let's upload
@@ -616,9 +628,10 @@ function files_check_if_upload() {
 }
 
 function process_check_sd_presence(answer) {
+	const common = new Common();
 	//console.log(answer);
 	//for direct SD there is a SD check
-	if (direct_sd) {
+	if (common.fwData.direct_sd) {
 		if (answer.indexOf("o SD card") > -1) {
 			alertdlg(translate_text_item("Upload failed"), translate_text_item("No SD card detected"));
 			files_error_status = "No SD card";
@@ -665,7 +678,7 @@ function files_start_upload() {
 
 	displayBlock("files_uploading_msg");
 	displayNone("files_navigation_buttons");
-	if (direct_sd) {
+	if (common.fwData.direct_sd) {
 		SendFileHttp(url, formData, FilesUploadProgressDisplay, files_list_success, files_directSD_upload_failed,);
 		//console.log("send file");
 	}

@@ -68,7 +68,7 @@ const Disable_interface = (lostconnection) => {
 	//No auto check
 	on_autocheck_position(false);
 	reportNone();
-	if (common.async_webcommunication) {
+	if (common.fwData.async_webcommunication) {
 		event_source.removeEventListener("ActiveID", ActiveID_events, false);
 		event_source.removeEventListener("InitID", Init_events, false);
 		event_source.removeEventListener("DHT", DHT_events, false);
@@ -80,7 +80,7 @@ const Disable_interface = (lostconnection) => {
 
 const EventListenerSetup = () => {
 	const common = new Common();
-	if (!common.async_webcommunication) {
+	if (!common.fwData.async_webcommunication) {
 		return;
 	}
 	if (window.EventSource) {
@@ -135,9 +135,11 @@ const process_socket_response = (msg) => msg.split("\n").forEach(grblHandleMessa
 const startSocket = () => {
 	const common = new Common();
 	try {
-		const wsUrl = common.async_webcommunication ? `${document.location.host}/ws` : `${common.websocket_ip}:${common.websocket_port}`;
+		const wsUrl = !common.fwData.async_webcommunication
+			? `${document.location.host}/ws`
+			: `${common.fwData.websocket_ip}:${common.fwData.websocket_port}`;
 		ws_source = new WebSocket(`ws://${wsUrl}`, ["arduino"]);
-		if (!common.async_webcommunication) {
+		if (!common.fwData.async_webcommunication) {
 			console.log(`Socket is ${wsUrl}`);
 		}
 	} catch (exception) {

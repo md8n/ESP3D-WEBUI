@@ -64,12 +64,12 @@ function setAutocheck(flag) {
 
 function build_axis_selection() {
 	const common = new Common();
-	if (common.grblaxis <= 3) {
+	if (common.fwData.grblaxis <= 3) {
 		return;
 	}
 
 	let html = "<select class='form-control wauto' id='control_select_axis'>";
-	for (let i = 3; i <= common.grblaxis; i++) {
+	for (let i = 3; i <= common.fwData.grblaxis; i++) {
 		let letter;
 		let sel = "";
 		if (i === 3) {

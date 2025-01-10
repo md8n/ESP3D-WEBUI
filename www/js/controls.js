@@ -175,7 +175,7 @@ function SendHomecommand(cmd) {
 		case "G28": grblCmd = "$H"; break;
 		case "G28 X0": grblCmd = "$HX"; break;
 		case "G28 Y0": grblCmd = "$HY"; break;
-		case "G28 Z0": grblCmd = (common.grblaxis > 3) ? `$H${id("control_select_axis").value}` : "$HZ"; break;
+		case "G28 Z0": grblCmd = (common.fwData.grblaxis > 3) ? `$H${id("control_select_axis").value}` : "$HZ"; break;
 		default: grblCmd = "$H"; break;
 	}
 
@@ -223,7 +223,7 @@ function SendJogcommand(cmd, feedrate) {
 	let letter = "Z";
 	const common = new Common();
 	let aCmd = cmd;
-	if (common.grblaxis > 3) {
+	if (common.fwData.grblaxis > 3) {
 		letter = "Axis";
 		valueDef.label = valueDef.label.replace("Z axis", letter);
 		aCmd = cmd.replace("Z", id("control_select_axis").value);

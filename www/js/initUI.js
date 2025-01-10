@@ -30,9 +30,9 @@ import {
 const Set_page_title = (page_title = "") => {
 	const common = new Common();
 	if (page_title) {
-		common.esp_hostname = page_title;
+		common.fwData.esp_hostname = page_title;
 	}
-	document.title = common.esp_hostname;
+	document.title = common.fwData.esp_hostname;
 }
 
 const hideAxiscontrols = () => {
@@ -66,26 +66,26 @@ const update_UI_firmware_target = () => {
 	displayInitial("zero_xyz_btn");
 	displayInitial("zero_x_btn");
 	displayInitial("zero_y_btn");
-	if (common.grblaxis > 2) {
+	if (common.fwData.grblaxis > 2) {
 		//displayInitial('control_z_position_display');
 		setHTML("control_z_position_label", "Zw");
 	} else {
 		hideAxiscontrols();
 		displayNone("z_feedrate_group");
 	}
-	if (common.grblaxis > 3) {
+	if (common.fwData.grblaxis > 3) {
 		id("zero_xyz_btn_txt").innerHTML += "A";
 		common.grblzerocmd += " A0";
 		build_axis_selection();
 		displayBlock(["a_feedrate_group", "control_a_position_display"]);
 		id("positions_labels2").style.display = "inline-grid";
 	}
-	if (common.grblaxis > 4) {
+	if (common.fwData.grblaxis > 4) {
 		displayBlock(["control_b_position_display", "b_feedrate_group"]);
 		id("zero_xyz_btn_txt").innerHTML += "B";
 		common.grblzerocmd += " B0";
 	}
-	if (common.grblaxis > 5) {
+	if (common.fwData.grblaxis > 5) {
 		displayBlock(["control_c_position_display", "c_feedrate_group"]);
 		id("zero_xyz_btn_txt").innerHTML += "C";
 	} else {
@@ -106,7 +106,7 @@ const update_UI_firmware_target = () => {
 	//SD image or not
 	setHTML(
 		"showSDused",
-		direct_sd
+		common.fwData.direct_sd
 			? "<svg width='1.3em' height='1.2em' viewBox='0 0 1300 1200'><g transform='translate(50,1200) scale(1, -1)'><path  fill='#777777' d='M200 1100h700q124 0 212 -88t88 -212v-500q0 -124 -88 -212t-212 -88h-700q-124 0 -212 88t-88 212v500q0 124 88 212t212 88zM100 900v-700h900v700h-900zM500 700h-200v-100h200v-300h-300v100h200v100h-200v300h300v-100zM900 700v-300l-100 -100h-200v500h200z M700 700v-300h100v300h-100z' /></g></svg>"
 			: "",
 	);
@@ -124,18 +124,15 @@ const display_boot_progress = () => {
 
 /** InitUI step1 - try to connect to the ESP32 */
 const initUI = () => {
-	console.log("Init UI - Step 1");
 	const common = new Common();
-	if (common.ESP3D_authentication) {
-		connectdlg(false);
-	}
+	console.log("Init UI - Step 1");
+
+	// Start up connect dialog, don't try and get the FW data
+	connectdlg(false);
+
 	AddCmd(display_boot_progress);
 	//initial check
-	if (
-		typeof target_firmware === "undefined" ||
-		typeof web_ui_version === "undefined" ||
-		typeof direct_sd === "undefined"
-	) {
+	if (typeof web_ui_version === "undefined") {
 		alert("Missing init data!");
 	}
 	//check FW
@@ -145,7 +142,7 @@ const initUI = () => {
 	//update UI version
 	setHTML("UI_VERSION", web_ui_version);
 	//update FW version
-	setHTML("FW_VERSION", fw_version);
+	setHTML("FW_VERSION", common.fwData.fw_version);
 	// Get the element with id="defaultOpen" and click on it
 	id("tablettablink").click();
 
@@ -180,19 +177,19 @@ function initUI_3() {
 
 /** InitUI step4 - Initialise the command and files panels, determine if the setup wizard needs to be run */
 function initUI_4() {
+	const common = new Common();
 	console.log("Init UI - Step 4 - Initialise the command and files panels, determine if the setup wizard needs to be run");
 	AddCmd(display_boot_progress);
 	init_command_panel();
 	init_files_panel(false);
 	//check if we need setup
-	if (target_firmware === "???") {
+	if (common.fwData.target_firmware === "???") {
 		console.log("Launch Setup");
 		AddCmd(display_boot_progress);
 		closeModal("Connection successful");
 		setupdlg();
 	} else {
 		//wizard is done UI can be updated
-		const common = new Common();
 		common.setup_is_done = true;
 		common.do_not_build_settings = false;
 		AddCmd(display_boot_progress);

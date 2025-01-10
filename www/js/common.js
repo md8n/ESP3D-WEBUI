@@ -191,9 +191,20 @@ class Common {
 		};
 
 		/** See connectdlg.js */
-		this.esp_hostname = "ESP3D WebUI";
-		this.websocket_port = 0;
-		this.websocket_ip = "";
+		this.fwData = {
+			fw_version: "",
+			target_firmware: "",
+			direct_sd: false,
+			primary_sd: "/ext/",
+			secondary_sd: "/sd/",
+			ESP3D_authentication: false,
+			async_webcommunication: false,
+			websocket_port: 0,
+			websocket_ip: "",
+			esp_hostname: "ESP3D WebUI",
+			grblaxis: 3,
+			success: true,
+		}
 
 		/** See controls.js */
 		this.control_macrolist = [];
@@ -203,7 +214,6 @@ class Common {
 
 		/** See grbl.js */
 		this.calibrationResults = {};
-		this.grblaxis = 3;
 		this.grblzerocmd = "X0 Y0 Z0";
 		this.reportType = 'none';
 		this.spindleTabSpindleSpeed = 1;
@@ -265,8 +275,6 @@ class Common {
 		this.EP_AUTH_TYPE = 119;
 		this.EP_TARGET_FW = 461;
 
-		/** See socket.js */
-		this.async_webcommunication = false;
 		/** Id of the interval timer */
 		this.interval_ping = -1;
 
@@ -286,7 +294,6 @@ class Common {
 		/** See wizard.js - this is always false for some reason */
 		this.can_revert_wizard = false;
 
-		this.ESP3D_authentication = false;
 		this.esp_error_code = 0;
 		this.esp_error_message = "";
 
