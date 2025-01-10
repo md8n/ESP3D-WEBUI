@@ -41,6 +41,7 @@ import {
     BuildPreferencesJson,
     LoadPreferencesJson,
     translate_text,
+    CheckForHttpCommLock,
 } from "./common.js";
 
 //Preferences dialog
@@ -542,9 +543,7 @@ function process_preferencesCloseDialog(answer) {
 }
 
 const SavePreferences = () => {
-    const common = new Common();
-    if (common.http_communication_locked) {
-        alertdlg(translate_text_item("Busy..."), translate_text_item("Communications are currently locked, please wait and retry."));
+    if (CheckForHttpCommLock()) {
         return;
     }
     console.log("save prefs");

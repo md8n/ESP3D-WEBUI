@@ -120,6 +120,15 @@ function GetIdentificationStatusSuccess(response_text) {
 	}
 }
 
+const CheckForHttpCommLock = () => {
+	const common = new Common();
+	if (common.http_communication_locked) {
+		alertdlg(translate_text_item("Busy..."), translate_text_item("Communications are currently locked, please wait and retry."));
+		console.warn("communication locked");
+	}
+	return common.http_communication_locked;
+}
+
 const SendGetHttp = (url, result_fn, error_fn, id, max_id) => {
 	if (http_cmd_list.length > max_cmd && max_cmd !== -1) {
 		error_fn(999, translate_text_item("Server not responding"));
@@ -302,4 +311,4 @@ function ProcessFileHttp(url, postdata, progressfn, resultfn, errorfn) {
 	xmlhttpupload.send(postdata);
 }
 
-export { AddCmd, clear_cmd_list, SendFileHttp, SendGetHttp };
+export { AddCmd, clear_cmd_list, SendFileHttp, SendGetHttp, CheckForHttpCommLock };

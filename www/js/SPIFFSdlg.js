@@ -17,6 +17,7 @@ import {
 	SendFileHttp,
 	SendGetHttp,
 	translate_text_item,
+	CheckForHttpCommLock,
 } from "./common.js";
 
 //SPIFFS dialog
@@ -309,8 +310,7 @@ function SPIFFSUploadProgressDisplay(oEvent) {
 
 function SPIFFS_UploadFile() {
 	const common = new Common();
-	if (common.http_communication_locked) {
-		alertdlg(translate_text_item("Busy..."), translate_text_item("Communications are currently locked, please wait and retry."),);
+	if (CheckForHttpCommLock()) {
 		return;
 	}
 	const files = id("SPIFFS-select").files;

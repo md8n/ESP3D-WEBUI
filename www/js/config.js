@@ -11,6 +11,7 @@ import {
 	alertdlg,
 	SendGetHttp,
 	translate_text_item,
+	CheckForHttpCommLock,
 } from "./common.js";
 
 var config_configList = [];
@@ -23,9 +24,7 @@ var is_override_config = false;
 var config_file_name = "/sd/config";
 
 const refreshconfig = (is_override) => {
-	const common = new Common();
-	if (common.http_communication_locked) {
-		setHTML("config_status", translate_text_item("Communication locked by another process, retry later."));
+	if (CheckForHttpCommLock()) {
 		return;
 	}
 	is_override_config = false;

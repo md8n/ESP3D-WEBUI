@@ -15,6 +15,7 @@ import {
 	SendFileHttp,
 	SendGetHttp,
 	translate_text_item,
+	CheckForHttpCommLock,
 } from "./common.js";
 
 let update_ongoing = false;
@@ -91,9 +92,7 @@ function StartUploadUpdatefile(response) {
 	if (response !== "yes") {
 		return;
 	}
-	const common = new Common();
-	if (common.http_communication_locked) {
-		alertdlg(translate_text_item("Busy..."), translate_text_item("Communications are currently locked, please wait and retry."));
+	if (CheckForHttpCommLock()) {
 		return;
 	}
 	const files = id("fw-select").files;

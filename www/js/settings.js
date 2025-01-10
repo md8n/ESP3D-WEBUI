@@ -19,6 +19,7 @@ import {
 	SendGetHttp,
 	translate_text_item,
 	restartdlg,
+	CheckForHttpCommLock,
 } from "./common.js";
 
 /** setting_configList */
@@ -55,8 +56,7 @@ const CONFIG_TOOLTIPS = {
 
 const refreshSettings = (hide_setting_list) => {
 	const common = new Common();
-	if (common.http_communication_locked) {
-		setHTML("config_status", translate_text_item("Communication locked by another process, retry later."));
+	if (CheckForHttpCommLock()) {
 		return;
 	}
 	common.do_not_build_settings = typeof hide_setting_list === "undefined" ? false : !hide_setting_list;

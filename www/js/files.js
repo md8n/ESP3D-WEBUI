@@ -17,6 +17,7 @@ import {
 	SendGetHttp,
 	showGCode,
 	translate_text_item,
+	CheckForHttpCommLock,
 } from "./common.js";
 
 let files_currentPath = "/";
@@ -647,9 +648,7 @@ function process_check_sd_presence(answer) {
 
 function files_start_upload() {
 	const common = new Common();
-	if (common.http_communication_locked) {
-		alertdlg(translate_text_item("Busy..."), translate_text_item("Communications are currently locked, please wait and retry."));
-		console.log("communication locked");
+	if (CheckForHttpCommLock()) {
 		return;
 	}
 	const url = "/upload";

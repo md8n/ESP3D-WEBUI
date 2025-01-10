@@ -16,6 +16,7 @@ import {
 	confirmdlg,
 	SendFileHttp,
 	translate_text_item,
+	CheckForHttpCommLock,
 } from "./common.js";
 
 //Macro dialog
@@ -296,8 +297,7 @@ function process_macroCloseDialog(answer) {
 }
 
 function SaveNewMacroList() {
-	if (http_communication_locked) {
-		alertdlg(translate_text_item("Busy..."), translate_text_item("Communications are currently locked, please wait and retry."));
+	if (CheckForHttpCommLock()) {
 		return;
 	}
 	for (let i = 0; i < 9; i++) {

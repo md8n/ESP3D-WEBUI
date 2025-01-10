@@ -77,7 +77,7 @@ import {
 	setSpindleSpeed,
 } from "./grbl.js";
 import { grblpanel } from "./grblpanel.js";
-import { AddCmd, clear_cmd_list, SendFileHttp, SendGetHttp } from "./http.js";
+import { AddCmd, clear_cmd_list, SendFileHttp, SendGetHttp, CheckForHttpCommLock } from "./http.js";
 import { get_icon_svg } from "./icons.js";
 import { Set_page_title, update_UI_firmware_target, initUI } from "./initUI.js";
 import { inputdlg } from "./inputdlg.js";
@@ -373,6 +373,7 @@ export {
 	clear_cmd_list,
 	SendFileHttp,
 	SendGetHttp,
+	CheckForHttpCommLock,
 	// from icons.js
 	get_icon_svg,
 	// from "./initUI.js";
