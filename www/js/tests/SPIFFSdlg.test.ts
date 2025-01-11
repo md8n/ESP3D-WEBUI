@@ -2,6 +2,10 @@ import { beforeEach, describe, expect, test } from "bun:test";
 import {
 	maslowMsgHandling,
 	loadedValues,
+	setValue,
+	setHTML,
+	translate_text_item,
+	displayNone,
 } from "../common.js";
 
 describe("SPIFFSdlg", () => {
@@ -42,11 +46,11 @@ describe("SPIFFSdlg", () => {
 		SPIFFSsuccess(testResponse.join(""));
 		return;
 		//endRemoveIf(production)
-		const common = new Common();
-		let url = `/files?action=${action}&filename=${encodeURI(filename)}&path=${encodeURI(common.SPIFFS_currentpath)}`;
-		id("SPIFFS_loader").style.visibility = "visible";
-		console.log(url);
-		SendGetHttp(url, SPIFFSsuccess, SPIFFSfailed);
+		// const common = new Common();
+		// const url = `/files?action=${action}&filename=${encodeURI(filename)}&path=${encodeURI(common.SPIFFS_currentpath)}`;
+		// id("SPIFFS_loader").style.visibility = "visible";
+		// console.log(url);
+		// SendGetHttp(url, SPIFFSsuccess, SPIFFSfailed);
 	}
 
 	function refreshSPIFFS() {

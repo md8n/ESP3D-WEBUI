@@ -54,6 +54,8 @@ import { creditsdlg } from "./creditsdlg.js";
 import { clear_drop_menu, hide_drop_menu, showhide_drop_menu } from "./dropmenu.js";
 import {
 	build_file_filter_list,
+	files_currentPath,
+	files_file_list,
 	files_list_success,
 	files_select_upload,
 	init_files_panel,
@@ -142,6 +144,8 @@ import {
 } from "./settings.js";
 import { settingstab } from "./settingstab.js";
 import { setupdlg } from "./setupdlg.js";
+import { Interpreter } from "./simple-interpreter.js";
+import { parseLine } from "./simple-parser.js";
 import { Toolpath } from "./simple-toolpath.js";
 import {
 	CancelCurrentUpload,
@@ -349,6 +353,8 @@ export {
 	showhide_drop_menu,
 	// files.js
 	build_file_filter_list,
+	files_currentPath,
+	files_file_list,
 	files_list_success,
 	files_select_upload,
 	init_files_panel,
@@ -455,6 +461,10 @@ export {
 	setupdlg,
 	// from settingstab.js
 	settingstab,
+	// from "./simple-parser.js";
+	parseLine,
+	// from "./simple-interpreter.js";
+	Interpreter,
 	// from simple-toolpath.js
 	Toolpath,
 	// from socket.js

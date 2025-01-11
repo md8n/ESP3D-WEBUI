@@ -636,8 +636,8 @@ const bboxHandlers = {
 		// Update tpUnits in case it changed in a previous line
 		tpUnits = modal.units;
 
-		ps = projection(start);
-		pe = projection(end);
+		const ps = projection(start);
+		const pe = projection(end);
 
 		tpBbox.min.x = Math.min(tpBbox.min.x, ps.x, pe.x);
 		tpBbox.min.y = Math.min(tpBbox.min.y, ps.y, pe.y);
@@ -658,9 +658,9 @@ const bboxHandlers = {
 		const start = (modal.motion === "G2") ? finish : begin;
 		const end = (modal.motion === "G2") ? begin : finish;
 
-		ps = projection(start);
-		pc = projection(center);
-		pe = projection(end);
+		const ps = projection(start);
+		const pc = projection(center);
+		const pe = projection(end);
 
 		// Coordinates relative to the center of the arc
 		const sx = ps.x - pc.x;
@@ -823,8 +823,8 @@ const displayHandlers = {
 			}
 		}
 
-		ps = projection(start);
-		pe = projection(end);
+		const ps = projection(start);
+		const pe = projection(end);
 		tp.beginPath();
 		// tp.moveTo(start.x, start.y);
 		// tp.lineTo(end.x, end.y);
@@ -863,10 +863,10 @@ const displayHandlers = {
 		n = 10 * Math.ceil(Math.abs(deltaTheta) / Math.PI);
 		dt = deltaTheta / n;
 		dz = (end.z - start.z) / n;
-		ps = projection(start);
+		const ps = projection(start);
 		tp.moveTo(ps.x, ps.y);
 		next = {};
-		theta = theta1;
+		let theta = theta1;
 		next.z = start.z;
 		for (i = 0; i < n; i++) {
 			theta += dt;
@@ -880,99 +880,91 @@ const displayHandlers = {
 	},
 };
 
-// biome-ignore lint/style/noVar: <explanation>
-// biome-ignore lint/complexity/useArrowFunction: <explanation>
-var ToolpathDisplayer = function () {};
+class ToolpathDisplayer {
+	// var offset;
+	clear() { clearCanvas(); }
+	showToolpath(gcode,
+		modal,
+		initialPosition) {
+		cameraAngle = cameraAngle || 0;
 
-// var offset;
+		let drawBounds = false;
+		let drawBelts = false;
 
-ToolpathDisplayer.prototype.clear = () => { clearCanvas(); };
+		switch (cameraAngle) {
+			case 0:
+				obliqueView();
+				break;
+			case 1:
+				obliqueView();
+				drawBounds = true;
+				break;
+			case 2:
+				topView();
+				break;
+			case 3:
+				topView();
+				drawBounds = true;
+				break;
+			case 4:
+				topView();
+				drawBounds = true;
+				drawBelts = true;
+				break;
+			default:
+				obliqueView();
+		}
 
-ToolpathDisplayer.prototype.showToolpath = (
-	gcode,
-	modal,
-	initialPosition,
-) => {
-	cameraAngle = cameraAngle || 0;
+		resetBbox();
+		bboxHandlers.position = initialPosition;
+		bboxHandlers.modal = modal;
 
-	let drawBounds = false;
-	let drawBelts = false;
+		if (drawBounds) {
+			drawMachineBounds(); //Adds the machine bounds to the bounding box...this does not draw
+		}
+		if (drawBelts) {
+			drawMachineBelts(); //Adds the belts to the bounding box...does not draw yet
+		}
 
-	switch (cameraAngle) {
-		case 0:
-			obliqueView();
-			break;
-		case 1:
-			obliqueView();
-			drawBounds = true;
-			break;
-		case 2:
-			topView();
-			break;
-		case 3:
-			topView();
-			drawBounds = true;
-			break;
-		case 4:
-			topView();
-			drawBounds = true;
-			drawBelts = true;
-			break;
-		default:
-			obliqueView();
+		const gcodeLines = gcode.split("\n");
+		new Toolpath(bboxHandlers).loadFromLinesSync(gcodeLines);
+		transformCanvas();
+		if (!bboxIsSet) {
+			return;
+		}
+		initialMoves = true;
+		displayHandlers.position = initialPosition;
+		const common = new Common();
+		displayHandlers.modal = common.modal;
+		new Toolpath(displayHandlers).loadFromLinesSync(gcodeLines);
+
+		drawTool(initialPosition);
+
+		if (drawBounds) {
+			drawMachineBounds(); //Actually draws the bounding box
+		}
+		if (drawBelts) {
+			drawMachineBelts(); //Actually draws the belts
+		}
 	}
-
-	resetBbox();
-	bboxHandlers.position = initialPosition;
-	bboxHandlers.modal = modal;
-
-	if (drawBounds) {
-		drawMachineBounds(); //Adds the machine bounds to the bounding box...this does not draw
+	reDrawTool(modal, dpos) {
+		if (toolSave != null) {
+			tp.putImageData(toolSave, toolX, toolY);
+			drawTool(dpos);
+		}
 	}
-	if (drawBelts) {
-		drawMachineBelts(); //Adds the belts to the bounding box...does not draw yet
-	}
+	cycleCameraAngle(gcode, position) {
+		cameraAngle = cameraAngle + 1;
+		if (cameraAngle > 4) {
+			cameraAngle = 0;
+		}
 
-	const gcodeLines = gcode.split("\n");
-	new Toolpath(bboxHandlers).loadFromLinesSync(gcodeLines);
-	transformCanvas();
-	if (!bboxIsSet) {
-		return;
+		const common = new Common();
+		displayer.showToolpath(gcode, common.modal, position);
 	}
-	initialMoves = true;
-	displayHandlers.position = initialPosition;
-	const common = new Common();
-	displayHandlers.modal = common.modal;
-	new Toolpath(displayHandlers).loadFromLinesSync(gcodeLines);
-
-	drawTool(initialPosition);
-
-	if (drawBounds) {
-		drawMachineBounds(); //Actually draws the bounding box
-	}
-	if (drawBelts) {
-		drawMachineBelts(); //Actually draws the belts
-	}
-};
-
-ToolpathDisplayer.prototype.reDrawTool = (modal, dpos) => {
-	if (toolSave != null) {
-		tp.putImageData(toolSave, toolX, toolY);
-		drawTool(dpos);
-	}
-};
+}
 
 const displayer = new ToolpathDisplayer();
-
-ToolpathDisplayer.prototype.cycleCameraAngle = (gcode, position) => {
-	cameraAngle = cameraAngle + 1;
-	if (cameraAngle > 4) {
-		cameraAngle = 0;
-	}
-
-	const common = new Common();
-	displayer.showToolpath(gcode, common.modal, position);
-};
 
 /** Expects a simple array with 3 elements, and converts it to an xyz object */
 const arrayToXYZ = (arr) => {

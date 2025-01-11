@@ -13,7 +13,7 @@ import {
 	UIdisableddlg,
 } from "./common.js";
 
-let convertDHT2Fahrenheit = false;
+const convertDHT2Fahrenheit = false;
 let event_source;
 
 let wsmsg = "";

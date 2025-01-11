@@ -9,6 +9,7 @@
   "scripts": {
     "build": "bun run build.ts",
     "build:en": "bun run build.ts --lang en",
+    "lint": "bunx biome lint --write",
     "serve": "bun run --hot serve.ts"
   },
   "devDependencies": {

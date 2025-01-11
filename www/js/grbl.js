@@ -43,6 +43,7 @@ const WPOS = (value) => {
 	return wpos;
 };
 
+// biome-ignore lint/style/noVar: <explanation>
 var feedrate = [0, 0, 0, 0, 0, 0];
 let last_axis_letter = "Z";
 

@@ -173,7 +173,9 @@ function process_config_answer(response_text) {
 	//console.log("Config has " + tlines.length + " entries");
 	let vindex = 0;
 	for (let i = 0; i < tlines.length; i++) {
-		vindex = create_config_entry(tlines[i], vindex);
+		if (create_config_entry(tlines[i], vindex)) {
+			vindex++;
+		}
 	}
 	if (vindex > 0) {
 		build_HTML_config_list();
@@ -186,7 +188,7 @@ function process_config_answer(response_text) {
 
 function create_config_entry(sentry, vindex) {
 	if (!is_config_entry(sentry)) {
-		return vindex;
+		return false;
 	}
 	let ssentry = sentry.replaceAll("\t", " ")
 	while (ssentry.indexOf("  ") > -1) {
@@ -237,8 +239,7 @@ function create_config_entry(sentry, vindex) {
 			config_configList.push(config_entry);
 		}
 	}
-	vindex++;
-	return vindex;
+	return true;
 }
 //check it is valid entry
 function is_config_entry(sline) {

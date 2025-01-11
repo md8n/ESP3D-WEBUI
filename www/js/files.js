@@ -20,7 +20,15 @@ import {
 	CheckForHttpCommLock,
 } from "./common.js";
 
-let files_currentPath = "/";
+let files_current_path = "/";
+/** get/set the current path used for files */
+const files_currentPath = (value) => {
+	if (typeof value === "string") {
+		files_current_path = value;
+	}
+	return files_current_path;
+}
+
 let files_filter_sd_list = false;
 let files_file_list = [];
 let files_status_list = [];
@@ -203,7 +211,7 @@ function tabletSelectGCodeFile(filename) {
 
 function files_print(index) {
 	const file = files_file_list[index];
-	const path = files_currentPath + file.name;
+	const path = files_currentPath() + file.name;
 	tabletSelectGCodeFile(file.name);
 	tabletLoadGCodeFile(path, file.size);
 	files_print_filename(path);
@@ -231,7 +239,7 @@ function files_create_dir(name) {
 		return;
 	}
 
-	const cmdpath = files_currentPath;
+	const cmdpath = files_currentPath();
 	const url = `/upload?path=${encodeURIComponent(cmdpath)}&action=createdir&filename=${encodeURIComponent(name)}`;
 	displayBlock("files_nav_loader");
 	SendGetHttp(url, files_list_success, files_list_failed);
@@ -259,7 +267,7 @@ function files_delete_file(index) {
 	if (!common.fwData.direct_sd) {
 		return;
 	}
-	const cmdpath = `path=${encodeURIComponent(files_currentPath)}`;
+	const cmdpath = `path=${encodeURIComponent(files_currentPath())}`;
 	const action = `action=${files_file_list[index].isdir ? "deletedir" : "delete"}`;
 	const filename = `filename=${encodeURIComponent(files_file_list[index].sdname)}`;
 	const url = `/upload?${cmdpath}&${action}&${filename}`;
@@ -272,7 +280,7 @@ const files_is_clickable = (index) => {
 	files_file_list[index].isdir ? true : common.fwData.direct_sd;
 }
 
-const files_enter_dir = (name) => files_refreshFiles(`${files_currentPath + name}/`, true);
+const files_enter_dir = (name) => files_refreshFiles(`${files_currentPath() + name}/`, true);
 
 let old_file_name;
 function files_rename(index) {
@@ -287,7 +295,7 @@ function process_files_rename(new_file_name) {
 	}
 	files_error_status = `Rename ${old_file_name}`;
 
-	const cmdpath = `path=${encodeURIComponent(files_currentPath)}`;
+	const cmdpath = `path=${encodeURIComponent((files_currentPath()))}`;
 	const action = "action=rename";
 	const filename = `filename=${encodeURIComponent(old_file_name)}`;
 	const newname = `newname=${encodeURIComponent(new_file_name)}`;
@@ -298,7 +306,7 @@ function process_files_rename(new_file_name) {
 function files_download(index) {
 	const entry = files_file_list[index];
 	//console.log("file on direct SD");
-	const url = `SD/${files_currentPath}${entry.sdname}`;
+	const url = `SD/${files_currentPath()}${entry.sdname}`;
 	window.location.href = encodeURIComponent(url.replace("//", "/"));
 }
 function files_click_file(index) {
@@ -307,14 +315,14 @@ function files_click_file(index) {
 		files_enter_dir(entry.name);
 		return;
 	}
-	const common = new Common();
-	if (false && common.fwData.direct_sd) {
-		// Don't download on click; use the button
-		//console.log("file on direct SD");
-		const url = `SD/${files_currentPath}${entry.sdname}`;
-		window.location.href = encodeURIComponent(url.replace("//", "/"));
-		return;
-	}
+	// const common = new Common();
+	// if (false && common.fwData.direct_sd) {
+	// 	// Don't download on click; use the button
+	// 	//console.log("file on direct SD");
+	// 	const url = `SD/${files_currentPath()}${entry.sdname}`;
+	// 	window.location.href = encodeURIComponent(url.replace("//", "/"));
+	// 	return;
+	// }
 }
 
 function files_isgcode(filename, isdir) {
@@ -348,14 +356,14 @@ function files_showdeletebutton(index) {
 	return true;
 }
 
-function files_refreshFiles(path, usecache) {
+function files_refreshFiles(path, usecache = false) {
 	const common = new Common();
 	//console.log("refresh requested " + path);
 	const cmdpath = path;
-	files_currentPath = path;
+	files_currentPath(path);
 	if (current_source !== last_source) {
-		files_currentPath = "/";
-		path = "/";
+		files_currentPath("/");
+		// path = "/";
 		last_source = current_source;
 	}
 	if (current_source === tft_sd || current_source === tft_usb) {
@@ -363,10 +371,7 @@ function files_refreshFiles(path, usecache) {
 	} else {
 		displayBlock("print_upload_btn");
 	}
-	if (typeof usecache === "undefined") {
-		usecache = false;
-	}
-	setHTML("files_currentPath", files_currentPath);
+	setHTML("filesCurrentPath", files_currentPath());
 	files_file_list = [];
 	files_status_list = [];
 	files_build_display_filelist(false);
@@ -516,10 +521,10 @@ function files_directSD_upload_failed(error_code, response) {
 	displayBlock("files_navigation_buttons");
 }
 
-const need_up_level = () => files_currentPath !== "/";
+const need_up_level = () => files_currentPath() !== "/";
 
 function files_go_levelup() {
-	const tlist = files_currentPath.split("/");
+	const tlist = files_currentPath().split("/");
 	let path = "/";
 	let nb = 1;
 	while (nb < tlist.length - 2) {
@@ -530,7 +535,7 @@ function files_go_levelup() {
 }
 
 function files_build_display_filelist(displaylist = true) {
-	populateTabletFileSelector(files_file_list, files_currentPath);
+	populateTabletFileSelector(files_file_list, files_currentPath());
 
 	displayNone(["files_uploading_msg", "files_list_loader", "files_nav_loader"]);
 
@@ -578,7 +583,7 @@ function files_build_display_filelist(displaylist = true) {
 	if (files_status_list.length === 0 && files_error_status !== "") {
 		files_status_list.push({
 			status: files_error_status,
-			path: files_currentPath,
+			path: files_currentPath(),
 			used: "-1",
 			total: "-1",
 			occupation: "-1",
@@ -652,7 +657,7 @@ function files_start_upload() {
 		return;
 	}
 	const url = "/upload";
-	const path = files_currentPath;
+	const path = files_currentPath();
 	//console.log("upload from " + path );
 	const files = id("files_input_file").files;
 
@@ -696,6 +701,8 @@ function FilesUploadProgressDisplay(oEvent) {
 
 export {
 	build_file_filter_list,
+	files_currentPath,
+	files_file_list,
 	files_list_success,
 	files_select_upload,
 	init_files_panel,

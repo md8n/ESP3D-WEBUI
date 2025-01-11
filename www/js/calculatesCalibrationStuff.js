@@ -7,10 +7,13 @@ import {
   onCalibrationButtonsClick,
 } from "./common.js";
 
-var tlZ = 100;
-var trZ = 56;
-var blZ = 34;
-var brZ = 78;
+/** Set these to match the arm assignment of your machine, and any special anchor point changes of your frame.
+ * These are in mm.
+  */
+// const tlZ = 100;
+// const trZ = 56;
+// const blZ = 34;
+// const brZ = 78;
 
 let result;
 
@@ -345,10 +348,10 @@ function computeLinesFitness(measurements, lastGuess) {
   // console.log(fitnesses)
 
   //Here is where we need to do the calculation of which corner is the worst and which direction to move it
-  lastGuess = computeFurthestFromCenterOfMass(allLines, lastGuess);
-  lastGuess.fitness = fitness;
+  const newGuess = computeFurthestFromCenterOfMass(allLines, lastGuess);
+  newGuess.fitness = fitness;
 
-  return lastGuess;
+  return newGuess;
 }
 
 function calculateTensions(x, y, guess) {
@@ -420,14 +423,14 @@ function calculateAverage(array) {
  * @param {Object} measurement - An object containing the measurements
  * @returns {Object} - An object containing the projected measurements
  */
-function projectMeasurement(measurement) {
-  const tl = Math.sqrt((measurement.tl ** 2) - (tlZ ** 2));
-  const tr = Math.sqrt((measurement.tr ** 2) - (trZ ** 2));
-  const bl = Math.sqrt((measurement.bl ** 2) - (blZ ** 2));
-  const br = Math.sqrt((measurement.br ** 2) - (brZ ** 2));
+// function projectMeasurement(measurement) {
+//   const tl = Math.sqrt((measurement.tl ** 2) - (tlZ ** 2));
+//   const tr = Math.sqrt((measurement.tr ** 2) - (trZ ** 2));
+//   const bl = Math.sqrt((measurement.bl ** 2) - (blZ ** 2));
+//   const br = Math.sqrt((measurement.br ** 2) - (brZ ** 2));
 
-  return { tl: tl, tr: tr, bl: bl, br: br };
-}
+//   return { tl: tl, tr: tr, bl: bl, br: br };
+// }
 
 /**
  * Projects an array of measurements to the plane of the machine to account for the fact that the start and end point are not in the same plane.

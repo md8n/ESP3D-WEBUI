@@ -117,6 +117,7 @@ function updatesuccess(response) {
 	setHTML("updatemsg", translate_text_item("Restarting, please wait...."));
 	setHTML("fw_file_name", "");
 	let i = 0;
+	// biome-ignore lint/style/useConst: <explanation>
 	let interval;
 	const x = id("prgfw");
 	x.max = 10;

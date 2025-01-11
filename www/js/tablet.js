@@ -6,6 +6,8 @@ import {
   JogFeedrate,
   numpad,
   SendPrinterCommand,
+  files_currentPath,
+  files_file_list,
   files_list_success,
   files_select_upload,
   SendRealtimeCmd,
@@ -221,7 +223,7 @@ const setAxis = (axis, field) => {
   sendCommand(`G10 L20 P1 ${axis}${id(field).value}`);
 };
 
-var longone = false;
+let longone = false;
 function long_jog(target) {
   longone = true;
   distance = 1000;
@@ -240,8 +242,7 @@ function long_jog(target) {
 
 const sendMove = (cmd) => {
   tabletClick();
-  const jog = (params) => {
-    params = params || {};
+  const jog = (params = {}) => {
     let s = "";
     for (key in params) {
       s += key + params[key];
@@ -255,8 +256,7 @@ const sendMove = (cmd) => {
     msgWindow.scrollTop = msgWindow.scrollHeight
 
   }
-  const move = (params) => {
-    params = params || {}
+  const move = (params = {}) => {
     let s = ''
     for (key in params) {
       s += key + params[key];
@@ -264,7 +264,7 @@ const sendMove = (cmd) => {
     moveTo(s);
   };
 
-  let distance = cmd.includes('Z') ? Number(id('disZ').innerText) || 0 : Number(id('disM').innerText) || 0
+  const distance = cmd.includes('Z') ? Number(id('disZ').innerText) || 0 : Number(id('disM').innerText) || 0
 
   const fn = {
     G28: () => sendCommand('G28'),
@@ -321,6 +321,7 @@ const sendMove = (cmd) => {
     },
   }[cmd];
 
+  // biome-ignore lint/complexity/useOptionalChain: <explanation>
   fn && fn();
 };
 
@@ -333,8 +334,7 @@ const moveHome = () => {
   const x = Number.parseFloat(id("mpos-x").innerText);
   const y = Number.parseFloat(id("mpos-y").innerText);
 
-  const jog = (params) => {
-    params = params || {};
+  const jog = (params = {}) => {
     let s = "";
     for (key in params) {
       s += key + params[key];
@@ -485,16 +485,14 @@ function addJogDistance(distance) {
   //return selector.appendChild(option);
 }
 
-var runTime = 0;
-
 function setButton(name, isEnabled, color, text) {
-  var button = id(name);
+  const button = id(name);
   button.disabled = !isEnabled;
   button.style.backgroundColor = color;
   button.innerText = text;
 }
 
-var playButtonHandler;
+let playButtonHandler;
 function setPlayButton(isEnabled, color, text, click) {
   setButton("playBtn", isEnabled, color, text);
   playButtonHandler = click;
@@ -507,7 +505,7 @@ function doPlayButton() {
   addMessage(`Starting File: ${document.getElementById('filelist').options[selectElement.selectedIndex].text}`);
 }
 
-var pauseButtonHandler;
+let pauseButtonHandler;
 function setPauseButton(isEnabled, color, text, click) {
   setButton("pauseBtn", isEnabled, color, text);
   pauseButtonHandler = click;
@@ -518,9 +516,9 @@ function doPauseButton() {
   }
 }
 
-var green = "#86f686";
-var red = "#f64646";
-var gray = "#f6f6f6";
+const green = "#86f686";
+const red = "#f64646";
+const gray = "#f6f6f6";
 
 function setRunControls() {
   if (gCodeLoaded) {
@@ -534,11 +532,11 @@ function setRunControls() {
   }
 }
 
-var grblReportingUnits = 0;
-var startTime = 0;
+const grblReportingUnits = 0;
+let startTime = 0;
 
-var spindleDirection = "";
-var spindleSpeed = "";
+let spindleDirection = "";
+let spindleSpeed = "";
 
 function stopAndRecover() {
   stopGCode();
@@ -548,7 +546,7 @@ function stopAndRecover() {
   requestModes();
 }
 
-var oldCannotClick = null;
+let oldCannotClick = null;
 
 function scaleUnits(target) {
   //Scale the units to move when jogging down or up by 25 to keep them reasonable
@@ -585,6 +583,8 @@ function tabletUpdateModal() {
     scaleUnits("disZ");
   }
 }
+
+let runTime = 0;
 const tabletGrblState = (grbl, response) => {
   // tabletShowResponse(response)
   const stateName = grbl.stateName;
@@ -883,7 +883,8 @@ function nthLineEnd(str, n) {
   }
   const L = str.length;
   let i = -1;
-  while (n-- && i++ < L) {
+  let count = n;
+  while (count-- && i++ < L) {
     i = str.indexOf('\n', i);
     if (i < 0) {
       break;
@@ -963,7 +964,9 @@ function selectFile() {
     common.gCodeFilename = "";
     files_enter_dir(filename);
   } else {
-    tabletLoadGCodeFile(files_currentPath + filename, file.size);
+    const fullPath = files_currentPath() + filename;
+    console.log(`loading file '${fullPath}'`);
+    tabletLoadGCodeFile(fullPath, file.size);
   }
 }
 // function toggleDropdown() {
@@ -1057,8 +1060,11 @@ function jogClick(name) {
   clickon(name);
 }
 
-// Reports whether a text input box has focus - see the next comment
-var isInputFocused = false;
+/** Reports whether a text input box has focus - see the next comment.
+ * TODO: Currently this is always false. Maybe we should remove all usages of it
+ */
+// biome-ignore lint/style/useConst: <explanation>
+let isInputFocused = false;
 function tabletIsActive() {
   return id("tablettab").style.display !== "none";
 }
