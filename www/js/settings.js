@@ -20,6 +20,7 @@ import {
 	translate_text_item,
 	restartdlg,
 	CheckForHttpCommLock,
+	setClassName,
 } from "./common.js";
 
 /** setting_configList */
@@ -605,7 +606,7 @@ function setESPsettingsfailed(error_code, response) {
 	conErr(errMsg);
 	setBtn(setting_lasti, setting_lastj, "btn-danger");
 	const iconName = `icon_setting_${setting_lasti}_${setting_lastj}`;
-	id(iconName).className = "form-control-feedback has-error ico_feedback";
+	setClassName(iconName, "form-control-feedback has-error ico_feedback");
 	setHTML(iconName, get_icon_svg("remove"));
 	setStatus(setting_lasti, setting_lastj, "has-feedback has-error");
 }

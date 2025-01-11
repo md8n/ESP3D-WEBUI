@@ -11,6 +11,7 @@ import {
 	setChecked,
 	getValue,
 	setValue,
+	setClassName,
 	setHTML,
 	HTMLEncode,
 	HTMLDecode,
@@ -37,6 +38,7 @@ import {
 	Apply_config_override,
 	Delete_config_override,
 	refreshconfig,
+	getESPconfigSuccess,
 } from "./config.js";
 import { configtab } from "./configtab.js";
 import { confirmdlg } from "./confirmdlg.js";
@@ -324,6 +326,7 @@ export {
 	Apply_config_override,
 	Delete_config_override,
 	refreshconfig,
+	getESPconfigSuccess,
 	// from configtab.js
 	configtab,
 	// from confirmdlg.js
@@ -495,6 +498,7 @@ export {
 	setChecked,
 	getValue,
 	setValue,
+	setClassName,
 	setHTML,
 	HTMLEncode,
 	HTMLDecode,

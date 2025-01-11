@@ -3,14 +3,14 @@ import { classes } from "./common.js";
 const clear_drop_menu = (event) => {
 	const item = get_parent_by_class(event.target, "dropdownselect");
 	const ignore_id = item?.id || "-1";
-	const list = classes("dropmenu-content");
-	for (let index = 0; index < list.length; index++) {
-		const item2 = get_parent_by_class(list[index], "dropdownselect");
+	// biome-ignore lint/complexity/noForEach: <explanation>
+	classes("dropmenu-content").forEach((item) => {
+		const item2 = get_parent_by_class(item, "dropdownselect");
 		if (item2?.id !== ignore_id) {
-			list[index].classList.remove("show");
+			item.classList.remove("show");
 		}
-	}
-};
+	});
+}
 
 function get_parent_by_class(item, classname) {
 	if (item === null || typeof item === "undefined") {

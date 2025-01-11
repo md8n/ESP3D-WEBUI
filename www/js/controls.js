@@ -157,14 +157,15 @@ function Control_get_position_value(label, result_data) {
 	return result.trim();
 }
 
-function process_Position(response) {
-	grblProcessStatus(response);
-}
+// function process_Position(response) {
+// 	grblProcessStatus(response);
+// }
 
 function control_motorsOff() {
 	SendPrinterCommand("$Motors/Disable", true);
 }
 
+// Referenced by jogdial.svg
 function SendHomecommand(cmd) {
 	if (getChecked("lock_UI") !== "false") {
 		return;
@@ -329,5 +330,6 @@ export {
 	init_controls_panel,
 	JogFeedrate,
 	on_autocheck_position,
+	SendHomecommand,
 	SendJogcommand,
 };

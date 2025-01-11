@@ -1,27 +1,18 @@
-import { Common, classes, displayBlock } from "./common.js";
+import { Common, classes, displayBlock, displayNone } from "./common.js";
 
 const openstep = (evt, stepname) => {
-	let i;
-	let stepcontent;
-	let steplinks;
 	const common = new Common();
-	if (
-		evt.currentTarget.className.indexOf("wizard_done") > -1 &&
-		!common.can_revert_wizard
-	) {
+	if (evt.currentTarget.classList.includes("wizard_done") && !common.can_revert_wizard) {
 		return;
 	}
 
-	stepcontent = classes("stepcontent");
-	for (i = 0; i < stepcontent.length; i++) {
-		stepcontent[i].style.display = "none";
-	}
-	steplinks = classes("steplinks");
-	for (i = 0; i < steplinks.length; i++) {
-		steplinks[i].className = steplinks[i].className.replace(" active", "");
-	}
+	// biome-ignore lint/complexity/noForEach: <explanation>
+	classes("stepcontent").forEach((stepcont) => displayNone(stepcont));
+	// biome-ignore lint/complexity/noForEach: <explanation>
+	classes("steplinks").forEach((steplink) => steplink.remove("active"));
+
 	displayBlock(stepname);
-	evt.currentTarget.className += " active";
+	evt.currentTarget.classList.add("active");
 };
 
 export { openstep };

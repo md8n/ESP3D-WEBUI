@@ -40,23 +40,23 @@ const SendPrinterCommand = (cmd, echo_on, processfn, errorfn, id, max_id, extra_
 	//console.log(cmd);
 };
 
-function SendPrinterSilentCommand(cmd, processfn, errorfn, id, max_id) {
-	const url = "/command_silent?commandText=";
-	if (cmd.length === 0) {
-		return;
-	}
+// function SendPrinterSilentCommand(cmd, processfn, errorfn, id, max_id) {
+// 	const url = "/command_silent?commandText=";
+// 	if (cmd.length === 0) {
+// 		return;
+// 	}
 
-	const procFn = cleanFunc(processfn, SendPrinterSilentCommandSuccess);
-	const errFn = cleanFunc(errorfn, SendPrinterCommandFailed);
-	const encCmd = encodeURI(cmd).replace("#", "%23");
+// 	const procFn = cleanFunc(processfn, SendPrinterSilentCommandSuccess);
+// 	const errFn = cleanFunc(errorfn, SendPrinterCommandFailed);
+// 	const encCmd = encodeURI(cmd).replace("#", "%23");
 	
-	SendGetHttp(url + encCmd, procFn, errFn, id, max_id);
-	//console.log(cmd);
-}
+// 	SendGetHttp(url + encCmd, procFn, errFn, id, max_id);
+// 	//console.log(cmd);
+// }
 
-function SendPrinterSilentCommandSuccess(response) {
-	//console.log(response);
-}
+// function SendPrinterSilentCommandSuccess(response) {
+// 	//console.log(response);
+// }
 
 function SendPrinterCommandSuccess(response) { }
 

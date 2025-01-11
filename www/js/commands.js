@@ -115,7 +115,9 @@ function SendCustomCommand() {
 	let cmd = id("custom_cmd_txt").value;
 	const url = "/command?commandText=";
 	cmd = cmd.trim();
-	if (cmd.trim().length === 0) return;
+	if (cmd.trim().length === 0) {
+		return;
+	}
 	CustomCommand_history.push(cmd);
 	CustomCommand_history.slice(-40);
 	CustomCommand_history_index = CustomCommand_history.length;

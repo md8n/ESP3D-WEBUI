@@ -3,7 +3,7 @@ import {
 	findMaxFitness,
 	Common,
 	get_icon_svg,
-	getChecked,
+	getESPconfigSuccess,
 	getValue,
 	setValue,
 	id,
@@ -55,9 +55,9 @@ function setClickability(element, visible) {
 }
 
 const autocheck = "report_auto";
-function getAutocheck() {
-	return getChecked(autocheck) !== "false";
-}
+// function getAutocheck() {
+// 	return getChecked(autocheck) !== "false";
+// }
 function setAutocheck(flag) {
 	setChecked(autocheck, flag);
 }

@@ -20,6 +20,7 @@ import {
     define_esp_role,
     define_esp_role_from_pos,
     translate_text,
+    setClassName,
 } from "./common.js";
 
 //setup dialog
@@ -30,30 +31,29 @@ const heading = (label) => `<h4>${translate_text_item(label)}</h4><hr>`;
 
 const buildControlItem = (label, pos, actions, extra) => (translate_text_item(label) + table(build_control_from_pos(pos, actions, extra)));
 
-function wizardDone(element) {
-    id(element).className = id(element).className.replace(" wizard_done", "");
-}
+const wizardDone = (element) => id(element).classList.remove("wizard_done");
+
 function disableStep(wizard, step) {
     id(wizard).style.background = "#e0e0e0";
     id(step).disabled = true;
-    id(step).className = "steplinks disabled";
+    setClassName(step, "steplinks disabled");
     wizardDone(step);
 }
 function openStep(wizard, step) {
     id(wizard).style.background = "#337AB7";
     id(step).disabled = "";
-    id(step).className = id(step).className.replace(" disabled", "");
+    id(step).classList.remove("disabled");
 }
 function closeStep(step) {
-    if (id(step).className.indexOf(" wizard_done") !== -1) {
+    if (id(step).classList.includes("wizard_done")) {
         return;
     }
 
-    id(step).className += " wizard_done";
+    id(step).classList.add("wizard_done");
 
     const common = new Common();
     if (!common.can_revert_wizard) {
-        id(step).className += " no_revert_wizard";
+        id(step).classList.add("no_revert_wizard");
     }
 }
 

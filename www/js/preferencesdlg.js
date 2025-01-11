@@ -1,7 +1,6 @@
 import {
     Monitor_check_autoscroll,
     Monitor_check_verbose_mode,
-    Common,
     get_icon_svg,
     prefDefs,
     conErr,

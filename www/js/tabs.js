@@ -16,12 +16,12 @@ const opentab = (evt, tabname, tabcontentid, tablinkid) => {
 	tablinks = classes("tablinks");
 	for (i = 0; i < tablinks.length; i++) {
 		if (tablinks[i].parentNode.id === tablinkid) {
-			tablinks[i].className = tablinks[i].className.replace("active", "");
+			tablinks[i].classList.remove("active");
 		}
 	}
 	id(tabname).dispatchEvent(activateEvent);
 	displayBlock(tabname);
-	evt.currentTarget.className += " active";
+	evt.currentTarget.classList.add("active");
 };
 
 export { opentab };

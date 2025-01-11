@@ -64,12 +64,7 @@ const getPref = (prefName) => {
 		}
 	}
 	if (!pref) {
-		console.error(
-			stdErrMsg(
-				"Unknown Preference",
-				`'${prefName}' not found as a preference key or as the fieldId within a preference value`,
-			),
-		);
+		console.error(stdErrMsg("Unknown Preference", `'${prefName}' not found as a preference key or as the fieldId within a preference value`));
 		return undefined;
 	}
 	return pref;
@@ -93,21 +88,15 @@ const getPrefDefPath = (prefName) => {
 	return pref;
 };
 
-/** Get the named preference value */
-const getPrefValue = (prefName) => {
-	const pref = getPref(prefName);
-	if (!pref) {
-		return undefined;
-	}
-	return pref.value;
-};
+/** Get the named preference value, or undefined */
+const getPrefValue = (prefName) => getPref(prefName)?.value;
 
 /** Set the preference item to the supplied value.
  * Returns true for success, false for failure - usually because the preference item does not exist
  */
 const setPrefValue = (prefName, value) => {
 	const pref = getPrefDefPath(prefName);
-	if (typeof pref === "undefined") {
+	if (!pref) {
 		return false;
 	}
 	// TODO: test the typeof the value is compatible with the valueType
@@ -123,7 +112,7 @@ const enable_ping = () => getPrefValue("enable_ping");
 
 /** Determine if the preferences have been modified */
 const PreferencesModified = () => {
-    let isModified = false;
+	let isModified = false;
 
 	for (const [prefName, value] of Object.entries(preferences)) {
 		const key = prefName === "language_list" ? "language" : prefName;
@@ -138,7 +127,7 @@ const PreferencesModified = () => {
 
 /** Build the flat preferences json structure from the preferences */
 const BuildPreferencesJson = () => {
-    const preferenceslist = [];
+	const preferenceslist = [];
 
 	for (const [prefName, value] of Object.entries(preferences)) {
 		const key = prefName === "language_list" ? "language" : prefName;
@@ -154,18 +143,18 @@ const BuildPreferencesJson = () => {
 
 /** Load the flat preferences json structure into the preferences */
 const LoadPreferencesJson = (preferenceslist = "") => {
-	if (!preferenceslist)	{
+	if (!preferenceslist) {
 		return;
 	}
 
 	let prefs;
-	
+
 	try {
-        prefs = JSON.parse(preferenceslist)[0];
-    } catch (e) {
-        console.error("Parsing error:", e);
+		prefs = JSON.parse(preferenceslist)[0];
+	} catch (e) {
+		console.error("Parsing error:", e);
 		return;
-    }
+	}
 
 	for (const [key, value] of Object.entries(preferences)) {
 		if (!(key in prefs)) {
@@ -173,16 +162,16 @@ const LoadPreferencesJson = (preferenceslist = "") => {
 		}
 		const prefName = (key === "language") ? "language_list" : key;
 		switch (value.valueType) {
-            case "panel":
-            case "bool":
+			case "panel":
+			case "bool":
 				if (typeof prefs[key] === "boolean") {
 					setPrefValue(prefName, `${prefs[key]}`);
 				}
 				if (typeof prefs[key] === "string") {
 					setPrefValue(prefName, prefs[key].toLowerCase() === "false" || !prefs[key] ? "false" : "true");
 				}
-                break;
-            case "int":
+				break;
+			case "int":
 				if (typeof prefs[key] === "number") {
 					setPrefValue(prefName, prefs[key]);
 				}
@@ -193,7 +182,7 @@ const LoadPreferencesJson = (preferenceslist = "") => {
 					}
 				}
 				break;
-            case "float":
+			case "float":
 				if (typeof prefs[key] === "number") {
 					setPrefValue(prefName, prefs[key]);
 				}
@@ -204,17 +193,17 @@ const LoadPreferencesJson = (preferenceslist = "") => {
 					}
 				}
 				break;
-            case "text":
-            case "select":
+			case "text":
+			case "select":
 				setPrefValue(prefName, prefs[key]);
-                break;
+				break;
 			case "enctext":
 				setPrefValue(prefName, HTMLDecode(prefs[key]));
-                break;
-            default:
-                console.log(`${key}: ${JSON.stringify(value)}`);
-                break;
-        }
+				break;
+			default:
+				console.log(`${key}: ${JSON.stringify(value)}`);
+				break;
+		}
 	}
 }
 

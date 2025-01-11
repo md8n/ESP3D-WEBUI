@@ -62,42 +62,12 @@ function getEndPoint(startX, startY, angle, length) {
  * @returns {number} - The fitness value, which is the average distance between all line end points.
  */
 function computeEndpointFitness(line1, line2, line3, line4) {
-  const a = distanceBetweenPoints(
-    line1.xEnd,
-    line1.yEnd,
-    line2.xEnd,
-    line2.yEnd,
-  );
-  const b = distanceBetweenPoints(
-    line1.xEnd,
-    line1.yEnd,
-    line3.xEnd,
-    line3.yEnd,
-  );
-  const c = distanceBetweenPoints(
-    line1.xEnd,
-    line1.yEnd,
-    line4.xEnd,
-    line4.yEnd,
-  );
-  const d = distanceBetweenPoints(
-    line2.xEnd,
-    line2.yEnd,
-    line3.xEnd,
-    line3.yEnd,
-  );
-  const e = distanceBetweenPoints(
-    line2.xEnd,
-    line2.yEnd,
-    line4.xEnd,
-    line4.yEnd,
-  );
-  const f = distanceBetweenPoints(
-    line3.xEnd,
-    line3.yEnd,
-    line4.xEnd,
-    line4.yEnd,
-  );
+  const a = distanceBetweenPoints(line1.xEnd, line1.yEnd, line2.xEnd, line2.yEnd);
+  const b = distanceBetweenPoints(line1.xEnd, line1.yEnd, line3.xEnd, line3.yEnd);
+  const c = distanceBetweenPoints(line1.xEnd, line1.yEnd, line4.xEnd, line4.yEnd);
+  const d = distanceBetweenPoints(line2.xEnd, line2.yEnd, line3.xEnd, line3.yEnd);
+  const e = distanceBetweenPoints(line2.xEnd, line2.yEnd, line4.xEnd, line4.yEnd);
+  const f = distanceBetweenPoints(line3.xEnd, line3.yEnd, line4.xEnd, line4.yEnd);
 
   const fitness = (a + b + c + d + e + f) / 6;
 
@@ -275,36 +245,11 @@ function computeDistanceFromCenterOfMass(lineToCompare, line2, line3, line4) {
 function generateTweaks(lines) {
   //We care about the distances for tlX, tlY, trX, trY, brX
 
-  const tlX = computeDistanceFromCenterOfMass(
-    lines.tlLine,
-    lines.trLine,
-    lines.blLine,
-    lines.brLine,
-  ).x;
-  const tlY = computeDistanceFromCenterOfMass(
-    lines.tlLine,
-    lines.trLine,
-    lines.blLine,
-    lines.brLine,
-  ).y;
-  const trX = computeDistanceFromCenterOfMass(
-    lines.trLine,
-    lines.tlLine,
-    lines.blLine,
-    lines.brLine,
-  ).x;
-  const trY = computeDistanceFromCenterOfMass(
-    lines.trLine,
-    lines.tlLine,
-    lines.blLine,
-    lines.brLine,
-  ).y;
-  const brX = computeDistanceFromCenterOfMass(
-    lines.brLine,
-    lines.tlLine,
-    lines.trLine,
-    lines.blLine,
-  ).x;
+  const tlX = computeDistanceFromCenterOfMass(lines.tlLine, lines.trLine, lines.blLine, lines.brLine).x;
+  const tlY = computeDistanceFromCenterOfMass(lines.tlLine, lines.trLine, lines.blLine, lines.brLine).y;
+  const trX = computeDistanceFromCenterOfMass(lines.trLine, lines.tlLine, lines.blLine, lines.brLine).x;
+  const trY = computeDistanceFromCenterOfMass(lines.trLine, lines.tlLine, lines.blLine, lines.brLine).y;
+  const brX = computeDistanceFromCenterOfMass(lines.brLine, lines.tlLine, lines.trLine, lines.blLine).x;
 
   return { tlX: tlX, tly: tlY, trX: trX, trY: trY, brX: brX };
 }
@@ -489,15 +434,7 @@ function projectMeasurement(measurement) {
  * @param {Object[]} measurements - An array of objects containing the measurements of the top left, top right, bottom left, and bottom right corners of a rectangle.
  * @returns {Object[]} - An array of objects containing the projected measurements of the top left, top right, bottom left, and bottom right corners of a rectangle.
  */
-function projectMeasurements(measurements) {
-  const projectedMeasurements = [];
-
-  measurements.forEach((measurement) => {
-    projectedMeasurements.push(projectMeasurement(measurement));
-  });
-
-  return projectedMeasurements;
-}
+// const projectMeasurements = (measurements) => measurements.map((measurement) => projectMeasurement(measurement));
 
 /**
  * Adds a constant to each measurement in an array of measurements.
@@ -505,18 +442,18 @@ function projectMeasurements(measurements) {
  * @param {number} offset - The constant to add to each measurement.
  * @returns {Object[]} - An array of objects containing the updated measurements of the top left, top right, bottom left, and bottom right corners of a rectangle.
  */
-function offsetMeasurements(measurements, offset) {
-  const newMeasurements = measurements.map((measurement) => {
-    return {
-      tl: measurement.tl + offset,
-      tr: measurement.tr + offset,
-      bl: measurement.bl + offset,
-      br: measurement.br + offset,
-    };
-  });
+// function offsetMeasurements(measurements, offset) {
+//   const newMeasurements = measurements.map((measurement) => {
+//     return {
+//       tl: measurement.tl + offset,
+//       tr: measurement.tr + offset,
+//       bl: measurement.bl + offset,
+//       br: measurement.br + offset,
+//     };
+//   });
 
-  return newMeasurements;
-}
+//   return newMeasurements;
+// }
 
 /**
  * Scales each measurement in an array of measurements by a constant.
@@ -524,46 +461,46 @@ function offsetMeasurements(measurements, offset) {
  * @param {number} scale - The constant to multiply each measurement by.
  * @returns {Object[]} - An array of objects containing the updated measurements of the top left, top right, bottom left, and bottom right corners of a rectangle.
  */
-function scaleMeasurements(measurements, scale) {
-  const newMeasurements = measurements.map((measurement) => {
-    return {
-      tl: measurement.tl * scale,
-      tr: measurement.tr * scale,
-      bl: measurement.bl, // * scale,
-      br: measurement.br, // * scale
-    };
-  });
+// function scaleMeasurements(measurements, scale) {
+//   const newMeasurements = measurements.map((measurement) => {
+//     return {
+//       tl: measurement.tl * scale,
+//       tr: measurement.tr * scale,
+//       bl: measurement.bl, // * scale,
+//       br: measurement.br, // * scale
+//     };
+//   });
 
-  return newMeasurements;
-}
+//   return newMeasurements;
+// }
 
-function scaleMeasurementsBasedOnTension(measurements, guess) {
-  const maxScale = 0.995;
-  const minScale = 0.994;
-  const maxTension = 60;
-  const minTension = 20;
+// function scaleMeasurementsBasedOnTension(measurements, guess) {
+//   const maxScale = 0.995;
+//   const minScale = 0.994;
+//   const maxTension = 60;
+//   const minTension = 20;
 
-  const scaleRange = maxScale - minScale;
-  const tensionRange = maxTension - minTension;
+//   const scaleRange = maxScale - minScale;
+//   const tensionRange = maxTension - minTension;
 
-  const newMeasurements = measurements.map((measurement) => {
-    const tensionAdjustedTLScale =
-      (1 - (measurement.TLtension - minTension) / tensionRange) * scaleRange +
-      minScale;
-    const tensionAdjustedTRScale =
-      (1 - (measurement.TRtension - minTension) / tensionRange) * scaleRange +
-      minScale;
+//   const newMeasurements = measurements.map((measurement) => {
+//     const tensionAdjustedTLScale =
+//       (1 - (measurement.TLtension - minTension) / tensionRange) * scaleRange +
+//       minScale;
+//     const tensionAdjustedTRScale =
+//       (1 - (measurement.TRtension - minTension) / tensionRange) * scaleRange +
+//       minScale;
 
-    return {
-      tl: measurement.tl * tensionAdjustedTLScale,
-      tr: measurement.tr * tensionAdjustedTRScale,
-      bl: measurement.bl, // * scale,
-      br: measurement.br, // * scale
-    };
-  });
+//     return {
+//       tl: measurement.tl * tensionAdjustedTLScale,
+//       tr: measurement.tr * tensionAdjustedTRScale,
+//       bl: measurement.bl, // * scale,
+//       br: measurement.br, // * scale
+//     };
+//   });
 
-  return newMeasurements;
-}
+//   return newMeasurements;
+// }
 
 const findMaxFitness = (measurements) => {
   const common = new Common();
@@ -594,12 +531,7 @@ const findMaxFitness = (measurements) => {
       }
       totalCounter++;
       // console.log("Total Counter: " + totalCounter);
-      sendCalibrationEvent({
-        final: false,
-        guess: currentGuess,
-        bestGuess: bestGuess,
-        totalCounter,
-      });
+      sendCalibrationEvent({ final: false, guess: currentGuess, bestGuess: bestGuess, totalCounter });
 
       if (totalCounter % 100 === 0) {
         messagesBox.textContent += `Fitness: ${(1 / bestGuess.fitness).toFixed(7)} in ${totalCounter}\n`;
@@ -610,8 +542,7 @@ const findMaxFitness = (measurements) => {
       setTimeout(iterate, 0);
     } else {
       if (1 / bestGuess.fitness < common.acceptableCalibrationThreshold) {
-        messagesBox.value +=
-          "\nWARNING FITNESS TOO LOW. DO NOT USE THESE CALIBRATION VALUES!";
+        messagesBox.value += "\nWARNING FITNESS TOO LOW. DO NOT USE THESE CALIBRATION VALUES!";
       }
 
       messagesBox.textContent += '\nCalibration values:';
@@ -627,11 +558,7 @@ const findMaxFitness = (measurements) => {
         sendCommand(`$/${M}_brX= ${brxStr}`);
         sendCommand(`$/${M}_brY= ${bryStr}`);
 
-        sendCalibrationEvent({
-          good: true,
-          final: true,
-          bestGuess: bestGuess,
-        }, true);
+        sendCalibrationEvent({ good: true, final: true, bestGuess: bestGuess }, true);
 
         const common = new Common();
         refreshSettings(common.current_setting_filter);
@@ -645,15 +572,9 @@ const findMaxFitness = (measurements) => {
         common.initialGuess.fitness = 100000000;
 
         // This restarts calibration process for the next stage
-        setTimeout(() => {
-          onCalibrationButtonsClick("$CAL", "Calibrate");
-        }, 2000);
+        setTimeout(() => { onCalibrationButtonsClick("$CAL", "Calibrate"); }, 2000);
       } else {
-        sendCalibrationEvent({
-          good: false,
-          final: true,
-          guess: bestGuess,
-        }, true);
+        sendCalibrationEvent({ good: false, final: true, guess: bestGuess }, true);
       }
     }
   }
@@ -673,13 +594,7 @@ function sendCalibrationEvent(dataToSend, log = false) {
     } else if (dataToSend.totalCounter) {
       console.log("total counter:", dataToSend.totalCounter);
     }
-    document.body.dispatchEvent(
-      new CustomEvent(CALIBRATION_EVENT_NAME, {
-        bubbles: true,
-        cancelable: true,
-        detail: dataToSend,
-      }),
-    );
+    document.body.dispatchEvent(new CustomEvent(CALIBRATION_EVENT_NAME, { bubbles: true, cancelable: true, detail: dataToSend }));
   } catch (err) {
     console.error("Unexpected:", err);
   }

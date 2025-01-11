@@ -242,7 +242,7 @@ const sendMove = (cmd) => {
   tabletClick();
   const jog = (params) => {
     params = params || {};
-    var s = "";
+    let s = "";
     for (key in params) {
       s += key + params[key];
     }
@@ -330,12 +330,12 @@ const moveHome = () => {
   }
 
   //We want to move to the opposite of the machine's current X,Y cordinates
-  var x = parseFloat(id("mpos-x").innerText);
-  var y = parseFloat(id("mpos-y").innerText);
+  const x = Number.parseFloat(id("mpos-x").innerText);
+  const y = Number.parseFloat(id("mpos-y").innerText);
 
   const jog = (params) => {
     params = params || {};
-    var s = "";
+    let s = "";
     for (key in params) {
       s += key + params[key];
     }
@@ -361,7 +361,7 @@ const moveHome = () => {
 const saveSerialMessages = () => {
   const msgs = getValue("messages");
   const link = document.createElement("a");
-  link.setAttribute("href", "data:text/plain;charset=utf-8," + encodeURI(msgs));
+  link.setAttribute("href", `data:text/plain;charset=utf-8,${encodeURI(msgs)}`);
   link.setAttribute("download", "Maslow-serial.log");
   document.body.appendChild(link);
   link.click();
@@ -424,10 +424,10 @@ const clearAlarm = () => {
 };
 
 function setJogSelector(units) {
-  var buttonDistances = [];
-  var menuDistances = [];
-  var selected = 0;
-  if (units == "G20") {
+  let buttonDistances = [];
+  let menuDistances = [];
+  let selected = 0;
+  if (units === "G20") {
     // Inches
     buttonDistances = [
       0.001, 0.01, 0.1, 1, 0.003, 0.03, 0.3, 3, 0.005, 0.05, 0.5, 5,
@@ -446,20 +446,20 @@ function setJogSelector(units) {
     ];
     selected = "10";
   }
-  var buttonNames = [
-    "jog00",
-    "jog01",
-    "jog02",
-    "jog03",
-    "jog10",
-    "jog11",
-    "jog12",
-    "jog13",
-    "jog20",
-    "jog21",
-    "jog22",
-    "jog23",
-  ];
+  // const buttonNames = [
+  //   "jog00",
+  //   "jog01",
+  //   "jog02",
+  //   "jog03",
+  //   "jog10",
+  //   "jog11",
+  //   "jog12",
+  //   "jog13",
+  //   "jog20",
+  //   "jog21",
+  //   "jog22",
+  //   "jog23",
+  // ];
   //buttonNames.forEach( function(n, i) { id(n).innerHTML = buttonDistances[i]; } );
 
   // var selector = id('jog-distance');
@@ -966,36 +966,36 @@ function selectFile() {
     tabletLoadGCodeFile(files_currentPath + filename, file.size);
   }
 }
-function toggleDropdown() {
-  id("tablet-dropdown-menu").classList.toggle("show");
-}
-function hideMenu() {
-  toggleDropdown();
-}
-function menuFullscreen() {
-  toggleFullscreen();
-  hideMenu();
-}
-function menuReset() {
-  stopAndRecover();
-  hideMenu();
-}
-function menuUnlock() {
-  sendCommand("$X");
-  hideMenu();
-}
-function menuHomeAll() {
-  sendCommand("$H");
-  hideMenu();
-}
-function menuHomeA() {
-  sendCommand("$HA");
-  hideMenu();
-}
-function menuSpindleOff() {
-  sendCommand("M5");
-  hideMenu();
-}
+// function toggleDropdown() {
+//   id("tablet-dropdown-menu").classList.toggle("show");
+// }
+// function hideMenu() {
+//   toggleDropdown();
+// }
+// function menuFullscreen() {
+//   toggleFullscreen();
+//   hideMenu();
+// }
+// function menuReset() {
+//   stopAndRecover();
+//   hideMenu();
+// }
+// function menuUnlock() {
+//   sendCommand("$X");
+//   hideMenu();
+// }
+// function menuHomeAll() {
+//   sendCommand("$H");
+//   hideMenu();
+// }
+// function menuHomeA() {
+//   sendCommand("$HA");
+//   hideMenu();
+// }
+// function menuSpindleOff() {
+//   sendCommand("M5");
+//   hideMenu();
+// }
 
 function requestModes() {
   sendCommand("$G");

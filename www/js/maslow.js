@@ -20,8 +20,7 @@ const MaslowErrMsgKeyValueCantUse = `${err}Could not use supplied key-value pair
 const MaslowErrMsgNoKey = `${err}No key supplied for value.`;
 const MaslowErrMsgNoValue = `${err}No value supplied for key.`;
 const MaslowErrMsgNoMatchingKey = `${err}Could not find key for value in reference table.`;
-const MaslowErrMsgKeyValueSuffix =
-	"This is probably a programming error\nKey-Value pair supplied was:";
+const MaslowErrMsgKeyValueSuffix = "This is probably a programming error\nKey-Value pair supplied was:";
 
 /** Perform maslow specific-ish info message handling */
 const maslowInfoMsgHandling = (msg) => {
@@ -71,9 +70,7 @@ const maslowMsgHandling = (msg) => {
 	const keyValue = msg.split("=");
 	const errMsgSuffix = `${MaslowErrMsgKeyValueSuffix}${msg}`;
 	if (keyValue.length !== 2) {
-		return maslowErrorMsgHandling(
-			`${MaslowErrMsgKeyValueCantUse} ${errMsgSuffix}`,
-		);
+		return maslowErrorMsgHandling(`${MaslowErrMsgKeyValueCantUse} ${errMsgSuffix}`);
 	}
 	const key = keyValue[0] || "";
 	const value = (keyValue[1] || "").trim();
@@ -100,11 +97,7 @@ const maslowMsgHandling = (msg) => {
 		calibration_grid_width_mm_X: (value) => stdAction("gridWidth", value),
 		calibration_grid_height_mm_Y: (value) => stdAction("gridHeight", value),
 		Retract_Current_Threshold: (value) => stdAction("retractionForce", value),
-		vertical: (value) =>
-			stdAction(
-				"machineOrientation",
-				value === "false" ? "horizontal" : "vertical",
-			),
+		vertical: (value) => stdAction("machineOrientation", value === "false" ? "horizontal" : "vertical"),
 		trX: (value) => { common.initialGuess.tr.x = fullDimensionAction("machineWidth", value); },
 		trY: (value) => { common.initialGuess.tr.y = fullDimensionAction("machineHeight", value); },
 		trZ: (value) => { common.initialGuess.tr.z = stdDimensionAction(value); },
@@ -117,15 +110,11 @@ const maslowMsgHandling = (msg) => {
 		blX: (value) => nullAction(),
 		blY: (value) => nullAction(),
 		blZ: (value) => { common.initialGuess.bl.z = stdDimensionAction(value); },
-		Acceptable_Calibration_Threshold: (value) => {
-			common.acceptableCalibrationThreshold = stdDimensionAction(value);
-		},
+		Acceptable_Calibration_Threshold: (value) => { common.acceptableCalibrationThreshold = stdDimensionAction(value); },
 	};
 	const action = msgExtra[key] || "";
 	if (!action) {
-		return maslowErrorMsgHandling(
-			`error: Could not find key for value in reference table. ${errMsgSuffix}`,
-		);
+		return maslowErrorMsgHandling(`error: Could not find key for value in reference table. ${errMsgSuffix}`);
 	}
 	action(value);
 
@@ -193,9 +182,7 @@ const saveConfigValues = () => {
 
 	//If the grid spacing is going to be more than 200 don't save the values
 	if (gridSpacingWidth > 260 || gridSpacingHeight > 260) {
-		alert(
-			"Grid spacing is too large. Please reduce the grid size or increase the number of points.",
-		);
+		alert("Grid spacing is too large. Please reduce the grid size or increase the number of points.");
 		return;
 	}
 
@@ -212,14 +199,9 @@ const saveConfigValues = () => {
 		sendCommand(`$/${M}_Retract_Current_Threshold=${retractionForce}`);
 	}
 	if (machineOrientation !== loadedValues("machineOrientation")) {
-		sendCommand(
-			`$/${M}_vertical=${machineOrientation === "horizontal" ? "false" : "true"}`,
-		);
+		sendCommand(`$/${M}_vertical=${machineOrientation === "horizontal" ? "false" : "true"}`);
 	}
-	if (
-		machineWidth !== loadedValues("machineWidth") ||
-		machineHeight !== loadedValues("machineHeight")
-	) {
+	if (machineWidth !== loadedValues("machineWidth") || machineHeight !== loadedValues("machineHeight")) {
 		sendCommand(`$/${M}_tlX=0`);
 		sendCommand(`$/${M}_tlY=${machineHeight}`);
 		sendCommand(`$/${M}_trX=${machineWidth}`);

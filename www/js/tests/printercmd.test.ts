@@ -59,26 +59,6 @@ describe("preferncesdlg", () => {
 		SendGetHttp(url + cmd, processfn, errorfn, id, max_id);
 		//console.log(cmd);
 	};
-
-	function SendPrinterSilentCommand(cmd, processfn, errorfn, id, max_id) {
-		const url = "/command_silent?commandText=";
-		if (cmd.length === 0) {
-			return;
-		}
-		//removeIf(production)
-		console.log(cmd);
-		if (processfn instanceof Function) processfn("Test response");
-		else SendPrinterCommandSuccess("Test response");
-		return;
-		//endRemoveIf(production)
-		if (!(processfn instanceof Function))
-			processfn = SendPrinterSilentCommandSuccess;
-		if (!(errorfn instanceof Function)) errorfn = SendPrinterCommandFailed;
-		cmd = encodeURI(cmd);
-		cmd = cmd.replace("#", "%23");
-		SendGetHttp(url + cmd, processfn, errorfn, id, max_id);
-		//console.log(cmd);
-	}
 	
 	test.each(inputValidation)("Input %p results in %p", (inp, expected) => {
 		const result = maslowMsgHandling(inp);

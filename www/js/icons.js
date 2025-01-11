@@ -1,5 +1,5 @@
 //bootstrap icons
-var list_icon = {
+const list_icon = {
   cloud:
     'M503 1089q110 0 200.5 -59.5t134.5 -156.5q44 14 90 14q120 0 205 -86.5t85 -206.5q0 -121 -85 -207.5t-205 -86.5h-750q-79 0 -135.5 57t-56.5 137q0 69 42.5 122.5t108.5 67.5q-2 12 -2 37q0 153 108 260.5t260 107.5z',
   star: 'M407 800l131 353q7 19 17.5 19t17.5 -19l129 -353h421q21 0 24 -8.5t-14 -20.5l-342 -249l130 -401q7 -20 -0.5 -25.5t-24.5 6.5l-343 246l-342 -247q-17 -12 -24.5 -6.5t-0.5 25.5l130 400l-347 251q-17 12 -14 20.5t23 8.5h429z',
@@ -38,8 +38,8 @@ var list_icon = {
 }
 
 const get_icon_svg = (name, w = '1.3em', h= '1.2em', color = 'currentColor') => {
-  var content = ''
-  var has_error = false
+  let content = ''
+  let has_error = false
   try {
     content = list_icon[name]
   } catch (e) {

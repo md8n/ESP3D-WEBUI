@@ -14,7 +14,17 @@ const setValue = (name, val) => {
 /** Return an element's `value` value. If the element does not exist or does not have a `value` value `undefined` is returned */
 const getValue = (name) => id(name)?.value;
 
-/** Set the innerHTML if the element with an id matching the supplied name.
+/** Set the className of the element with an id matching the supplied name.
+ * If the element cannot be found - nothing happens
+ */
+const setClassName = (name, className) => {
+  const elem = id(name);
+  if (elem) {
+    elem.className = className;
+  }
+}
+
+/** Set the innerHTML of the element with an id matching the supplied name.
  * If the element cannot be found - nothing happens
  */
 const setHTML = (name, val) => {
@@ -116,7 +126,7 @@ export {
   stdErrMsg,
   getChecked, setChecked,
   getValue, setValue,
-  setHTML,
+  setClassName, setHTML,
   HTMLEncode, HTMLDecode,
   id,
   browser_is,
