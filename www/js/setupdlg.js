@@ -45,15 +45,20 @@ function openStep(wizard, step) {
     id(step).classList.remove("disabled");
 }
 function closeStep(step) {
-    if (id(step).classList.includes("wizard_done")) {
+    const elem = id(step);
+    if (!elem) {
+        console.error(`No wizard page element named '${step}' found`);
+        return;
+    }
+    if (elem.classList.contains("wizard_done")) {
         return;
     }
 
-    id(step).classList.add("wizard_done");
+    elem.classList.add("wizard_done");
 
     const common = new Common();
     if (!common.can_revert_wizard) {
-        id(step).classList.add("no_revert_wizard");
+        elem.classList.add("no_revert_wizard");
     }
 }
 
@@ -65,7 +70,7 @@ const endDiv = () => "</div>";
 const setupdlg = () => {
     const common = new Common();
     common.setup_is_done = false;
-    let active_wizard_page = 0;
+    let active_wizard_page = 1;
     displayNone("main_ui");
     // From settingstab
     const settingstab_list_elem = id("settings_list_data");
@@ -77,6 +82,8 @@ const setupdlg = () => {
     if (modal == null) {
         return;
     }
+
+    showModal();
 
     id("setupDlgCancel").addEventListener("click", (event) => closeModal("cancel"));
 
@@ -103,7 +110,6 @@ const setupdlg = () => {
     setHTML("setup_langage_list", content);
     id("language_selection").addEventListener("change", (event) => translate_text(getPrefValue("language_list")));
 
-    showModal();
     id("startsteplink", true).click();
 };
 
@@ -140,7 +146,7 @@ const continue_setup_wizard = (active_wizard_page) => {
             closeModal("ok");
             break;
         default:
-            console.log("wizard page out of range");
+            console.log(`wizard page ${active_wizard_page} is out of range`);
             break;
     }
 }

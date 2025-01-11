@@ -2,7 +2,7 @@ import { Common, classes, displayBlock, displayNone } from "./common.js";
 
 const openstep = (evt, stepname) => {
 	const common = new Common();
-	if (evt.currentTarget.classList.includes("wizard_done") && !common.can_revert_wizard) {
+	if (evt.currentTarget.classList.contains("wizard_done") && !common.can_revert_wizard) {
 		return;
 	}
 
