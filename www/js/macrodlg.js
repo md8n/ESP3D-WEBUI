@@ -1,6 +1,7 @@
 import {
 	Common,
 	get_icon_svg,
+	list_icon,
 	displayBlock,
 	displayNone,
 	id,
@@ -38,26 +39,23 @@ function showmacrodlg(closefn) {
 	showModal();
 }
 
+const iconDownTri = () => get_icon_svg("triangle-bottom", {h:'0.8em', w:'0.8em', s:'pointer-events:none', t:'translate(50,1200) scale(1, -1)'});
+
 function build_color_selection(index, actions) {
 	let content = "";
 	const entry = macrodlg_macrolist[index];
 	const menu_pos = index > 3 ? "dropmenu-content-up" : "dropmenu-content-down";
 	content += `<div id='macro_color_line${index}' class='dropdownselect'>`;
 	content += `<button id='macro_color_line${index}_btn' class='btn ${entry.class}'>&nbsp;`;
-	content +=
-		"<svg width='0.8em' height='0.8em' viewBox='0 0 1300 1200' style='pointer-events:none'>";
-	content += "<g transform='translate(50,1200) scale(1, -1)'>";
-	content +=
-		"<path  fill='currentColor' d='M100 900h1000q41 0 49.5 -21t-20.5 -50l-494 -494q-14 -14 -35 -14t-35 14l-494 494q-29 29 -20.5 50t49.5 21z'></path>";
-	content += "</g>";
-	content += "</svg>";
+	content += iconDownTri();
 	content += "</button>";
 	actions.push({ id: `macro_color_line${index}_btn`, type: "click", method: (event) => showhide_drop_menu(event) });
 	content += `<div class='dropmenu-content ${menu_pos}' style='min-width:auto; padding-left: 4px;padding-right: 4px;'>`;
-	for ((col) in ["default", "primary", "info", "warning", "danger"]) {
+	// biome-ignore lint/complexity/noForEach: <explanation>
+	["default", "primary", "info", "warning", "danger"].forEach((col) => {
 		content += `<button id='macro_select_color_${col}${index}_btn' class='btn btn-${col}'>&nbsp;</button>`;
 		actions.push({ id: `macro_select_color_${col}${index}_btn`, type: "click", method: (event) => macro_select_color(event, col, index) });
-	};
+	});
 	content += "</div>";
 	content += "</div>";
 	return content;
@@ -69,13 +67,7 @@ function build_target_selection(index, actions) {
 	const menu_pos = index > 3 ? "dropmenu-content-up" : "dropmenu-content-down";
 	content += `<div id='macro_target_line${index}' class='dropdownselect'>`;
 	content += `<button id='macro_target_line${index}_btn' class='btn btn-default' style='min-width:5em;'><span>${entry.target}</span>`;
-	content +=
-		"<svg width='0.8em' height='0.8em' viewBox='0 0 1300 1200' style='pointer-events:none'>";
-	content += "<g transform='translate(50,1200) scale(1, -1)'>";
-	content +=
-		"<path fill='currentColor' d='M100 900h1000q41 0 49.5 -21t-20.5 -50l-494 -494q-14 -14 -35 -14t-35 14l-494 494q-29 29 -20.5 50t49.5 21z'></path>";
-	content += "</g>";
-	content += "</svg>";
+	content += iconDownTri();
 	content += "</button>";
 	actions.push({ id: `macro_target_line${index}_btn`, type: "click", method: (event) => showhide_drop_menu(event) });
 	content += `<div class='dropmenu-content ${menu_pos}' style='min-width:auto'>`;
@@ -97,13 +89,7 @@ function build_glyph_selection(index, actions) {
 	const menu_pos = index > 3 ? "dropmenu-content-up" : "dropmenu-content-down";
 	content += `<div id='macro_glyph_line${index}' class='dropdownselect'>`;
 	content += `<button id='macro_glyph_line${index}_btn' class='btn ${entry.class}'><span>${get_icon_svg(entry.glyph)}</span>&nbsp;`;
-	content +=
-		"<svg width='0.8em' height='0.8em' viewBox='0 0 1300 1200' style='pointer-events:none'>";
-	content += "<g transform='translate(50,1200) scale(1, -1)'>";
-	content +=
-		"<path fill='currentColor' d='M100 900h1000q41 0 49.5 -21t-20.5 -50l-494 -494q-14 -14 -35 -14t-35 14l-494 494q-29 29 -20.5 50t49.5 21z'></path>";
-	content += "</g>";
-	content += "</svg>";
+	content += iconDownTri();
 	content += "</button>";
 	actions.push({ id: `macro_glyph_line${index}_btn`, type: "click", method: (event) => showhide_drop_menu(event) });
 	content += `<div class='dropmenu-content ${menu_pos}' style='min-width:30em'>`;
@@ -111,8 +97,9 @@ function build_glyph_selection(index, actions) {
 		if (key === "plus") {
 			continue;
 		}
-		content += `<button id='macro_glyph_select${index}_btn' class='btn btn-default btn-xs'><span>${get_icon_svg(key)}</span></button>`;
-		actions.push({ id: `macro_glyph_select${index}_btn`, type: "click", method: (event) => macro_select_glyph(event, key, index) });
+		const btnId = `macro_glyph_select${index}${key}_btn`;
+		content += `<button id='${btnId}' class='btn btn-default btn-xs'><span>${get_icon_svg(key)}</span></button>`;
+		actions.push({ id: btnId, type: "click", method: (event) => macro_select_glyph(event, key, index) });
 	}
 	content += "</div>";
 	content += "</div>";
@@ -256,7 +243,7 @@ function macro_select_target(event, target, index) {
 	build_dlg_macrolist_line(index);
 }
 
-function macro_select_glyph(event, glyph, index) {
+const macro_select_glyph = (event, glyph, index) => {
 	const entry = macrodlg_macrolist[index];
 	hide_drop_menu(event);
 	entry.glyph = glyph;
