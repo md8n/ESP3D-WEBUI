@@ -41,6 +41,7 @@ const SPIFFSdlg = (root) => {
 	id("refreshSPIFFSbtn").addEventListener("click", (event) => refreshSPIFFS());
 
 	const iconOptions = {t: "translate(50,1200) scale(1,-1)"};
+	setHTML("SPIFFS_uploadbtn", get_icon_svg("upload", iconOptions));
 	setHTML("refreshSPIFFSbtn", get_icon_svg("refresh", iconOptions));
 
 	if (typeof root !== "undefined") {
