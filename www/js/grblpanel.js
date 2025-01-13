@@ -73,6 +73,7 @@ const grblpanel = () => {
 
 	setHTML("grblspindle_rew", `On Rew${get_icon_svg("triangle-left")}`);
 	setHTML("grblspindle_fwd", `On Fwd${get_icon_svg("triangle-right")}`);
+	setHTML("grblspindle_fwd", `Off${get_icon_svg("stop")}`);
 
 	setHTML("sd_resume_btn", get_icon_svg("play", {h: "1.4em", w: "2em", t: "translate(50,1200) scale(1,-1)", color: "green"}));
 

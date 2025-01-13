@@ -290,11 +290,7 @@ function control_build_macro_ui() {
 	actions.push({ id: "control_btn_show_macro_dlg", method: (event) => showmacrodlg(processMacroSave) });
 	content += "<span class='badge'>";
 	content += get_icon_svg("star", iconOptions);
-	content += "<svg width='1.3em' height='1.2em' viewBox='0 0 1300 1200'>";
-	content += "<g transform='translate(50,1200) scale(1, -1)'>";
-	content += "<path  fill='currentColor' d='M1011 1210q19 0 33 -13l153 -153q13 -14 13 -33t-13 -33l-99 -92l-214 214l95 96q13 14 32 14zM1013 800l-615 -614l-214 214l614 614zM317 96l-333 -112l110 335z'></path>";
-	content += "</g>";
-	content += "</svg>";
+	content += get_icon_svg("pencil", iconOptions);;
 	content += "</span>";
 	content += "</button>";
 	content += "</div>";

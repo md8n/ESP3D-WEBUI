@@ -30,6 +30,9 @@ const changepassworddlg = () => {
 	setHTML("password_password_text", "");
 	setHTML("password_password_text1", "");
 	setHTML("password_password_text2", "");
+
+	setHTML("passwordChange", `${get_icon_svg("user")}<span>${translate_text_item("Change Password")}</span>`);
+
 	showModal();
 };
 
