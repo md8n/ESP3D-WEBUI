@@ -115,6 +115,9 @@ function init_files_panel(dorefresh = true) {
 
 	id("files_input_file").addEventListener("change", (event) => files_check_if_upload());
 
+	const iconOptions = {t: "translate(50,1200) scale(1,-1)"};
+	setHTML("files_filter_btn", `<span id="files_filter_glyph" style="position:relative; top:2px">${get_icon_svg("filter", iconOptions)}</span>`);
+
 	files_set_button_as_filter(files_filter_sd_list);
 	if (common.fwData.direct_sd && dorefresh) {
 		files_refreshFiles(files_currentPath);
@@ -149,6 +152,7 @@ function files_build_file_line(index, actions) {
 	let content = "";
 	const entry = files_file_list[index];
 	const is_clickable = files_is_clickable(index);
+	const iconOptions = {w: "1em", h: "1em"};
 	if ((files_filter_sd_list && entry.isprintable) || !files_filter_sd_list) {
 		const fliId = `filelist_${index}`;
 		const clickStyle = is_clickable ? " style='cursor:pointer;'" : "";
@@ -180,19 +184,19 @@ function files_build_file_line(index, actions) {
 		content += `<div class='${iconcol}'>`;
 		content += "<div class='pull-right'>";
 		if (entry.isprintable) {
-			content += `<button id='${fliId}_print_btn' ${btnCls} ${btnPad}>${get_icon_svg("play", {w: "1em", h: "1em"})}</button>`;
+			content += `<button id='${fliId}_print_btn' ${btnCls} ${btnPad}>${get_icon_svg("play", iconOptions)}</button>`;
 			actions.push({ id: `${fliId}_print_btn`, method: files_print, index: index });
 		}
 		content += "&nbsp;";
 		if (!entry.isdir) {
-			content += `<button id='${fliId}_download_btn' ${btnCls} ${btnPad}>${get_icon_svg("download", {w: "1em", h: "1em"})}</button>`;
+			content += `<button id='${fliId}_download_btn' ${btnCls} ${btnPad}>${get_icon_svg("download", iconOptions)}</button>`;
 			actions.push({ id: `${fliId}_download_btn`, method: files_download, index: index });
 		}
 		if (files_showdeletebutton(index)) {
-			content += `<button id='${fliId}_delete_btn' class='btn btn-xs btn-danger' ${btnPad}>${get_icon_svg("trash", {w: "1em", h: "1em"})}</button>`;
+			content += `<button id='${fliId}_delete_btn' class='btn btn-xs btn-danger' ${btnPad}>${get_icon_svg("trash", iconOptions)}</button>`;
 			actions.push({ id: `${fliId}_delete_btn`, method: files_delete, index: index });
 		}
-		content += `<button id='${fliId}_rename_btn' ${btnCls} ${btnPad}>${get_icon_svg("wrench", {w: "1em", h: "1em"})}</button>`;
+		content += `<button id='${fliId}_rename_btn' ${btnCls} ${btnPad}>${get_icon_svg("wrench", iconOptions)}</button>`;
 		actions.push({ id: `${fliId}_rename_btn`, method: files_rename, index: index });
 		content += "</div>";
 		content += "</div>";

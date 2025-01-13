@@ -16,6 +16,8 @@ import {
 	SendRealtimeCmd,
 	StartProbeProcess,
 	setSpindleSpeed,
+	setHTML,
+	get_icon_svg,
 } from "./common.js";
 
 /** Set up the event handlers for the grblpanel */
@@ -68,6 +70,20 @@ const grblpanel = () => {
     id("grblpanel_probetablink").addEventListener("click", (event) => opentab(event, "grblprobetab", "grbluitabscontent", "grbluitablinks"));
 
 	id("global_reset_btn").addEventListener("click", (event) => grbl_reset());
+
+	setHTML("grblspindle_rew", `On Rew${get_icon_svg("triangle-left")}`);
+	setHTML("grblspindle_fwd", `On Fwd${get_icon_svg("triangle-right")}`);
+
+	setHTML("sd_resume_btn", get_icon_svg("play", {h: "1.4em", w: "2em", t: "translate(50,1200) scale(1,-1)", color: "green"}));
+
+	const iconPlayOptions = {h: "1.4em", w: "1.3em", t: "translate(50,1200) scale(1,-1)", color: "black"};
+	setHTML("grblpanel_F0", get_icon_svg("play", iconPlayOptions));
+	setHTML("grblpanel_S0", get_icon_svg("play", iconPlayOptions));
+
+	const iconResetOptions = {h: "1.4em", w: "2em", t: "translate(1200,1200) scale(-1, -1)", v: "0 0 1200 1200", color: "white"};
+	setHTML("sd_reset_btn", get_icon_svg("play", iconResetOptions));
+	setHTML("global_reset_btn", get_icon_svg("play", iconResetOptions));
+
 };
 
 const onReportType = (e) => {

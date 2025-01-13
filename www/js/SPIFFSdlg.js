@@ -40,6 +40,9 @@ const SPIFFSdlg = (root) => {
 	id("SPIFFS_btn_close").addEventListener("click", (event) => closeSPIFFSDialog("cancel"));
 	id("refreshSPIFFSbtn").addEventListener("click", (event) => refreshSPIFFS());
 
+	const iconOptions = {t: "translate(50,1200) scale(1,-1)"};
+	setHTML("refreshSPIFFSbtn", get_icon_svg("refresh", iconOptions));
+
 	if (typeof root !== "undefined") {
 		const common = new Common();
 		common.SPIFFS_currentpath = root;
@@ -211,7 +214,7 @@ function SPIFFSdispatchfilestatus(jsonresponse) {
 		const pos = common.SPIFFS_currentpath.lastIndexOf("/", common.SPIFFS_currentpath.length - 2);
 		const previouspath = common.SPIFFS_currentpath.slice(0, pos + 1);
 		const rowId = "SPIFFS_row_up_dir";
-		content += `<tr id="${rowId}" style="cursor:pointer;"><td >${get_icon_svg("level-up")}</td><td colspan='4'> Up..</td></tr>`;
+		content += `<tr id="${rowId}" style="cursor:pointer;"><td>${get_icon_svg("level-up")}</td><td colspan='4'> Up..</td></tr>`;
 		actions.push({ id: rowId, method: upDirAndRelist, filename: previouspath });
 	}
 	jsonresponse.files.sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }));

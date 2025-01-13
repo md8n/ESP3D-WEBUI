@@ -6,6 +6,8 @@ import {
 	getPrefValue,
 	setPrefValue,
 	SavePreferences,
+	setHTML,
+	get_icon_svg,
 } from "./common.js";
 
 /** Set up the event handlers for the camera tab */
@@ -16,6 +18,12 @@ const cameratab = () => {
 	id("cameratab_getaddress").addEventListener("click", (event) => camera_GetAddress());
 	id("cameratab_saveaddress").addEventListener("click", (event) => camera_saveaddress());
 	id("camera_detach_button").addEventListener("click", (event) => camera_detachcam());
+
+	const iconOptions = {t: "translate(50,1200) scale(1,-1)"};
+	setHTML("cameratab_loadframe", get_icon_svg("share-alt", iconOptions));	
+	setHTML("cameratab_getaddress", get_icon_svg("open", iconOptions));
+	setHTML("cameratab_saveaddress", get_icon_svg("save", iconOptions));
+	setHTML("camera_detach_button", get_icon_svg("new window", iconOptions));
 };
 
 function cameraformataddress() {

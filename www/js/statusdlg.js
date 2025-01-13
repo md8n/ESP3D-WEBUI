@@ -7,6 +7,7 @@ import {
 	id,
 	setHTML,
 	closeModal,
+	get_icon_svg,
 	getactiveModal,
 	setactiveModal,
 	showModal,
@@ -24,6 +25,9 @@ const statusdlg = () => {
 	id("status_dlg_close").addEventListener("click", (event) => closeModal("cancel"));
 	id("status_dlg_btn_close").addEventListener("click", (event) => closeModal("cancel"));
 	id("status_dlg_refreshstatus").addEventListener("click", (event) => refreshstatus());
+
+	const iconOptions = {t: "translate(50,1200) scale(1,-1)"};
+	setHTML("status_dlg_refreshstatus", get_icon_svg("refresh", iconOptions));
 
 	showModal();
 	refreshstatus();

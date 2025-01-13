@@ -29,6 +29,9 @@ const scanwifidlg = (item, subitem) => {
 	id("scanWiFiDlgClose").addEventListener("click", (event) => closeModal("cancel"));
 	id("refresh_scanwifi_btn").addEventListener("click", (event) => refresh_scanwifi());
 
+	const iconOptions = {t: "translate(50,1200) scale(1,-1)"};
+	setHTML("refresh_scanwifi_btn", get_icon_svg("refresh", iconOptions));
+
 	ssid_item_scanwifi = item;
 	ssid_subitem_scanwifi = subitem;
 	showModal();

@@ -4,6 +4,8 @@ import {
 	build_HTML_setting_list,
 	refreshSettings,
 	restart_esp,
+	setHTML,
+	get_icon_svg,
 	SPIFFSdlg,
 	statusdlg,
 	updatedlg,
@@ -21,6 +23,11 @@ const settingstab = () => {
 
 	const common = new Common();
 	id("settings_refresh_btn").addEventListener("click", (event) => refreshSettings(common.current_setting_filter) );
+	
+	const iconOptions = {t: "translate(50,1200) scale(1,-1)"};
+	setHTML("settings_refresh_btn", get_icon_svg("refresh", iconOptions));
+	setHTML("settings_SPIFFS_btn", get_icon_svg("folder-open", iconOptions));
+
 };
 
 export { settingstab };

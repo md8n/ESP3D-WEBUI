@@ -22,7 +22,10 @@ const logindlg = (closefunc, check_first = false) => {
 	id("login_password_text").addEventListener("keyup", (event) => login_password_OnKeyUp(event));
 	id("login_submit_btn").addEventListener("click", (event) => SubmitLogin());
 
-	setHTML("login_title", translate_text_item("Identification requested"));
+	const iconOptions = { t: "translate(50,1200) scale(1,-1)" };
+	const buildTitle = (icon, label) => `${get_icon_svg(icon, iconOptions)}<span id="login_title">${translate_text_item(label)}</span>`;
+	setHTML("login_title_container", buildTitle("login", "Identification requested"));
+
 	displayNone("login_loader");
 	displayBlock("login_content");
 
@@ -63,10 +66,7 @@ function login_password_OnKeyUp(event) {
 
 function loginfailed(error_code, response_text) {
 	const response = JSON.parse(response_text);
-	setHTML(
-		"login_title",
-		translate_text_item(response.status || "Identification invalid!"),
-	);
+	setHTML("login_title", translate_text_item(response.status || "Identification invalid!"));
 	conErr(error_code, response_text);
 	displayBlock("login_content");
 	setHTML("current_ID", translate_text_item("guest"));

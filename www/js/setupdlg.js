@@ -26,11 +26,11 @@ import {
 } from "./common.js";
 
 const wizardSteps = [
-    { name: "startstep", icon: "wizard-alert", link: "startsteplink", wizardLine: "", contAct: () => step0ContentAndActions(), next: "step1" },
-    { name: "step1", icon: "wizard-gear", link: "step1link", wizardLine: "wizard_line1", contAct: () => step1ContentAndActions(), next: "step2" },
-    { name: "step2", icon: "wizard-signal", link: "step2link", wizardLine: "wizard_line2", contAct: () => step2ContentAndActions(), next: "endstep" },
+    { name: "startstep", icon: "alert", link: "startsteplink", wizardLine: "", contAct: () => step0ContentAndActions(), next: "step1" },
+    { name: "step1", icon: "cog", link: "step1link", wizardLine: "wizard_line1", contAct: () => step1ContentAndActions(), next: "step2" },
+    { name: "step2", icon: "signal", link: "step2link", wizardLine: "wizard_line2", contAct: () => step2ContentAndActions(), next: "endstep" },
     // { name: "step3", icon: "wizard-sd", link: "step3link", wizardLine: "wizard_line3", contAct: () => step3ContentAndActions(), next: "endstep" },
-    { name: "endstep", icon: "wizard-check", link: "endsteplink", wizardLine: "wizard_line4", contAct: () => step4Content(), next: "close" },
+    { name: "endstep", icon: "ok", link: "endsteplink", wizardLine: "wizard_line4", contAct: () => step4Content(), next: "close" },
 ];
 
 /** Set up the event handlers and state machine for the setup wizard */

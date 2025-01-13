@@ -24,6 +24,7 @@ import {
 	build_HTML_setting_list,
 	refreshSettings,
 	setupdlg,
+	get_icon_svg,
 } from "./common.js";
 
 /** Set the page's title */
@@ -56,9 +57,10 @@ const update_UI_firmware_target = () => {
 	showAxiscontrols();
 
 	const fwName = "FluidNC";
-	displayNone(["configtablink", "auto_check_control", "progress_btn", "abort_btn", "motor_off_control"]);
+	// displayNone(["configtablink", "auto_check_control", "progress_btn", "abort_btn", "motor_off_control"]);
+	displayNone(["auto_check_control", "progress_btn", "abort_btn", "motor_off_control"]);
 	setHTML("tab_title_configuration", "<span translate>GRBL configuration</span>");
-	setHTML("tab_printer_configuration", "<span translate>GRBL</span>");
+	// setHTML("tab_printer_configuration", "<span translate>GRBL</span>");
 	const fif = id("files_input_file");
 	if (fif) {
 		fif.accept = " .g, .gco, .gcode, .txt, .ncc, .G, .GCO, .GCODE, .TXT, .NC";
@@ -104,12 +106,7 @@ const update_UI_firmware_target = () => {
 
 	setHTML("fwName", fwName);
 	//SD image or not
-	setHTML(
-		"showSDused",
-		common.fwData.direct_sd
-			? "<svg width='1.3em' height='1.2em' viewBox='0 0 1300 1200'><g transform='translate(50,1200) scale(1, -1)'><path  fill='#777777' d='M200 1100h700q124 0 212 -88t88 -212v-500q0 -124 -88 -212t-212 -88h-700q-124 0 -212 88t-88 212v500q0 124 88 212t212 88zM100 900v-700h900v700h-900zM500 700h-200v-100h200v-300h-300v100h200v100h-200v300h300v-100zM900 700v-300l-100 -100h-200v500h200z M700 700v-300h100v300h-100z' /></g></svg>"
-			: "",
-	);
+	setHTML("showSDused", common.fwData.direct_sd ? get_icon_svg("sd-video", { t: "translate(50,1200) scale(1,-1)", color: "#777777" }) : "");
 
 	return fwName;
 }
