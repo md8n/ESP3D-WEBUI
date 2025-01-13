@@ -179,7 +179,7 @@
 "E feedrate": "Скорость подачи оси экструдера",
 "Camera address": "Адрес IP-камеры ",
 "Setup": "Конфигурация",
-"Start setup": "Начать настройку",
+"Start": "начало",
 "This wizard will help you to configure the basic settings.": "Этот мастер поможет вам настроить основные параметры.",
 "Press start to proceed.": "Нажмите кнопку «Начать настройку», чтобы продолжить.",
 "Save your printer's firmware base:": "Установите тип программного обеспечения принтера:",

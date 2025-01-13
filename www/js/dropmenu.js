@@ -12,8 +12,9 @@ const clear_drop_menu = (event) => {
 	});
 }
 
+/** Traverse back through the current item's parent until you get to the item with the desired classname */
 function get_parent_by_class(item, classname) {
-	if (item === null || typeof item === "undefined") {
+	if (!item) {
 		return null;
 	}
 	if (item.classList.contains(classname)) {

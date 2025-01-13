@@ -175,7 +175,6 @@ import { arrayToXYZ, displayer, refreshGcode } from "./toolpath-displayer.js";
 import { translate_text } from "./translate.js";
 import { UIdisableddlg } from "./UIdisableddlg.js";
 import { updatedlg } from "./updatedlg.js";
-import { openstep } from "./wizard.js";
 
 /** Selected values that were globals, now set up as members of a singleton */
 class Common {
@@ -298,9 +297,6 @@ class Common {
 
 		/** See util.js */
 		this.last_ping = 0;
-
-		/** See wizard.js - this is always false for some reason */
-		this.can_revert_wizard = false;
 
 		this.esp_error_code = 0;
 		this.esp_error_message = "";
@@ -519,6 +515,4 @@ export {
 	// from utilValidation.js
 	checkValue,
 	valueIsFloat,
-	// from wizard.js
-	openstep,
 };

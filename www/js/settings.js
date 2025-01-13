@@ -641,15 +641,16 @@ function process_restart_esp(answer) {
 }
 
 const define_esp_role = (index) => {
+	const common = new Common();
 	switch (Number(defval(index))) {
-		case SETTINGS_FALLBACK_MODE:
+		case common.SETTINGS_FALLBACK_MODE:
 			displayBlock(["setup_STA", "setup_AP"]);
 			break;
-		case SETTINGS_AP_MODE:
+		case common.SETTINGS_AP_MODE:
 			displayNone("setup_STA");
 			displayBlock("setup_AP");
 			break;
-		case SETTINGS_STA_MODE:
+		case common.SETTINGS_STA_MODE:
 			displayBlock("setup_STA");
 			displayNone("setup_AP");
 			break;

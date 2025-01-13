@@ -181,7 +181,7 @@
 "E feedrate":"E előtolási sebesség",
 "Camera address":"Kamera IP",
 "Setup":"Beállítás",
-"Start setup":"Start",
+"Start":"Start",
 "This wizard will help you to configure the basic settings.":"Ez a varázsló segít az alapbeállítások konfigurálásában.",
 "Press start to proceed.":"A folytatáshoz nyomja meg a Start gombot.",
 "Save your printer's firmware base:":"Mentse el az alapvető firmware-beállításokat:",

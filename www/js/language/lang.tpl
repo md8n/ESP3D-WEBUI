@@ -183,7 +183,7 @@ var langtrans = {
 "E feedrate":"E feedrate",
 "Camera address":"Camera address",
 "Setup":"Setup",
-"Start setup":"Start setup",
+"Start":"Start",
 "This wizard will help you to configure the basic settings.":"This wizard will help you to configure the basic settings.",
 "Press start to proceed.":"Press start to proceed.",
 "Save your printer's firmware base:":"Save your printer's firmware base:",
