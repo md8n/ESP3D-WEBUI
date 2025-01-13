@@ -1,4 +1,4 @@
-import {closeModal, setactiveModal, showModal, id} from "./common.js";
+import {closeModal, setactiveModal, showModal, id, setHTML, get_icon_svg} from "./common.js";
 
 /** confirm dialog */
 const confirmdlg = (titledlg, textdlg, closefunc) => {
@@ -11,10 +11,14 @@ const confirmdlg = (titledlg, textdlg, closefunc) => {
 	id("ConfirmDialogYes").addEventListener("click", (event) => closeModal("yes"));
 	id("ConfirmDialogNo").addEventListener("click", (event) => closeModal("no"));
 
+	// Note that this has the span with the modal-text class
+	setHTML("confirmQuestion", `${get_icon_svg("question-sign", {h:'24px', w:'26px', t:'translate(50,1200) scale(1, -1)', color:'#337ab7'})}&nbsp;&nbsp;<span class="modal-text"></span>`);
+
 	const title = modal.element.getElementsByClassName("modal-title")[0];
 	const body = modal.element.getElementsByClassName("modal-text")[0];
 	title.innerHTML = titledlg;
 	body.innerHTML = textdlg;
+
 	showModal();
 };
 
