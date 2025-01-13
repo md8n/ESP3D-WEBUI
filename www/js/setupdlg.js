@@ -21,14 +21,16 @@ import {
     define_esp_role_from_pos,
     translate_text,
     setClassName,
+    // get_index_from_eeprom_pos,
+    // defval,
 } from "./common.js";
 
 const wizardSteps = [
-    { "name": "startstep", "link": "startsteplink", "wizardLine": "", "next": "step1" },
-    { "name": "step1", "link": "step1link", "wizardLine": "wizard_line1", "next": "step2" },
-    { "name": "step2", "link": "step2link", "wizardLine": "wizard_line2", "next": "endstep" },
-    { "name": "step3", "link": "step3link", "wizardLine": "wizard_line3", "next": "endstep" },
-    { "name": "endstep", "link": "endsteplink", "wizardLine": "wizard_line4", "next": "close" },
+    { name: "startstep", icon: "wizard-alert", link: "startsteplink", wizardLine: "", contAct: () => step0ContentAndActions(), next: "step1" },
+    { name: "step1", icon: "wizard-gear", link: "step1link", wizardLine: "wizard_line1", contAct: () => step1ContentAndActions(), next: "step2" },
+    { name: "step2", icon: "wizard-signal", link: "step2link", wizardLine: "wizard_line2", contAct: () => step2ContentAndActions(), next: "endstep" },
+    // { name: "step3", icon: "wizard-sd", link: "step3link", wizardLine: "wizard_line3", contAct: () => step3ContentAndActions(), next: "endstep" },
+    { name: "endstep", icon: "wizard-check", link: "endsteplink", wizardLine: "wizard_line4", contAct: () => step4Content(), next: "close" },
 ];
 
 /** Set up the event handlers and state machine for the setup wizard */
@@ -50,14 +52,19 @@ const setupdlg = () => {
 
     id("setupDlgCancel").addEventListener("click", (event) => closeModal("cancel"));
 
+    const actions = [];
+    const content = ["<div class='steplinks spacer'></div>"];
     // biome-ignore lint/complexity/noForEach: <explanation>
     wizardSteps.forEach((step) => {
-        id(step.link).addEventListener("click", (event) => startStep(event, step.name));
+        content.push(buildWizardLink(step));
+        actions.push({ id: step.link, type: "click", method: (event) => startStep(event, step.name) });
     });
+    setHTML("setupStepLinks", content.join("\n"));
+    addActions(actions);
 
     setHTML("wizard_button", translate_text_item("Start"));
-    // point the wizard button at the current step
-    id("wizard_button").title = wizardSteps[0].name;
+    // point the wizard button at the next step
+    id("wizard_button").title = wizardSteps[0].next;
     id("wizard_button").addEventListener("click", (event) => continueSetupWizard());
 
     // biome-ignore lint/complexity/noForEach: <explanation>
@@ -67,13 +74,14 @@ const setupdlg = () => {
         }
     });
 
-    displayNone(["step3link", "wizard_line4"]);
-
-    setupLanguageList();
+    // displayNone("step3link");
 
     showModal();
-    wizardNotDone("startsteplink");
-    id("startsteplink").click();
+    wizardNotDone(wizardSteps[0].link);
+
+    // Load up the step content and actions
+    wizardSteps[0].contAct();
+    id(wizardSteps[0].link).click();
 };
 
 const td = (content) => `<td>${content}</td>`;
@@ -86,10 +94,17 @@ const endDiv = () => "</div>";
 /** Mark the wizard step as 'not done' by removing the 'wizard_done' class */
 const wizardNotDone = (element) => id(element).classList.remove("wizard_done");
 
-const setupLanguageList = () => {
-    const content = table(td(`${get_icon_svg("flag")}&nbsp;`) + td(build_language_list("language_selection")));
-    setHTML("setup_langage_list", content);
-    id("language_selection").addEventListener("change", (event) => translate_text(getPrefValue("language_list")));
+const buildWizardLink = (step) => {
+    const content = [];
+    if (step.wizardLine) {
+        content.push(`<div id="${step.wizardLine}" class="steplinks connecting-line"></div>`);
+    }
+
+    content.push(`<button id="${step.link}" class="steplinks">`);
+    content.push(get_icon_svg(step.icon, {t: "translate(50,1200) scale(1,-1)"}));
+    content.push("</button>");
+
+    return content.join("\n");
 }
 
 function setupdone(response) {
@@ -102,7 +117,6 @@ function setupdone(response) {
     displayUndoNone("main_ui");
     closeModal("setup done");
 }
-
 
 const startStep = (evt, stepName) => {
     // if (evt.currentTarget.classList.contains("wizard_done")) {
@@ -148,16 +162,16 @@ const closeStepLink = (stepLink) => {
 }
 
 const continueSetupWizard = () => {
-    const currentStepName = id("wizard_button").title;
-
-    if (currentStepName === "close") {
+    const nextStepName = id("wizard_button").title;
+    if (nextStepName === "close") {
         // This also calls `setupdone` above
         closeModal("ok");
         return;
     }
 
-    const currentStep = wizardSteps.find((step) => step.name === currentStepName);
-    const nextStep = wizardSteps.find((step) => step.name === currentStep?.next);
+    const currentStep = wizardSteps.find((step) => step.next === nextStepName);
+    const nextStep = wizardSteps.find((step) => step.name === nextStepName);
+    console.info(`From step: '${currentStep.name}' -> To step: '${nextStepName}'`);
 
     // Point the wizard button at the next step
     id("wizard_button").title = nextStep?.next || "close";
@@ -166,24 +180,21 @@ const continueSetupWizard = () => {
     closeStepLink(currentStep.link);
     openStepLink(nextStep.wizardLine, nextStep.link);
 
-    switch (nextStep.name) {
+    // Load of the step content and actions
+    nextStep.contAct();
+    id(nextStep.link).click();
+
+    // Any actions after exiting the step
+    switch (nextStepName) {
         case "step1":
-            enablestep1();
             setPrefValue("language", getPrefValue("language_list"));
             break;
         case "step2":
-            enablestep2();
-            break;
         case "step3":
-        // Pre-emptively step over step 3
-        // id("wizard_line3").style.background = "#337AB7";
-        // enablestep3();
-        // break;
         case "endstep":
-            enablestep4();
             break;
         default:
-            console.error(`wizard page ${nextStep.name} is not defined`);
+            console.error(`wizard page ${nextStepName} is not defined`);
             break;
     }
 }
@@ -193,25 +204,42 @@ const addActions = (actions) => {
     actions.forEach((action) => {
         const elem = id(action.id);
         if (elem) {
-            elem.addEventListener(action.type, (event) => action.method);
+            elem.addEventListener(action.type, action.method);
         }
     });
 };
 
-function enablestep1() {
+const step0ContentAndActions = (stepName = "startstep") => {
+    const ls = "language_selection";
+    const sll = "setup_language_list";
+    let content = "";
+    content += heading("Setup Wizard");
+    content += `${translate_text_item("This wizard will help you to configure the basic settings.")}<br/>`;
+    content += `${div(sll) + endDiv()}<br/>`;
+    content += `<span>${translate_text_item("Press start to proceed.")}</span>`;
+
+    setHTML(stepName, content);
+
+    id(sll).classList.add("center");
+    const langList = table(td(`${get_icon_svg("flag")}&nbsp;`) + td(build_language_list(ls)));
+    setHTML(sll, langList);
+
+    const actions = [{ id: ls, type: "change", method: (event) => translate_text(getPrefValue("language_list")) }];
+    addActions(actions);
+}
+
+const step1ContentAndActions = (stepName = "step1") => {
     const actions = [];
     const EP_HOSTNAME = "Hostname";
 
-    setHTML("wizard_button", translate_text_item("Continue"));
-
     const content = heading("FluidNC Settings") + buildControlItem("Define ESP name:", EP_HOSTNAME, actions);
-    setHTML("step1", content);
-    addActions(actions);
 
-    id("step1link").click();
+    setHTML(stepName, content);
+    addActions(actions);
+    setHTML("wizard_button", translate_text_item("Continue"));
 }
 
-function enablestep2() {
+const step2ContentAndActions = (stepName = "step2") => {
     const common = new Common();
     const actions = [];
 
@@ -236,15 +264,13 @@ function enablestep2() {
     content += buildControlItem("Password for access point:", common.EP_AP_PASSWORD, actions);
     content += endDiv();
 
-    setHTML("step2", content);
+    setHTML(stepName, content);
     addActions(actions);
     define_esp_role_from_pos(common.EP_WIFI_MODE);
-
-    id("step2link").click();
 }
 
 // const define_sd_role = (index) => {
-//     if (setting_configList[index].defaultvalue === 1) {
+//     if (defval(index) === 1) {
 //         displayBlock("setup_SD");
 //         displayNone("setup_primary_SD");
 //     } else {
@@ -252,7 +278,7 @@ function enablestep2() {
 //     }
 // };
 
-// function enablestep3() {
+// const step3ContentAndActions = (stepName = "step3") => {
 //     const common = new Common();
 //     const actions = [];
 
@@ -274,17 +300,20 @@ function enablestep2() {
 
 //     content += endDiv();
 
-//     setHTML("step3", content);
+//     setHTML(stepName, content);
 //     addActions(actions);
 //     define_sd_role(get_index_from_eeprom_pos(common.EP_IS_DIRECT_SD));
-
-//     id("step3link").click();
 // }
 
-function enablestep4() {
-    setHTML("wizard_button", translate_text_item("Close"));
+const step4Content = (stepName = "endstep") => {
+    let content = "";
+    content += heading("Setup Wizard Completed");
+    content += `<span>${translate_text_item("Setup is finished.")}</span><br/>`;
+    content += `<span>${translate_text_item("After closing, you will still be able to change or to fine tune your settings in the main interface anytime.")}</span><br/>`;
+    content += `<span>${translate_text_item("You may need to restart the board to apply the new settings and connect again")}</span>`;
 
-    id("endsteplink").click();
+    setHTML(stepName, content);
+    setHTML("wizard_button", translate_text_item("Close"));
 }
 
 export { setupdlg };

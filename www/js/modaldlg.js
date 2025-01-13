@@ -1,4 +1,4 @@
-import { id } from "./common.js";
+import { id, displayBlock } from "./common.js";
 
 /** A list of currently opened modals */
 const listmodal = [];
@@ -9,17 +9,20 @@ const setactiveModal = (html_template_name, closefunc) => {
         console.error(`Error: no template named '${html_template_name}'`);
         return null;
     }
-    const modal = new Object;
-    modal.element = mdlTemplate;
-    modal.id = listmodal.length;
-    modal.name = html_template_name;
-    modal.closefn = (closefunc instanceof Function) ? closefunc : (response) => {/* Do Nothing*/};
 
+    const clFn = (closefunc instanceof Function) ? closefunc : (response) => {/* Do Nothing*/};
+    const modal = {
+        "element": mdlTemplate,
+        "id": listmodal.length,
+        "name": html_template_name,
+        "closefn": clFn
+    }
     listmodal.push(modal);
-    //console.log("Creation of modal  " +  modal.name + " with ID " +modal.id);
+
     return listmodal[listmodal.length - 1];
 }
 
+/** The currently active modal, or `null` if there are no currently active modals */
 const getactiveModal = () => (listmodal.length > 0) ? listmodal[listmodal.length - 1] : null;
 
 /** Show the modal dialog */
@@ -29,7 +32,6 @@ const showModal = () => {
         return;
     }
     currentmodal.element.style.display = "block";
-    //console.log("Show modal " +  currentmodal.name + " with ID " + currentmodal.id  );
 }
 
 /** Close the modal dialog - normally triggered when the user clicks on <X> */

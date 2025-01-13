@@ -121,7 +121,7 @@ function init_files_panel(dorefresh = true) {
 	}
 }
 
-const files_set_button_as_filter = (isfilter) => setHTML("files_filter_glyph", get_icon_svg(!isfilter ? "filter" : "list-alt", "1em", "1em"));
+const files_set_button_as_filter = (isfilter) => setHTML("files_filter_glyph", get_icon_svg(!isfilter ? "filter" : "list-alt", {w: "1em", h: "1em"}));
 
 function files_filter_button() {
 	files_filter_sd_list = !files_filter_sd_list;
@@ -180,19 +180,19 @@ function files_build_file_line(index, actions) {
 		content += `<div class='${iconcol}'>`;
 		content += "<div class='pull-right'>";
 		if (entry.isprintable) {
-			content += `<button id='${fliId}_print_btn' ${btnCls} ${btnPad}>${get_icon_svg("play", "1em", "1em")}</button>`;
+			content += `<button id='${fliId}_print_btn' ${btnCls} ${btnPad}>${get_icon_svg("play", {w: "1em", h: "1em"})}</button>`;
 			actions.push({ id: `${fliId}_print_btn`, method: files_print, index: index });
 		}
 		content += "&nbsp;";
 		if (!entry.isdir) {
-			content += `<button id='${fliId}_download_btn' ${btnCls} ${btnPad}>${get_icon_svg("download", "1em", "1em")}</button>`;
+			content += `<button id='${fliId}_download_btn' ${btnCls} ${btnPad}>${get_icon_svg("download", {w: "1em", h: "1em"})}</button>`;
 			actions.push({ id: `${fliId}_download_btn`, method: files_download, index: index });
 		}
 		if (files_showdeletebutton(index)) {
-			content += `<button id='${fliId}_delete_btn' class='btn btn-xs btn-danger' ${btnPad}>${get_icon_svg("trash", "1em", "1em")}</button>`;
+			content += `<button id='${fliId}_delete_btn' class='btn btn-xs btn-danger' ${btnPad}>${get_icon_svg("trash", {w: "1em", h: "1em"})}</button>`;
 			actions.push({ id: `${fliId}_delete_btn`, method: files_delete, index: index });
 		}
-		content += `<button id='${fliId}_rename_btn' ${btnCls} ${btnPad}>${get_icon_svg("wrench", "1em", "1em")}</button>`;
+		content += `<button id='${fliId}_rename_btn' ${btnCls} ${btnPad}>${get_icon_svg("wrench", {w: "1em", h: "1em"})}</button>`;
 		actions.push({ id: `${fliId}_rename_btn`, method: files_rename, index: index });
 		content += "</div>";
 		content += "</div>";

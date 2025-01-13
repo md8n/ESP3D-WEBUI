@@ -141,9 +141,8 @@ function grbl_clear_status() {
 }
 
 function grbl_set_probe_detected(state) {
-	const color = state ? "green" : "grey";
 	const glyph = state ? "ok-circle" : "record";
-	setHTML("touch_status_icon", get_icon_svg(glyph, "1.3em", "1.3em", color));
+	setHTML("touch_status_icon", get_icon_svg(glyph, {w: "1.3em", h: "1.3em", color: state ? "green" : "grey"}));
 }
 
 const onprobemaxtravelChange = () => {

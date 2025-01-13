@@ -71,9 +71,8 @@ const refreshSettings = (hide_setting_list) => {
 	SendGetHttp(url, getESPsettingsSuccess, getESPsettingsfailed);
 };
 
-function defval(i) {
-	return scl[i].defaultvalue;
-}
+/** Return the defaultValue for the setting at index `i` */
+const defval = (i) => scl[i].defaultvalue;
 
 /** Build a 'setting' id, any prefix (pf) if supplied should include an '_' at the end of its value */
 const sId = (sEntry, j, pf = "") => `${pf}${sEntry.id}_${j}`;
@@ -667,6 +666,8 @@ export {
 	build_HTML_setting_list,
 	define_esp_role,
 	define_esp_role_from_pos,
+	defval,
+	get_index_from_eeprom_pos,
 	refreshSettings,
 	restart_esp,
 	saveMaslowYaml,

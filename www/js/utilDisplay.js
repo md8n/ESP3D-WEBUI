@@ -1,21 +1,14 @@
 import { id } from "./common.js";
 
-const setDisplaySingle = (name, val) => {
-  const elem = id(name);
-  if (!elem) {
-    return;
-  }
-  id(name).style.display = val;
-}
-
 /** Set the display style of the element (or elements) identified by name(s) to the supplied value */
 const setDisplay = (name, val) => {
   if (!name) {
     return;
   }
   const names = Array.isArray(name) ? name : [name];
+  const elems = names.map((name) => id(name)).filter((elem) => elem);
   // biome-ignore lint/complexity/noForEach: <explanation>
-  names.forEach((n) => setDisplaySingle(n, val));
+  elems.forEach((elem) => { elem.style.display = val;});
 }
 
 /** Set the display style of the element (or elements) identified by name(s) to 'none' */

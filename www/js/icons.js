@@ -35,23 +35,41 @@ const list_icon = {
     'M865 565l-494 -494q-23 -23 -41 -23q-14 0 -22 13.5t-8 38.5v1000q0 25 8 38.5t22 13.5q18 0 41 -23l494 -494q14 -14 14 -35t-14 -35z',
   'triangle-left':
     'M335 635l494 494q29 29 50 20.5t21 -49.5v-1000q0 -41 -21 -49.5t-50 20.5l-494 494q-14 14 -14 35t14 35z',
-}
+  'wizard-alert': 'M658 1197l637 -1104q23 -38 7 -65.5t-60 -27.5h-1276q-44 0 -60 27.5t7 65.5l637 1104q22 39 54 39t54 -39zM704 800h-208q-20 0 -32 -14.5t-8 -34.5l58 -302q4 -20 21.5 -34.5t37.5 -14.5h54q20 0 37.5 14.5t21.5 34.5l58 302q4 20 -8 34.5t-32 14.5zM500 300v-100h200 v100h-200z',
+  'wizard-gear': 'M600 1174q33 0 74 -5l38 -152l5 -1q49 -14 94 -39l5 -2l134 80q61 -48 104 -105l-80 -134l3 -5q25 -44 39 -93l1 -6l152 -38q5 -43 5 -73q0 -34 -5 -74l-152 -38l-1 -6q-15 -49 -39 -93l-3 -5l80 -134q-48 -61 -104 -105l-134 81l-5 -3q-44 -25 -94 -39l-5 -2l-38 -151 q-43 -5 -74 -5q-33 0 -74 5l-38 151l-5 2q-49 14 -94 39l-5 3l-134 -81q-60 48 -104 105l80 134l-3 5q-25 45 -38 93l-2 6l-151 38q-6 42 -6 74q0 33 6 73l151 38l2 6q13 48 38 93l3 5l-80 134q47 61 105 105l133 -80l5 2q45 25 94 39l5 1l38 152q43 5 74 5zM600 815 q-89 0 -152 -63t-63 -151.5t63 -151.5t152 -63t152 63t63 151.5t-63 151.5t-152 63z',
+  'wizard-signal': 'M1025 1200h150q10 0 17.5 -7.5t7.5 -17.5v-1150q0 -10 -7.5 -17.5t-17.5 -7.5h-150q-10 0 -17.5 7.5t-7.5 17.5v1150q0 10 7.5 17.5t17.5 7.5zM725 800h150q10 0 17.5 -7.5t7.5 -17.5v-750q0 -10 -7.5 -17.5t-17.5 -7.5h-150q-10 0 -17.5 7.5t-7.5 17.5v750 q0 10 7.5 17.5t17.5 7.5zM425 500h150q10 0 17.5 -7.5t7.5 -17.5v-450q0 -10 -7.5 -17.5t-17.5 -7.5h-150q-10 0 -17.5 7.5t-7.5 17.5v450q0 10 7.5 17.5t17.5 7.5zM125 300h150q10 0 17.5 -7.5t7.5 -17.5v-250q0 -10 -7.5 -17.5t-17.5 -7.5h-150q-10 0 -17.5 7.5t-7.5 17.5 v250q0 10 7.5 17.5t17.5 7.5z',
+  'wizard-sd': 'M200 1100h700q124 0 212 -88t88 -212v-500q0 -124 -88 -212t-212 -88h-700q-124 0 -212 88t-88 212v500q0 124 88 212t212 88zM100 900v-700h900v700h-900zM500 700h-200v-100h200v-300h-300v100h200v100h-200v300h300v-100zM900 700v-300l-100 -100h-200v500h200z M700 700v-300h100v300h-100z',
+  'wizard-check': 'M465 477l571 571q8 8 18 8t17 -8l177 -177q8 -7 8 -17t-8 -18l-783 -784q-7 -8 -17.5 -8t-17.5 8l-384 384q-8 8 -8 18t8 17l177 177q7 8 17 8t18 -8l171 -171q7 -7 18 -7t18 7z',
+};
 
-const get_icon_svg = (name, w = '1.3em', h= '1.2em', color = 'currentColor') => {
-  let content = ''
-  let has_error = false
+const get_icon_svg = (name, options = {}) => {
+  let content = "";
+  let has_error = false;
+
   try {
-    content = list_icon[name]
+    content = list_icon[name];
   } catch (e) {
-    console.error('Parsing error:', e)
-    has_error = true
+    console.error('Parsing error:', e);
+    has_error = true;
   }
-  if (has_error) return ''
-  let icon =`<svg width='${w}' height='${h}' viewBox='0 0 1300 1200'>`
-  icon += "<g transform='translate(30,1200) scale(1, -1)'>";
-  icon += `<path  fill='${color}' d='${content}'></path>`
-  icon += "</g></svg>";
-  return icon
+
+  if (has_error) {
+    return "";
+  }
+
+  const defOptions = {w: '1.3em', h: '1.2em', t: 'translate(30,1200) scale(1, -1)', color: 'currentColor'};
+  options.w = options.w || defOptions.w;
+  options.h = options.h || defOptions.h;
+  options.t = options.t || defOptions.t;
+  options.color = options.color || defOptions.color;
+
+  const icon = [`<svg width='${options.w}' height='${options.h}' viewBox='0 0 1300 1200'>`];
+  icon.push(`<g transform='${options.t}'>`);
+  icon.push(`<path fill='${options.color}' d='${content}'></path>`);
+  icon.push("</g>");
+  icon.push("</svg>");
+
+  return icon.join("\n")
 }
 
 export { get_icon_svg };
