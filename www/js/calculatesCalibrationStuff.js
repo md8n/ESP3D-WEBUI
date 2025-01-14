@@ -528,8 +528,6 @@ function findMaxFitness(measurements) {
   function iterate() {
     const messagesBox = document.getElementById('messages');
     if (stagnantCounter < 1000 && totalCounter < 200000) {
-      //Clear the canvass
-      clearCanvas();
 
       currentGuess = computeLinesFitness(measurements, currentGuess);
 
@@ -539,6 +537,7 @@ function findMaxFitness(measurements) {
       } else {
         stagnantCounter++;
       }
+
       totalCounter++;
       // console.log("Total Counter: " + totalCounter);
       sendCalibrationEvent({
@@ -548,6 +547,8 @@ function findMaxFitness(measurements) {
         totalCounter
       });
 
+      console.log("Should print here");
+      //Every 100 iterations print out the fitness
       if (totalCounter % 100 == 0) {
         messagesBox.textContent += `Fitness: ${(1 / bestGuess.fitness).toFixed(7)} in ${totalCounter}\n`;
         messagesBox.scrollTop = messagesBox.scrollHeight;
@@ -555,9 +556,10 @@ function findMaxFitness(measurements) {
 
       // Schedule the next iteration
       setTimeout(iterate, 0);
-    } else {
+
+    } else { //We have completed the calibration (success or timeout)
       if (1 / bestGuess.fitness < acceptableCalibrationThreshold) {
-        messagesBox.value += '\nWARNING FITNESS TOO LOW. DO NOT USE THESE CALIBRATION VALUES! Should Recalibrate';
+        messagesBox.textContent += '\nWARNING FITNESS TOO LOW. DO NOT USE THESE CALIBRATION VALUES!';
       }
 
       messagesBox.textContent += '\nCalibration values:';
@@ -608,25 +610,29 @@ function findMaxFitness(measurements) {
           onCalibrationButtonsClick('$CAL', 'Calibrate');
         }, 2000);
       } else {
+
         sendCalibrationEvent({
           good: false,
           final: true,
           guess: bestGuess
         }, true);
 
-        log_info("Attempting to compute again");
+        messagesBox.textContent += '\n Restarting';
 
         //Add +-50 to each of the corner anchor points and try again
-        initialGuess.tl.x = initialGuess.tl.x + Math.random() * 100 - 50;
-        initialGuess.tl.y = initialGuess.tl.y + Math.random() * 100 - 50;
-        initialGuess.tr.x = initialGuess.tr.x + Math.random() * 100 - 50;
-        initialGuess.tr.y = initialGuess.tr.y + Math.random() * 100 - 50;
-        initialGuess.br.x = initialGuess.br.x + Math.random() * 100 - 50;
+        initialGuess.tl.x = bestGuess.tl.x + Math.random() * 100 - 50;
+        initialGuess.tl.y = bestGuess.tl.y + Math.random() * 100 - 50;
+        initialGuess.tr.x = bestGuess.tr.x + Math.random() * 100 - 50;
+        initialGuess.tr.y = bestGuess.tr.y + Math.random() * 100 - 50;
+        initialGuess.br.x = bestGuess.br.x + Math.random() * 100 - 50;
 
         //Reset the counters
         stagnantCounter = 0;
         totalCounter = 0;
+
+        //Try again with different starting conditions
         bestGuess = JSON.parse(JSON.stringify(initialGuess));
+        currentGuess = JSON.parse(JSON.stringify(initialGuess));
 
         //Restart the iteration
         setTimeout(iterate, 0);
@@ -647,9 +653,9 @@ function sendCalibrationEvent(dataToSend, log = false) {
   try {
     if (log) {
       console.log(JSON.stringify(dataToSend, null, 2));
-    } else if (dataToSend.totalCounter) {
-      console.log("total counter:", dataToSend.totalCounter);
-    }
+    } //else if (dataToSend.totalCounter) {
+    //   console.log("total counter:", dataToSend.totalCounter);
+    // }
     document.body.dispatchEvent(new CustomEvent(CALIBRATION_EVENT_NAME, {
       bubbles: true,
       cancelable: true,
