@@ -16,6 +16,7 @@ import {
 	SendRealtimeCmd,
 	StartProbeProcess,
 	setSpindleSpeed,
+	translate_text_item,
 	setHTML,
 	get_icon_svg,
 } from "./common.js";
@@ -81,7 +82,7 @@ const grblpanel = () => {
 
 	setHTML("grblspindle_rew", `On Rew${get_icon_svg("triangle-left")}`);
 	setHTML("grblspindle_fwd", `On Fwd${get_icon_svg("triangle-right")}`);
-	setHTML("grblspindle_fwd", `Off${get_icon_svg("stop")}`);
+	setHTML("grblspindle_off", `Off${get_icon_svg("stop")}`);
 
 	const iconPlayOptions = {h: "1.4em", w: "1.3em", t: "translate(50,1200) scale(1,-1)", color: "black"};
 	setHTML("FFastBack", get_icon_svg("fast-backward", iconPlayOptions));
