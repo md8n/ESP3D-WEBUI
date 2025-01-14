@@ -1066,8 +1066,10 @@ function jogClick(name) {
 // biome-ignore lint/style/useConst: <explanation>
 let isInputFocused = false;
 function tabletIsActive() {
-  return id("tablettab").style.display !== "none";
+  const elem = id("tablettab");
+  return !elem ? false : elem.style.display !== "none";
 }
+
 function handleKeyDown(event) {
   // When we are in a modal input field like the MDI text boxes
   // or the numeric entry boxes, disable keyboard jogging so those

@@ -2,9 +2,6 @@ import {
 	Common,
 	get_icon_svg,
 	conErr,
-	displayBlock,
-	displayInline,
-	displayNone,
 	getChecked,
 	id,
 	setChecked,
@@ -24,7 +21,6 @@ let interval_position = -1;
 const init_controls_panel = () => {
 	loadmacrolist();
 };
-
 
 /** Set up the event handlers for the Controls Panel */
 const ControlsPanel = () => {

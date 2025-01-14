@@ -1,15 +1,26 @@
 // Display the XY-plane projection of a GCode toolpath on a 2D canvas
 import { Common, getValue, id, MPOS, WPOS, Toolpath } from "./common.js";
 
-const scale = window.devicePixelRatio;
-const width = window.innerWidth;
-const tp_canvas = id("small-toolpath");
-if (tp_canvas) {
-	tp_canvas.width = width * scale;
-	tp_canvas.height = (width / 2) * scale;
+let tpc = null;
+const tpCanvas = () => {
+	if (!tpc) {
+		const elem = id("small-toolpath");
+		if (!elem) {
+			return null;
+		}
+		tpc = elem;
+
+		const scale = window.devicePixelRatio;
+		const width = window.innerWidth;
+
+		tpc.width = width * scale;
+		tpc.height = (width / 2) * scale;
+	}
+
+	return tpc;
 }
-const tp = tp_canvas.getContext("2d", { willReadFrequently: true });
-let tpRect;
+
+const tp = tpc ? tpc.getContext("2d", { willReadFrequently: true }) : {};
 
 tp.lineWidth = 0.1;
 tp.lineCap = "round";
@@ -26,266 +37,258 @@ const blY = 0;
 const brX = 3505;
 const brY = 0;
 
-//Draw buttons
-const tlC = document.getElementById("tlBtn").getContext("2d");
-tlC.fillStyle = "#b69fcb";
-tlC.fillRect(0, 0, 500, 500);
-tlC.beginPath();
-tlC.moveTo(90, 40);
-tlC.lineTo(90, 140);
-tlC.lineTo(230, 40);
-tlC.lineTo(90, 40);
-tlC.closePath();
-tlC.lineWidth = 5;
-tlC.strokeStyle = "white";
-tlC.fillStyle = "white";
-tlC.fill();
-tlC.stroke();
+const get2DContext = (id) => {
+	const btnElem = document.getElementById(id)
+	if (!btnElem) {
+		return null;
+	}
+	return btnElem.getContext("2d");
+}
 
-const trC = document.getElementById("trBtn").getContext("2d");
-trC.fillStyle = "#b69fcb";
-trC.fillRect(0, 0, 500, 500);
-trC.beginPath();
-trC.moveTo(90, 40);
-trC.lineTo(230, 140);
-trC.lineTo(230, 40);
-trC.lineTo(90, 40);
-trC.closePath();
-trC.lineWidth = 5;
-trC.strokeStyle = "white";
-trC.fillStyle = "white";
-trC.fill();
-trC.stroke();
+/** Draw buttons */
+const drawBtn = (btnDef) => {
+	const bec = get2DContext(btnDef.id);
+	if (!bec) {
+		return;
+	}
 
-const blC = document.getElementById("blBtn").getContext("2d");
-blC.fillStyle = "#b69fcb";
-blC.fillRect(0, 0, 500, 500);
-blC.beginPath();
-blC.moveTo(90, 40);
-blC.lineTo(230, 140);
-blC.lineTo(90, 140);
-blC.lineTo(90, 40);
-blC.closePath();
-blC.lineWidth = 5;
-blC.strokeStyle = "white";
-blC.fillStyle = "white";
-blC.fill();
-blC.stroke();
+	bec.fillStyle = btnDef.fillStyle;
+	bec.fillRect(0, 0, 500, 500);
+	bec.beginPath();
+	bec.moveTo(...btnDef.path[0]);
+	for (let ix = 1; ix < btnDef.path.length; ix++) {
+		bec.lineTo(...btnDef.path[ix]);
+	}
+	bec.closePath();
+	bec.lineWidth = 5;
+	bec.strokeStyle = "white";
+	bec.fillStyle = "white";
+	bec.fill();
+	bec.stroke();
 
-const brC = document.getElementById("brBtn").getContext("2d");
-brC.fillStyle = "#b69fcb";
-brC.fillRect(0, 0, 500, 500);
-brC.beginPath();
-brC.moveTo(90, 140);
-brC.lineTo(230, 140);
-brC.lineTo(230, 40);
-brC.lineTo(90, 140);
-brC.closePath();
-brC.lineWidth = 5;
-brC.strokeStyle = "white";
-brC.fillStyle = "white";
-brC.fill();
-brC.stroke();
+	return bec;
+}
 
-const upC = document.getElementById("upBtn").getContext("2d");
-upC.fillStyle = "#9d88c0";
-upC.fillRect(0, 0, 500, 500);
-// #rect441
-upC.beginPath();
-upC.fillStyle = "white";
-upC.lineWidth = 1;
-upC.rect(60 + 49.21384, 99.622299, 93.976021, 74.721062);
-upC.fill();
+const btnDefs = [
+	{ name: "tlC", id: "tlBtn", fill: "#b69fcb", path: [[90, 40], [90, 140], [230, 40], [90, 40]] },
+	{ name: "trC", id: "trBtn", fill: "#b69fcb", path: [[90, 40], [230, 140], [230, 40], [90, 40]] },
+	{ name: "blC", id: "blBtn", fill: "#b69fcb", path: [[90, 40], [230, 140], [90, 140], [90, 40]] },
+	{ name: "brC", id: "brBtn", fill: "#b69fcb", path: [[90, 140], [230, 140], [230, 40], [90, 140]] },
+]
 
-// #path608
-upC.beginPath();
-upC.strokeStyle = "white";
-upC.lineWidth = 1;
-upC.lineCap = "butt";
-upC.lineJoin = "miter";
-upC.moveTo(60 + 5.109692, 104.66681);
-upC.lineTo(60 + 94.67922, 4.145211);
-upC.lineTo(60 + 189.30507, 103.959);
-upC.lineTo(60 + 5.109692, 104.66681);
-upC.closePath();
-upC.stroke();
-upC.fill();
+const tlC = drawBtn(btnDefs.find((btnDef) => btnDef.name === "tlC"));
+const trC = drawBtn(btnDefs.find((btnDef) => btnDef.name === "trC"));
+const blC = drawBtn(btnDefs.find((btnDef) => btnDef.name === "blC"));
+const brC = drawBtn(btnDefs.find((btnDef) => btnDef.name === "brC"));
 
-const dnC = document.getElementById("dnBtn").getContext("2d");
-dnC.fillStyle = "#9d88c0";
-dnC.fillRect(0, 0, 500, 500);
-// #rect441
-dnC.save();
-dnC.transform(1.0, 0.0, 0.0, -1.0, 0.0, 0.0);
-dnC.fillStyle = "white";
-dnC.lineWidth = 1;
-dnC.rect(60 + 49.21384, -75.901474, 93.976021, 74.721062);
-dnC.fill();
-dnC.restore();
+const upC = get2DContext("upBtn");
+if (upC) {
+	upC.fillStyle = "#9d88c0";
+	upC.fillRect(0, 0, 500, 500);
+	// #rect441
+	upC.beginPath();
+	upC.fillStyle = "white";
+	upC.lineWidth = 1;
+	upC.rect(60 + 49.21384, 99.622299, 93.976021, 74.721062);
+	upC.fill();
 
-// #path608
-dnC.beginPath();
-dnC.strokeStyle = "white";
-dnC.fillStyle = "white";
-dnC.lineWidth = 1;
-dnC.lineCap = "butt";
-dnC.lineJoin = "miter";
-dnC.moveTo(60 + 5, 70 - 20);
-dnC.lineTo(60 + 94, 171 - 20);
-dnC.lineTo(60 + 189, 71 - 20);
-dnC.lineTo(60 + 5, 70 - 20);
-dnC.closePath();
-dnC.stroke();
-dnC.fill();
+	// #path608
+	upC.beginPath();
+	upC.strokeStyle = "white";
+	upC.lineWidth = 1;
+	upC.lineCap = "butt";
+	upC.lineJoin = "miter";
+	upC.moveTo(60 + 5.109692, 104.66681);
+	upC.lineTo(60 + 94.67922, 4.145211);
+	upC.lineTo(60 + 189.30507, 103.959);
+	upC.lineTo(60 + 5.109692, 104.66681);
+	upC.closePath();
+	upC.stroke();
+	upC.fill();
+}
 
-const rC = document.getElementById("rBtn").getContext("2d");
-rC.fillStyle = "#9d88c0";
-rC.fillRect(0, 0, 500, 500);
-// #g1100
-rC.save();
-rC.transform(0.0, 1.0, -1.0, 0.0, 187.481, 0.27369);
+const dnC = get2DContext("dnBtn");
+if (dnC) {
+	dnC.fillStyle = "#9d88c0";
+	dnC.fillRect(0, 0, 500, 500);
+	// #rect441
+	dnC.save();
+	dnC.transform(1.0, 0.0, 0.0, -1.0, 0.0, 0.0);
+	dnC.fillStyle = "white";
+	dnC.lineWidth = 1;
+	dnC.rect(60 + 49.21384, -75.901474, 93.976021, 74.721062);
+	dnC.fill();
+	dnC.restore();
 
-// #rect441
-rC.fillStyle = "white";
-rC.lineWidth = 1;
-rC.rect(-20 + 49.21384, 99.622299 - 80, 93.976021, 74.721062);
-rC.fill();
+	// #path608
+	dnC.beginPath();
+	dnC.strokeStyle = "white";
+	dnC.fillStyle = "white";
+	dnC.lineWidth = 1;
+	dnC.lineCap = "butt";
+	dnC.lineJoin = "miter";
+	dnC.moveTo(60 + 5, 70 - 20);
+	dnC.lineTo(60 + 94, 171 - 20);
+	dnC.lineTo(60 + 189, 71 - 20);
+	dnC.lineTo(60 + 5, 70 - 20);
+	dnC.closePath();
+	dnC.stroke();
+	dnC.fill();
+}
 
-// #path608
-rC.beginPath();
-rC.strokeStyle = "white";
-rC.lineWidth = 1;
-rC.lineCap = "butt";
-rC.lineJoin = "miter";
-rC.moveTo(-20 + 5.109692, 104.66681 - 80);
-rC.lineTo(-20 + 94.67922, 4.145213 - 80);
-rC.lineTo(-20 + 189.30507, 103.959 - 80);
-rC.closePath();
-rC.stroke();
-rC.fill();
-rC.restore();
+const rC = get2DContext("rBtn");
+if (rC) {
+	rC.fillStyle = "#9d88c0";
+	rC.fillRect(0, 0, 500, 500);
+	// #g1100
+	rC.save();
+	rC.transform(0.0, 1.0, -1.0, 0.0, 187.481, 0.27369);
+	// #rect441
+	rC.fillStyle = "white";
+	rC.lineWidth = 1;
+	rC.rect(-20 + 49.21384, 99.622299 - 80, 93.976021, 74.721062);
+	rC.fill();
 
-const lC = document.getElementById("lBtn").getContext("2d");
-lC.fillStyle = "#9d88c0";
-lC.fillRect(0, 0, 500, 500);
-// #g1100
-lC.save();
-lC.transform(0.0, 1.0, 1.0, 0.0, 11.9575, 0.27369);
+	// #path608
+	rC.beginPath();
+	rC.strokeStyle = "white";
+	rC.lineWidth = 1;
+	rC.lineCap = "butt";
+	rC.lineJoin = "miter";
+	rC.moveTo(-20 + 5.109692, 104.66681 - 80);
+	rC.lineTo(-20 + 94.67922, 4.145213 - 80);
+	rC.lineTo(-20 + 189.30507, 103.959 - 80);
+	rC.closePath();
+	rC.stroke();
+	rC.fill();
+	rC.restore();
+}
 
-// #rect441
-lC.fillStyle = "white";
-lC.lineWidth = 1;
-lC.rect(-20 + 49.21384, 99.622299, 93.976021, 74.721062);
-lC.fill();
+const lC = get2DContext("lBtn");
+if (lC) {
+	lC.fillStyle = "#9d88c0";
+	lC.fillRect(0, 0, 500, 500);
+	// #g1100
+	lC.save();
+	lC.transform(0.0, 1.0, 1.0, 0.0, 11.9575, 0.27369);
+	// #rect441
+	lC.fillStyle = "white";
+	lC.lineWidth = 1;
+	lC.rect(-20 + 49.21384, 99.622299, 93.976021, 74.721062);
+	lC.fill();
 
-// #path608
-lC.beginPath();
-lC.strokeStyle = "white";
-lC.lineWidth = 1;
-lC.lineCap = "butt";
-lC.lineJoin = "miter";
-lC.moveTo(-20 + 5.109692, 104.66681);
-lC.lineTo(-20 + 94.67922, 4.145213);
-lC.lineTo(-20 + 189.30507, 103.959);
-lC.closePath();
-lC.stroke();
-lC.fill();
-lC.restore();
+	// #path608
+	lC.beginPath();
+	lC.strokeStyle = "white";
+	lC.lineWidth = 1;
+	lC.lineCap = "butt";
+	lC.lineJoin = "miter";
+	lC.moveTo(-20 + 5.109692, 104.66681);
+	lC.lineTo(-20 + 94.67922, 4.145213);
+	lC.lineTo(-20 + 189.30507, 103.959);
+	lC.closePath();
+	lC.stroke();
+	lC.fill();
+	lC.restore();
+}
 
-const hC = document.getElementById("hBtn").getContext("2d");
+const hC = get2DContext("hBtn");
+if (hC) {
+	const xO = 55;
+	const yO = -45;
 
-const xO = 55;
-const yO = -45;
+	// #path5094
+	hC.beginPath();
+	hC.fillStyle = "rgb(183, 161, 208)";
+	hC.strokeStyle = "rgb(0, 0, 0)";
+	hC.lineWidth = 0.472615;
+	hC.lineCap = "butt";
+	hC.lineJoin = "miter";
+	hC.moveTo(xO + 55.719343, 197.54965 + yO);
+	hC.lineTo(xO + 152.15065, 197.54965 + yO);
+	hC.lineTo(xO + 152.60952, 74.078285 + yO);
+	hC.lineTo(xO + 132.40481, 73.680279 + yO);
+	hC.lineTo(xO + 131.39342, 110.31085 + yO);
+	hC.lineTo(xO + 103.47573, 84.035976 + yO);
+	hC.lineTo(xO + 54.341657, 131.43307 + yO);
+	hC.fill();
+	hC.stroke();
 
-// #path5094
-hC.beginPath();
-hC.fillStyle = "rgb(183, 161, 208)";
-hC.strokeStyle = "rgb(0, 0, 0)";
-hC.lineWidth = 0.472615;
-hC.lineCap = "butt";
-hC.lineJoin = "miter";
-hC.moveTo(xO + 55.719343, 197.54965 + yO);
-hC.lineTo(xO + 152.15065, 197.54965 + yO);
-hC.lineTo(xO + 152.60952, 74.078285 + yO);
-hC.lineTo(xO + 132.40481, 73.680279 + yO);
-hC.lineTo(xO + 131.39342, 110.31085 + yO);
-hC.lineTo(xO + 103.47573, 84.035976 + yO);
-hC.lineTo(xO + 54.341657, 131.43307 + yO);
-hC.fill();
-hC.stroke();
+	// #rect1898
+	hC.beginPath();
+	hC.fillStyle = "rgb(218, 208, 230)";
+	hC.lineWidth = 0.472615;
+	hC.rect(xO + 74.087212, 146.1696 + yO, 29.84779, 50.981743);
+	hC.fill();
 
-// #rect1898
-hC.beginPath();
-hC.fillStyle = "rgb(218, 208, 230)";
-hC.lineWidth = 0.472615;
-hC.rect(xO + 74.087212, 146.1696 + yO, 29.84779, 50.981743);
-hC.fill();
-
-// #path13430
-hC.beginPath();
-hC.fillStyle = "rgb(151, 132, 181)";
-hC.strokeStyle = "rgb(0, 0, 0)";
-hC.lineWidth = 0.472615;
-hC.lineCap = "butt";
-hC.lineJoin = "miter";
-hC.moveTo(xO + 103.47573, 84.035976 + yO);
-hC.lineTo(xO + 167.30417, 144.97477 + yO);
-hC.lineTo(xO + 181.08009, 132.22934 + yO);
-hC.lineTo(xO + 103.01658, 56.951581 + yO);
-hC.lineTo(xO + 24.953156, 131.43276 + yO);
-hC.lineTo(xO + 40.565818, 144.97477 + yO);
-hC.fill();
-hC.stroke();
+	// #path13430
+	hC.beginPath();
+	hC.fillStyle = "rgb(151, 132, 181)";
+	hC.strokeStyle = "rgb(0, 0, 0)";
+	hC.lineWidth = 0.472615;
+	hC.lineCap = "butt";
+	hC.lineJoin = "miter";
+	hC.moveTo(xO + 103.47573, 84.035976 + yO);
+	hC.lineTo(xO + 167.30417, 144.97477 + yO);
+	hC.lineTo(xO + 181.08009, 132.22934 + yO);
+	hC.lineTo(xO + 103.01658, 56.951581 + yO);
+	hC.lineTo(xO + 24.953156, 131.43276 + yO);
+	hC.lineTo(xO + 40.565818, 144.97477 + yO);
+	hC.fill();
+	hC.stroke();
+}
 
 //---------------------------
 
-const playC = document.getElementById("playBtn").getContext("2d");
-playC.fillStyle = "#4aa85c";
-playC.fillRect(0, 0, 500, 500);
+const playC = get2DContext("playBtn");
+if (playC) {
+	playC.fillStyle = "#4aa85c";
+	playC.fillRect(0, 0, 500, 500);
+	playC.beginPath();
+	playC.strokeStyle = "white";
+	playC.fillStyle = "white";
+	playC.lineWidth = 1;
+	playC.lineCap = "butt";
+	playC.lineJoin = "miter";
+	playC.moveTo(60 + 44.053484, 147.60826 - 35);
+	playC.lineTo(60 + 44.053484, 68.502834 - 35);
+	playC.lineTo(60 + 112.31147, 106.82861 - 35);
+	playC.closePath;
+	playC.fill();
+	playC.stroke();
+}
 
-playC.beginPath();
-playC.strokeStyle = "white";
-playC.fillStyle = "white";
-playC.lineWidth = 1;
-playC.lineCap = "butt";
-playC.lineJoin = "miter";
-playC.moveTo(60 + 44.053484, 147.60826 - 35);
-playC.lineTo(60 + 44.053484, 68.502834 - 35);
-playC.lineTo(60 + 112.31147, 106.82861 - 35);
-playC.closePath;
-playC.fill();
-playC.stroke();
+const pauseC = get2DContext("pauseBtn");
+if (pauseC) {
+	pauseC.fillStyle = "#efbb33";
+	pauseC.fillRect(0, 0, 500, 500);
+	// #rect1967
+	pauseC.beginPath();
+	pauseC.fillStyle = "white";
+	pauseC.lineWidth = 1;
+	pauseC.rect(75 + 44, 66 - 35, 20, 81);
+	pauseC.fill();
+	// #rect1967-4
+	pauseC.beginPath();
+	pauseC.fillStyle = "white";
+	pauseC.lineWidth = 1;
+	pauseC.rect(75 + 75, 66 - 35, 20, 81);
+	pauseC.fill();
+}
 
-const pauseC = document.getElementById("pauseBtn").getContext("2d");
-pauseC.fillStyle = "#efbb33";
-pauseC.fillRect(0, 0, 500, 500);
-
-// #rect1967
-pauseC.beginPath();
-pauseC.fillStyle = "white";
-pauseC.lineWidth = 1;
-pauseC.rect(75 + 44, 66 - 35, 20, 81);
-pauseC.fill();
-
-// #rect1967-4
-pauseC.beginPath();
-pauseC.fillStyle = "white";
-pauseC.lineWidth = 1;
-pauseC.rect(75 + 75, 66 - 35, 20, 81);
-pauseC.fill();
-
-const stopC = document.getElementById("stopBtn").getContext("2d");
-stopC.fillStyle = "#cd654c";
-stopC.fillRect(0, 0, 500, 500);
-
-stopC.strokeStyle = "white";
-stopC.fillStyle = "white";
-stopC.beginPath();
-stopC.fillStyle = "white";
-stopC.lineWidth = 1;
-stopC.rect(60 + 44, 65 - 35, 100, 80);
-stopC.fill();
-stopC.stroke();
+const stopC = get2DContext("stopBtn");
+if (stopC) {
+	stopC.fillStyle = "#cd654c";
+	stopC.fillRect(0, 0, 500, 500);
+	stopC.strokeStyle = "white";
+	stopC.fillStyle = "white";
+	stopC.beginPath();
+	stopC.fillStyle = "white";
+	stopC.lineWidth = 1;
+	stopC.rect(60 + 44, 65 - 35, 100, 80);
+	stopC.fill();
+	stopC.stroke();
+}
 
 let tpUnits = "G21";
 
@@ -540,17 +543,21 @@ const xToPixel = (x) => scaler * x + xOffset;
 const yToPixel = (y) => -scaler * y + yOffset;
 
 const clearCanvas = () => {
-	// Reset the transform and clear the tp_canvas
+	const tpc = tpCanvas();
+	if (!tpc) {
+		return;
+	}
+	// Reset the transform and clear the tpCanvas
 	tp.setTransform(1, 0, 0, 1, 0, 0);
 
 	//    if (tpRect == undefined) {
-	const tpRect = tp_canvas.parentNode.getBoundingClientRect();
-	// tp_canvas.width = tpRect.width ? tpRect.width : 400;
-	// tp_canvas.height = tpRect.height ? tpRect.height : 400;
+	const tpRect = tpc.parentNode.getBoundingClientRect();
+	// tpc.width = tpRect.width ? tpRect.width : 400;
+	// tpc.height = tpRect.height ? tpRect.height : 400;
 	//    }
 
 	tp.fillStyle = "white";
-	tp.fillRect(0, 0, tp_canvas.width, tp_canvas.height);
+	tp.fillRect(0, 0, tpc.width, tpc.height);
 };
 
 const transformCanvas = () => {
@@ -558,10 +565,16 @@ const transformCanvas = () => {
 
 	clearCanvas();
 
+	const tpc = tpCanvas();
+
 	let inset;
 	if (!bboxIsSet) {
-		// imageWidth = tp_canvas.width;
-		// imageHeight = tp_canvas.height;
+		// const tpc = tpCanvas();
+		// if (tpc) {
+		// imageWidth = tpc.width;
+		// imageHeight = tpc.height;
+		// }
+
 		inset = 0;
 		scaler = 1;
 		xOffset = 0;
@@ -579,50 +592,52 @@ const transformCanvas = () => {
 	}
 	const shrink = 0.9;
 	inset = 5;
-	const scaleX = (tp_canvas.width - inset * 2) / imageWidth;
-	const scaleY = (tp_canvas.height - inset * 2) / imageHeight;
-	const minScale = Math.min(scaleX, scaleY);
+	if (tpc) {
+		const scaleX = (tpc.width - inset * 2) / imageWidth;
+		const scaleY = (tpc.height - inset * 2) / imageHeight;
+		const minScale = Math.min(scaleX, scaleY);
 
-	scaler = minScale * shrink;
-	if (scaler < 0) {
-		scaler = -scaler;
+		scaler = minScale * shrink;
+		if (scaler < 0) {
+			scaler = -scaler;
+		}
+		xOffset = inset - tpBbox.min.x * scaler;
+		yOffset = tpc.height - inset - tpBbox.min.y * -scaler;
+
+		// Canvas coordinates of image bounding box top and right
+		const imageTop = scaler * imageHeight;
+		const imageRight = scaler * imageWidth;
+
+		// Show the X and Y limit coordinates of the GCode program.
+		// We do this before scaling because after we invert the Y coordinate,
+		// text would be displayed upside-down.
+		// tp.fillStyle = "black";
+		// tp.font = "14px Ariel";
+		// tp.textAlign = "center";
+		// tp.textBaseline = "bottom";
+		// tp.fillText(formatLimit(tpBbox.min.y), imageRight/2, tpc.height-inset);
+		// tp.textBaseline = "top";
+		// tp.fillText(formatLimit(tpBbox.max.y), imageRight/2, tpc.height-inset - imageTop);
+		// tp.textAlign = "left";
+		// tp.textBaseline = "center";
+		// tp.fillText(formatLimit(tpBbox.min.x), inset, tpc.height-inset - imageTop/2);
+		// tp.textAlign = "right";
+		// tp.textBaseline = "center";
+		// tp.fillText(formatLimit(tpBbox.max.x), inset+imageRight, tpc.height-inset - imageTop/2);
+		// Transform the path coordinate system so the image fills the tpc
+		// with a small inset, and +Y goes upward.
+		// The net transform from image space (x,y) to pixel space (x',y') is:
+		//   x' =  scaler*x + xOffset
+		//   y' = -scaler*y + yOffset
+		// We use setTransform() instead of a sequence of scale() and translate() calls
+		// because we need to perform the transform manually for getImageData(), which
+		// uses pixel coordinates, and there is no standard way to read back the current
+		// transform matrix.
+
+		tp.setTransform(scaler, 0, 0, -scaler, xOffset, yOffset);
+
+		tp.lineWidth = 0.5 / scaler;
 	}
-	xOffset = inset - tpBbox.min.x * scaler;
-	yOffset = tp_canvas.height - inset - tpBbox.min.y * -scaler;
-
-	// Canvas coordinates of image bounding box top and right
-	const imageTop = scaler * imageHeight;
-	const imageRight = scaler * imageWidth;
-
-	// Show the X and Y limit coordinates of the GCode program.
-	// We do this before scaling because after we invert the Y coordinate,
-	// text would be displayed upside-down.
-	// tp.fillStyle = "black";
-	// tp.font = "14px Ariel";
-	// tp.textAlign = "center";
-	// tp.textBaseline = "bottom";
-	// tp.fillText(formatLimit(tpBbox.min.y), imageRight/2, tp_canvas.height-inset);
-	// tp.textBaseline = "top";
-	// tp.fillText(formatLimit(tpBbox.max.y), imageRight/2, tp_canvas.height-inset - imageTop);
-	// tp.textAlign = "left";
-	// tp.textBaseline = "center";
-	// tp.fillText(formatLimit(tpBbox.min.x), inset, tp_canvas.height-inset - imageTop/2);
-	// tp.textAlign = "right";
-	// tp.textBaseline = "center";
-	// tp.fillText(formatLimit(tpBbox.max.x), inset+imageRight, tp_canvas.height-inset - imageTop/2);
-	// Transform the path coordinate system so the image fills the tp_canvas
-	// with a small inset, and +Y goes upward.
-	// The net transform from image space (x,y) to pixel space (x',y') is:
-	//   x' =  scaler*x + xOffset
-	//   y' = -scaler*y + yOffset
-	// We use setTransform() instead of a sequence of scale() and translate() calls
-	// because we need to perform the transform manually for getImageData(), which
-	// uses pixel coordinates, and there is no standard way to read back the current
-	// transform matrix.
-
-	tp.setTransform(scaler, 0, 0, -scaler, xOffset, yOffset);
-
-	tp.lineWidth = 0.5 / scaler;
 
 	drawOrigin(imageWidth * 0.04);
 };
@@ -976,7 +991,10 @@ const updateGcodeViewerAngle = () => {
 	displayer.cycleCameraAngle(gcode, arrayToXYZ(WPOS()));
 };
 
-tp_canvas.addEventListener("mouseup", updateGcodeViewerAngle);
+if (tpc) {
+	tpc.addEventListener("mouseup", updateGcodeViewerAngle);
+}
+
 const refreshGcode = () => {
 	const gcode = getValue("tablettab_gcode");
 	// This call has one too many parameters, no idea how it was supposed to work
