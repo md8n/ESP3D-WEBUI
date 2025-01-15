@@ -8,10 +8,11 @@ var WCO = undefined
 var OVR = { feed: undefined, rapid: undefined, spindle: undefined }
 var MPOS = [0, 0, 0]
 var WPOS = [0, 0, 0]
-var grblaxis = 3
-var grblzerocmd = 'X0 Y0 Z0'
-var feedrate = [0, 0, 0, 0, 0, 0]
-var last_axis_letter = 'Z'
+var grblaxis = 3;
+var grblzerocmd = 'X0 Y0 Z0';
+/** Feed rate for 'each' axis. Note this does not include the probe feed rate */
+var axis_feedrate = [0, 0, 0, 0, 0, 0];
+var last_axis_letter = 'Z';
 
 var axisNames = ['x', 'y', 'z', 'a', 'b', 'c']
 
@@ -31,68 +32,82 @@ function setAutocheck(flag) {
   setChecked(autocheck, flag)
 }
 
-function build_axis_selection() {
-  var html = "<select class='form-control wauto' id='control_select_axis' onchange='control_changeaxis()' >"
+/** Build the axis selection dropdown, if there are more than 3 axes */
+const build_axis_selection = () => {
+  const minAxisCount = 3;
+  if (grblaxis < minAxisCount) {
+    return;
+  }
+
+  const axisOpts = [
+    '<option value="Z" selected>Z</option>',
+    '<option value="A">A</option>',
+    '<option value="B">B</option>',
+    '<option value="C">C</option>',
+  ];
+
+  const html = ["<select class='form-control wauto' id='control_select_axis' onchange='control_changeaxis()' >"];
   for (var i = 3; i <= grblaxis; i++) {
-    var letter
-    if (i == 3) letter = 'Z'
-    else if (i == 4) letter = 'A'
-    else if (i == 5) letter = 'B'
-    else if (i == 6) letter = 'C'
-    html += "<option value='" + letter + "'"
-    if (i == 3) html += ' selected '
-    html += '>'
-    html += letter
-    html += '</option>\n'
+    html.push(axisOpts[i - 3]);
   }
+  html.push("</select>");
 
-  html += '</select>\n'
-  if (grblaxis > 3) {
-    setHTML('axis_selection', html)
-    setHTML('axis_label', translate_text_item('Axis') + ':')
-    setClickability('axis_selection', true)
-  }
+  setHTML("axis_selection", html.join("\n"));
+  setHTML("axis_label", `${translate_text_item('Axis')}:`);
+  setClickability("axis_selection", true);
 }
 
+/** Change the selected axis. Relevant for axes "Z", "A", "B", "C". Not relevant for axes "X" or "Y" */
 function control_changeaxis() {
-  const letter = getValue('control_select_axis')
-  setHTML('axisup', `+${letter}`)
-  setHTML('axisdown', `-${letter}`)
-  setHTML('homeZlabel', ` ${letter} `)
+  const letter = getValue('control_select_axis');
+  setHTML('axisup', `+${letter}`);
+  setHTML('axisdown', `-${letter}`);
+  setHTML('homeZlabel', ` ${letter} `);
+
+  const getLastNonXYFeedRate = getValue('controlpanel_z_feedrate');
   switch (last_axis_letter) {
-    case 'Z':
-      axis_feedrate[2] = getValue('control_z_velocity')
-      break
-    case 'A':
-      axis_feedrate[3] = getValue('control_a_velocity')
-      break
-    case 'B':
-      axis_feedrate[4] = getValue('control_b_velocity')
-      break
-    case 'C':
-      axis_feedrate[5] = getValue('control_c_velocity')
-      break
+    case 'Z': axis_feedrate[2] = getLastNonXYFeedRate; break;
+    case 'A': axis_feedrate[3] = getLastNonXYFeedRate; break;
+    case 'B': axis_feedrate[4] = getLastNonXYFeedRate; break;
+    case 'C': axis_feedrate[5] = getLastNonXYFeedRate; break;
   }
 
-  last_axis_letter = letter
-  switch (last_axis_letter) {
-    case 'Z':
-      setValue('control_z_velocity', axis_feedrate[2])
-      break
-    case 'A':
-      setValue('control_a_velocity', axis_feedrate[3])
-      break
-    case 'B':
-      setValue('control_b_velocity', axis_feedrate[4])
-      break
-    case 'C':
-      setValue('control_c_velocity', axis_feedrate[5])
-      break
+  // Change over to the new axis that's been selected
+  switch (letter) {
+    case 'Z': setValue('controlpanel_z_feedrate', axis_feedrate[2]); break;
+    case 'A': setValue('controlpanel_z_feedrate', axis_feedrate[3]); break;
+    case 'B': setValue('controlpanel_z_feedrate', axis_feedrate[4]); break;
+    case 'C': setValue('controlpanel_z_feedrate', axis_feedrate[5]); break;
   }
+
+  // And keep a record of it
+  last_axis_letter = letter;
 }
 
+const floatOrZero = (value) => {
+  const val = Number.parseFloat(value);
+  return isNaN(val) ? 0.0 : val;
+}
+
+/** This must be done after the preferences have been set */
 function init_grbl_panel() {
-  grbl_set_probe_detected(false)
+  const prefList = (typeof preferencesList !== "undefined" && Array.isArray(preferenceList) && preferenceList.length > 0)
+    ? preferenceslist[0]
+    : default_preferenceslist[0];
+
+  // Feed rate for X and Y Axes
+  axis_feedrate[0] = floatOrZero(prefList.xy_feedrate);
+  axis_feedrate[1] = floatOrZero(prefList.xy_feedrate);
+  
+  axis_feedrate[2] = floatOrZero(prefList.z_feedrate);
+  axis_feedrate[3] = floatOrZero(prefList.a_feedrate);
+  axis_feedrate[4] = floatOrZero(prefList.b_feedrate);
+  axis_feedrate[5] = floatOrZero(prefList.c_feedrate);
+
+  setValue('controlpanel_xy_feedrate', axis_feedrate[0]);
+  setValue('controlpanel_z_feedrate', axis_feedrate[2]);
+
+  grbl_set_probe_detected(false);
 }
 
 function grbl_clear_status() {

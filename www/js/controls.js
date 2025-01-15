@@ -19,8 +19,8 @@ const ControlsPanel = () => {
 	id("zero_b_btn").addEventListener("click", (event) => SendZerocommand("B0"));
 	id("zero_c_btn").addEventListener("click", (event) => SendZerocommand("C0"));
 
-	id("controlpanel_xy_feedrate").addEventListener("change", (event) => onXYvelocityChange());
-	id("controlpanel_z_feedrate").addEventListener("change", (event) => onZvelocityChange());
+	id("controlpanel_xy_feedrate").addEventListener("change", (event) => onXYFeedRateChange());
+	id("controlpanel_z_feedrate").addEventListener("change", (event) => onNonXYFeedRateChange());
 
 	id("motor_off_control").addEventListener("click", (event) => control_motorsOff());
 };
@@ -31,7 +31,7 @@ function hideAxiscontrols() {
 	displayBlock("CornerZ");
 	displayNone("control_z_position_display");
 	displayNone("control_zm_position_row");
-	displayNone("z_velocity_display");
+	displayNone("z_feedrate_display");
 }
 
 function showAxiscontrols() {
@@ -40,7 +40,7 @@ function showAxiscontrols() {
 	displayBlock("HomeZ");
 	displayBlock("control_z_position_display");
 	displayTable("control_zm_position_row");
-	displayInline("z_velocity_display");
+	displayInline("z_feedrate_display");
 }
 
 function loadmacrolist() {
@@ -171,7 +171,7 @@ function SendHomecommand(cmd) {
 		case 'G28': cmd = '$H'; break;
 		case 'G28 X0': cmd = '$HX'; break;
 		case 'G28 Y0': cmd = '$HY'; break;
-		case 'G28 Z0': cmd = (grblaxis > 3) ? `$H${id("control_select_axis").value}` : '$HZ'; break;
+		case 'G28 Z0': cmd = (grblaxis > 3) ? `$H${getValue("control_select_axis") || ""}` : '$HZ'; break;
 		default: cmd = '$H'; break;
 	}
 
@@ -183,31 +183,38 @@ function SendZerocommand(cmd) {
 	SendPrinterCommand(command, true, get_Position);
 }
 
-const buildFeedRateValueDef = (isZAxis) => {
+
+const buildValueDef = (label, defValue) => {
 	return {
 		"valueType": "float",
 		"units": "mm/min",
-		"label": isZAxis ? "Z axis feedrate" : "XY axis feedrate",
+		"label": label,
 		"min": 0.00001,
-		"defValue": 0,
+		"defValue": defValue,
 	};
 }
 
+const buildDistanceValueDef = () => buildValueDef("Distance", 0);
+const buildFeedRateValueDef = () => buildValueDef("Axis feedrate", 1);
+
+/** Get the Relevant Feed Rate for the Axis. It does not have to be the selected Axis */
+const GetAxisFeedRate = (axis = "XY") => {
+	switch (axis.toUpperCase()) {
+		case "XY": return axis_feedrate[0];
+		case "Z": return axis_feedrate[2];
+		case "A": return axis_feedrate[3];
+		case "B": return axis_feedrate[4];
+		case "C": return axis_feedrate[5];
+		default:
+			// "x", "y", "XY"
+			return axis_feedrate[0];
+	}
+}
+
+/** Get the relevant feed rate for jogging */
 function JogFeedrate(axis) {
 	const isZAxis = axis[0].toUpperCase() === "Z";
-	const valueDef = buildFeedRateValueDef(isZAxis);
-
-	const controlName = isZAxis ? "disZ" : "disM";
-	const elem = id(controlName);
-	const feedrateValue = elem ? elem.innerText : "";
-
-	const errorList = valueIsFloat(feedrateValue, valueDef);
-	if (errorList.length) {
-		// error text was "Feedrate value must be at least 1 mm/min!"
-		alertdlg(translate_text_item("Out of range"), errorList.join("\n"));
-		return valueDef.defValue;
-	}
-	return Number.parseFloat(feedrateValue);
+	return GetAxisFeedRate(isZAxis ? "Z" : "XY");
 }
 
 /** This is extensively used in the jog dial SVGs */
@@ -216,48 +223,55 @@ function SendJogcommand(cmd, feedrate) {
 		return;
 	}
 
-	const isZAxis = feedrate[0].toUpperCase() === "Z";
-	const valueDef = buildFeedRateValueDef(isZAxis);
-
-	const controlName = isZAxis ? "controlpanel_z_feedrate" : "controlpanel_xy_feedrate";
-	let letter = "Z";
-	let cmd = "";
 	if (grblaxis > 3) {
-		letter = "Axis";
-		valueDef.label = valueDef.label.replace("Z axis", letter);
-		cmd = cmd.replace("Z", id("control_select_axis").value);
+		cmd = cmd.replace("Z", getValue("control_select_axis"));
 	}
 
-	const elem = id(controlName);
-	const feedrateValue = elem ? elem.value : "";
-	const errorList = valueIsFloat(feedrateValue, valueDef);
-
-	if (errorList.length) {
-		// error text was "(something) Feedrate value must be at least 1 mm/min!"
-		alertdlg(translate_text_item("Out of range"), errorList.join("\n"));
-		id(controlName).value = feedrate.startsWith("Z") ? preferenceslist[0].z_feedrate : preferenceslist[0].xy_feedrate ;
-		return;
-	}
+	const feedrateValue = GetAxisFeedRate(feedrate[0].toUpperCase() === "Z" ? getValue("control_select_axis") : "XY");
 
 	const command = `$J=G91 G21 F${feedrateValue} ${cmd}`;
 	console.log(command);
 	SendPrinterCommand(command, true, get_Position);
 }
 
-function onXYvelocityChange() {
-	const feedratevalue = Number.parseFloat(id('control_xy_velocity').value);
-	if (feedratevalue < 1 || feedratevalue > 9999 || Number.isNaN(feedratevalue) || (feedratevalue === null)) {
-		//we could display error but we do not
+const getFeedRateValue = (name) => floatOrZero(getValue(name) || 0);
+
+function control_resetaxis(axis = "") {
+	const letter = !axis ? getValue('control_select_axis') : axis;
+
+	// Change over to the new axis that's been selected
+	switch (letter) {
+		case "XY": setValue('controlpanel_xy_feedrate', axis_feedrate[0]); break;
+		case 'Z': setValue('controlpanel_z_feedrate', axis_feedrate[2]); break;
+		case 'A': setValue('controlpanel_z_feedrate', axis_feedrate[3]); break;
+		case 'B': setValue('controlpanel_z_feedrate', axis_feedrate[4]); break;
+		case 'C': setValue('controlpanel_z_feedrate', axis_feedrate[5]); break;
 	}
 }
 
-function onZvelocityChange() {
-	const feedratevalue = Number.parseFloat(id('control_z_velocity').value);
-	if (feedratevalue < 1 || feedratevalue > 999 || Number.isNaN(feedratevalue) || (feedratevalue === null)) {
+function onXYFeedRateChange() {
+	const feedratevalue = getFeedRateValue("controlpanel_xy_feedrate");
+	if (feedratevalue < 1 || feedratevalue > 9999) {
 		//we could display error but we do not
+		control_resetaxis("XY");
 	}
+
+	// Set the XY feed rate values
+	axis_feedrate[0] = feedratevalue;
+	axis_feedrate[1] = feedratevalue;
 }
 
+function onNonXYFeedRateChange() {
+	const feedratevalue = getFeedRateValue("controlpanel_z_feedrate");
+	if (feedratevalue < 1 || feedratevalue > 999) {
+		//we could display error but we do not
+		control_resetaxis();
+		return;
+	}
+
+	// Flush the change through
+	control_changeaxis();
+}
 
 function processMacroSave(answer) {
 	if (answer == "ok") {
