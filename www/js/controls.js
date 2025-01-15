@@ -183,20 +183,24 @@ function SendZerocommand(cmd) {
 	SendPrinterCommand(command, true, get_Position);
 }
 
-const buildFeedRateValueDef = (axis) => {
+const buildFeedRateValueDef = (isZAxis) => {
 	return {
 		"valueType": "float",
 		"units": "mm/min",
-		"label": axis.startsWith("Z") ? "Z axis feedrate" : "XY axis feedrate",
+		"label": isZAxis ? "Z axis feedrate" : "XY axis feedrate",
 		"min": 0.00001,
-		"defValue": 1,
+		"defValue": 0,
 	};
 }
 
 function JogFeedrate(axis) {
-	const controlName = axis.startsWith("Z") ? "controlpanel_z_feedrate" : "controlpanel_xy_feedrate";
-	const valueDef = buildFeedRateValueDef(axis);
-	const feedrateValue = id(controlName).value;
+	const isZAxis = axis[0].toUpperCase() === "Z";
+	const valueDef = buildFeedRateValueDef(isZAxis);
+
+	const controlName = isZAxis ? "disZ" : "disM";
+	const elem = id(controlName);
+	const feedrateValue = elem ? elem.innerText : "";
+
 	const errorList = valueIsFloat(feedrateValue, valueDef);
 	if (errorList.length) {
 		// error text was "Feedrate value must be at least 1 mm/min!"
@@ -212,10 +216,10 @@ function SendJogcommand(cmd, feedrate) {
 		return;
 	}
 
-	const controlName = feedrate.startsWith("Z") ? "controlpanel_z_feedrate" : "controlpanel_xy_feedrate";
-	const prefName = feedrate.startsWith("Z") ? "z_feedrate" : "xy_feedrate";
-	const valueDef = buildFeedRateValueDef(feedrate);
+	const isZAxis = feedrate[0].toUpperCase() === "Z";
+	const valueDef = buildFeedRateValueDef(isZAxis);
 
+	const controlName = isZAxis ? "controlpanel_z_feedrate" : "controlpanel_xy_feedrate";
 	let letter = "Z";
 	let cmd = "";
 	if (grblaxis > 3) {
@@ -224,7 +228,8 @@ function SendJogcommand(cmd, feedrate) {
 		cmd = cmd.replace("Z", id("control_select_axis").value);
 	}
 
-	const feedrateValue = id(controlName).value;
+	const elem = id(controlName);
+	const feedrateValue = elem ? elem.value : "";
 	const errorList = valueIsFloat(feedrateValue, valueDef);
 
 	if (errorList.length) {
@@ -234,20 +239,20 @@ function SendJogcommand(cmd, feedrate) {
 		return;
 	}
 
-	let command = `$J=G91 G21 F${feedrateValue} ${cmd}`;
+	const command = `$J=G91 G21 F${feedrateValue} ${cmd}`;
 	console.log(command);
 	SendPrinterCommand(command, true, get_Position);
 }
 
 function onXYvelocityChange() {
-	var feedratevalue = parseFloat(id('control_xy_velocity').value);
+	const feedratevalue = Number.parseFloat(id('control_xy_velocity').value);
 	if (feedratevalue < 1 || feedratevalue > 9999 || Number.isNaN(feedratevalue) || (feedratevalue === null)) {
 		//we could display error but we do not
 	}
 }
 
 function onZvelocityChange() {
-	var feedratevalue = parseFloat(id('control_z_velocity').value);
+	const feedratevalue = Number.parseFloat(id('control_z_velocity').value);
 	if (feedratevalue < 1 || feedratevalue > 999 || Number.isNaN(feedratevalue) || (feedratevalue === null)) {
 		//we could display error but we do not
 	}
