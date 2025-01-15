@@ -183,20 +183,6 @@ function SendZerocommand(cmd) {
 	SendPrinterCommand(command, true, get_Position);
 }
 
-
-const buildValueDef = (label, defValue) => {
-	return {
-		"valueType": "float",
-		"units": "mm/min",
-		"label": label,
-		"min": 0.00001,
-		"defValue": defValue,
-	};
-}
-
-const buildDistanceValueDef = () => buildValueDef("Distance", 0);
-const buildFeedRateValueDef = () => buildValueDef("Axis feedrate", 1);
-
 /** Get the Relevant Feed Rate for the Axis. It does not have to be the selected Axis */
 const GetAxisFeedRate = (axis = "XY") => {
 	switch (axis.toUpperCase()) {
