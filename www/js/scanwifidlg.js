@@ -42,8 +42,8 @@ function refresh_scanwifi() {
 	displayBlock(["AP_scan_loader", "AP_scan_status"]);
 	displayNone(["AP_scan_list", "refresh_scanwifi_btn"]);
 	setHTML("AP_scan_status", translate_text_item("Scanning"));
-	const url = `/command?plain=${encodeURIComponent("[ESP410]")}`;
-	SendGetHttp(url, getscanWifiSuccess, getscanWififailed);
+	const cmd = `/command?plain=${encodeURIComponent("[ESP410]")}`;
+	SendGetHttp(cmd, getscanWifiSuccess, getscanWififailed);
 }
 
 function process_scanWifi_answer(response_text) {

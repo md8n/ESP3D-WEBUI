@@ -44,8 +44,8 @@ const ControlsPanel = () => {
 function loadmacrolist() {
 	const common = new Common();
 	common.control_macrolist = [];
-	const url = "/macrocfg.json";
-	SendGetHttp(url, processMacroGetSuccess, processMacroGetFailed);
+	const cmd = "/macrocfg.json";
+	SendGetHttp(cmd, processMacroGetSuccess, processMacroGetFailed);
 }
 
 function Macro_build_list(response_text) {

@@ -487,8 +487,8 @@ const togglePanel = (checkboxId, panelId) => displayBlockOrNone(panelId, handleC
 
 const prefFile = "/preferences.json";
 const getpreferenceslist = () => {
-    const url = prefFile;
-    SendGetHttp(url, processPreferencesGetSuccess, processPreferencesGetFailed);
+    const cmd = prefFile;
+    SendGetHttp(cmd, processPreferencesGetSuccess, processPreferencesGetFailed);
 }
 
 const processPreferencesGetSuccess = (response) => {
@@ -551,12 +551,12 @@ const SavePreferences = () => {
     const file = new File([blob], prefFile);
 
     const formData = new FormData();
-    const url = "/files";
+    const cmd = "/files";
     formData.append("path", "/");
     formData.append("myfile[]", file, prefFile);
 
     SendFileHttp(
-        url,
+        cmd,
         formData,
         preferencesdlgUploadProgressDisplay,
         preferencesUploadsuccess,

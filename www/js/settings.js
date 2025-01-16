@@ -67,8 +67,8 @@ const refreshSettings = (hide_setting_list) => {
 
 	// Clear all of the elements in the array
 	scl.length = 0;
-	const url = `/command?plain=${encodeURIComponent("[ESP400]")}`;
-	SendGetHttp(url, getESPsettingsSuccess, getESPsettingsfailed);
+	const cmd = `/command?plain=${encodeURIComponent("[ESP400]")}`;
+	SendGetHttp(cmd, getESPsettingsSuccess, getESPsettingsfailed);
 };
 
 /** Return the defaultValue for the setting at index `i` */
@@ -533,7 +533,6 @@ function settingsetvalue(i, j = 0) {
 		alertdlg(translate_text_item("Out of range"), `${translate_text_item("Value must be ") + setting_error_msg} !`);
 	} else {
 		//value is ok save it
-		const cmd = scl[i].cmd + value;
 		setting_lasti = i;
 		setting_lastj = j;
 		scl[i].defaultvalue = value;
@@ -541,8 +540,8 @@ function settingsetvalue(i, j = 0) {
 		setIcon(i, j, "has-success ico_feedback");
 		setIconHTML(i, j, get_icon_svg("ok"));
 		setStatus(i, j, "has-feedback has-success");
-		const url = `/command?plain=${encodeURIComponent(cmd)}`;
-		SendGetHttp(url, setESPsettingsSuccess, setESPsettingsfailed);
+		const cmd = `/command?plain=${encodeURIComponent(scl[i].cmd + value)}`;
+		SendGetHttp(cmd, setESPsettingsSuccess, setESPsettingsfailed);
 	}
 }
 

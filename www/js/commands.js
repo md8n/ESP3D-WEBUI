@@ -7,6 +7,8 @@ import {
 	SendGetHttp,
 	translate_text_item,
 	process_socket_response,
+	getValue,
+	setValue,
 } from "./common.js";
 
 const CustomCommand_history = [];
@@ -112,21 +114,20 @@ const Monitor_output_Update = (message) => {
 };
 
 function SendCustomCommand() {
-	let cmd = id("custom_cmd_txt").value;
-	const url = "/command?commandText=";
-	cmd = cmd.trim();
-	if (cmd.trim().length === 0) {
+	const cmd = (getValue("custom_cmd_txt") || "").trim();
+	if (!cmd) {
 		return;
 	}
 	CustomCommand_history.push(cmd);
 	CustomCommand_history.slice(-40);
 	CustomCommand_history_index = CustomCommand_history.length;
-	id("custom_cmd_txt").value = "";
+	setValue("custom_cmd_txt", "");
 	Monitor_output_Update(`${cmd}\n`);
-	cmd = encodeURI(cmd);
-	//because # is not encoded
-	cmd = cmd.replace("#", "%23");
-	SendGetHttp(url + cmd, SendCustomCommandSuccess, SendCustomCommandFailed);
+
+	// replace needed because # is not encoded
+	const fullCmd = `/command?commandText=${encodeURI(cmd).replace("#", "%23")}`;
+
+	SendGetHttp(fullCmd, SendCustomCommandSuccess, SendCustomCommandFailed);
 }
 
 function CustomCommand_OnKeyUp(event) {

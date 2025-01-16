@@ -52,27 +52,23 @@ function config_display_override(display_it) {
 	}
 }
 
-function getprinterconfig(is_override) {
-	let cmd = commandtxt;
-	if (typeof is_override !== "undefined" && is_override) {
-		cmd = "M503";
-		config_override_List = [];
-		is_override_config = true;
-	} else {
-		is_override_config = false;
+function getprinterconfig(is_override = false) {
+	is_override_config = is_override;
+	if (is_override) {
+		config_override_List.length = 0;
 	}
-	const url = `/command?plain=${encodeURIComponent(cmd)}`;
-	SendGetHttp(url);
+	const cmd = `/command?plain=${encodeURIComponent((is_override) ? "M503" : commandtxt)}`;
+	SendGetHttp(cmd);
 }
 
 const Apply_config_override = () => {
-	const url = `/command?plain=${encodeURIComponent("M500")}`;
-	SendGetHttp(url, getESPUpdateconfigSuccess);
+	const cmd = `/command?plain=${encodeURIComponent("M500")}`;
+	SendGetHttp(cmd, getESPUpdateconfigSuccess);
 };
 
 const Delete_config_override = () => {
-	const url = `/command?plain=${encodeURIComponent("M502")}`;
-	SendGetHttp(url, getESPUpdateconfigSuccess);
+	const cmd = `/command?plain=${encodeURIComponent("M502")}`;
+	SendGetHttp(cmd, getESPUpdateconfigSuccess);
 };
 
 function getESPUpdateconfigSuccess(response) {
@@ -327,9 +323,8 @@ function configGetvalue(index, is_override) {
 
 		setInput(id_suffix, "success");
 
-		const cmd = item.cmd + value;
-		const url = `/command?plain=${encodeURIComponent(cmd)}`;
-		SendGetHttp(url, setESPconfigSuccess, setESPconfigfailed);
+		const cmd = `/command?plain=${encodeURIComponent(item.cmd + value)}`;
+		SendGetHttp(cmd, setESPconfigSuccess, setESPconfigfailed);
 	}
 }
 

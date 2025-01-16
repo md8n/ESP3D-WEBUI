@@ -13,11 +13,9 @@ function noop() { }
 const cleanFunc = (fn, cleanFn) => fn instanceof Function ? fn : cleanFn;
 
 const SendPrinterCommand = (cmd, echo_on, processfn, errorfn, id, max_id, extra_arg) => {
-	const common = new Common();
-	if (!cmd.length) {
+	if (!cmd) {
 		return;
 	}
-	const url = "/command?commandText=";
 	const push_cmd = typeof echo_on !== "undefined" ? echo_on : true;
 	if (push_cmd) {
 		Monitor_output_Update(`[#]${cmd}\n`);
@@ -27,6 +25,7 @@ const SendPrinterCommand = (cmd, echo_on, processfn, errorfn, id, max_id, extra_
 	let errFn = cleanFunc(errorfn, SendPrinterCommandFailed);
 
 	if (!cmd.startsWith("[ESP")) {
+        const common = new Common();
 		common.grbl_processfn = procFn;
 		common.grbl_errorfn = errFn;
 		procFn = noop;
@@ -36,27 +35,10 @@ const SendPrinterCommand = (cmd, echo_on, processfn, errorfn, id, max_id, extra_
 	if (extra_arg) {
 		encCmd += `&${extra_arg}`;
 	}
-	SendGetHttp(url + encCmd, procFn, errFn, id, max_id);
-	//console.log(cmd);
+	const fullcmd = `/command?commandText=${encCmd}`;
+	SendGetHttp(fullcmd, procFn, errFn, id, max_id);
+	//console.log(fullcmd);
 };
-
-// function SendPrinterSilentCommand(cmd, processfn, errorfn, id, max_id) {
-// 	const url = "/command_silent?commandText=";
-// 	if (cmd.length === 0) {
-// 		return;
-// 	}
-
-// 	const procFn = cleanFunc(processfn, SendPrinterSilentCommandSuccess);
-// 	const errFn = cleanFunc(errorfn, SendPrinterCommandFailed);
-// 	const encCmd = encodeURI(cmd).replace("#", "%23");
-	
-// 	SendGetHttp(url + encCmd, procFn, errFn, id, max_id);
-// 	//console.log(cmd);
-// }
-
-// function SendPrinterSilentCommandSuccess(response) {
-// 	//console.log(response);
-// }
 
 function SendPrinterCommandSuccess(response) { }
 

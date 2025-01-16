@@ -309,11 +309,11 @@ function SaveNewMacroList() {
 		file = new File([blob], "/macrocfg.json");
 	}
 	const formData = new FormData();
-	const url = "/files";
+	const cmd = "/files";
 	formData.append("path", "/");
 	formData.append("myfile[]", file, "/macrocfg.json");
 	SendFileHttp(
-		url,
+		cmd,
 		formData,
 		macrodlgUploadProgressDisplay,
 		macroUploadsuccess,

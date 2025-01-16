@@ -97,7 +97,7 @@ function StartUploadUpdatefile(response) {
 	}
 	const files = id("fw-select").files;
 	const formData = new FormData();
-	const url = "/updatefw";
+	const cmd = "/updatefw";
 	for (let i = 0; i < files.length; i++) {
 		const file = files[i];
 		const arg = `/${file.name}S`;
@@ -110,7 +110,7 @@ function StartUploadUpdatefile(response) {
 	displayBlock(["updatemsg", "prgfw"]);
 	current_update_filename = files.length === 1 ? files[0].name : "";
 	setHTML("updatemsg", `${translate_text_item("Uploading")} ${current_update_filename}`);
-	SendFileHttp(url, formData, UpdateProgressDisplay, updatesuccess, updatefailed);
+	SendFileHttp(cmd, formData, UpdateProgressDisplay, updatesuccess, updatefailed);
 }
 
 function updatesuccess(response) {

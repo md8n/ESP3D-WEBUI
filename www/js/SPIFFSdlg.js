@@ -145,6 +145,8 @@ function processSPIFFSDeleteDir(answer) {
 	SPIFFS_currentfile = "";
 }
 
+let old_file_name = "";
+
 function SPIFFSRename(filename) {
 	old_file_name = filename;
 	inputdlg(translate_text_item("New file name"), translate_text_item("Name:"), processSPIFFSRename, old_file_name);
@@ -155,18 +157,18 @@ function processSPIFFSRename(new_file_name) {
 		return;
 	}
 	const common = new Common();
-	let url = `/files?action=rename&path=${encodeURIComponent(common.SPIFFS_currentpath)}`;
-	url += `&filename=${encodeURIComponent(old_file_name)}`;
-	url += `&newname=${encodeURIComponent(new_file_name)}`;
-	SendGetHttp(url, SPIFFSsuccess, SPIFFSfailed);
+	const cmd = [`/files?action=rename&path=${encodeURIComponent(common.SPIFFS_currentpath)}`];
+	cmd.push(`&filename=${encodeURIComponent(old_file_name)}`);
+	cmd.push(`&newname=${encodeURIComponent(new_file_name)}`);
+	SendGetHttp(cmd.join(), SPIFFSsuccess, SPIFFSfailed);
 }
 
 function SPIFFSSendCommand(action, filename) {
 	const common = new Common();
-	const url = `/files?action=${action}&filename=${encodeURI(filename)}&path=${encodeURI(common.SPIFFS_currentpath)}`;
 	id("SPIFFS_loader").style.visibility = "visible";
-	console.log(url);
-	SendGetHttp(url, SPIFFSsuccess, SPIFFSfailed);
+	const cmd = `/files?action=${action}&filename=${encodeURI(filename)}&path=${encodeURI(common.SPIFFS_currentpath)}`;
+	console.log(cmd);
+	SendGetHttp(cmd, SPIFFSsuccess, SPIFFSfailed);
 }
 
 function SPIFFSsuccess(response) {
@@ -319,7 +321,7 @@ function SPIFFS_UploadFile() {
 	}
 	const files = id("SPIFFS-select").files;
 	const formData = new FormData();
-	const url = "/files";
+	const cmd = "/files";
 	formData.append("path", common.SPIFFS_currentpath);
 	for (let i = 0; i < files.length; i++) {
 		const file = files[i];
@@ -333,7 +335,7 @@ function SPIFFS_UploadFile() {
 	displayBlock(["uploadSPIFFSmsg", "SPIFFS_prg"]);
 	SPIFFS_currentfile = (files.length === 1) ? files[0].name : "";
 	setHTML("uploadSPIFFSmsg", `${translate_text_item("Uploading")} ${SPIFFS_currentfile}`);
-	SendFileHttp(url, formData, SPIFFSUploadProgressDisplay, SPIFFSUploadsuccess, SPIFFSUploadfailed);
+	SendFileHttp(cmd, formData, SPIFFSUploadProgressDisplay, SPIFFSUploadsuccess, SPIFFSUploadfailed);
 }
 
 function SPIFFSUploadsuccess(response) {
