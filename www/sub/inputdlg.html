@@ -3,7 +3,7 @@
     <!-- input content -->
     <div class="modal-content">
         <div class="modal-header">
-            <span class="close" onclick="closeInputModal('cancel')"><b>&times;</b></span>
+            <span id="inputdlg_close" class="close"><b>&times;</b></span>
             <h3>
                 <div class="modal-title"></div>
             </h3>
@@ -17,13 +17,13 @@
         </div>
         <div class="modal-footer">
             <span class="pull-right">
-                <button class="btn btn-warning" onclick="closeInputModal('cancel');" translate>Cancel</button>
+                <button id="inputdlg_cancel" class="btn btn-warning" translate>Cancel</button>
             </span>
             <span class="pull-right">
                 &nbsp;&nbsp;
             </span>
             <span class="pull-right">
-                <button class="btn btn-primary" onclick="closeInputModal('ok');" translate>Ok</button>
+                <button id="inputdlg_ok" class="btn btn-primary" translate>Ok</button>
             </span>
         </div>
     </div>

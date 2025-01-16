@@ -10,22 +10,53 @@ label {
     margin-right: 0.5rem;
     margin-left: 0.2rem;
 }
+
+.center {
+    display: flex;
+    justify-content: center; /* Center horizontally */
+}
+
+dl {
+    display: grid;
+    grid-template-columns: max-content auto;
+}
+
+dt {
+    grid-column-start: 1;
+}
+
+dd {
+    grid-column-start: 2;
+}
+
+dt::after {
+    content: ": ";
+}
+
+button.center {
+    display: block;
+    margin: auto;
+}
+
 .filesize {
-  text-align: right;
+    text-align: right;
 }
 
 .report input[type="radio"] {
-  margin-left: 1rem;
+    margin-left: 1rem;
 }
+
 .form_control {
     height: 34px !important;
 }
-.fixedbutton{
+
+.fixedbutton {
     width: 8em !important;
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
 }
+
 .input-min {
     min-width: 8em;
 }
@@ -54,8 +85,6 @@ label {
     margin: 0 !important;
     line-height: 0;
 }
-
-.noshowonlowrestab {}
 
 .btn-svg {
     padding: 4px 0px 0px 0px !important;
@@ -152,6 +181,14 @@ label {
     left: 0.5em;
     -webkit-animation-delay: 500ms;
     animation-delay: 500ms;
+}
+
+/* overwrite what's in bootstrap */
+.panel-heading, .modal-body > .checkbox {
+    padding: 5px 15px;
+}
+.panel-body > table+table {
+    margin-top: 5px;
 }
 
 .panel-min-width {
@@ -375,8 +412,7 @@ w25 {
     }
 }
 
-
-@media (min-width: 800px) and (max-width: 1350px){
+@media (min-width: 800px) and (max-width: 1350px) {
     .fixedbutton {
         width: 6em !important;
     }
@@ -428,7 +464,6 @@ w25 {
     text-decoration: none;
     font-style: normal;
     font-variant: small-caps slashed-zero;
-    ;
     text-transform: none;
 }
 
@@ -437,5 +472,3 @@ w25 {
     valign: middle;
     text-align: center;
 }
-
-.button_txt {}

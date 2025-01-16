@@ -1,4 +1,4 @@
-// import - conErr, stdErrMsg, getChecked, id, decode_entitie, SendGetHttp, translate_text_item, process_socket_response
+// import - conErr, stdErrMsg, getChecked, id, HTMLDecode, SendGetHttp, translate_text_item, process_socket_response
 
 const CustomCommand_history = [];
 let CustomCommand_history_index = -1;
@@ -6,21 +6,11 @@ let Monitor_output = [];
 
 /** Set up the event handlers for the commands panel */
 const init_command_panel = () => {
-	id("clear_monitor_btn").addEventListener("click", (event) =>
-		Monitor_output_Clear(),
-	);
-	id("custom_cmd_txt").addEventListener("keyup", (event) =>
-		CustomCommand_OnKeyUp(event),
-	);
-	id("commandspanel_send").addEventListener("click", (event) =>
-		SendCustomCommand(),
-	);
-	id("monitor_enable_autoscroll").addEventListener("click", (event) =>
-		Monitor_check_autoscroll(),
-	);
-	id("monitor_enable_verbose_mode").addEventListener("click", (event) =>
-		Monitor_check_verbose_mode(),
-	);
+	id("clear_monitor_btn").addEventListener("click", (event) => Monitor_output_Clear());
+	id("custom_cmd_txt").addEventListener("keyup", (event) => CustomCommand_OnKeyUp(event));
+	id("commandspanel_send").addEventListener("click", (event) => SendCustomCommand());
+	id("monitor_enable_autoscroll").addEventListener("click", (event) => Monitor_check_autoscroll());
+	id("monitor_enable_verbose_mode").addEventListener("click", (event) => Monitor_check_verbose_mode());
 };
 
 function Monitor_output_autoscrollcmd() {
@@ -174,13 +164,13 @@ function SendCustomCommandFailed(error_code, response) {
 		error_code === 0
 			? translate_text_item("Connection error")
 			: stdErrMsg(
-					error_code,
-					decode_entitie(response),
-					translate_text_item("Error"),
-				);
+				error_code,
+				HTMLDecode(response),
+				translate_text_item("Error"),
+			);
 	Monitor_output_Update(`${errMsg}\n`);
 
-	conErr(error_code, decode_entitie(response), "cmd Error");
+	conErr(error_code, HTMLDecode(response), "cmd Error");
 }
 
 // export - init_command_panel, Monitor_check_autoscroll, Monitor_check_verbose_mode, Monitor_output_Update

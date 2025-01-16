@@ -2,7 +2,7 @@
 
 var root = window;
 
-var canvas = id("small-toolpath");
+const canvas = document.getElementById("small-toolpath");
 const scale = window.devicePixelRatio;
 const width = window.innerWidth; 
 canvas.width = width * scale;

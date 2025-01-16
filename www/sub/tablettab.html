@@ -9,8 +9,8 @@
       <div class = "tablettab-controls-wrapper">
         <div style="grid-template-columns: 20% 20% 20% 20% 20%;" class="maslow-grid-container tablettab-controls-item">
           <!-- Buttons row 1 -->
-          <div class="maslow-grid-item maslow-grid-item-btn" style="background-color: #f2f0e4;; color: #337ab7; border-right: 2px solid grey;"
-            onclick="sendMove('Z+');" id="zUp">
+          <div id="zUp" class="maslow-grid-item maslow-grid-item-btn" style="background-color: #f2f0e4;; color: #337ab7; border-right: 2px solid grey;"
+            onclick="sendMove('Z+');">
             <svg width="32" height="32" viewBox="0 0 38 38">
               <polygon fill="currentColor" points="10.319 5.525 17.833 13.039 2.805 13.039 10.319 5.525" />
               <rect fill="currentColor" height="2.5" transform="translate(31.899 11.262) rotate(90)" width="21.79" x="-0.576" y="20.33" />
@@ -20,8 +20,8 @@
           <div class="maslow-grid-item maslow-grid-item-btn" onclick="sendMove('X-Y+')" style="background-color: #b69fcb;"><canvas id="tlBtn" style="width: 100%; height: 100%"></canvas></div>
           <div class="maslow-grid-item maslow-grid-item-btn" style="background-color: #9d88c0;" onclick="sendMove('Y+')"><canvas id="upBtn" style="width: 100%; height: 100%"></canvas></div>
           <div class="maslow-grid-item maslow-grid-item-btn" style="background-color: #b69fcb;" onclick="sendMove('X+Y+')"><canvas id="trBtn" style="width: 100%; height: 100%"></canvas></div>
-          <div class="maslow-grid-item maslow-grid-item-btn" style="background-color: #f2f0e4; font-size: 1vw; color: #337ab7; display: flex;flex-direction: column;"
-            onclick="loadCornerValues(); openModal('calibration-popup');" id="calibrationBTN" >
+          <div id="calibrationBTN" class="maslow-grid-item maslow-grid-item-btn" style="background-color: #f2f0e4; font-size: 1vw; color: #337ab7; display: flex;flex-direction: column;"
+            onclick="loadCornerValues(); openModal('calibration-popup');" >
             <svg height="32" width="32" viewBox="0 0 48 48" fill="currentColor">
               <g>
                 <path d="M24,11c-7.2,0-13,5.8-13,13c0,7.2,5.8,13,13,13c7.2,0,13-5.8,13-13C37,16.8,31.2,11,24,11z M24,35c-6.1,0-11-4.9-11-11   s4.9-11,11-11s11,4.9,11,11S30.1,35,24,35z" />
@@ -31,14 +31,14 @@
             <span>Setup</span>
           </div>
           <!-- Buttons row 2 -->
-          <div class="maslow-grid-item maslow-grid-item-btn" style="background-color: #f2f0e4; border-right: 2px solid grey;" id="disZ">5</div>
+          <div id="disZ" class="maslow-grid-item maslow-grid-item-btn" style="background-color: #f2f0e4; border-right: 2px solid grey;">5</div>
           <div class="maslow-grid-item maslow-grid-item-btn" style="background-color: #9d88c0;" onclick="sendMove('X-')"><canvas id="lBtn" style="width: 100%; height: 100%"></div>
-          <div class="maslow-grid-item maslow-grid-item-btn" style="background-color: #f2f0e4;" id="disM">100</div>
+          <div id="disM" class="maslow-grid-item maslow-grid-item-btn" style="background-color: #f2f0e4;">100</div>
           <div class="maslow-grid-item maslow-grid-item-btn" style="background-color: #9d88c0;" onclick="sendMove('X+')"><canvas id="rBtn" style="width: 100%; height: 100%"></div>
           <div class="maslow-grid-item maslow-grid-item-btn"></div>
           <!-- Buttons row 3 -->
-          <div class="maslow-grid-item maslow-grid-item-btn" style="background-color: #f2f0e4; color: #337ab7; border-right: 2px solid grey;"
-            onclick="sendMove('Z-');" id="zDown">
+          <div id="zDown" class="maslow-grid-item maslow-grid-item-btn" style="background-color: #f2f0e4; color: #337ab7; border-right: 2px solid grey;"
+            onclick="sendMove('Z-');">
             <svg width="32" height="32" viewBox="0 0 38 38">
               <polygon transform="rotate(180) translate(-21 -44)" fill="currentColor"
                 points="10.319 5.525 17.833 13.039 2.805 13.039 10.319 5.525"></polygon>
@@ -55,14 +55,14 @@
           <div class="maslow-grid-item maslow-grid-item-btn" style="background-color: #f2f0e4; border-right: 2px solid grey;"
             onmousedown="zeroAxis('Z');" onmouseup="refreshGcode();">Define Z Home</div>
           <div class="maslow-grid-item maslow-grid-item-btn" style="background-color: #f2f0e4;" onclick="moveHome()"><canvas id="hBtn" style="width: 100%; height: 100%"></div>
-          <div class="maslow-grid-item maslow-grid-item-btn" style="background-color: #f2f0e4;" id="units" title="Toggle Units"
+          <div id="units" class="maslow-grid-item maslow-grid-item-btn" style="background-color: #f2f0e4;" title="Toggle Units"
             onclick="toggleUnits()">mm</div>
-          <div class="maslow-grid-item maslow-grid-item-btn" style="background-color: #f2f0e4;" id="defineHomeBTN"
+          <div id="defineHomeBTN" class="maslow-grid-item maslow-grid-item-btn" style="background-color: #f2f0e4;"
             onmousedown="setHomeClickDown();" onmouseup="setHomeClickUp();" ondblclick="setXYHome();" title="Press and hold, or tap twice">Define XY Home</div>
           <div class="maslow-grid-item maslow-grid-item-btn"></div>
         </div>
         <div style="grid-template-columns: 80% 20%;" class="maslow-grid-container tablettab-controls-item" style="height: 60px;">
-          <select class="form-control" id="filelist" onchange="selectFile()">
+          <select id="filelist" class="form-control" onchange="selectFile()">
             <option>Load File...</option>
           </select>
           <div class="maslow-grid-item maslow-grid-item-btn" style="background-color: #337ab7; color: white; height: 50px;display: flex;flex-direction: column;"

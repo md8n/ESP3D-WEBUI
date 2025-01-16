@@ -1,9 +1,9 @@
 <!-- macro Modal -->
-<div id="macrodlg.html" class="modal" onclick="clear_drop_menu(event)">
+<div id="macrodlg.html" class="modal">
     <!-- macro content -->
     <div class="modal-content">
         <div class="modal-header">
-            <span class="close" onclick="closeMacroDialog()"><b>&times;</b></span>
+            <span id="MacroDialogClose" class="close"><b>&times;</b></span>
             <h3>
                 <div class="modal-title" translate>Macro Editor</div>
             </h3>
@@ -35,13 +35,13 @@
                 <span id="macrodlg_upload_percent">0</span>%</td>
             </div>
             <span class="pull-right">
-                <button class="btn btn-warning" onclick="closeMacroDialog()" translate>Cancel</button>
+                <button id="MacroDialogCancel" class="btn btn-warning" translate>Cancel</button>
             </span>
             <span class="pull-right">
                 &nbsp;&nbsp;
             </span>
             <span class="pull-right">
-                <button class="btn btn-primary" onclick="SaveNewMacroList()" translate>Save</button>
+                <button id="MacroDialogSave" class="btn btn-primary" translate>Save</button>
             </span>
         </div>
     </div>
