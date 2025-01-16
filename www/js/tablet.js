@@ -176,7 +176,7 @@ const jogTo = (axisAndDistance) => {
   // Always force G90 mode because synchronization of modal reports is unreliable
   // JogFeedRate is defined in controls.js
   let feedrate = JogFeedrate(axisAndDistance);
-  if (modal.units === 'G20') {
+  if (modal.units === "G20") {
     feedrate /= 25.4;
     feedrate = feedrate.toFixed(2);
   }
@@ -220,32 +220,46 @@ function long_jog(target) {
 }
 
 const sendMove = (cmd) => {
-  tabletClick()
-  const jog = (params) => {
-    params = params || {}
-    let s = ''
-    for (key in params) {
-      s += key + params[key]
-    }
-    jogTo(s)
+  tabletClick();
 
-    const msgWindow = document.getElementById('messages')
-    let text = msgWindow.textContent
-    text += `\nJog: ${s}`
-    msgWindow.textContent = text
-    msgWindow.scrollTop = msgWindow.scrollHeight
-
-  }
-  const move = (params) => {
-    params = params || {}
-    let s = ''
-    for (key in params) {
-      s += key + params[key]
+  const checkParams = (params = {}) => {
+    if (!Object.keys(params).length) {
+      addMessage("Could not perform Jog. No jog parameters supplied. Programmer error.");
+      return "";
     }
-    moveTo(s)
+
+    if (!("Z" in params) && !checkHomed()) {
+      addMessage("Could not perform Jog. Belt lengths are unknown.");
+      return "";
+    }
+
+    const s = [];
+    for (key in params) {
+      s.push(`${key}${params[key]}`);
+    }
+    return s.join();
   }
 
-  let distance = cmd.includes('Z') ? Number(id('disZ').innerText) || 0 : Number(id('disM').innerText) || 0
+  const jog = (params = {}) => {
+    const cmd = checkParams(params);
+    if (!cmd) {
+      return;
+    }
+
+    addMessage(`Jog: ${cmd}`);
+    jogTo(cmd);
+  }
+
+  const move = (params = {}) => {
+    const cmd = checkParams(params);
+    if (!cmd) {
+      return;
+    }
+
+    moveTo(cmd);
+  }
+
+  let distance = cmd.includes('Z') ? Number(id('disZ').innerText) || 0 : Number(id('disM').innerText) || 0;
 
   const fn = {
     G28: () => sendCommand('G28'),
@@ -254,55 +268,23 @@ const sendMove = (cmd) => {
     X0: () => move({ X: 0 }),
     Y0: () => move({ Y: 0 }),
     Z0: () => move({ Z: 0 }),
-    'X-Y+': () => {
-      if (checkHomed()) {
-        jog({ X: -distance, Y: distance })
-      }
-    },
-    'X+Y+': () => {
-      if (checkHomed()) {
-        jog({ X: distance, Y: distance })
-      }
-    },
-    'X-Y-': () => {
-      if (checkHomed()) {
-        jog({ X: -distance, Y: -distance })
-      }
-    },
-    'X+Y-': () => {
-      if (checkHomed()) {
-        jog({ X: distance, Y: -distance })
-      }
-    },
-    'X-': () => {
-      if (checkHomed()) {
-        jog({ X: -distance })
-      }
-    },
-    'X+': () => {
-      if (checkHomed()) {
-        jog({ X: distance })
-      }
-    },
-    'Y-': () => {
-      if (checkHomed()) {
-        jog({ Y: -distance })
-      }
-    },
-    'Y+': () => {
-      if (checkHomed()) {
-        jog({ Y: distance })
-      }
-    },
+    'X-Y+': () => jog({ X: -distance, Y: distance }),
+    'X+Y+': () => jog({ X: distance, Y: distance }),
+    'X-Y-': () => jog({ X: -distance, Y: -distance }),
+    'X+Y-': () => jog({ X: distance, Y: -distance }),
+    'X-': () => jog({ X: -distance }),
+    'X+': () => jog({ X: distance }),
+    'Y-': () => jog({ Y: -distance }),
+    'Y+': () => jog({ Y: distance }),
     'Z-': () => jog({ Z: -distance }),
     'Z+': () => jog({ Z: distance }),
     'Z_TOP': () => {
       // She's got legs ♫
-      move({ Z: 70 })
+      move({ Z: 70 });
     },
   }[cmd]
 
-  fn && fn()
+  fn && fn();
 }
 
 const moveHome = () => {

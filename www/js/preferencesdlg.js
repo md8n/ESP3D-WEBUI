@@ -40,44 +40,6 @@ var defaultpreferenceslist = "[{\
 var preferences_file_name = '/preferences.json';
 
 function initpreferences() {
-    defaultpreferenceslist = "[{\
-                                            \"language\":\"en\",\
-                                            \"enable_lock_UI\":\"false\",\
-                                            \"enable_ping\":\"true\",\
-                                            \"enable_DHT\":\"false\",\
-                                            \"enable_camera\":\"false\",\
-                                            \"auto_load_camera\":\"false\",\
-                                            \"camera_address\":\"\",\
-                                            \"number_extruders\":\"1\",\
-                                            \"is_mixed_extruder\":\"false\",\
-                                            \"enable_redundant\":\"false\",\
-                                            \"enable_probe\":\"false\",\
-                                            \"enable_control_panel\":\"true\",\
-                                            \"enable_grbl_panel\":\"true\",\
-                                            \"autoreport_interval\":\"50\",\
-                                            \"interval_positions\":\"3\",\
-                                            \"interval_status\":\"3\",\
-                                            \"xy_feedrate\":\"2500\",\
-                                            \"z_feedrate\":\"300\",\
-                                            \"a_feedrate\":\"100\",\
-                                            \"b_feedrate\":\"100\",\
-                                            \"c_feedrate\":\"100\",\
-                                            \"e_feedrate\":\"400\",\
-                                            \"e_distance\":\"5\",\
-                                            \"enable_files_panel\":\"true\",\
-                                            \"has_TFT_SD\":\"false\",\
-                                            \"has_TFT_USB\":\"false\",\
-                                            \"f_filters\":\"g;G;gco;GCO;gcode;GCODE;nc;NC;ngc;NCG;tap;TAP;txt;TXT\",\
-                                            \"enable_commands_panel\":\"true\",\
-                                            \"enable_autoscroll\":\"true\",\
-                                            \"enable_verbose_mode\":\"true\",\
-                                            \"enable_grbl_probe_panel\":\"false\",\
-                                            \"probemaxtravel\":\"40\",\
-                                            \"probefeedrate\":\"100\",\
-                                            \"proberetract\":\"1.0\",\
-                                            \"probetouchplatethickness\":\"0.5\"\
-                                            }]";
-
     displayNone('DHT_pref_panel');
     displayBlock('grbl_pref_panel');
     displayTable('has_tft_sd');
@@ -130,8 +92,9 @@ function prefs_toggledisplay(id_source, forcevalue) {
 }
 
 function processPreferencesGetSuccess(response) {
-    if (response.indexOf("<HTML>") == -1) Preferences_build_list(response);
-    else Preferences_build_list(defaultpreferenceslist);
+    Preferences_build_list(response.indexOf("<HTML>") == -1
+        ? Preferences_build_list(response)
+        : Preferences_build_list(defaultpreferenceslist));
 }
 
 function processPreferencesGetFailed(error_code, response) {
@@ -142,12 +105,7 @@ function processPreferencesGetFailed(error_code, response) {
 function Preferences_build_list(response_text) {
     preferenceslist = [];
     try {
-        if (response_text.length != 0) {
-            //console.log(response_text);  
-            preferenceslist = JSON.parse(response_text);
-        } else {
-            preferenceslist = JSON.parse(defaultpreferenceslist);
-        }
+        preferenceslist = JSON.parse(response_text.length != 0 ? response_text : defaultpreferenceslist);
     } catch (e) {
         console.error("Parsing error:", e);
         preferenceslist = JSON.parse(defaultpreferenceslist);
@@ -304,13 +262,13 @@ function applypreferenceslist() {
                 id('preferences_control_z_velocity').value = axis_Z_feedrate;
                 break;
             case "A":
-                id('preferences_control_z_velocity').value = axis_A_feedrate;
+                id('preferences_control_a_velocity').value = axis_A_feedrate;
                 break;
             case "B":
-                id('preferences_control_z_velocity').value = axis_B_feedrate;
+                id('preferences_control_b_velocity').value = axis_B_feedrate;
                 break;
             case "C":
-                id('preferences_control_z_velocity').value = axis_C_feedrate;
+                id('preferences_control_c_velocity').value = axis_C_feedrate;
                 break;
         }
     }

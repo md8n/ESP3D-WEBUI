@@ -143,23 +143,26 @@ function update_UI_firmware_target() {
 		hideAxiscontrols();
 		displayNone('preferences_control_z_velocity_group');
 	}
+	build_axis_selection();
+	if (grblaxis > 3) {
+		id('positions_labels2').style.display = 'inline-grid';
+	}
 	if (grblaxis > 3) {
 		id('zero_xyz_btn_txt').innerHTML += 'A';
 		grblzerocmd += ' A0';
-		build_axis_selection();
-		displayBlock('preferences_control_a_velocity_group');
-		id('positions_labels2').style.display = 'inline-grid';
 		displayBlock('control_a_position_display');
+		displayBlock('preferences_control_a_velocity_group');
 	}
 	if (grblaxis > 4) {
-		displayBlock('control_b_position_display')
-		id('zero_xyz_btn_txt').innerHTML += 'B'
-		grblzerocmd += ' B0'
-		displayBlock('preferences_control_b_velocity_group')
+		id('zero_xyz_btn_txt').innerHTML += 'B';
+		grblzerocmd += ' B0';
+		displayBlock('control_b_position_display');
+		displayBlock('preferences_control_b_velocity_group');
 	}
 	if (grblaxis > 5) {
-		displayBlock('control_c_position_display');
 		id('zero_xyz_btn_txt').innerHTML += 'C';
+		grblzerocmd += ' C0';
+		displayBlock('control_c_position_display');
 		displayBlock('preferences_control_c_velocity_group');
 	} else {
 		displayNone('control_c_position_display');
@@ -245,12 +248,14 @@ function initUI_2() {
 
 function initUI_3() {
 	AddCmd(display_boot_progress);
+
+	console.log('Get preferences');
+	getpreferenceslist();
+
 	//init panels
 	console.log('Get macros');
 	init_controls_panel();
 	init_grbl_panel();
-	console.log('Get preferences');
-	getpreferenceslist();
 	initUI_4();
 }
 
