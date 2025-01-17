@@ -10,7 +10,7 @@ import {
 	getPrefValue,
 	SendPrinterCommand,
 	SendGetHttp,
-	translate_text_item,
+	trans_text_item,
 	showmacrodlg,
 	valueIsFloat,
 } from "./common.js";
@@ -133,7 +133,7 @@ function onPosIntervalChange() {
 		setChecked("autocheck_position", false);
 		id("controlpanel_interval_positions").value = 0;
 		if (interval !== 0)
-			alertdlg(translate_text_item("Out of range"), translate_text_item("Value of auto-check must be between 0s and 99s !!"));
+			alertdlg(trans_text_item("Out of range"), trans_text_item("Value of auto-check must be between 0s and 99s !!"));
 		on_autocheck_position();
 	}
 }
@@ -201,7 +201,7 @@ function JogFeedrate(axis) {
 	const errorList = valueIsFloat(feedrateValue, valueDef);
 	if (errorList.length) {
 		// error text was "Feedrate value must be at least 1 mm/min!"
-		alertdlg(translate_text_item("Out of range"), errorList.join("\n"));
+		alertdlg(trans_text_item("Out of range"), errorList.join("\n"));
 		return valueDef.defValue;
 	}
 	return Number.parseFloat(feedrateValue);
@@ -231,7 +231,7 @@ function SendJogcommand(cmd, feedrate) {
 
 	if (errorList.length) {
 		// error text was "(something) Feedrate value must be at least 1 mm/min!"
-		alertdlg(translate_text_item("Out of range"), errorList.join("\n"));
+		alertdlg(trans_text_item("Out of range"), errorList.join("\n"));
 		id(controlName).value = getPrefValue(prefName);
 		return;
 	}

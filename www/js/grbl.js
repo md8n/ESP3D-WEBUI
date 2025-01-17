@@ -11,7 +11,7 @@ import {
   setHTML,
   alertdlg,
   SendPrinterCommand,
-  translate_text_item,
+  trans_text_item,
   sendCommand,
   displayNone,
   displayTable,
@@ -87,7 +87,7 @@ function build_axis_selection() {
   id("control_select_axis").addEventListener("change", (event) =>
     control_changeaxis(),
   );
-  setHTML("axis_label", `${translate_text_item("Axis")}:`);
+  setHTML("axis_label", `${trans_text_item("Axis")}:`);
   setClickability("axis_selection", true);
 }
 
@@ -148,7 +148,7 @@ function grbl_set_probe_detected(state) {
 const onprobemaxtravelChange = () => {
   const travel = Number.parseFloat(getValue("grblpanel_probemaxtravel"));
   if (travel > 9999 || travel <= 0 || Number.isNaN(travel) || travel === null) {
-    alertdlg(translate_text_item("Out of range"), translate_text_item("Value of maximum probe travel must be between 1 mm and 9999 mm !"));
+    alertdlg(trans_text_item("Out of range"), trans_text_item("Value of maximum probe travel must be between 1 mm and 9999 mm !"));
     return false;
   }
   return true;
@@ -157,7 +157,7 @@ const onprobemaxtravelChange = () => {
 const onprobefeedrateChange = () => {
   const feedratevalue = Number.parseInt(getValue("grblpanel_probefeedrate"));
   if (feedratevalue <= 0 || feedratevalue > 9999 || Number.isNaN(feedratevalue) || feedratevalue === null) {
-    alertdlg(translate_text_item("Out of range"), translate_text_item("Value of probe feedrate must be between 1 mm/min and 9999 mm/min !"));
+    alertdlg(trans_text_item("Out of range"), trans_text_item("Value of probe feedrate must be between 1 mm/min and 9999 mm/min !"));
     return false;
   }
   return true;
@@ -166,7 +166,7 @@ const onprobefeedrateChange = () => {
 const onproberetractChange = () => {
   const thickness = Number.parseFloat(getValue("grblpanel_proberetract"));
   if (thickness < 0 || thickness > 999 || Number.isNaN(thickness) || thickness === null) {
-    alertdlg(translate_text_item("Out of range"), translate_text_item("Value of probe retract must be between 0 mm and 9999 mm !"));
+    alertdlg(trans_text_item("Out of range"), trans_text_item("Value of probe retract must be between 0 mm and 9999 mm !"));
     return false;
   }
   return true;
@@ -175,7 +175,7 @@ const onproberetractChange = () => {
 const onprobetouchplatethicknessChange = () => {
   const thickness = Number.parseFloat(getValue("grblpanel_probetouchplatethickness"));
   if (thickness < 0 || thickness > 999 || Number.isNaN(thickness) || thickness === null) {
-    alertdlg(translate_text_item("Out of range"), translate_text_item("Value of probe touch plate thickness must be between 0 mm and 9999 mm !"));
+    alertdlg(trans_text_item("Out of range"), trans_text_item("Value of probe touch plate thickness must be between 0 mm and 9999 mm !"));
     return false;
   }
   return true;
@@ -215,7 +215,7 @@ function enablePolling() {
     return;
   }
   setValue("grblpanel_interval_status", 0);
-  alertdlg(translate_text_item("Out of range"), translate_text_item("Value of auto-check must be between 0s and 99s !!"));
+  alertdlg(trans_text_item("Out of range"), trans_text_item("Value of auto-check must be between 0s and 99s !!"));
   disablePolling();
   reportNone();
 }
@@ -443,7 +443,7 @@ function show_grbl_status(stateName, message, hasSD) {
     }
   }
 
-  setHTML("grbl_status_text", translate_text_item(message));
+  setHTML("grbl_status_text", trans_text_item(message));
   setClickability("clear_status_btn", stateName === "Alarm");
 }
 
@@ -538,7 +538,7 @@ function grblGetProbeResult(response) {
 
 function probe_failed_notification() {
   finalize_probing();
-  alertdlg(translate_text_item("Error"), translate_text_item("Probe failed !"));
+  alertdlg(trans_text_item("Error"), trans_text_item("Probe failed !"));
   beep(3, 140, 261);
 }
 const modalModes = [
@@ -730,7 +730,7 @@ const grblHandleMessage = (msg) => {
       probe_failed_notification();
     }
     if (grbl_error_msg.length === 0) {
-      grbl_error_msg = translate_text_item(msg.trim());
+      grbl_error_msg = trans_text_item(msg.trim());
     }
     return;
   }

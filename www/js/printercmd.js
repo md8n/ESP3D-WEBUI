@@ -4,7 +4,7 @@ import {
 	stdErrMsg,
 	Monitor_output_Update,
 	SendGetHttp,
-	translate_text_item,
+	trans_text_item,
 	Common,
 } from "./common.js";
 
@@ -44,8 +44,8 @@ function SendPrinterCommandSuccess(response) { }
 
 function SendPrinterCommandFailed(error_code, response) {
 	const errMsg = (error_code === 0)
-		? translate_text_item("Connection error")
-		: stdErrMsg(error_code, HTMLDecode(response), translate_text_item("Error"));
+		? trans_text_item("Connection error")
+		: stdErrMsg(error_code, HTMLDecode(response), trans_text_item("Error"));
 	Monitor_output_Update(`${errMsg}\n`);
 
 	conErr(error_code, HTMLDecode(response), "printer cmd Error");

@@ -1,4 +1,4 @@
-import { Common, setHTML, translate_text_item, logindlg, pageID } from "./common.js";
+import { Common, alertdlg, setHTML, trans_text_item, logindlg, pageID } from "./common.js";
 
 let http_cmd_list = [];
 let processing_cmd = false;
@@ -77,24 +77,15 @@ function process_cmd() {
 	}
 
 	processing_cmd = true;
-
-	switch (cmdType) {
-		case "GET":
-			ProcessGetHttp(command);
-			break;
-		case "POST":
-			// Note: Only used for uploading files
-			ProcessFileHttp(command);
-			break;
-		case "CMD": {
-			// Note: NOT an actual http command, just something else to be done
-			const fn = command.fn;
-			fn();
-			http_cmd_list.shift();
-			processing_cmd = false;
-			process_cmd();
-			break;
-		}
+	if (cmdType === "CMD") {
+		// Note: NOT an actual http command, just something else to be done
+		const fn = command.fn;
+		fn();
+		http_cmd_list.shift();
+		processing_cmd = false;
+		process_cmd();
+	} else {
+		ProcessHttpCommand(command);
 	}
 }
 
@@ -150,7 +141,7 @@ const checkForMaxListSize = (desc) => {
 		return true;
 	}
 
-	http_errorfn(999, translate_text_item("Server not responding"));
+	http_errorfn(999, trans_text_item("Server not responding"));
 	console.error(`${desc} could not be added to the http_cmd_list. Maximum pending commands length has been exceeded.`);
 
 	console.info("Will attempt to continue processes commands");
@@ -181,7 +172,7 @@ function GetIdentificationStatusSuccess(response_text) {
 	const response = JSON.parse(response_text);
 	if (typeof response.authentication_lvl !== "undefined") {
 		if (response.authentication_lvl === "guest") {
-			setHTML("current_ID", translate_text_item("guest"));
+			setHTML("current_ID", trans_text_item("guest"));
 			setHTML("current_auth_level", "");
 		}
 	}
@@ -190,7 +181,7 @@ function GetIdentificationStatusSuccess(response_text) {
 const CheckForHttpCommLock = () => {
 	const common = new Common();
 	if (common.http_communication_locked) {
-		alertdlg(translate_text_item("Busy..."), translate_text_item("Communications are currently locked, please wait and retry."));
+		alertdlg(trans_text_item("Busy..."), trans_text_item("Communications are currently locked, please wait and retry."));
 		console.warn("communication locked");
 	}
 	return common.http_communication_locked;
@@ -222,29 +213,6 @@ const SendGetHttp = (cmd, result_fn, error_fn, id, max_id) => {
 	process_cmd();
 };
 
-function ProcessGetHttp(command) {
-	const common = new Common();
-	if (common.http_communication_locked) {
-		http_errorfn(503, translate_text_item("Communication locked!"));
-		console.warn("locked");
-		return;
-	}
-
-	fetch(command.url, { method: 'GET' })
-		.then(response => {
-			if (response.status === 200) {
-				return response.text();
-			}
-
-			if (response.status === 401) {
-				GetIdentificationStatus();
-			}
-			throw new Error(response.status);
-		})
-		.then(responseText => http_handleSuccess(command, responseText))
-		.catch(error => http_handleError(command, error.message, error.responseText));
-}
-
 function SendFileHttp(cmd, postdata, progress_fn, result_fn, error_fn) {
 	if (!checkForMaxListSize(`The command '${cmd}'`)) {
 		return;
@@ -259,22 +227,27 @@ function SendFileHttp(cmd, postdata, progress_fn, result_fn, error_fn) {
 	process_cmd();
 }
 
-function ProcessFileHttp(command) {
+const ProcessHttpCommand = (command) => {
 	const common = new Common();
 	if (common.http_communication_locked) {
-		http_errorfn(503, translate_text_item("Communication locked!"));
+		http_errorfn(503, trans_text_item("Communication locked!"));
 		console.warn("locked");
 		return;
 	}
 
+	const req = { method: command.type };
+	if (req.method === "POST") {
+		// Note: Only used for uploading files
+		req.body = command.postdata;
+	}
+
 	common.http_communication_locked = true;
-	fetch(command.url, { method: 'POST', body: command.postdata })
+	fetch(command.url, req)
 		.then(response => {
 			common.http_communication_locked = false;
 			if (response.status === 200) {
 				return response.text();
 			}
-
 			if (response.status === 401) {
 				GetIdentificationStatus();
 			}

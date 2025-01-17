@@ -8,7 +8,7 @@ import {
 	setactiveModal,
 	showModal,
 	SendGetHttp,
-	translate_text_item,
+	trans_text_item,
 } from "./common.js";
 
 /** Change Password dialog */
@@ -31,7 +31,7 @@ const changepassworddlg = () => {
 	setHTML("password_password_text1", "");
 	setHTML("password_password_text2", "");
 
-	setHTML("passwordChange", `${get_icon_svg("user")}<span>${translate_text_item("Change Password")}</span>`);
+	setHTML("passwordChange", `${get_icon_svg("user")}<span>${trans_text_item("Change Password")}</span>`);
 
 	showModal();
 };
@@ -42,9 +42,9 @@ function checkpassword() {
 	setHTML("password_content", "");
 	displayNone("change_password_btn");
 	if (pwd1 !== pwd2) {
-		setHTML("password_content", translate_text_item("Passwords do not matches!"));
+		setHTML("password_content", trans_text_item("Passwords do not matches!"));
 	} else if (pwd1.length < 1 || pwd1.length > 16 || pwd1.indexOf(" ") > -1) {
-		setHTML("password_content", translate_text_item("Password must be >1 and <16 without space!"));
+		setHTML("password_content", trans_text_item("Password must be >1 and <16 without space!"));
 	} else {
 		displayBlock("change_password_btn");
 	}
@@ -53,7 +53,7 @@ function checkpassword() {
 function ChangePasswordfailed(error_code, response_text) {
 	const response = JSON.parse(response_text);
 	if (typeof response.status !== "undefined") {
-		setHTML("password_content", translate_text_item(response.status));
+		setHTML("password_content", trans_text_item(response.status));
 	}
 	conErr(error_code, response_text || "");
 	displayNone("password_loader");

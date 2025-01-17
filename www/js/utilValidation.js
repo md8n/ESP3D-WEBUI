@@ -1,3 +1,5 @@
+import { trans_text_item } from "./common.js";
+
 // For all of the following `valueDef` is the following structure 
 /*
 {
@@ -16,7 +18,7 @@
  * failure is an error message */
 const valueMinTest = (value, valueDef) => {
 	return "min" in valueDef && value < valueDef.min
-		? `'${valueDef.label}' ${translate_text_item("must be greater than or equal to")} ${valueDef.min}`
+		? `'${valueDef.label}' ${trans_text_item("must be greater than or equal to")} ${valueDef.min}`
 		: "";
 };
 
@@ -25,7 +27,7 @@ const valueMinTest = (value, valueDef) => {
  * failure is an error message */
 const valueMaxTest = (value, valueDef) => {
 	return "max" in valueDef && value > valueDef.max
-		? `'${valueDef.label}' ${translate_text_item("must be less than or equal to")} ${valueDef.max}`
+		? `'${valueDef.label}' ${trans_text_item("must be less than or equal to")} ${valueDef.max}`
 		: "";
 };
 
@@ -36,7 +38,7 @@ const valueIsInt = (value, valueDef) => {
   const errorList = [];
   const vInt = Number.parseInt(value);
   if (Number.isNaN(vInt)) {
-    errorList.push(`'${valueDef.label}' ${translate_text_item("must be an integer")}`);
+    errorList.push(`'${valueDef.label}' ${trans_text_item("must be an integer")}`);
   } else {
     errorList.push(valueMinTest(vInt, valueDef));
     errorList.push(valueMaxTest(vInt, valueDef));
@@ -51,7 +53,7 @@ const valueIsFloat = (value, valueDef) => {
   const errorList = [];
   const vFloat = Number.parseFloat(value);
   if (Number.isNaN(vInt)) {
-    errorList.push(`'${valueDef.label}' ${translate_text_item("must be an float")}`);
+    errorList.push(`'${valueDef.label}' ${trans_text_item("must be an float")}`);
   } else {
     errorList.push(valueMinTest(vFloat, valueDef));
     errorList.push(valueMaxTest(vFloat, valueDef));
@@ -66,7 +68,7 @@ const valueIsFloat = (value, valueDef) => {
 const valueIsBool = (value, valueDef) => {
   return (typeof value === "boolean" || (typeof value === "string" && ["true", "false"].includes(value.toLocaleLowerCase())))
     ? []
-    : `'${valueDef.label}' ${translate_text_item("must be a boolean, or 'true' or 'false'")}`;
+    : `'${valueDef.label}' ${trans_text_item("must be a boolean, or 'true' or 'false'")}`;
 }
 
 /** Test whether a value is text,
@@ -75,7 +77,7 @@ const valueIsBool = (value, valueDef) => {
 const valueIsText = (value, valueDef) => {
   return (typeof value === "string")
     ? []
-    : `'${valueDef.label}' ${translate_text_item("must be a string")}`;
+    : `'${valueDef.label}' ${trans_text_item("must be a string")}`;
 }
 
 /** Checks a supplied value against the supplied valueDef,
@@ -99,7 +101,7 @@ const checkValue = (value, valueDef, errorList = []) => {
       // This is effectively an enum - no specific test for this yet
       break;
     default: {
-      const valueDefError = `'${valueDef.label}' ${translate_text_item("is an unknown value type")} '${valueDef.valueType}'`;
+      const valueDefError = `'${valueDef.label}' ${trans_text_item("is an unknown value type")} '${valueDef.valueType}'`;
       console.error(`${valueDefError}: ${JSON.stringify(value)}`);
       errorList.push(valueDefError); 
       break;

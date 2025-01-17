@@ -5,7 +5,7 @@ import {
 	id,
 	HTMLDecode,
 	SendGetHttp,
-	translate_text_item,
+	trans_text_item,
 	process_socket_response,
 	getValue,
 	setValue,
@@ -94,10 +94,10 @@ const Monitor_output_Update = (message) => {
 			out.startsWith("Hold:") ||
 			out.startsWith("Door:")
 		) {
-			out = `<font color='orange'><b>${out}${translate_text_item(out.trim())}</b></font>\n`;
+			out = `<font color='orange'><b>${out}${trans_text_item(out.trim())}</b></font>\n`;
 		}
 		if (out.startsWith("error:")) {
-			out = `<font color='red'><b>${out.toUpperCase()}${translate_text_item(out.trim())}</b></font>\n`;
+			out = `<font color='red'><b>${out.toUpperCase()}${trans_text_item(out.trim())}</b></font>\n`;
 		}
 		output += out;
 	}
@@ -174,11 +174,11 @@ function SendCustomCommandSuccess(response) {
 function SendCustomCommandFailed(error_code, response) {
 	const errMsg =
 		error_code === 0
-			? translate_text_item("Connection error")
+			? trans_text_item("Connection error")
 			: stdErrMsg(
 				error_code,
 				HTMLDecode(response),
-				translate_text_item("Error"),
+				trans_text_item("Error"),
 			);
 	Monitor_output_Update(`${errMsg}\n`);
 

@@ -16,7 +16,7 @@ import {
 	SendFileHttp,
 	SendGetHttp,
 	showGCode,
-	translate_text_item,
+	trans_text_item,
 	CheckForHttpCommLock,
 	setValue,
 } from "./common.js";
@@ -230,7 +230,7 @@ function files_print_filename(path) {
 	SendPrinterCommand(`$SD/Run=${path}`);
 }
 
-const files_Createdir = () => inputdlg(translate_text_item("Please enter directory name"), translate_text_item("Name:"), process_files_Createdir);
+const files_Createdir = () => inputdlg(trans_text_item("Please enter directory name"), trans_text_item("Name:"), process_files_Createdir);
 
 function process_files_Createdir(answer) {
 	if (answer.length > 0) {
@@ -252,11 +252,11 @@ function files_create_dir(name) {
 
 function files_delete(index) {
 	files_current_file_index = index;
-	let msg = translate_text_item("Confirm deletion of directory: ");
+	let msg = trans_text_item("Confirm deletion of directory: ");
 	if (!files_file_list[index].isdir) {
-		msg = translate_text_item("Confirm deletion of file: ");
+		msg = trans_text_item("Confirm deletion of file: ");
 	}
-	confirmdlg(translate_text_item("Please Confirm"), msg + files_file_list[index].name, process_files_Delete);
+	confirmdlg(trans_text_item("Please Confirm"), msg + files_file_list[index].name, process_files_Delete);
 }
 
 function process_files_Delete(answer) {
@@ -291,7 +291,7 @@ let old_file_name;
 function files_rename(index) {
 	const entry = files_file_list[index];
 	old_file_name = entry.sdname;
-	inputdlg(translate_text_item("New file name"), translate_text_item("Name:"), process_files_rename, old_file_name);
+	inputdlg(trans_text_item("New file name"), trans_text_item("Name:"), process_files_rename, old_file_name);
 }
 
 function process_files_rename(new_file_name) {
@@ -453,7 +453,7 @@ const files_list_success = (response_text) => {
 		error = true;
 	}
 	if (error || typeof response.status === "undefined") {
-		files_list_failed(406, translate_text_item("Wrong data", true));
+		files_list_failed(406, trans_text_item("Wrong data", true));
 		return;
 	}
 	populateTabletFileSelector(response);
@@ -488,7 +488,7 @@ const files_list_success = (response_text) => {
 	}
 	files_status_list = [];
 	files_status_list.push({
-		status: translate_text_item(response.status),
+		status: trans_text_item(response.status),
 		path: response.path,
 		used: vused,
 		total: vtotal,
@@ -500,7 +500,7 @@ const files_list_success = (response_text) => {
 /** Shows an alert dialog for the ESP error, and then clears the ESP error_code */
 const alertEspError = () => {
 	const common = new Common();
-	alertdlg(translate_text_item("Error"), stdErrMsg(`(${common.esp_error_code})`, common.esp_error_message));
+	alertdlg(trans_text_item("Error"), stdErrMsg(`(${common.esp_error_code})`, common.esp_error_message));
 	common.esp_error_code = 0;
 };
 
@@ -510,7 +510,7 @@ function files_list_failed(error_code, response) {
 	if (common.esp_error_code !== 0) {
 		alertEspError();
 	} else {
-		alertdlg(translate_text_item("Error"), translate_text_item("No connection"));
+		alertdlg(trans_text_item("Error"), trans_text_item("No connection"));
 	}
 	files_build_display_filelist(false);
 }
@@ -520,7 +520,7 @@ function files_directSD_upload_failed(error_code, response) {
 	if (common.esp_error_code !== 0) {
 		alertEspError();
 	} else {
-		alertdlg(translate_text_item("Error"), translate_text_item("Upload failed"));
+		alertdlg(trans_text_item("Error"), trans_text_item("Upload failed"));
 	}
 	displayNone("files_uploading_msg");
 	displayBlock("files_navigation_buttons");
@@ -613,7 +613,7 @@ function files_build_display_filelist(displaylist = true) {
 		}
 		files_error_status = "";
 		if (files_status_list[0].status.toLowerCase() !== "ok") {
-			setHTML("files_sd_status_msg", translate_text_item(files_status_list[0].status, true));
+			setHTML("files_sd_status_msg", trans_text_item(files_status_list[0].status, true));
 			displayTable("files_status_sd_status");
 		} else {
 			displayNone("files_status_sd_status");
@@ -644,10 +644,10 @@ function process_check_sd_presence(answer) {
 	//for direct SD there is a SD check
 	if (common.fwData.direct_sd) {
 		if (answer.indexOf("o SD card") > -1) {
-			alertdlg(translate_text_item("Upload failed"), translate_text_item("No SD card detected"));
+			alertdlg(trans_text_item("Upload failed"), trans_text_item("No SD card detected"));
 			files_error_status = "No SD card";
 			files_build_display_filelist(false);
-			setHTML("files_sd_status_msg", translate_text_item(files_error_status, true));
+			setHTML("files_sd_status_msg", trans_text_item(files_error_status, true));
 			displayTable("files_status_sd_status");
 		} else files_start_upload();
 	} else {

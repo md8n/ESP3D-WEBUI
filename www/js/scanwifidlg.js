@@ -12,7 +12,7 @@ import {
 	setactiveModal,
 	showModal,
 	SendGetHttp,
-	translate_text_item,
+	trans_text_item,
 } from "./common.js";
 
 let ssid_item_scanwifi = -1;
@@ -41,7 +41,7 @@ const scanwifidlg = (item, subitem) => {
 function refresh_scanwifi() {
 	displayBlock(["AP_scan_loader", "AP_scan_status"]);
 	displayNone(["AP_scan_list", "refresh_scanwifi_btn"]);
-	setHTML("AP_scan_status", translate_text_item("Scanning"));
+	setHTML("AP_scan_status", trans_text_item("Scanning"));
 	const cmd = `/command?plain=${encodeURIComponent("[ESP410]")}`;
 	SendGetHttp(cmd, getscanWifiSuccess, getscanWififailed);
 }
@@ -101,7 +101,7 @@ function select_ap_ssid(ssid_name) {
 
 function getscanWifiSuccess(response) {
 	if (!process_scanWifi_answer(response)) {
-		getscanWififailed(406, translate_text_item("Wrong data"));
+		getscanWififailed(406, trans_text_item("Wrong data"));
 		return;
 	}
 	displayNone(["AP_scan_loader", "AP_scan_status"]);
@@ -112,7 +112,7 @@ function getscanWififailed(error_code, response) {
 	conErr(error_code, response);
 	displayNone("AP_scan_loader");
 	displayBlock(["AP_scan_status", "refresh_scanwifi_btn"]);
-	setHTML("AP_scan_status", stdErrMsg(error_code, response, translate_text_item("Failed")));
+	setHTML("AP_scan_status", stdErrMsg(error_code, response, trans_text_item("Failed")));
 }
 
 function scanwifidlg_close(response) {

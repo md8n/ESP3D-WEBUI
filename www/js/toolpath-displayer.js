@@ -1,30 +1,37 @@
 // Display the XY-plane projection of a GCode toolpath on a 2D canvas
 import { Common, getValue, id, MPOS, WPOS, Toolpath } from "./common.js";
 
-let tpc = null;
+let tpcvs = null;
 const tpCanvas = () => {
-	if (!tpc) {
+	if (!tpcvs) {
 		const elem = id("small-toolpath");
 		if (!elem) {
 			return null;
 		}
-		tpc = elem;
+		tpcvs = elem;
 
 		const scale = window.devicePixelRatio;
 		const width = window.innerWidth;
 
-		tpc.width = width * scale;
+		tpcvs.width = width * scale;
 		tpc.height = (width / 2) * scale;
 	}
 
-	return tpc;
+	return tpcvs;
 }
 
-const tp = tpc ? tpc.getContext("2d", { willReadFrequently: true }) : {};
+let tpctx = {};
+const tpCtx = () => {
+	if (!tpctx) {
+		tpctx = tpCanvas() ? tpCanvas().getContext("2d", { willReadFrequently: true }) : {};
+	}
 
-tp.lineWidth = 0.1;
-tp.lineCap = "round";
-tp.strokeStyle = "black";
+	return tpctx;
+}
+
+tpCtx().lineWidth = 0.1;
+tpCtx().lineCap = "round";
+tpCtx().strokeStyle = "black";
 
 let cameraAngle = 0;
 
@@ -46,7 +53,7 @@ const get2DContext = (id) => {
 }
 
 /** Draw buttons */
-const drawBtn = (btnDef) => {
+const drawCornerBtn = (btnDef) => {
 	const bec = get2DContext(btnDef.id);
 	if (!bec) {
 		return;
@@ -69,17 +76,17 @@ const drawBtn = (btnDef) => {
 	return bec;
 }
 
-const btnDefs = [
-	{ name: "tlC", id: "tlBtn", fill: "#b69fcb", path: [[90, 40], [90, 140], [230, 40], [90, 40]] },
-	{ name: "trC", id: "trBtn", fill: "#b69fcb", path: [[90, 40], [230, 140], [230, 40], [90, 40]] },
-	{ name: "blC", id: "blBtn", fill: "#b69fcb", path: [[90, 40], [230, 140], [90, 140], [90, 40]] },
-	{ name: "brC", id: "brBtn", fill: "#b69fcb", path: [[90, 140], [230, 140], [230, 40], [90, 140]] },
-]
-
-const tlC = drawBtn(btnDefs.find((btnDef) => btnDef.name === "tlC"));
-const trC = drawBtn(btnDefs.find((btnDef) => btnDef.name === "trC"));
-const blC = drawBtn(btnDefs.find((btnDef) => btnDef.name === "blC"));
-const brC = drawBtn(btnDefs.find((btnDef) => btnDef.name === "brC"));
+const drawCornerBtns = () => {
+	const btnDefs = [
+		{ name: "tlC", id: "tlBtn", fill: "#b69fcb", path: [[90, 40], [90, 140], [230, 40], [90, 40]] },
+		{ name: "trC", id: "trBtn", fill: "#b69fcb", path: [[90, 40], [230, 140], [230, 40], [90, 40]] },
+		{ name: "blC", id: "blBtn", fill: "#b69fcb", path: [[90, 40], [230, 140], [90, 140], [90, 40]] },
+		{ name: "brC", id: "brBtn", fill: "#b69fcb", path: [[90, 140], [230, 140], [230, 40], [90, 140]] },
+	]
+	// biome-ignore lint/complexity/noForEach: <explanation>
+	btnDefs.forEach((btnDef) => drawCornerBtn(btnDef))
+}
+drawCornerBtns();
 
 const upC = get2DContext("upBtn");
 if (upC) {
@@ -359,26 +366,30 @@ const drawTool = (dpos) => {
 	const pp = projection(dpos);
 	toolX = xToPixel(pp.x) - toolRadius - 2;
 	toolY = yToPixel(pp.y) - toolRadius - 2;
-	toolSave = tp.getImageData(toolX, toolY, toolRectWH, toolRectWH);
 
-	tp.beginPath();
-	tp.strokeStyle = "magenta";
-	tp.fillStyle = "magenta";
-	tp.arc(pp.x, pp.y, toolRadius / scaler, 0, Math.PI * 2, true);
-	tp.fill();
-	tp.stroke();
+	const tpctx = tpCtx();
+	toolSave = tpctx.getImageData(toolX, toolY, toolRectWH, toolRectWH);
+
+	tpctx.beginPath();
+	tpctx.strokeStyle = "magenta";
+	tpctx.fillStyle = "magenta";
+	tpctx.arc(pp.x, pp.y, toolRadius / scaler, 0, Math.PI * 2, true);
+	tpctx.fill();
+	tpctx.stroke();
 };
 
 const drawOrigin = (radius) => {
 	const po = projection({ x: 0.0, y: 0.0, z: 0.0 });
-	tp.beginPath();
-	tp.strokeStyle = "red";
-	tp.arc(po.x, po.y, radius, 0, Math.PI * 2, false);
-	tp.moveTo(-radius * 1.5, 0);
-	tp.lineTo(radius * 1.5, 0);
-	tp.moveTo(0, -radius * 1.5);
-	tp.lineTo(0, radius * 1.5);
-	tp.stroke();
+
+	const tpctx = tpCtx();
+	tpctx.beginPath();
+	tpctx.strokeStyle = "red";
+	tpctx.arc(po.x, po.y, radius, 0, Math.PI * 2, false);
+	tpctx.moveTo(-radius * 1.5, 0);
+	tpctx.lineTo(radius * 1.5, 0);
+	tpctx.moveTo(0, -radius * 1.5);
+	tpctx.lineTo(0, radius * 1.5);
+	tpctx.stroke();
 };
 
 const drawMachineBounds = () => {
@@ -400,15 +411,16 @@ const drawMachineBounds = () => {
 	bboxIsSet = true;
 
 	//Draw to the actual display
-	tp.beginPath();
-	tp.moveTo(p0.x, p0.y);
-	tp.lineTo(p0.x, p0.y);
-	tp.lineTo(p1.x, p1.y);
-	tp.lineTo(p2.x, p2.y);
-	tp.lineTo(p3.x, p3.y);
-	tp.lineTo(p0.x, p0.y);
-	tp.strokeStyle = "green";
-	tp.stroke();
+	const tpctx = tpCtx();
+	tpctx.beginPath();
+	tpctx.moveTo(p0.x, p0.y);
+	tpctx.lineTo(p0.x, p0.y);
+	tpctx.lineTo(p1.x, p1.y);
+	tpctx.lineTo(p2.x, p2.y);
+	tpctx.lineTo(p3.x, p3.y);
+	tpctx.lineTo(p0.x, p0.y);
+	tpctx.strokeStyle = "green";
+	tpctx.stroke();
 };
 
 const drawMachineBelts = () => {
@@ -424,35 +436,36 @@ const drawMachineBelts = () => {
 	tpBbox.max.x = Math.max(tpBbox.max.x, tr.x);
 	tpBbox.max.y = Math.max(tpBbox.max.y, tr.y);
 
-	tp.beginPath();
-	tp.strokeStyle = "grey";
-	tp.moveTo(0, 0);
-	tp.lineTo(tl.x, tl.y);
-	tp.moveTo(0, 0);
-	tp.lineTo(tr.x, tr.y);
-	tp.moveTo(0, 0);
-	tp.lineTo(bl.x, bl.y);
-	tp.moveTo(0, 0);
-	tp.lineTo(br.x, br.y);
-	tp.stroke();
+	const tpctx = tpCtx();
+	tpctx.beginPath();
+	tpctx.strokeStyle = "grey";
+	tpctx.moveTo(0, 0);
+	tpctx.lineTo(tl.x, tl.y);
+	tpctx.moveTo(0, 0);
+	tpctx.lineTo(tr.x, tr.y);
+	tpctx.moveTo(0, 0);
+	tpctx.lineTo(bl.x, bl.y);
+	tpctx.moveTo(0, 0);
+	tpctx.lineTo(br.x, br.y);
+	tpctx.stroke();
 
-	tp.fillStyle = "black";
-	tp.beginPath();
-	tp.arc(tl.x, tl.y, 10, 0, 2 * Math.PI);
-	tp.closePath();
-	tp.fill();
-	tp.beginPath();
-	tp.arc(tr.x, tr.y, 10, 0, 2 * Math.PI);
-	tp.closePath();
-	tp.fill();
-	tp.beginPath();
-	tp.arc(br.x, br.y, 10, 0, 2 * Math.PI);
-	tp.closePath();
-	tp.fill();
-	tp.beginPath();
-	tp.arc(bl.x, bl.y, 10, 0, 2 * Math.PI);
-	tp.closePath();
-	tp.fill();
+	tpctx.fillStyle = "black";
+	tpctx.beginPath();
+	tpctx.arc(tl.x, tl.y, 10, 0, 2 * Math.PI);
+	tpctx.closePath();
+	tpctx.fill();
+	tpctx.beginPath();
+	tpctx.arc(tr.x, tr.y, 10, 0, 2 * Math.PI);
+	tpctx.closePath();
+	tpctx.fill();
+	tpctx.beginPath();
+	tpctx.arc(br.x, br.y, 10, 0, 2 * Math.PI);
+	tpctx.closePath();
+	tpctx.fill();
+	tpctx.beginPath();
+	tpctx.arc(bl.x, bl.y, 10, 0, 2 * Math.PI);
+	tpctx.closePath();
+	tpctx.fill();
 
 	const squareSize = projection({ x: 50, y: 0, z: 0 });
 
@@ -530,10 +543,11 @@ function perc2color(perc) {
 
 const drawARect = (x, y, size, opacity) => {
 	const posP = projection({ x: x - size / 2, y: y - size / 2, z: 0 });
-	tp.beginPath();
-	tp.fillStyle = perc2color(100 - 100 * opacity); //"rgba(255, 0, 0, " + opacity + ")";
-	tp.rect(posP.x, posP.y, size, size);
-	tp.fill();
+	const tpctx = tpCtx();
+	tpctx.beginPath();
+	tpctx.fillStyle = perc2color(100 - 100 * opacity); //"rgba(255, 0, 0, " + opacity + ")";
+	tpctx.rect(posP.x, posP.y, size, size);
+	tpctx.fill();
 };
 
 let xOffset = 0;
@@ -548,7 +562,8 @@ const clearCanvas = () => {
 		return;
 	}
 	// Reset the transform and clear the tpCanvas
-	tp.setTransform(1, 0, 0, 1, 0, 0);
+	const tpctx = tpCtx();
+	tpctx.setTransform(1, 0, 0, 1, 0, 0);
 
 	//    if (tpRect == undefined) {
 	const tpRect = tpc.parentNode.getBoundingClientRect();
@@ -556,8 +571,8 @@ const clearCanvas = () => {
 	// tpc.height = tpRect.height ? tpRect.height : 400;
 	//    }
 
-	tp.fillStyle = "white";
-	tp.fillRect(0, 0, tpc.width, tpc.height);
+	tpctx.fillStyle = "white";
+	tpctx.fillRect(0, 0, tpc.width, tpc.height);
 };
 
 const transformCanvas = () => {
@@ -608,22 +623,24 @@ const transformCanvas = () => {
 		const imageTop = scaler * imageHeight;
 		const imageRight = scaler * imageWidth;
 
+		const tpctx = tpCtx();
+
 		// Show the X and Y limit coordinates of the GCode program.
 		// We do this before scaling because after we invert the Y coordinate,
 		// text would be displayed upside-down.
-		// tp.fillStyle = "black";
-		// tp.font = "14px Ariel";
-		// tp.textAlign = "center";
-		// tp.textBaseline = "bottom";
-		// tp.fillText(formatLimit(tpBbox.min.y), imageRight/2, tpc.height-inset);
-		// tp.textBaseline = "top";
-		// tp.fillText(formatLimit(tpBbox.max.y), imageRight/2, tpc.height-inset - imageTop);
-		// tp.textAlign = "left";
-		// tp.textBaseline = "center";
-		// tp.fillText(formatLimit(tpBbox.min.x), inset, tpc.height-inset - imageTop/2);
-		// tp.textAlign = "right";
-		// tp.textBaseline = "center";
-		// tp.fillText(formatLimit(tpBbox.max.x), inset+imageRight, tpc.height-inset - imageTop/2);
+		// tpctx.fillStyle = "black";
+		// tpctx.font = "14px Ariel";
+		// tpctx.textAlign = "center";
+		// tpctx.textBaseline = "bottom";
+		// tpctx.fillText(formatLimit(tpBbox.min.y), imageRight/2, tpc.height-inset);
+		// tpctx.textBaseline = "top";
+		// tpctx.fillText(formatLimit(tpBbox.max.y), imageRight/2, tpc.height-inset - imageTop);
+		// tpctx.textAlign = "left";
+		// tpctx.textBaseline = "center";
+		// tpctx.fillText(formatLimit(tpBbox.min.x), inset, tpc.height-inset - imageTop/2);
+		// tpctx.textAlign = "right";
+		// tpctx.textBaseline = "center";
+		// tpctx.fillText(formatLimit(tpBbox.max.x), inset+imageRight, tpc.height-inset - imageTop/2);
 		// Transform the path coordinate system so the image fills the tpc
 		// with a small inset, and +Y goes upward.
 		// The net transform from image space (x,y) to pixel space (x',y') is:
@@ -634,9 +651,9 @@ const transformCanvas = () => {
 		// uses pixel coordinates, and there is no standard way to read back the current
 		// transform matrix.
 
-		tp.setTransform(scaler, 0, 0, -scaler, xOffset, yOffset);
+		tpctx.setTransform(scaler, 0, 0, -scaler, xOffset, yOffset);
 
-		tp.lineWidth = 0.5 / scaler;
+		tpctx.lineWidth = 0.5 / scaler;
 	}
 
 	drawOrigin(imageWidth * 0.04);
@@ -826,11 +843,13 @@ const bboxHandlers = {
 let initialMoves = true;
 const displayHandlers = {
 	addLine: (modal, start, end) => {
+		const tpctx = tpCtx();
+
 		const motion = modal.motion;
 		if (motion === "G0") {
-			tp.strokeStyle = initialMoves ? "red" : "green";
+			tpctx.strokeStyle = initialMoves ? "red" : "green";
 		} else {
-			tp.strokeStyle = "black";
+			tpctx.strokeStyle = "black";
 			// Don't cancel initialMoves on no-motion G1 (e.g. G1 F30)
 			// or on Z-only moves
 			if (start.x !== end.x || start.y !== end.y) {
@@ -840,12 +859,12 @@ const displayHandlers = {
 
 		const ps = projection(start);
 		const pe = projection(end);
-		tp.beginPath();
-		// tp.moveTo(start.x, start.y);
-		// tp.lineTo(end.x, end.y);
-		tp.moveTo(ps.x, ps.y);
-		tp.lineTo(pe.x, pe.y);
-		tp.stroke();
+		tpctx.beginPath();
+		// tpctx.moveTo(start.x, start.y);
+		// tpctx.lineTo(end.x, end.y);
+		tpctx.moveTo(ps.x, ps.y);
+		tpctx.lineTo(pe.x, pe.y);
+		tpctx.stroke();
 	},
 	addArcCurve: (modal, start, end, center, extraRotations) => {
 		const motion = modal.motion;
@@ -872,14 +891,16 @@ const displayHandlers = {
 
 		initialMoves = false;
 
-		tp.beginPath();
-		tp.strokeStyle = "black";
+		const tpctx = tpCtx();
+
+		tpctx.beginPath();
+		tpctx.strokeStyle = "black";
 		deltaTheta = theta2 - theta1;
 		n = 10 * Math.ceil(Math.abs(deltaTheta) / Math.PI);
 		dt = deltaTheta / n;
 		dz = (end.z - start.z) / n;
 		const ps = projection(start);
-		tp.moveTo(ps.x, ps.y);
+		tpctx.moveTo(ps.x, ps.y);
 		next = {};
 		let theta = theta1;
 		next.z = start.z;
@@ -889,9 +910,9 @@ const displayHandlers = {
 			next.y = center.y + radius * Math.sin(theta);
 			next.z += dz;
 			pe = projection(next);
-			tp.lineTo(pe.x, pe.y);
+			tpctx.lineTo(pe.x, pe.y);
 		}
-		tp.stroke();
+		tpctx.stroke();
 	},
 };
 
@@ -964,7 +985,7 @@ class ToolpathDisplayer {
 	}
 	reDrawTool(modal, dpos) {
 		if (toolSave != null) {
-			tp.putImageData(toolSave, toolX, toolY);
+			tpCtx().putImageData(toolSave, toolX, toolY);
 			drawTool(dpos);
 		}
 	}
@@ -991,8 +1012,8 @@ const updateGcodeViewerAngle = () => {
 	displayer.cycleCameraAngle(gcode, arrayToXYZ(WPOS()));
 };
 
-if (tpc) {
-	tpc.addEventListener("mouseup", updateGcodeViewerAngle);
+if (tpCanvas()) {
+	tpCanvas().addEventListener("mouseup", updateGcodeViewerAngle);
 }
 
 const refreshGcode = () => {

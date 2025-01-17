@@ -12,7 +12,7 @@ import {
 	setactiveModal,
 	showModal,
 	SendGetHttp,
-	translate_text_item,
+	trans_text_item,
 } from "./common.js";
 
 //status dialog
@@ -49,7 +49,7 @@ const buildSettingList = (dataDef) => {
 	const settingList = ["<dl>"];
 	for (let i = 0; i < dataDef.length; i++) {
 		const data = dataDef[i];
-		settingList.push(`<dt>${translate_text_item(data.name)}</dt><dd class='text-info'>${data.value || ""}</dd>`);
+		settingList.push(`<dt>${trans_text_item(data.name)}</dt><dd class='text-info'>${data.value || ""}</dd>`);
 	}
 	settingList.push("</dl>");
 	return settingList.join("\n");
