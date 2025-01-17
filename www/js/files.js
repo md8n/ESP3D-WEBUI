@@ -16,8 +16,9 @@ import {
 	SendFileHttp,
 	SendGetHttp,
 	showGCode,
-	translate_text_item,
+	trans_text_item,
 	CheckForHttpCommLock,
+	setValue,
 } from "./common.js";
 
 let files_current_path = "/";
@@ -115,7 +116,7 @@ function init_files_panel(dorefresh = true) {
 
 	id("files_input_file").addEventListener("change", (event) => files_check_if_upload());
 
-	const iconOptions = {t: "translate(50,1200) scale(1,-1)"};
+	const iconOptions = { t: "translate(50,1200) scale(1,-1)" };
 	setHTML("files_filter_btn", `<span id="files_filter_glyph" style="position:relative; top:2px">${get_icon_svg("filter", iconOptions)}</span>`);
 
 	files_set_button_as_filter(files_filter_sd_list);
@@ -124,7 +125,7 @@ function init_files_panel(dorefresh = true) {
 	}
 }
 
-const files_set_button_as_filter = (isfilter) => setHTML("files_filter_glyph", get_icon_svg(!isfilter ? "filter" : "list-alt", {w: "1em", h: "1em"}));
+const files_set_button_as_filter = (isfilter) => setHTML("files_filter_glyph", get_icon_svg(!isfilter ? "filter" : "list-alt", { w: "1em", h: "1em" }));
 
 function files_filter_button() {
 	files_filter_sd_list = !files_filter_sd_list;
@@ -152,7 +153,7 @@ function files_build_file_line(index, actions) {
 	let content = "";
 	const entry = files_file_list[index];
 	const is_clickable = files_is_clickable(index);
-	const iconOptions = {w: "1em", h: "1em"};
+	const iconOptions = { w: "1em", h: "1em" };
 	if ((files_filter_sd_list && entry.isprintable) || !files_filter_sd_list) {
 		const fliId = `filelist_${index}`;
 		const clickStyle = is_clickable ? " style='cursor:pointer;'" : "";
@@ -229,7 +230,7 @@ function files_print_filename(path) {
 	SendPrinterCommand(`$SD/Run=${path}`);
 }
 
-const files_Createdir = () => inputdlg(translate_text_item("Please enter directory name"), translate_text_item("Name:"), process_files_Createdir);
+const files_Createdir = () => inputdlg(trans_text_item("Please enter directory name"), trans_text_item("Name:"), process_files_Createdir);
 
 function process_files_Createdir(answer) {
 	if (answer.length > 0) {
@@ -244,18 +245,18 @@ function files_create_dir(name) {
 	}
 
 	const cmdpath = files_currentPath();
-	const url = `/upload?path=${encodeURIComponent(cmdpath)}&action=createdir&filename=${encodeURIComponent(name)}`;
+	const cmd = `/upload?path=${encodeURIComponent(cmdpath)}&action=createdir&filename=${encodeURIComponent(name)}`;
 	displayBlock("files_nav_loader");
-	SendGetHttp(url, files_list_success, files_list_failed);
+	SendGetHttp(cmd, files_list_success, files_list_failed);
 }
 
 function files_delete(index) {
 	files_current_file_index = index;
-	let msg = translate_text_item("Confirm deletion of directory: ");
+	let msg = trans_text_item("Confirm deletion of directory: ");
 	if (!files_file_list[index].isdir) {
-		msg = translate_text_item("Confirm deletion of file: ");
+		msg = trans_text_item("Confirm deletion of file: ");
 	}
-	confirmdlg(translate_text_item("Please Confirm"), msg + files_file_list[index].name, process_files_Delete);
+	confirmdlg(trans_text_item("Please Confirm"), msg + files_file_list[index].name, process_files_Delete);
 }
 
 function process_files_Delete(answer) {
@@ -274,9 +275,9 @@ function files_delete_file(index) {
 	const cmdpath = `path=${encodeURIComponent(files_currentPath())}`;
 	const action = `action=${files_file_list[index].isdir ? "deletedir" : "delete"}`;
 	const filename = `filename=${encodeURIComponent(files_file_list[index].sdname)}`;
-	const url = `/upload?${cmdpath}&${action}&${filename}`;
+	const cmd = `/upload?${cmdpath}&${action}&${filename}`;
 	displayBlock("files_nav_loader");
-	SendGetHttp(url, files_list_success, files_list_failed);
+	SendGetHttp(cmd, files_list_success, files_list_failed);
 }
 
 const files_is_clickable = (index) => {
@@ -290,7 +291,7 @@ let old_file_name;
 function files_rename(index) {
 	const entry = files_file_list[index];
 	old_file_name = entry.sdname;
-	inputdlg(translate_text_item("New file name"), translate_text_item("Name:"), process_files_rename, old_file_name);
+	inputdlg(trans_text_item("New file name"), trans_text_item("Name:"), process_files_rename, old_file_name);
 }
 
 function process_files_rename(new_file_name) {
@@ -303,9 +304,9 @@ function process_files_rename(new_file_name) {
 	const action = "action=rename";
 	const filename = `filename=${encodeURIComponent(old_file_name)}`;
 	const newname = `newname=${encodeURIComponent(new_file_name)}`;
-	const url = `/upload?${cmdpath}&${action}&${filename}&${newname}`;
+	const cmd = `/upload?${cmdpath}&${action}&${filename}&${newname}`;
 	displayBlock("files_nav_loader");
-	SendGetHttp(url, files_list_success, files_list_failed);
+	SendGetHttp(cmd, files_list_success, files_list_failed);
 }
 function files_download(index) {
 	const entry = files_file_list[index];
@@ -382,8 +383,8 @@ function files_refreshFiles(path, usecache = false) {
 	displayBlock(["files_list_loader", "files_nav_loader"]);
 	//this is pure direct SD
 	if (common.fwData.direct_sd) {
-		const url = `/upload?path=${encodeURI(cmdpath)}`;
-		SendGetHttp(url, files_list_success, files_list_failed);
+		const cmd = `/upload?path=${encodeURI(cmdpath)}`;
+		SendGetHttp(cmd, files_list_success, files_list_failed);
 	}
 }
 
@@ -446,13 +447,17 @@ const files_list_success = (response_text) => {
 	let error = false;
 	let response;
 	try {
-		response = JSON.parse(response_text);
+		if (response_text.length) {
+			response = JSON.parse(response_text);
+		} else {
+			response = {files: []}
+		}
 	} catch (e) {
 		console.error(`Parsing error: ${e}\n${response_text}`);
 		error = true;
 	}
 	if (error || typeof response.status === "undefined") {
-		files_list_failed(406, translate_text_item("Wrong data", true));
+		files_list_failed(406, trans_text_item("Wrong data", true));
 		return;
 	}
 	populateTabletFileSelector(response);
@@ -487,7 +492,7 @@ const files_list_success = (response_text) => {
 	}
 	files_status_list = [];
 	files_status_list.push({
-		status: translate_text_item(response.status),
+		status: trans_text_item(response.status),
 		path: response.path,
 		used: vused,
 		total: vtotal,
@@ -499,7 +504,7 @@ const files_list_success = (response_text) => {
 /** Shows an alert dialog for the ESP error, and then clears the ESP error_code */
 const alertEspError = () => {
 	const common = new Common();
-	alertdlg(translate_text_item("Error"), stdErrMsg(`(${common.esp_error_code})`, common.esp_error_message));
+	alertdlg(trans_text_item("Error"), stdErrMsg(`(${common.esp_error_code})`, common.esp_error_message));
 	common.esp_error_code = 0;
 };
 
@@ -509,7 +514,7 @@ function files_list_failed(error_code, response) {
 	if (common.esp_error_code !== 0) {
 		alertEspError();
 	} else {
-		alertdlg(translate_text_item("Error"), translate_text_item("No connection"));
+		alertdlg(trans_text_item("Error"), trans_text_item("No connection"));
 	}
 	files_build_display_filelist(false);
 }
@@ -519,7 +524,7 @@ function files_directSD_upload_failed(error_code, response) {
 	if (common.esp_error_code !== 0) {
 		alertEspError();
 	} else {
-		alertdlg(translate_text_item("Error"), translate_text_item("Upload failed"));
+		alertdlg(trans_text_item("Error"), trans_text_item("Upload failed"));
 	}
 	displayNone("files_uploading_msg");
 	displayBlock("files_navigation_buttons");
@@ -612,7 +617,7 @@ function files_build_display_filelist(displaylist = true) {
 		}
 		files_error_status = "";
 		if (files_status_list[0].status.toLowerCase() !== "ok") {
-			setHTML("files_sd_status_msg", translate_text_item(files_status_list[0].status, true));
+			setHTML("files_sd_status_msg", trans_text_item(files_status_list[0].status, true));
 			displayTable("files_status_sd_status");
 		} else {
 			displayNone("files_status_sd_status");
@@ -630,7 +635,7 @@ function files_check_if_upload() {
 	const canupload = true;
 	const files = id("files_input_file").files;
 	if (common.fwData.direct_sd) {
-		SendPrinterCommand("[ESP200]", false, process_check_sd_presence);
+		SendPrinterCommand("[ESP200]", false, process_check_sd_presence, null);
 	} else {
 		//no reliable way to know SD is present or not so let's upload
 		files_start_upload();
@@ -643,10 +648,10 @@ function process_check_sd_presence(answer) {
 	//for direct SD there is a SD check
 	if (common.fwData.direct_sd) {
 		if (answer.indexOf("o SD card") > -1) {
-			alertdlg(translate_text_item("Upload failed"), translate_text_item("No SD card detected"));
+			alertdlg(trans_text_item("Upload failed"), trans_text_item("No SD card detected"));
 			files_error_status = "No SD card";
 			files_build_display_filelist(false);
-			setHTML("files_sd_status_msg", translate_text_item(files_error_status, true));
+			setHTML("files_sd_status_msg", trans_text_item(files_error_status, true));
 			displayTable("files_status_sd_status");
 		} else files_start_upload();
 	} else {
@@ -657,23 +662,28 @@ function process_check_sd_presence(answer) {
 
 function files_start_upload() {
 	const common = new Common();
+
 	if (CheckForHttpCommLock()) {
 		return;
 	}
-	const url = "/upload";
-	const path = files_currentPath();
-	//console.log("upload from " + path );
-	const files = id("files_input_file").files;
 
-	if (files.value === "" || typeof files[0].name === "undefined") {
-		console.log("nothing to upload");
+	const fileList = id("files_input_file").files;
+	if (!fileList.length) {
+		console.warn("nothing to upload");
 		return;
 	}
-	const formData = new FormData();
 
+	if (!common.fwData.direct_sd) {
+		setValue("files_input_file", "");
+		return;
+	}
+
+	const formData = new FormData();
+	const path = files_currentPath();
+	//console.log("upload from " + path );
 	formData.append("path", path);
-	for (let i = 0; i < files.length; i++) {
-		const file = files[i];
+	for (let i = 0; i < fileList.length; i++) {
+		const file = fileList[i];
 		const arg = `${path + file.name}S`;
 		//append file size first to check updload is complete
 		formData.append(arg, file.size);
@@ -686,11 +696,12 @@ function files_start_upload() {
 
 	displayBlock("files_uploading_msg");
 	displayNone("files_navigation_buttons");
-	if (common.fwData.direct_sd) {
-		SendFileHttp(url, formData, FilesUploadProgressDisplay, files_list_success, files_directSD_upload_failed,);
-		//console.log("send file");
-	}
-	id("files_input_file").value = "";
+
+	const cmd = "/upload";
+	SendFileHttp(cmd, formData, FilesUploadProgressDisplay, files_list_success, files_directSD_upload_failed);
+	//console.log("send file");
+
+	setValue("files_input_file", "");
 }
 
 function FilesUploadProgressDisplay(oEvent) {

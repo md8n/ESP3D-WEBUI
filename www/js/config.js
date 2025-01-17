@@ -10,7 +10,7 @@ import {
 	setHTML,
 	alertdlg,
 	SendGetHttp,
-	translate_text_item,
+	trans_text_item,
 	CheckForHttpCommLock,
 } from "./common.js";
 
@@ -52,27 +52,23 @@ function config_display_override(display_it) {
 	}
 }
 
-function getprinterconfig(is_override) {
-	let cmd = commandtxt;
-	if (typeof is_override !== "undefined" && is_override) {
-		cmd = "M503";
-		config_override_List = [];
-		is_override_config = true;
-	} else {
-		is_override_config = false;
+function getprinterconfig(is_override = false) {
+	is_override_config = is_override;
+	if (is_override) {
+		config_override_List.length = 0;
 	}
-	const url = `/command?plain=${encodeURIComponent(cmd)}`;
-	SendGetHttp(url);
+	const cmd = `/command?plain=${encodeURIComponent((is_override) ? "M503" : commandtxt)}`;
+	SendGetHttp(cmd);
 }
 
 const Apply_config_override = () => {
-	const url = `/command?plain=${encodeURIComponent("M500")}`;
-	SendGetHttp(url, getESPUpdateconfigSuccess);
+	const cmd = `/command?plain=${encodeURIComponent("M500")}`;
+	SendGetHttp(cmd, getESPUpdateconfigSuccess);
 };
 
 const Delete_config_override = () => {
-	const url = `/command?plain=${encodeURIComponent("M502")}`;
-	SendGetHttp(url, getESPUpdateconfigSuccess);
+	const cmd = `/command?plain=${encodeURIComponent("M502")}`;
+	SendGetHttp(cmd, getESPUpdateconfigSuccess);
 };
 
 function getESPUpdateconfigSuccess(response) {
@@ -128,7 +124,7 @@ function build_HTML_config_list() {
 			content += "<div class='input-group'>";
 			content += "<input class='hide_it'></input>";
 			content += "<span class='input-group-btn'>";
-			content += `<button id='${btnCfgId}' class='btn btn-default' translate english_content='Set'>${translate_text_item("Set")}</button>&nbsp;`;
+			content += `<button id='${btnCfgId}' class='btn btn-default' translate english_content='Set'>${trans_text_item("Set")}</button>&nbsp;`;
 			content += "</span>";
 			actions.push({ id: btnCfgId, type: "click", method: (event) => configGetvalue(i, is_override_config) });
 			content += "</div>";
@@ -161,7 +157,7 @@ function config_check_value(value, index, is_override) {
 	const valTrim = value.trim();
 	if (!valTrim || valTrim[0] === "-" || valTrim.includes.indexOf("#") !== -1) {
 		isvalid = false;
-		config_error_msg = translate_text_item("cannot have '-', '#' char or be empty");
+		config_error_msg = trans_text_item("cannot have '-', '#' char or be empty");
 	}
 	return isvalid;
 }
@@ -318,7 +314,7 @@ function configGetvalue(index, is_override) {
 	if (!isvalid) {
 		setInput(id_suffix, "danger");
 
-		alertdlg(translate_text_item("Out of range"), `${translate_text_item("Value ") + config_error_msg} !`);
+		alertdlg(trans_text_item("Out of range"), `${trans_text_item("Value ") + config_error_msg} !`);
 	} else {
 		//value is ok save it
 		config_lastindex = index;
@@ -327,9 +323,8 @@ function configGetvalue(index, is_override) {
 
 		setInput(id_suffix, "success");
 
-		const cmd = item.cmd + value;
-		const url = `/command?plain=${encodeURIComponent(cmd)}`;
-		SendGetHttp(url, setESPconfigSuccess, setESPconfigfailed);
+		const cmd = `/command?plain=${encodeURIComponent(item.cmd + value)}`;
+		SendGetHttp(cmd, setESPconfigSuccess, setESPconfigfailed);
 	}
 }
 
@@ -404,11 +399,11 @@ const grbl_help = {
 	$135: "C Max travel, mm",
 };
 
-const inline_help = (label) => translate_text_item((label in grbl_help) ? grbl_help[label] : "");
+const inline_help = (label) => trans_text_item((label in grbl_help) ? grbl_help[label] : "");
 
 function setESPconfigfailed(error_code, response) {
 	const errMsg = stdErrMsg(error_code, response);
-	alertdlg(translate_text_item("Set failed"), errMsg);
+	alertdlg(trans_text_item("Set failed"), errMsg);
 	conErr(errMsg);
 
 	const id_suffix = suffix(config_lastindex, config_lastindex_is_override);
@@ -421,7 +416,7 @@ function getESPconfigSuccess(response) {
 		return;
 	}
 
-	getESPconfigfailed(406, translate_text_item("Wrong data"));
+	getESPconfigfailed(406, trans_text_item("Wrong data"));
 	displayNone(["config_loader", "config_status"]);
 	displayBlock(["config_list_content", "config_refresh_btn"]);
 }
@@ -430,7 +425,7 @@ function getESPconfigfailed(error_code, response) {
 	conErr(error_code, response);
 	displayNone("config_loader");
 	displayBlock(["config_status", "config_refresh_btn"]);
-	setHTML("config_status", stdErrMsg(error_code, response, translate_text_item("Failed")));
+	setHTML("config_status", stdErrMsg(error_code, response, trans_text_item("Failed")));
 }
 
 

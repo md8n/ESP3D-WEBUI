@@ -16,7 +16,7 @@ import {
 	alertdlg,
 	confirmdlg,
 	SendFileHttp,
-	translate_text_item,
+	trans_text_item,
 	CheckForHttpCommLock,
 } from "./common.js";
 
@@ -184,7 +184,7 @@ function on_macro_filename(event, index) {
 	const filename = event.value.trim();
 	entry.filename = event.value;
 	if (filename.length === 0) {
-		alertdlg(translate_text_item("Out of range"), translate_text_item("File name cannot be empty!"));
+		alertdlg(trans_text_item("Out of range"), trans_text_item("File name cannot be empty!"));
 	}
 	build_dlg_macrolist_line(index);
 }
@@ -267,7 +267,7 @@ const closeMacroDialog = () => {
 		}
 	}
 	if (modified) {
-		confirmdlg(translate_text_item("Data modified"), translate_text_item("Do you want to save?"), process_macroCloseDialog);
+		confirmdlg(trans_text_item("Data modified"), trans_text_item("Do you want to save?"), process_macroCloseDialog);
 	} else {
 		closeModal("cancel");
 	}
@@ -292,7 +292,7 @@ function SaveNewMacroList() {
 			macrodlg_macrolist[i].filename.length === 0 &&
 			macrodlg_macrolist[i].class !== ""
 		) {
-			alertdlg(translate_text_item("Out of range"), translate_text_item("File name cannot be empty!"));
+			alertdlg(trans_text_item("Out of range"), trans_text_item("File name cannot be empty!"));
 			return;
 		}
 	}
@@ -309,11 +309,11 @@ function SaveNewMacroList() {
 		file = new File([blob], "/macrocfg.json");
 	}
 	const formData = new FormData();
-	const url = "/files";
+	const cmd = "/files";
 	formData.append("path", "/");
 	formData.append("myfile[]", file, "/macrocfg.json");
 	SendFileHttp(
-		url,
+		cmd,
 		formData,
 		macrodlgUploadProgressDisplay,
 		macroUploadsuccess,
@@ -363,7 +363,7 @@ const macroUploadsuccess = (response) => {
 }
 
 function macroUploadfailed(error_code, response) {
-	alertdlg(translate_text_item("Error"), translate_text_item("Save macro list failed!"));
+	alertdlg(trans_text_item("Error"), trans_text_item("Save macro list failed!"));
 	displayNone("macrodlg_upload_msg");
 }
 

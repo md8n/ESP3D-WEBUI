@@ -109,8 +109,8 @@ const connectsuccess = (response) => {
 const retryconnect = () => {
 	displayNone(["connectbtn", "failed_connect_msg"]);
 	displayBlock("connecting_msg");
-	const url = `/command?plain=${encodeURIComponent("[ESP800]")}`;
-	SendGetHttp(url, connectsuccess, connectfailed);
+	const cmd = `/command?plain=${encodeURIComponent("[ESP800]")}`;
+	SendGetHttp(cmd, connectsuccess, connectfailed);
 };
 
 export { connectdlg };

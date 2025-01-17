@@ -10,7 +10,7 @@ import {
 	getPrefValue,
 	SendPrinterCommand,
 	SendGetHttp,
-	translate_text_item,
+	trans_text_item,
 	showmacrodlg,
 	valueIsFloat,
 } from "./common.js";
@@ -44,14 +44,14 @@ const ControlsPanel = () => {
 function loadmacrolist() {
 	const common = new Common();
 	common.control_macrolist = [];
-	const url = "/macrocfg.json";
-	SendGetHttp(url, processMacroGetSuccess, processMacroGetFailed);
+	const cmd = "/macrocfg.json";
+	SendGetHttp(cmd, processMacroGetSuccess, processMacroGetFailed);
 }
 
 function Macro_build_list(response_text) {
 	let response = [];
 	try {
-		if (response_text.length !== 0) {
+		if (response_text.length) {
 			response = JSON.parse(response_text);
 		}
 	} catch (e) {
@@ -61,7 +61,7 @@ function Macro_build_list(response_text) {
 	for (let i = 0; i < 9; i++) {
 		let entry;
 		if (
-			response.length !== 0 &&
+			response.length &&
 			typeof response[i].name !== "undefined" &&
 			typeof response[i].glyph !== "undefined" &&
 			typeof response[i].filename !== "undefined" &&
@@ -133,7 +133,7 @@ function onPosIntervalChange() {
 		setChecked("autocheck_position", false);
 		id("controlpanel_interval_positions").value = 0;
 		if (interval !== 0)
-			alertdlg(translate_text_item("Out of range"), translate_text_item("Value of auto-check must be between 0s and 99s !!"));
+			alertdlg(trans_text_item("Out of range"), trans_text_item("Value of auto-check must be between 0s and 99s !!"));
 		on_autocheck_position();
 	}
 }
@@ -201,7 +201,7 @@ function JogFeedrate(axis) {
 	const errorList = valueIsFloat(feedrateValue, valueDef);
 	if (errorList.length) {
 		// error text was "Feedrate value must be at least 1 mm/min!"
-		alertdlg(translate_text_item("Out of range"), errorList.join("\n"));
+		alertdlg(trans_text_item("Out of range"), errorList.join("\n"));
 		return valueDef.defValue;
 	}
 	return Number.parseFloat(feedrateValue);
@@ -231,7 +231,7 @@ function SendJogcommand(cmd, feedrate) {
 
 	if (errorList.length) {
 		// error text was "(something) Feedrate value must be at least 1 mm/min!"
-		alertdlg(translate_text_item("Out of range"), errorList.join("\n"));
+		alertdlg(trans_text_item("Out of range"), errorList.join("\n"));
 		id(controlName).value = getPrefValue(prefName);
 		return;
 	}

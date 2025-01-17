@@ -166,6 +166,7 @@ import {
 	hideModal,
 	goAxisByValue,
 	onCalibrationButtonsClick,
+	saveJogDists,
 	saveSerialMessages,
 	showGCode,
 	tabletInit,
@@ -173,8 +174,9 @@ import {
 	tabletShowMessage,
 	tabletUpdateModal,
 } from "./tablet.js";
-import { arrayToXYZ, displayer, refreshGcode } from "./toolpath-displayer.js";
-import { translate_text } from "./translate.js";
+import { drawTPBtns } from "./tabletControls.js";
+import { arrayToXYZ, refreshGcode, tpDisplayer, tpInit } from "./toolpath-displayer.js";
+import { translate_text, trans_text_item } from "./translate.js";
 import { UIdisableddlg } from "./UIdisableddlg.js";
 import { updatedlg } from "./updatedlg.js";
 
@@ -487,16 +489,19 @@ export {
 	hideModal,
 	goAxisByValue,
 	onCalibrationButtonsClick,
+	saveJogDists,
 	saveSerialMessages,
 	showGCode,
 	tabletInit,
 	tabletGrblState,
 	tabletShowMessage,
 	tabletUpdateModal,
+	// from "./tabletControls.js";
+	drawTPBtns,
 	// from "./toolpath-displayer.js";
-	arrayToXYZ, displayer, refreshGcode,
+	arrayToXYZ, refreshGcode, tpDisplayer, tpInit,
 	// from translate.js
-	translate_text,
+	translate_text, trans_text_item,
 	// from UIdisableddlg.js
 	UIdisableddlg,
 	// from updatedlg.js

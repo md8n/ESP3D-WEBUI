@@ -4,7 +4,7 @@ import {
 	loadedValues,
 	setValue,
 	setHTML,
-	translate_text_item,
+	trans_text_item,
 	displayNone,
 } from "../common.js";
 
@@ -56,7 +56,7 @@ describe("SPIFFSdlg", () => {
 	function refreshSPIFFS() {
 		setValue("SPIFFS-select", "");
 		setHTML("uploadSPIFFSmsg", "");
-		setHTML("SPIFFS_file_name", translate_text_item("No file chosen"));
+		setHTML("SPIFFS_file_name", trans_text_item("No file chosen"));
 		displayNone("SPIFFS_uploadbtn");
 		displayNone("refreshSPIFFSbtn");
 		displayNone("SPIFFS_select_files");

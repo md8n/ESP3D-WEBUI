@@ -1,8 +1,15 @@
-import { translate_text_item, HTMLDecode } from "./common.js";
+import { translate_text_item, getPrefValue, HTMLDecode } from "./common.js";
+
+/** Call translate_text_tem, already knowing what the selected language is */
+const trans_text_item = (item_text, withtag = false) => {
+	const selLang = getPrefValue("language_list");
+	return translate_text_item(item_text, selLang, withtag);
+}
 
 /** Set up text translation to the selected language */
-const translate_text = (lang) => {
+const translate_text = (lang = "") => {
 	let translated_content = "";
+	const selLang = lang ? lang : getPrefValue("language_list");
 
 	const All = document.getElementsByTagName("*");
 	for (let i = 0; i < All.length; i++) {
@@ -14,7 +21,7 @@ const translate_text = (lang) => {
 				All[i].setAttribute("english_content", content);
 			}
 			content = All[i].getAttribute("english_content");
-			translated_content = translate_text_item(content);
+			translated_content = translate_text_item(content, selLang);
 
 			All[i].innerHTML = translated_content;
 		}
@@ -28,10 +35,10 @@ const translate_text = (lang) => {
 			}
 			content = All[i].getAttribute("english_content");
 
-			translated_content = HTMLDecode(translate_text_item(content));
+			translated_content = HTMLDecode(translate_text_item(content, selLang));
 			All[i].setAttribute("placeholder", translated_content);
 		}
 	}
 };
 
-export { translate_text };
+export { translate_text, trans_text_item };

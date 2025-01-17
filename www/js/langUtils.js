@@ -1,5 +1,3 @@
-import { getPrefValue} from "./common.js";
-
 /** List of currently support languages
  * There should be a json file for each one of these in js/language
  * Also check serve.ts when serving locally
@@ -21,13 +19,13 @@ const language_list = [
 ];
 
 /** Build a language list select element */
-const build_language_list = (id_item) => {
+const build_language_list = (id_item, selLang) => {
     const content = [`<select class='form-control' id='${id_item}'>`];
     for (let lang_i = 0; lang_i < language_list.length; lang_i++) {
         const langCode = language_list[lang_i][0];
         const langName = language_list[lang_i][1];
         const langEnabled = language_list[lang_i][2] ? "" : "disabled";
-        const isSelected = (langCode === getPrefValue("language_list")) ? "selected" : "";
+        const isSelected = (langCode === selLang) ? "selected" : "";
         
         content.push(`<option value='${langCode}' ${isSelected} ${langEnabled}>${langName}</option>`);
     }
@@ -35,13 +33,13 @@ const build_language_list = (id_item) => {
     return content.join("\n");
 }
 
-const getCurrentTrans = () => {
+const getCurrentTrans = (selLang) => {
     let currenttrans = {};
 
     for (let lang_i = 0; lang_i < language_list.length; lang_i++) {
         const langCode = language_list[lang_i][0];
         const langEnabled = language_list[lang_i][2];
-        if (langCode === getPrefValue("language_list") && langEnabled) {
+        if (langCode === selLang && langEnabled) {
             currenttrans = language_list[lang_i][2];
             break;
         }
@@ -51,8 +49,8 @@ const getCurrentTrans = () => {
 }
 
 /** Translate the supplied item_text, putting it into a `<span>` tag if required */
-const translate_text_item = (item_text, withtag = false) => {
-    const currenttrans = getCurrentTrans();
+const translate_text_item = (item_text, selLang, withtag = false) => {
+    const currenttrans = getCurrentTrans(selLang);
 
     let translated_content = currenttrans[item_text];
     if (typeof translated_content === 'undefined') {

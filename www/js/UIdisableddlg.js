@@ -1,5 +1,5 @@
 import {
-	translate_text_item,
+	trans_text_item,
 	id,
 	setHTML,
 	setactiveModal,
@@ -18,7 +18,7 @@ const UIdisableddlg = (lostcon) => {
 	id("UIdisabled_save_serial_msg").addEventListener("click", (event) => saveSerialMessages());
 
 	if (lostcon) {
-		setHTML("disconnection_msg", translate_text_item("Connection lost for more than 20s"));
+		setHTML("disconnection_msg", trans_text_item("Connection lost for more than 20s"));
 	}
 	showModal();
 };

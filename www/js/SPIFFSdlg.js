@@ -16,7 +16,7 @@ import {
 	inputdlg,
 	SendFileHttp,
 	SendGetHttp,
-	translate_text_item,
+	trans_text_item,
 	CheckForHttpCommLock,
 } from "./common.js";
 
@@ -49,7 +49,7 @@ const SPIFFSdlg = (root) => {
 		common.SPIFFS_currentpath = root;
 	}
 	setValue("SPIFFS-select", "");
-	setHTML("SPIFFS_file_name", translate_text_item("No file chosen"));
+	setHTML("SPIFFS_file_name", trans_text_item("No file chosen"));
 	displayNone(["SPIFFS_uploadbtn", "SPIFFS_prg", "uploadSPIFFSmsg", "SPIFFS_select_files"]);
 	showModal();
 	refreshSPIFFS();
@@ -57,7 +57,7 @@ const SPIFFSdlg = (root) => {
 
 function closeSPIFFSDialog(msg) {
 	if (SPIFFS_upload_ongoing) {
-		alertdlg(translate_text_item("Busy..."), translate_text_item("Upload is ongoing, please wait and retry."));
+		alertdlg(trans_text_item("Busy..."), trans_text_item("Upload is ongoing, please wait and retry."));
 		return;
 	}
 	closeModal(msg);
@@ -104,7 +104,7 @@ const SPIFFSnavbar = () => {
 	});
 };
 
-const SPIFFS_Createdir = () => inputdlg(translate_text_item("Please enter directory name"), translate_text_item("Name:"), processSPIFFS_Createdir);
+const SPIFFS_Createdir = () => inputdlg(trans_text_item("Please enter directory name"), trans_text_item("Name:"), processSPIFFS_Createdir);
 
 function processSPIFFS_Createdir(answer) {
 	if (answer.length > 0) {
@@ -130,12 +130,12 @@ function processSPIFFSDelete(answer) {
 
 function SPIFFSDelete(filename) {
 	SPIFFS_currentfile = filename;
-	confirmdlg(translate_text_item("Please Confirm"), translate_text_item("Confirm deletion of file: ") + filename, processSPIFFSDelete);
+	confirmdlg(trans_text_item("Please Confirm"), trans_text_item("Confirm deletion of file: ") + filename, processSPIFFSDelete);
 }
 
 function SPIFFSDeleteDir(filename) {
 	SPIFFS_currentfile = filename;
-	confirmdlg(translate_text_item("Please Confirm"), translate_text_item("Confirm deletion of directory: ") + filename, processSPIFFSDeleteDir);
+	confirmdlg(trans_text_item("Please Confirm"), trans_text_item("Confirm deletion of directory: ") + filename, processSPIFFSDeleteDir);
 }
 
 function processSPIFFSDeleteDir(answer) {
@@ -145,9 +145,11 @@ function processSPIFFSDeleteDir(answer) {
 	SPIFFS_currentfile = "";
 }
 
+let old_file_name = "";
+
 function SPIFFSRename(filename) {
 	old_file_name = filename;
-	inputdlg(translate_text_item("New file name"), translate_text_item("Name:"), processSPIFFSRename, old_file_name);
+	inputdlg(trans_text_item("New file name"), trans_text_item("Name:"), processSPIFFSRename, old_file_name);
 }
 
 function processSPIFFSRename(new_file_name) {
@@ -155,32 +157,38 @@ function processSPIFFSRename(new_file_name) {
 		return;
 	}
 	const common = new Common();
-	let url = `/files?action=rename&path=${encodeURIComponent(common.SPIFFS_currentpath)}`;
-	url += `&filename=${encodeURIComponent(old_file_name)}`;
-	url += `&newname=${encodeURIComponent(new_file_name)}`;
-	SendGetHttp(url, SPIFFSsuccess, SPIFFSfailed);
+	const cmd = [`/files?action=rename&path=${encodeURIComponent(common.SPIFFS_currentpath)}`];
+	cmd.push(`&filename=${encodeURIComponent(old_file_name)}`);
+	cmd.push(`&newname=${encodeURIComponent(new_file_name)}`);
+	SendGetHttp(cmd.join(), SPIFFSsuccess, SPIFFSfailed);
 }
 
 function SPIFFSSendCommand(action, filename) {
 	const common = new Common();
-	const url = `/files?action=${action}&filename=${encodeURI(filename)}&path=${encodeURI(common.SPIFFS_currentpath)}`;
 	id("SPIFFS_loader").style.visibility = "visible";
-	console.log(url);
-	SendGetHttp(url, SPIFFSsuccess, SPIFFSfailed);
+	const cmd = `/files?action=${action}&filename=${encodeURI(filename)}&path=${encodeURI(common.SPIFFS_currentpath)}`;
+	console.log(cmd);
+	SendGetHttp(cmd, SPIFFSsuccess, SPIFFSfailed);
 }
 
 function SPIFFSsuccess(response) {
 	//console.log(response);
-	const jsonresponse = JSON.parse(response);
 	id("SPIFFS_loader").style.visibility = "hidden";
 	displayBlock(["refreshSPIFFSbtn", "SPIFFS_select_files"]);
-	SPIFFSdispatchfilestatus(jsonresponse);
+	if (response) {
+		try {
+			const jsonresponse = JSON.parse(response);
+			SPIFFSdispatchfilestatus(jsonresponse);
+		} catch (error) {
+			console.error(`Could not parse '${response}' as JSON. ${error}`);
+		}
+	}
 }
 
 function SPIFFSfailed(error_code, response) {
 	id("SPIFFS_loader").style.visibility = "hidden";
 	displayBlock(["refreshSPIFFSbtn", "refreshSPIFFSbtn"]);
-	alertdlg(translate_text_item("Error"), stdErrMsg(error_code, response));
+	alertdlg(trans_text_item("Error"), stdErrMsg(error_code, response));
 	conErr(error_code, response);
 }
 
@@ -190,11 +198,11 @@ function SPIFFSbutton(btnId, btnClass, icon) {
 }
 
 const buildSPIFFSTotalBar = (jsonresponse) => {
-	let content = `${translate_text_item("Total:")} ${jsonresponse.total}`;
-	content += `&nbsp;&nbsp;|&nbsp;&nbsp;${translate_text_item("Used:")} ${jsonresponse.used}&nbsp;`;
+	let content = `${trans_text_item("Total:")} ${jsonresponse.total}`;
+	content += `&nbsp;&nbsp;|&nbsp;&nbsp;${trans_text_item("Used:")} ${jsonresponse.used}&nbsp;`;
 	content += `<meter min='0' max='100' high='90' value='${jsonresponse.occupation}'></meter>&nbsp;${jsonresponse.occupation}%`;
 	if (jsonresponse.status !== "Ok") {
-		content += `<br/>${translate_text_item(jsonresponse.status)}`;
+		content += `<br/>${trans_text_item(jsonresponse.status)}`;
 	}
 
 	return content;
@@ -279,7 +287,7 @@ function SPIFFSdispatchfilestatus(jsonresponse) {
 function refreshSPIFFS() {
 	setValue("SPIFFS-select", "");
 	setHTML("uploadSPIFFSmsg", "");
-	setHTML("SPIFFS_file_name", translate_text_item("No file chosen"));
+	setHTML("SPIFFS_file_name", trans_text_item("No file chosen"));
 	displayNone(["SPIFFS_uploadbtn", "refreshSPIFFSbtn", "SPIFFS_select_files"]);
 	SPIFFSSendCommand("list", "all");
 }
@@ -293,12 +301,12 @@ function checkSPIFFSfiles() {
 		if (files.length === 1) {
 			setHTML("SPIFFS_file_name", files[0].name);
 		} else {
-			const tmp = translate_text_item("$n files");
+			const tmp = trans_text_item("$n files");
 			setHTML("SPIFFS_file_name", tmp.replace("$n", files.length));
 		}
 		id("SPIFFS_uploadbtn").click();
 	} else {
-		setHTML("SPIFFS_file_name", translate_text_item("No file chosen"));
+		setHTML("SPIFFS_file_name", trans_text_item("No file chosen"));
 	}
 }
 
@@ -306,7 +314,7 @@ function SPIFFSUploadProgressDisplay(oEvent) {
 	if (oEvent.lengthComputable) {
 		const percentComplete = (oEvent.loaded / oEvent.total) * 100;
 		setValue("SPIFFS_prg", percentComplete);
-		setHTML("uploadSPIFFSmsg", `${translate_text_item("Uploading")} ${SPIFFS_currentfile} ${percentComplete.toFixed(0)}%`);
+		setHTML("uploadSPIFFSmsg", `${trans_text_item("Uploading")} ${SPIFFS_currentfile} ${percentComplete.toFixed(0)}%`);
 	} else {
 		// Impossible because size is unknown
 	}
@@ -319,7 +327,7 @@ function SPIFFS_UploadFile() {
 	}
 	const files = id("SPIFFS-select").files;
 	const formData = new FormData();
-	const url = "/files";
+	const cmd = "/files";
 	formData.append("path", common.SPIFFS_currentpath);
 	for (let i = 0; i < files.length; i++) {
 		const file = files[i];
@@ -332,19 +340,25 @@ function SPIFFS_UploadFile() {
 	SPIFFS_upload_ongoing = true;
 	displayBlock(["uploadSPIFFSmsg", "SPIFFS_prg"]);
 	SPIFFS_currentfile = (files.length === 1) ? files[0].name : "";
-	setHTML("uploadSPIFFSmsg", `${translate_text_item("Uploading")} ${SPIFFS_currentfile}`);
-	SendFileHttp(url, formData, SPIFFSUploadProgressDisplay, SPIFFSUploadsuccess, SPIFFSUploadfailed);
+	setHTML("uploadSPIFFSmsg", `${trans_text_item("Uploading")} ${SPIFFS_currentfile}`);
+	SendFileHttp(cmd, formData, SPIFFSUploadProgressDisplay, SPIFFSUploadsuccess, SPIFFSUploadfailed);
 }
 
 function SPIFFSUploadsuccess(response) {
 	setValue("SPIFFS-select", "");
-	setHTML("SPIFFS_file_name", translate_text_item("No file chosen"));
+	setHTML("SPIFFS_file_name", trans_text_item("No file chosen"));
 	displayBlock(["SPIFFS-select_form", "refreshSPIFFSbtn"]);
 	displayNone(["SPIFFS_prg", "SPIFFS_uploadbtn"]);
 	setHTML("uploadSPIFFSmsg", "");
 	SPIFFS_upload_ongoing = false;
-	const jsonresponse = JSON.parse(response.replace('"status":"Ok"', '"status":"Upload done"'));
-	SPIFFSdispatchfilestatus(jsonresponse);
+	if (response) {
+		try {
+			const jsonresponse = JSON.parse(response.replace('"status":"Ok"', '"status":"Upload done"'));
+			SPIFFSdispatchfilestatus(jsonresponse);
+		} catch (error) {
+			console.error(`Could not parse '${response}' as JSON. ${error}`);
+		}
+	}
 }
 
 function SPIFFSUploadfailed(error_code, response) {
@@ -354,12 +368,12 @@ function SPIFFSUploadfailed(error_code, response) {
 	conErr(stdErrMsg(error_code, response));
 	const common = new Common();
 	if (common.esp_error_code !== 0) {
-		alertdlg(translate_text_item("Error"), stdErrMsg(`(${common.esp_error_code})`, common.esp_error_message));
-		setHTML("SPIFFS_status", translate_text_item("Error : ") + common.esp_error_message);
+		alertdlg(trans_text_item("Error"), stdErrMsg(`(${common.esp_error_code})`, common.esp_error_message));
+		setHTML("SPIFFS_status", trans_text_item("Error : ") + common.esp_error_message);
 		common.esp_error_code = 0;
 	} else {
-		alertdlg(translate_text_item("Error"), stdErrMsg(error_code, response));
-		setHTML("SPIFFS_status", stdErrMsg(error_code, response, translate_text_item("Upload failed")));
+		alertdlg(trans_text_item("Error"), stdErrMsg(error_code, response));
+		setHTML("SPIFFS_status", stdErrMsg(error_code, response, trans_text_item("Upload failed")));
 	}
 	SPIFFS_upload_ongoing = false;
 	refreshSPIFFS();

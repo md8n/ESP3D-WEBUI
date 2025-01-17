@@ -34,7 +34,7 @@ import {
     SendGetHttp,
     build_language_list,
     ontoggleLock,
-    translate_text_item,
+    trans_text_item,
     handlePing,
     PreferencesModified,
     BuildPreferencesJson,
@@ -61,7 +61,7 @@ const buildTable = (contents, classVal) => buildElem("table", contents, classVal
 const buildDivPanel = (contents) => buildDiv(`<div class="panel-heading">${contents}</div>`, "panel panel-default");
 
 const buildTdIcon = (icon) => `<td>${get_icon_svg(icon)}&nbsp;</td>`;
-const buildTdLabel = (key, value) => `<td><span>${translate_text_item(value.label || key, true)}:&nbsp;</span></td>`;
+const buildTdLabel = (key, value) => `<td><span>${trans_text_item(value.label || key, true)}:&nbsp;</span></td>`;
 const buildTdInp = (inpFld, key, value) => `<td><div class="input-group has-control">${inpFld}${buildSpnErrFld(key, value)}</div></td>`;
 const buildSpnErrFld = (key, value) => `<span id="${buildFieldId(key, value)}_icon" class="form-control-feedback ico_feedback"></span>`;
 
@@ -74,7 +74,7 @@ const setGroupId = (elem, fId) => elem.setAttribute("id", `${fId}_group`);
 /** Build an input within a label for a checkbox element */
 const buildCheckBox = (key, value) => {
     const inpCheckBox = `<input type="checkbox" ${buildFieldIdAttr(key, value)}/>`;
-    return `<label>${inpCheckBox}${translate_text_item(value.label || key, true)}</label>`;
+    return `<label>${inpCheckBox}${trans_text_item(value.label || key, true)}</label>`;
 };
 
 /** Generate a panel controlled by a checkbox */
@@ -155,11 +155,12 @@ const buildText = (key, value, parentElem) => {
     });
 };
 
-/** Generate a mini table for selects */
+/** Generate a mini table for language list selects */
 const buildSelect = (key, value, parentElem) => {
     const fId = buildFieldId(key, value);
+    const selLang = getPrefValue("language_list");
     const inpSTable = buildTable(
-        `<tr>${buildTdIcon("flag")}<td>${build_language_list(fId)}</td></tr>`,
+        `<tr>${buildTdIcon("flag")}<td>${build_language_list(fId, selLang)}</td></tr>`,
     );
     // Use the key for the containing table, instead of the fId, which has been used for the select
     inpSTable.setAttribute("id", key);
@@ -487,8 +488,8 @@ const togglePanel = (checkboxId, panelId) => displayBlockOrNone(panelId, handleC
 
 const prefFile = "/preferences.json";
 const getpreferenceslist = () => {
-    const url = prefFile;
-    SendGetHttp(url, processPreferencesGetSuccess, processPreferencesGetFailed);
+    const cmd = prefFile;
+    SendGetHttp(cmd, processPreferencesGetSuccess, processPreferencesGetFailed);
 }
 
 const processPreferencesGetSuccess = (response) => {
@@ -524,7 +525,7 @@ const showpreferencesdlg = () => {
 
 const closePreferencesDialog = () => {
     if (PreferencesModified()) {
-        confirmdlg(translate_text_item("Data modified"), translate_text_item("Do you want to save?"), process_preferencesCloseDialog);
+        confirmdlg(trans_text_item("Data modified"), trans_text_item("Do you want to save?"), process_preferencesCloseDialog);
     } else {
         closeModal("cancel");
     }
@@ -551,12 +552,12 @@ const SavePreferences = () => {
     const file = new File([blob], prefFile);
 
     const formData = new FormData();
-    const url = "/files";
+    const cmd = "/files";
     formData.append("path", "/");
     formData.append("myfile[]", file, prefFile);
 
     SendFileHttp(
-        url,
+        cmd,
         formData,
         preferencesdlgUploadProgressDisplay,
         preferencesUploadsuccess,
@@ -582,7 +583,7 @@ function preferencesUploadsuccess(response) {
 }
 
 function preferencesUploadfailed(error_code, response) {
-    alertdlg(translate_text_item("Error"), translate_text_item("Save preferences failed!"));
+    alertdlg(trans_text_item("Error"), trans_text_item("Save preferences failed!"));
 }
 
 const CheckValue = (fId, valueDef) => {
@@ -624,7 +625,7 @@ const CheckValue = (fId, valueDef) => {
         if (elemIdIcon) {
             // elemIdIcon.innerHTML = get_icon_svg("remove");
         }
-        alertdlg(translate_text_item("Errors with settings & preferences"), errorList.join("\n"));
+        alertdlg(trans_text_item("Errors with settings & preferences"), errorList.join("\n"));
     }
     return errorList.length === 0;
 };

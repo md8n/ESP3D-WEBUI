@@ -14,28 +14,6 @@ const server = Bun.serve({
 	async fetch(req) {
 		const url = new URL(req.url);
 
-		// Request (0 KB) {
-		//   method: "GET",
-		//   url: "http://localhost:3000/command?plain=%5BESP800%5D&PAGEID=",
-		//   headers: Headers {
-		//     "host": "localhost:3000",
-		//     "connection": "keep-alive",
-		//     "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36 Edg/131.0.0.0",
-		//     "dnt": "1",
-		//     "accept": "*/*",
-		//     "sec-fetch-mode": "cors",
-		//     "sec-fetch-dest": "empty",
-		//     "referer": "http://localhost:3000/index.html",
-		//     "accept-encoding": "gzip, deflate, br, zstd",
-		//     "accept-language": "en-AU,en;q=0.9,en-US;q=0.8",
-		//     "sec-ch-ua-platform": "\"Windows\"",
-		//     "sec-ch-ua": "\"Microsoft Edge\";v=\"131\", \"Chromium\";v=\"131\", \"Not_A Brand\";v=\"24\"",
-		//     "sec-ch-ua-mobile": "?0",
-		//     "sec-fetch-site": "same-origin",
-		//     "sec-gpc": "1",
-		//   }
-		// }
-
 		// URL {
 		//   href: "http://localhost:3000/command?plain=%5BESP800%5D&PAGEID=",
 		//   origin: "http://localhost:3000",
@@ -87,9 +65,9 @@ const server = Bun.serve({
 						return new Response(body, { status: 200 });
 					}
 					case "[ESP400]": {
-            const body = JSON.stringify(EEPROMFake);
+						const body = JSON.stringify(EEPROMFake);
 						return new Response(body, { status: 200 });
-          }
+					}
 					default:
 						console.info(url);
 						break;
@@ -101,12 +79,54 @@ const server = Bun.serve({
 						const body = "Error";
 						return new Response(body, { status: 200 });
 					}
+					case "[ESP200]":
+						console.info("[ESP200]: Checking if previously sent file uploaded");
+						return new Response("", { status: 200 });
 					default:
-						console.info(url);
-            return new Response("", { status: 200 });
+						console.info(`Command: ${commandText}`);
+						return new Response("", { status: 200 });
 				}
 			}
 		}
+
+		if (url.pathname === "/upload") {
+			// Something file related - SD storage
+			const searchParams = url.searchParams;
+			const path = searchParams.get("path");
+
+			if (req.method === "GET") {
+				const dummyFileList = {
+					"files": [
+						{ "name": "CoasterHolesPartBoard-gcc.nc", "shortname": "CoasterHolesPartBoard-gcc.nc", "size": "3515", "datetime": "" },
+						{ "name": "CoasterHolesFullBoard.nc", "shortname": "CoasterHolesFullBoard.nc", "size": "52622", "datetime": "" }
+					], "path": "", "total": "119.00 MB", "used": "57.00 KB", "occupation": "0", "status": "Ok"
+				};
+				return new Response(JSON.stringify(dummyFileList), { status: 200, headers: { contentType: "application/json" } });
+			}
+			console.log(req);
+			return new Response("", { status: 200 });
+		}
+
+		if (url.pathname === "/files") {
+			// Something file related - regular storage
+			const searchParams = url.searchParams;
+			const action = searchParams.get("action");
+			const path = searchParams.get("path");
+
+			if (action === "list") {
+				const dummyFileList = {
+					"files": [
+						{ "name": "config-bak.yaml", "shortname": "config-bak.yaml", "size": "3585", "datetime": "" },
+						{ "name": "favicon.ico", "shortname": "favicon.ico", "size": "1150", "datetime": "" },
+						{ "name": "index.html.gz", "shortname": "index.html.gz", "size": "113340", "datetime": "" },
+						{ "name": "maslow.yaml", "shortname": "maslow.yaml", "size": "3546", "datetime": "" }
+					],
+					"path": "", "total": "192.00 KB", "used": "132.00 KB", "occupation": "68", "status": "Ok"
+				};
+				return new Response(JSON.stringify(dummyFileList), { status: 200, headers: { contentType: "application/json" } });
+			}
+		}
+
 
 		const checkFileBase = `./www${url.pathname}`;
 

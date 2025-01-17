@@ -22,7 +22,8 @@ import {
   maslowMsgHandling,
   saveConfigValues,
   sendCommand,
-  arrayToXYZ, displayer, refreshGcode,
+  arrayToXYZ, refreshGcode, tpDisplayer, tpInit,
+  drawTPBtns,
 } from "./common.js";
 
 let gCodeLoaded = false;
@@ -218,51 +219,67 @@ const setAxisByValue = (axis, coordinate) => {
   sendCommand(`G10 L20 P0 ${axis}${coordinate}`);
 };
 
-const setAxis = (axis, field) => {
-  tabletClick();
-  sendCommand(`G10 L20 P1 ${axis}${id(field).value}`);
-};
+// const setAxis = (axis, field) => {
+//   tabletClick();
+//   sendCommand(`G10 L20 P1 ${axis}${id(field).value}`);
+// };
 
-let longone = false;
-function long_jog(target) {
-  longone = true;
-  distance = 1000;
-  const axisAndDirection = target.value;
-  let feedrate = JogFeedrate(axisAndDirection);
-  const common = new Common();
-  if (common.modal.units === "G20") {
-    distance /= 25.4;
-    distance = distance.toFixed(3);
-    feedrate /= 25.4;
-    feedrate = feedrate.toFixed(2);
-  }
-  // tabletShowMessage("Long Jog " + cmd);
-  sendCommand(`$J=G91F${feedrate}${axisAndDirection}${distance}\n`);
-}
+// let longone = false;
+// function long_jog(target) {
+//   longone = true;
+//   distance = 1000;
+//   const axisAndDirection = target.value;
+//   let feedrate = JogFeedrate(axisAndDirection);
+//   const common = new Common();
+//   if (common.modal.units === "G20") {
+//     distance /= 25.4;
+//     distance = distance.toFixed(3);
+//     feedrate /= 25.4;
+//     feedrate = feedrate.toFixed(2);
+//   }
+//   // tabletShowMessage("Long Jog " + cmd);
+//   sendCommand(`$J=G91F${feedrate}${axisAndDirection}${distance}\n`);
+// }
 
 const sendMove = (cmd) => {
   tabletClick();
-  const jog = (params = {}) => {
-    let s = "";
-    for (key in params) {
-      s += key + params[key];
+
+  const checkParams = (params = {}) => {
+    if (!Object.keys(params).length) {
+      addMessage("Could not perform Jog. No jog parameters supplied. Programmer error.");
+      return "";
     }
-    jogTo(s);
 
-    const msgWindow = document.getElementById('messages')
-    let text = msgWindow.textContent
-    text += `\nJog: ${s}`
-    msgWindow.textContent = text
-    msgWindow.scrollTop = msgWindow.scrollHeight
+    if (!("Z" in params) && !checkHomed()) {
+      addMessage("Could not perform Jog. Belt lengths are unknown.");
+      return "";
+    }
 
+    const s = [];
+    for (const key in params) {
+      s.push(`${key}${params[key]}`);
+    }
+    return s.join();
   }
-  const move = (params = {}) => {
-    let s = ''
-    for (key in params) {
-      s += key + params[key];
+
+  const jog = (params = {}) => {
+    const cmd = checkParams(params);
+    if (!cmd) {
+      return;
     }
-    moveTo(s);
-  };
+
+    addMessage(`Jog: ${cmd}`);
+    jogTo(cmd);
+  }
+
+  const move = (params = {}) => {
+    const cmd = checkParams(params);
+    if (!cmd) {
+      return;
+    }
+
+    moveTo(cmd);
+  }
 
   const distance = cmd.includes('Z') ? Number(id('disZ').innerText) || 0 : Number(id('disM').innerText) || 0
 
@@ -273,46 +290,14 @@ const sendMove = (cmd) => {
     X0: () => move({ X: 0 }),
     Y0: () => move({ Y: 0 }),
     Z0: () => move({ Z: 0 }),
-    'X-Y+': () => {
-      if (checkHomed()) {
-        jog({ X: -distance, Y: distance });
-      }
-    },
-    'X+Y+': () => {
-      if (checkHomed()) {
-        jog({ X: distance, Y: distance });
-      }
-    },
-    'X-Y-': () => {
-      if (checkHomed()) {
-        jog({ X: -distance, Y: -distance });
-      }
-    },
-    'X+Y-': () => {
-      if (checkHomed()) {
-        jog({ X: distance, Y: -distance });
-      }
-    },
-    'X-': () => {
-      if (checkHomed()) {
-        jog({ X: -distance });
-      }
-    },
-    'X+': () => {
-      if (checkHomed()) {
-        jog({ X: distance });
-      }
-    },
-    'Y-': () => {
-      if (checkHomed()) {
-        jog({ Y: -distance });
-      }
-    },
-    'Y+': () => {
-      if (checkHomed()) {
-        jog({ Y: distance });
-      }
-    },
+    'X-Y+': () => jog({ X: -distance, Y: distance }),
+    'X+Y+': () => jog({ X: distance, Y: distance }),
+    'X-Y-': () => jog({ X: -distance, Y: -distance }),
+    'X+Y-': () => jog({ X: distance, Y: -distance }),
+    'X-': () => jog({ X: -distance }),
+    'X+': () => jog({ X: distance }),
+    'Y-': () => jog({ Y: -distance }),
+    'Y+': () => jog({ Y: distance }),
     'Z-': () => jog({ Z: -distance }),
     'Z+': () => jog({ Z: distance }),
     'Z_TOP': () => {
@@ -429,21 +414,13 @@ function setJogSelector(units) {
   let selected = 0;
   if (units === "G20") {
     // Inches
-    buttonDistances = [
-      0.001, 0.01, 0.1, 1, 0.003, 0.03, 0.3, 3, 0.005, 0.05, 0.5, 5,
-    ];
-    menuDistances = [
-      0.00025, 0.0005, 0.001, 0.003, 0.005, 0.01, 0.03, 0.05, 0.1, 0.3, 0.5, 1,
-      3, 5, 10, 30,
-    ];
+    buttonDistances = [0.001, 0.01, 0.1, 1, 0.003, 0.03, 0.3, 3, 0.005, 0.05, 0.5, 5];
+    menuDistances = [0.00025, 0.0005, 0.001, 0.003, 0.005, 0.01, 0.03, 0.05, 0.1, 0.3, 0.5, 1, 3, 5, 10, 30];
     selected = "1";
   } else {
     // millimeters
     buttonDistances = [0.1, 1, 10, 100, 0.3, 3, 30, 300, 0.5, 5, 50, 500];
-    menuDistances = [
-      0.005, 0.01, 0.03, 0.05, 0.1, 0.3, 0.5, 1, 3, 5, 10, 30, 50, 100, 300,
-      500, 1000,
-    ];
+    menuDistances = [0.005, 0.01, 0.03, 0.05, 0.1, 0.3, 0.5, 1, 3, 5, 10, 30, 50, 100, 300, 500, 1000];
     selected = "10";
   }
   // const buttonNames = [
@@ -727,7 +704,7 @@ const tabletGrblState = (grbl, response) => {
     }
   }
   if (common.gCodeDisplayable) {
-    displayer.reDrawTool(common.modal, arrayToXYZ(WPOS()));
+    tpDisplayer().reDrawTool(common.modal, arrayToXYZ(WPOS()));
   }
 
   const digits = common.modal.units === "G20" ? 4 : 2;
@@ -746,14 +723,14 @@ const tabletGrblState = (grbl, response) => {
   })
 }
 
-function addOption(selector, name, value, isDisabled, isSelected) {
-  const opt = document.createElement('option');
-  opt.appendChild(document.createTextNode(name));
-  opt.disabled = isDisabled;
-  opt.selected = isSelected;
-  opt.value = value;
-  selector.appendChild(opt);
-}
+// function addOption(selector, name, value, isDisabled, isSelected) {
+//   const opt = document.createElement('option');
+//   opt.appendChild(document.createTextNode(name));
+//   opt.disabled = isDisabled;
+//   opt.selected = isSelected;
+//   opt.value = value;
+//   selector.appendChild(opt);
+// }
 
 function tabletGetFileList(path) {
   const common = new Common();
@@ -762,6 +739,7 @@ function tabletGetFileList(path) {
 }
 
 const tabletInit = () => {
+  tpInit();
   // put in a timeout to allow things to settle. when they were here at startup ui froze from time to time.
   setTimeout(() => {
     showVersionNumber();
@@ -808,25 +786,25 @@ const tabletInit = () => {
     id("tablettab_right").addEventListener("click", (event) => sendMove("X+"));
 
     id("tablettab_zDown").addEventListener("click", (event) => sendMove("Z-"));
-    id("tablettab_bottomLeft").addEventListener("click", (event) => sendMove("X-Y-"),);
+    id("tablettab_bottomLeft").addEventListener("click", (event) => sendMove("X-Y-"));
     id("tablettab_bottom").addEventListener("click", (event) => sendMove("Y-"));
-    id("tablettab_bottomRight").addEventListener("click", (event) => sendMove("X+Y-"),);
+    id("tablettab_bottomRight").addEventListener("click", (event) => sendMove("X+Y-"));
 
-    id("tablettab_set_z_home").addEventListener("mousedown", (event) => zeroAxis("Z"),);
-    id("tablettab_set_z_home").addEventListener("mouseup", (event) => refreshGcode(),);
-    id("tablettab_move_to_xy_home").addEventListener("click", (event) => moveHome(),);
-    id("tablettab_toggle_units").addEventListener("click", (event) => toggleUnits(),);
-    id("tablettab_set_xy_home").addEventListener("mousedown", (event) => setHomeClickDown(),);
-    id("tablettab_set_xy_home").addEventListener("mouseup", (event) => setHomeClickUp(),);
-    id("tablettab_set_xy_home").addEventListener("dblclick", (event) => setXYHome(),);
+    id("tablettab_set_z_home").addEventListener("mousedown", (event) => zeroAxis("Z"));
+    id("tablettab_set_z_home").addEventListener("mouseup", (event) => refreshGcode());
+    id("tablettab_move_to_xy_home").addEventListener("click", (event) => moveHome());
+    id("tablettab_toggle_units").addEventListener("click", (event) => toggleUnits());
+    id("tablettab_set_xy_home").addEventListener("mousedown", (event) => setHomeClickDown());
+    id("tablettab_set_xy_home").addEventListener("mouseup", (event) => setHomeClickUp());
+    id("tablettab_set_xy_home").addEventListener("dblclick", (event) => setXYHome());
 
-    id("tablettab_gcode_upload").addEventListener("click", (event) => files_select_upload(),);
-    id("tablettab_gcode_play").addEventListener("click", (event) => doPlayButton(),);
-    id("tablettab_gcode_pause").addEventListener("click", (event) => doPauseButton(),);
-    id("tablettab_gcode_stop").addEventListener("click", (event) => onCalibrationButtonsClick("$STOP", "Stop Maslow and Gcode"),);
+    id("tablettab_gcode_upload").addEventListener("click", (event) => files_select_upload());
+    id("tablettab_gcode_play").addEventListener("click", (event) => doPlayButton());
+    id("tablettab_gcode_pause").addEventListener("click", (event) => doPauseButton());
+    id("tablettab_gcode_stop").addEventListener("click", (event) => onCalibrationButtonsClick("$STOP", "Stop Maslow and Gcode"));
 
-    id("tablettab_cal_retract").addEventListener("click", (event) => onCalibrationButtonsClick("$ALL", "Retract All"),);
-    id("tablettab_cal_extend").addEventListener("click", (event) => onCalibrationButtonsClick("$EXT", "Extend All"),);
+    id("tablettab_cal_retract").addEventListener("click", (event) => onCalibrationButtonsClick("$ALL", "Retract All"));
+    id("tablettab_cal_extend").addEventListener("click", (event) => onCalibrationButtonsClick("$EXT", "Extend All"));
     id("tablettab_cal_calibrate").addEventListener("click", (event) => {
       onCalibrationButtonsClick("$CAL", "Calibrate");
       setTimeout(() => {
@@ -857,6 +835,9 @@ const tabletInit = () => {
     id("configuration-popup").addEventListener("click", (event) => hideModal("configuration-popup"),);
 
     id("systemStatus").addEventListener("click", (event) => clearAlarm());
+
+    drawTPBtns();
+
   }, 1000);
 };
 
@@ -864,12 +845,12 @@ const showGCode = (gcode) => {
   gCodeLoaded = gcode !== "";
   if (!gCodeLoaded) {
     setValue("tablettab_gcode", "(No GCode loaded)");
-    displayer.clear();
+    tpDisplayer().clear();
   } else {
     setValue("tablettab_gcode", gcode);
     const common = new Common();
     if (common.gCodeDisplayable) {
-      displayer.showToolpath(gcode, common.modal, arrayToXYZ(WPOS()));
+      tpDisplayer().showToolpath(gcode, common.modal, arrayToXYZ(WPOS()));
     }
   }
 
@@ -929,7 +910,7 @@ function tabletLoadGCodeFile(path, size) {
   if ((Number.isNaN(size) && size.endsWith("GB")) || size > 10000000) {
     showGCode("GCode file too large to display (> 1MB)");
     common.gCodeDisplayable = false;
-    displayer.clear();
+    tpDisplayer().clear();
   } else {
     common.gCodeDisplayable = true;
     fetch(encodeURIComponent(`SD${common.gCodeFilename}`))
@@ -1191,7 +1172,7 @@ function setBottomHeight() {
   if (!tabletIsActive()) {
     return;
   }
-  const residue = bodyHeight() - heightId("navbar") - controlHeight();
+  // const residue = bodyHeight() - heightId("navbar") - controlHeight();
   const tStyle = getComputedStyle(id("tablettab"));
   let tPad =
     Number.parseFloat(tStyle.paddingTop) +
@@ -1296,6 +1277,7 @@ export {
   hideModal,
   goAxisByValue,
   onCalibrationButtonsClick,
+  saveJogDists,
   saveSerialMessages,
   showGCode,
   tabletInit,
