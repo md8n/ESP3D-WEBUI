@@ -169,6 +169,12 @@ function GetIdentificationStatus() {
 
 /** This expects the logindlg to be visible */
 function GetIdentificationStatusSuccess(response_text) {
+	if (!response_text) {
+		// treat as guest
+		setHTML("current_ID", trans_text_item("guest"));
+		setHTML("current_auth_level", "");
+		return;
+	}
 	const response = JSON.parse(response_text);
 	if (typeof response.authentication_lvl !== "undefined") {
 		if (response.authentication_lvl === "guest") {

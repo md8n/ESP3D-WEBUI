@@ -22,7 +22,8 @@ import {
   maslowMsgHandling,
   saveConfigValues,
   sendCommand,
-  arrayToXYZ, displayer, refreshGcode,
+  arrayToXYZ, refreshGcode, tpDisplayer, tpInit,
+  drawTPBtns,
 } from "./common.js";
 
 let gCodeLoaded = false;
@@ -703,7 +704,7 @@ const tabletGrblState = (grbl, response) => {
     }
   }
   if (common.gCodeDisplayable) {
-    displayer.reDrawTool(common.modal, arrayToXYZ(WPOS()));
+    tpDisplayer().reDrawTool(common.modal, arrayToXYZ(WPOS()));
   }
 
   const digits = common.modal.units === "G20" ? 4 : 2;
@@ -738,6 +739,7 @@ function tabletGetFileList(path) {
 }
 
 const tabletInit = () => {
+  tpInit();
   // put in a timeout to allow things to settle. when they were here at startup ui froze from time to time.
   setTimeout(() => {
     showVersionNumber();
@@ -833,6 +835,9 @@ const tabletInit = () => {
     id("configuration-popup").addEventListener("click", (event) => hideModal("configuration-popup"),);
 
     id("systemStatus").addEventListener("click", (event) => clearAlarm());
+
+    drawTPBtns();
+
   }, 1000);
 };
 
@@ -840,12 +845,12 @@ const showGCode = (gcode) => {
   gCodeLoaded = gcode !== "";
   if (!gCodeLoaded) {
     setValue("tablettab_gcode", "(No GCode loaded)");
-    displayer.clear();
+    tpDisplayer().clear();
   } else {
     setValue("tablettab_gcode", gcode);
     const common = new Common();
     if (common.gCodeDisplayable) {
-      displayer.showToolpath(gcode, common.modal, arrayToXYZ(WPOS()));
+      tpDisplayer().showToolpath(gcode, common.modal, arrayToXYZ(WPOS()));
     }
   }
 
@@ -905,7 +910,7 @@ function tabletLoadGCodeFile(path, size) {
   if ((Number.isNaN(size) && size.endsWith("GB")) || size > 10000000) {
     showGCode("GCode file too large to display (> 1MB)");
     common.gCodeDisplayable = false;
-    displayer.clear();
+    tpDisplayer().clear();
   } else {
     common.gCodeDisplayable = true;
     fetch(encodeURIComponent(`SD${common.gCodeFilename}`))

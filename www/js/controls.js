@@ -51,7 +51,7 @@ function loadmacrolist() {
 function Macro_build_list(response_text) {
 	let response = [];
 	try {
-		if (response_text.length !== 0) {
+		if (response_text.length) {
 			response = JSON.parse(response_text);
 		}
 	} catch (e) {
@@ -61,7 +61,7 @@ function Macro_build_list(response_text) {
 	for (let i = 0; i < 9; i++) {
 		let entry;
 		if (
-			response.length !== 0 &&
+			response.length &&
 			typeof response[i].name !== "undefined" &&
 			typeof response[i].glyph !== "undefined" &&
 			typeof response[i].filename !== "undefined" &&

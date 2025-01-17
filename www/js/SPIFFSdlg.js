@@ -173,10 +173,16 @@ function SPIFFSSendCommand(action, filename) {
 
 function SPIFFSsuccess(response) {
 	//console.log(response);
-	const jsonresponse = JSON.parse(response);
 	id("SPIFFS_loader").style.visibility = "hidden";
 	displayBlock(["refreshSPIFFSbtn", "SPIFFS_select_files"]);
-	SPIFFSdispatchfilestatus(jsonresponse);
+	if (response) {
+		try {
+			const jsonresponse = JSON.parse(response);
+			SPIFFSdispatchfilestatus(jsonresponse);
+		} catch (error) {
+			console.error(`Could not parse '${response}' as JSON. ${error}`);
+		}
+	}
 }
 
 function SPIFFSfailed(error_code, response) {
@@ -345,8 +351,14 @@ function SPIFFSUploadsuccess(response) {
 	displayNone(["SPIFFS_prg", "SPIFFS_uploadbtn"]);
 	setHTML("uploadSPIFFSmsg", "");
 	SPIFFS_upload_ongoing = false;
-	const jsonresponse = JSON.parse(response.replace('"status":"Ok"', '"status":"Upload done"'));
-	SPIFFSdispatchfilestatus(jsonresponse);
+	if (response) {
+		try {
+			const jsonresponse = JSON.parse(response.replace('"status":"Ok"', '"status":"Upload done"'));
+			SPIFFSdispatchfilestatus(jsonresponse);
+		} catch (error) {
+			console.error(`Could not parse '${response}' as JSON. ${error}`);
+		}
+	}
 }
 
 function SPIFFSUploadfailed(error_code, response) {

@@ -447,7 +447,11 @@ const files_list_success = (response_text) => {
 	let error = false;
 	let response;
 	try {
-		response = JSON.parse(response_text);
+		if (response_text.length) {
+			response = JSON.parse(response_text);
+		} else {
+			response = {files: []}
+		}
 	} catch (e) {
 		console.error(`Parsing error: ${e}\n${response_text}`);
 		error = true;

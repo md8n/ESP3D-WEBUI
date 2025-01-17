@@ -1,4 +1,4 @@
-import { translate_text_item, HTMLDecode } from "./common.js";
+import { translate_text_item, getPrefValue, HTMLDecode } from "./common.js";
 
 /** Call translate_text_tem, already knowing what the selected language is */
 const trans_text_item = (item_text, withtag = false) => {
