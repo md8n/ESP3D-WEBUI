@@ -25,24 +25,6 @@ const ControlsPanel = () => {
 	id("motor_off_control").addEventListener("click", (event) => control_motorsOff());
 };
 
-function hideAxiscontrols() {
-	displayNone("JogBar");
-	displayNone("HomeZ");
-	displayBlock("CornerZ");
-	displayNone("control_z_position_display");
-	displayNone("control_zm_position_row");
-	displayNone("z_feedrate_display");
-}
-
-function showAxiscontrols() {
-	displayNone("CornerZ");
-	displayBlock("JogBar");
-	displayBlock("HomeZ");
-	displayBlock("control_z_position_display");
-	displayTable("control_zm_position_row");
-	displayInline("z_feedrate_display");
-}
-
 function loadmacrolist() {
 	control_macrolist = [];
 	var url = "/macrocfg.json";
