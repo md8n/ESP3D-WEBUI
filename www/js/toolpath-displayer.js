@@ -258,23 +258,6 @@ playC.closePath;
 playC.fill();
 playC.stroke();
 
-const pauseC = document.getElementById("pauseBtn").getContext("2d");
-pauseC.fillStyle = "#efbb33";
-pauseC.fillRect(0, 0, 500, 500);
-
-// #rect1967
-pauseC.beginPath();
-pauseC.fillStyle = 'white';
-pauseC.lineWidth = 1;
-pauseC.rect(75 + 44, 66 - 35, 20, 81);
-pauseC.fill();
-    
-// #rect1967-4
-pauseC.beginPath();
-pauseC.fillStyle = 'white';
-pauseC.lineWidth = 1;
-pauseC.rect(75 + 75, 66 - 35, 20, 81);
-pauseC.fill();
 
 const stopC = document.getElementById("stopBtn").getContext("2d");
 stopC.fillStyle = "#cd654c";
