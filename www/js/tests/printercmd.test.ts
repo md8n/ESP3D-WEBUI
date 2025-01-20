@@ -13,8 +13,6 @@ describe("preferncesdlg", () => {
               <input id="gridHeight" value="" />
               <input id="retractionForce" value="" />
               <input id="machineOrientation" value="" />
-              <input id="machineWidth" value="" />
-              <input id="machineHeight" value="" />
           `;
 		global.initialGuess = {
 			tr: { x: 0, y: 0, z: 0 },
@@ -110,11 +108,6 @@ describe("preferncesdlg", () => {
 			expect(global[outDim]).toBe(outValue);
 		}
 	};
-
-	const fullDimensionActions = [
-		["trX", "3000", "machineWidth", ["tr", "x"]],
-		["trY", "2000", "machineHeight", ["tr", "y"]],
-	];
 
 	test.each(fullDimensionActions)(
 		"Key %p with value %p sets %p and %p.%p as well",

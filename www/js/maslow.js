@@ -85,10 +85,6 @@ const maslowMsgHandling = (msg) => {
 		document.getElementById(id).value = value;
 		loadedValues(id, value);
 	};
-	const fullDimensionAction = (id, value) => {
-		stdAction(id, value);
-		return stdDimensionAction(value);
-	};
 	const stdDimensionAction = (value) => Number.parseFloat(value);
 	const nullAction = () => { };
 
@@ -98,8 +94,8 @@ const maslowMsgHandling = (msg) => {
 		calibration_grid_height_mm_Y: (value) => stdAction("gridHeight", value),
 		Retract_Current_Threshold: (value) => stdAction("retractionForce", value),
 		vertical: (value) => stdAction("machineOrientation", value === "false" ? "horizontal" : "vertical"),
-		trX: (value) => { common.initialGuess.tr.x = fullDimensionAction("machineWidth", value); },
-		trY: (value) => { common.initialGuess.tr.y = fullDimensionAction("machineHeight", value); },
+		trX: (value) => { common.initialGuess.tr.x = stdDimensionAction(value); },
+		trY: (value) => { common.initialGuess.tr.y = stdDimensionAction(value); },
 		trZ: (value) => { common.initialGuess.tr.z = stdDimensionAction(value); },
 		tlX: (value) => { common.initialGuess.tl.x = stdDimensionAction(value); },
 		tlY: (value) => { common.initialGuess.tl.y = stdDimensionAction(value); },
@@ -174,8 +170,6 @@ const saveConfigValues = () => {
 	const gridSize = document.getElementById("gridSize").value;
 	const retractionForce = document.getElementById("retractionForce").value;
 	const machineOrientation = document.getElementById("machineOrientation").value;
-	const machineWidth = document.getElementById("machineWidth").value;
-	const machineHeight = document.getElementById("machineHeight").value;
 
 	const gridSpacingWidth = gridWidth / (gridSize - 1);
 	const gridSpacingHeight = gridHeight / (gridSize - 1);
@@ -200,13 +194,6 @@ const saveConfigValues = () => {
 	}
 	if (machineOrientation !== loadedValues("machineOrientation")) {
 		sendCommand(`$/${M}_vertical=${machineOrientation === "horizontal" ? "false" : "true"}`);
-	}
-	if (machineWidth !== loadedValues("machineWidth") || machineHeight !== loadedValues("machineHeight")) {
-		sendCommand(`$/${M}_tlX=0`);
-		sendCommand(`$/${M}_tlY=${machineHeight}`);
-		sendCommand(`$/${M}_trX=${machineWidth}`);
-		sendCommand(`$/${M}_trY=${machineHeight}`);
-		sendCommand(`$/${M}_brX=${machineWidth}`);
 	}
 
 	const common = new Common();
