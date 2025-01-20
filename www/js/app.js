@@ -74,4 +74,4 @@ window.onload = () => {
 		// Ensure that we always break out of this
 		failSafe--;
 	}, 500);
-};
+}
