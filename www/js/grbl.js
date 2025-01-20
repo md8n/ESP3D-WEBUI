@@ -63,73 +63,81 @@ function setAutocheck(flag) {
   setChecked(autocheck, flag);
 }
 
-function build_axis_selection() {
-  const common = new Common();
-  if (common.fwData.grblaxis <= 3) {
+/** Build the axis selection dropdown, if there are more than 3 axes */
+const build_axis_selection = () => {
+  const minAxisCount = 3;
+  if (grblaxis < minAxisCount) {
     return;
   }
 
-  let html = "<select class='form-control wauto' id='control_select_axis'>";
-  for (let i = 3; i <= common.fwData.grblaxis; i++) {
-    let letter;
-    let sel = "";
-    if (i === 3) {
-      letter = "Z";
-      sel = "selected";
-    } else if (i === 4) letter = "A";
-    else if (i === 5) letter = "B";
-    else if (i === 6) letter = "C";
-    html += `<option value='${letter}' ${sel}>${letter}</option>\n`;
-  }
-  html += "</select>\n";
+  const axisOpts = [
+    '<option value="Z" selected>Z</option>',
+    '<option value="A">A</option>',
+    '<option value="B">B</option>',
+    '<option value="C">C</option>',
+  ];
 
-  setHTML("axis_selection", html);
-  id("control_select_axis").addEventListener("change", (event) =>
-    control_changeaxis(),
-  );
-  setHTML("axis_label", `${trans_text_item("Axis")}:`);
+  const html = ["<select class='form-control wauto' id='control_select_axis' onchange='control_changeaxis()' >"];
+  for (let i = 3; i <= grblaxis; i++) {
+    html.push(axisOpts[i - 3]);
+  }
+  html.push("</select>");
+
+  setHTML("axis_selection", html.join("\n"));
+  setHTML("axis_label", `${translate_text_item('Axis')}:`);
   setClickability("axis_selection", true);
 }
 
+/** Change the selected axis. Relevant for axes "Z", "A", "B", "C". Not relevant for axes "X" or "Y" */
 function control_changeaxis() {
-  const letter = getValue("control_select_axis");
-  setHTML("axisup", `+${letter}`);
-  setHTML("axisdown", `-${letter}`);
-  setHTML("homeZlabel", ` ${letter} `);
+  const letter = getValue('control_select_axis');
+  setHTML('axisup', `+${letter}`);
+  setHTML('axisdown', `-${letter}`);
+  setHTML('homeZlabel', ` ${letter} `);
+
+  const getLastNonXYFeedRate = getValue('controlpanel_z_feedrate');
   switch (last_axis_letter) {
-    case "Z":
-      axis_feedrate[2] = getValue("z_feedrate");
-      break;
-    case "A":
-      axis_feedrate[3] = getValue("a_feedrate");
-      break;
-    case "B":
-      axis_feedrate[4] = getValue("b_feedrate");
-      break;
-    case "C":
-      axis_feedrate[5] = getValue("c_feedrate");
-      break;
+    case 'Z': axis_feedrate[2] = getLastNonXYFeedRate; break;
+    case 'A': axis_feedrate[3] = getLastNonXYFeedRate; break;
+    case 'B': axis_feedrate[4] = getLastNonXYFeedRate; break;
+    case 'C': axis_feedrate[5] = getLastNonXYFeedRate; break;
   }
 
-  last_axis_letter = letter;
-  switch (last_axis_letter) {
-    case "Z":
-      setValue("z_feedrate", axis_feedrate[2]);
-      break;
-    case "A":
-      setValue("a_feedrate", axis_feedrate[3]);
-      break;
-    case "B":
-      setValue("b_feedrate", axis_feedrate[4]);
-      break;
-    case "C":
-      setValue("c_feedrate", axis_feedrate[5]);
-      break;
+  // Change over to the new axis that's been selected
+  switch (letter) {
+    case 'Z': setValue('controlpanel_z_feedrate', axis_feedrate[2]); break;
+    case 'A': setValue('controlpanel_z_feedrate', axis_feedrate[3]); break;
+    case 'B': setValue('controlpanel_z_feedrate', axis_feedrate[4]); break;
+    case 'C': setValue('controlpanel_z_feedrate', axis_feedrate[5]); break;
   }
+
+  // And keep a record of it
+  last_axis_letter = letter;
 }
 
-/** Initialises the GRBL panel - looks for the probe */
+const floatOrZero = (value) => {
+  const val = Number.parseFloat(value);
+  return Number.isNaN(val) ? 0.0 : val;
+}
+
+/** This must be done after the preferences have been set */
 function init_grbl_panel() {
+  const prefList = (typeof preferencesList !== "undefined" && Array.isArray(preferenceList) && preferenceList.length > 0)
+    ? preferenceslist[0]
+    : default_preferenceslist[0];
+
+  // Feed rate for X and Y Axes
+  axis_feedrate[0] = floatOrZero(prefList.xy_feedrate);
+  axis_feedrate[1] = floatOrZero(prefList.xy_feedrate);
+  
+  axis_feedrate[2] = floatOrZero(prefList.z_feedrate);
+  axis_feedrate[3] = floatOrZero(prefList.a_feedrate);
+  axis_feedrate[4] = floatOrZero(prefList.b_feedrate);
+  axis_feedrate[5] = floatOrZero(prefList.c_feedrate);
+
+  setValue('controlpanel_xy_feedrate', axis_feedrate[0]);
+  setValue('controlpanel_z_feedrate', axis_feedrate[2]);
+
   grbl_set_probe_detected(false);
 }
 

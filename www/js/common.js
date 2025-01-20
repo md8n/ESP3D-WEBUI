@@ -199,7 +199,7 @@ class Common {
 			fitness: 100000000,
 		};
 
-		this.web_ui_version = "0.87";
+		this.web_ui_version = "0.88";
 
 		/** See connectdlg.js */
 		this.fwData = {

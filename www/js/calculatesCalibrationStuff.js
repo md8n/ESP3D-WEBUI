@@ -521,8 +521,6 @@ const findMaxFitness = (measurements) => {
   function iterate() {
     const messagesBox = document.getElementById("messages");
     if (stagnantCounter < 1000 && totalCounter < 200000) {
-      //Clear the canvass
-      clearCanvas();
 
       currentGuess = computeLinesFitness(measurements, currentGuess);
 
@@ -532,10 +530,12 @@ const findMaxFitness = (measurements) => {
       } else {
         stagnantCounter++;
       }
+
       totalCounter++;
       // console.log("Total Counter: " + totalCounter);
       sendCalibrationEvent({ final: false, guess: currentGuess, bestGuess: bestGuess, totalCounter });
 
+      //Every 100 iterations print out the fitness
       if (totalCounter % 100 === 0) {
         messagesBox.textContent += `Fitness: ${(1 / bestGuess.fitness).toFixed(7)} in ${totalCounter}\n`;
         messagesBox.scrollTop = messagesBox.scrollHeight;
@@ -543,9 +543,9 @@ const findMaxFitness = (measurements) => {
 
       // Schedule the next iteration
       setTimeout(iterate, 0);
-    } else {
+    } else { //We have completed the calibration (success or timeout)
       if (1 / bestGuess.fitness < common.acceptableCalibrationThreshold) {
-        messagesBox.value += "\nWARNING FITNESS TOO LOW. DO NOT USE THESE CALIBRATION VALUES!";
+        messagesBox.textContent += "\nWARNING FITNESS TOO LOW. DO NOT USE THESE CALIBRATION VALUES!";
       }
 
       messagesBox.textContent += '\nCalibration values:';
@@ -577,7 +577,28 @@ const findMaxFitness = (measurements) => {
         // This restarts calibration process for the next stage
         setTimeout(() => { onCalibrationButtonsClick("$CAL", "Calibrate"); }, 2000);
       } else {
+
         sendCalibrationEvent({ good: false, final: true, guess: bestGuess }, true);
+
+        messagesBox.textContent += '\n Restarting';
+
+        //Add +-50 to each of the corner anchor points and try again
+        common.initialGuess.tl.x = bestGuess.tl.x + Math.random() * 100 - 50;
+        common.initialGuess.tl.y = bestGuess.tl.y + Math.random() * 100 - 50;
+        common.initialGuess.tr.x = bestGuess.tr.x + Math.random() * 100 - 50;
+        common.initialGuess.tr.y = bestGuess.tr.y + Math.random() * 100 - 50;
+        common.initialGuess.br.x = bestGuess.br.x + Math.random() * 100 - 50;
+
+        //Reset the counters
+        stagnantCounter = 0;
+        totalCounter = 0;
+
+        //Try again with different starting conditions
+        bestGuess = JSON.parse(JSON.stringify(common.initialGuess));
+        currentGuess = JSON.parse(JSON.stringify(common.initialGuess));
+
+        //Restart the iteration
+        setTimeout(iterate, 0);
       }
     }
   }
@@ -594,8 +615,8 @@ function sendCalibrationEvent(dataToSend, log = false) {
   try {
     if (log) {
       console.log(JSON.stringify(dataToSend, null, 2));
-    } else if (dataToSend.totalCounter) {
-      console.log("total counter:", dataToSend.totalCounter);
+    // } else if (dataToSend.totalCounter) {
+    //   console.log("total counter:", dataToSend.totalCounter);
     }
     document.body.dispatchEvent(new CustomEvent(CALIBRATION_EVENT_NAME, { bubbles: true, cancelable: true, detail: dataToSend }));
   } catch (err) {

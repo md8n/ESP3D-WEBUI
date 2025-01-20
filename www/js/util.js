@@ -11,8 +11,9 @@ const setValue = (name, val) => {
     elem.value = val;
   }
 }
-/** Return an element's `value` value. If the element does not exist or does not have a `value` value `undefined` is returned */
-const getValue = (name) => id(name)?.value;
+/** Return an element's `value` value, or its `innerText` value.
+ * If the element does not exist or does not have a `value` or `innerText` value `undefined` is returned */
+const getValue = (name) => id(name)?.value || id(name)?.innerText;
 
 /** Set the className of the element with an id matching the supplied name.
  * If the element cannot be found - nothing happens

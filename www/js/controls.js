@@ -35,8 +35,8 @@ const ControlsPanel = () => {
 	id("zero_b_btn").addEventListener("click", (event) => SendZerocommand("B0"));
 	id("zero_c_btn").addEventListener("click", (event) => SendZerocommand("C0"));
 
-	id("controlpanel_xy_feedrate").addEventListener("change", (event) => onXYvelocityChange());
-	id("controlpanel_z_feedrate").addEventListener("change", (event) => onZvelocityChange());
+	id("controlpanel_xy_feedrate").addEventListener("change", (event) => onXYFeedRateChange());
+	id("controlpanel_z_feedrate").addEventListener("change", (event) => onNonXYFeedRateChange());
 
 	id("motor_off_control").addEventListener("click", (event) => control_motorsOff());
 };
@@ -184,27 +184,24 @@ function SendZerocommand(cmd) {
 	SendPrinterCommand(command, true, get_Position);
 }
 
-const buildFeedRateValueDef = (axis) => {
-	return {
-		"valueType": "float",
-		"units": "mm/min",
-		"label": axis.startsWith("Z") ? "Z axis feedrate" : "XY axis feedrate",
-		"min": 0.00001,
-		"defValue": 1,
-	};
+/** Get the Relevant Feed Rate for the Axis. It does not have to be the selected Axis */
+const GetAxisFeedRate = (axis = "XY") => {
+	switch (axis.toUpperCase()) {
+		case "XY": return axis_feedrate[0];
+		case "Z": return axis_feedrate[2];
+		case "A": return axis_feedrate[3];
+		case "B": return axis_feedrate[4];
+		case "C": return axis_feedrate[5];
+		default:
+			// "x", "y", "XY"
+			return axis_feedrate[0];
+	}
 }
 
+/** Get the relevant feed rate for jogging */
 function JogFeedrate(axis) {
-	const controlName = axis.startsWith("Z") ? "controlpanel_z_feedrate" : "controlpanel_xy_feedrate";
-	const valueDef = buildFeedRateValueDef(axis);
-	const feedrateValue = id(controlName).value;
-	const errorList = valueIsFloat(feedrateValue, valueDef);
-	if (errorList.length) {
-		// error text was "Feedrate value must be at least 1 mm/min!"
-		alertdlg(trans_text_item("Out of range"), errorList.join("\n"));
-		return valueDef.defValue;
-	}
-	return Number.parseFloat(feedrateValue);
+	const isZAxis = axis[0].toUpperCase() === "Z";
+	return GetAxisFeedRate(isZAxis ? "Z" : "XY");
 }
 
 /** This is extensively used in the jog dial SVGs */
@@ -213,46 +210,55 @@ function SendJogcommand(cmd, feedrate) {
 		return;
 	}
 
-	const controlName = axis.startsWith("Z") ? "controlpanel_z_feedrate" : "controlpanel_xy_feedrate";
-	const prefName = axis.startsWith("Z") ? "z_feedrate" : "xy_feedrate";
-	const valueDef = buildFeedRateValueDef(axis);
-
-	let letter = "Z";
-	const common = new Common();
 	let aCmd = cmd;
-	if (common.fwData.grblaxis > 3) {
-		letter = "Axis";
-		valueDef.label = valueDef.label.replace("Z axis", letter);
-		aCmd = cmd.replace("Z", id("control_select_axis").value);
+	if (grblaxis > 3) {
+		aCmd = cmd.replace("Z", getValue("control_select_axis"));
 	}
 
-	const feedrateValue = id(controlName).value;
-	const errorList = valueIsFloat(feedrateValue, valueDef);
-
-	if (errorList.length) {
-		// error text was "(something) Feedrate value must be at least 1 mm/min!"
-		alertdlg(trans_text_item("Out of range"), errorList.join("\n"));
-		id(controlName).value = getPrefValue(prefName);
-		return;
-	}
+	const feedrateValue = GetAxisFeedRate(feedrate[0].toUpperCase() === "Z" ? getValue("control_select_axis") : "XY");
 
 	const command = `$J=G91 G21 F${feedrateValue} ${aCmd}`;
 	console.log(command);
 	SendPrinterCommand(command, true, get_Position);
 }
 
-function onXYvelocityChange() {
-	const feedrateValue = Number.parseInt(id("controlpanel_xy_feedrate").value);
-	if (feedrateValue < 1 || feedrateValue > 9999 || Number.isNaN(feedrateValue) || feedrateValue === null) {
-		//we could display error but we do not
+const getFeedRateValue = (name) => floatOrZero(getValue(name) || 0);
+
+function control_resetaxis(axis = "") {
+	const letter = !axis ? getValue('control_select_axis') : axis;
+
+	// Change over to the new axis that's been selected
+	switch (letter) {
+		case "XY": setValue('controlpanel_xy_feedrate', axis_feedrate[0]); break;
+		case 'Z': setValue('controlpanel_z_feedrate', axis_feedrate[2]); break;
+		case 'A': setValue('controlpanel_z_feedrate', axis_feedrate[3]); break;
+		case 'B': setValue('controlpanel_z_feedrate', axis_feedrate[4]); break;
+		case 'C': setValue('controlpanel_z_feedrate', axis_feedrate[5]); break;
 	}
 }
 
-function onZvelocityChange() {
-	const feedrateValue = Number.parseInt(id("controlpanel_z_feedrate").value);
-	if (feedrateValue < 1 || feedrateValue > 999 || Number.isNaN(feedrateValue) || feedrateValue === null) {
+function onXYFeedRateChange() {
+	const feedratevalue = getFeedRateValue("controlpanel_xy_feedrate");
+	if (feedratevalue < 1 || feedratevalue > 9999) {
 		//we could display error but we do not
+		control_resetaxis("XY");
 	}
+
+	// Set the XY feed rate values
+	axis_feedrate[0] = feedratevalue;
+	axis_feedrate[1] = feedratevalue;
+}
+
+function onNonXYFeedRateChange() {
+	const feedratevalue = getFeedRateValue("controlpanel_z_feedrate");
+	if (feedratevalue < 1 || feedratevalue > 999) {
+		//we could display error but we do not
+		control_resetaxis();
+		return;
+	}
+
+	// Flush the change through
+	control_changeaxis();
 }
 
 function processMacroSave(answer) {
