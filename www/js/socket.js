@@ -148,21 +148,15 @@ const startSocket = () => {
 				msg += String.fromCharCode(bytes[i]);
 				if (bytes[i] === 10) {
 					wsmsg += msg.replace("\r\n", "\n");
-					const thismsg = wsmsg;
+					const thismsg = wsmsg.trim();
 					wsmsg = "";
 					msg = "";
 					Monitor_output_Update(thismsg);
 					process_socket_response(thismsg);
-					if (
-						!(
-							thismsg.startsWith("<") ||
-							thismsg.startsWith("ok T:") ||
-							thismsg.startsWith("X:") ||
-							thismsg.startsWith("FR:") ||
-							thismsg.startsWith("echo:E0 Flow")
-						)
-					)
+					const noNeedToShowMsg = ["<", "ok T:", "X:", "FR:", "echo:E0 Flow"].some((msgStart) => thismsg.startsWith(msgStart));
+					if (!noNeedToShowMsg && thismsg !== "ok") {
 						console.log(thismsg);
+					}
 				}
 			}
 			wsmsg += msg;

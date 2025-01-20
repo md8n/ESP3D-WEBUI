@@ -47,7 +47,7 @@ const build_axis_selection = () => {
   ];
 
   const html = ["<select class='form-control wauto' id='control_select_axis' onchange='control_changeaxis()' >"];
-  for (var i = 3; i <= grblaxis; i++) {
+  for (let i = 3; i <= grblaxis; i++) {
     html.push(axisOpts[i - 3]);
   }
   html.push("</select>");
