@@ -805,18 +805,18 @@ const tabletInit = () => {
 
     id("tablettab_cal_retract").addEventListener("click", (event) => onCalibrationButtonsClick("$ALL", "Retract All"));
     id("tablettab_cal_extend").addEventListener("click", (event) => onCalibrationButtonsClick("$EXT", "Extend All"));
-    id("tablettab_cal_calibrate").addEventListener("click", (event) => {
-      onCalibrationButtonsClick("$CAL", "Calibrate");
-      setTimeout(() => {
-        hideModal("calibration-popup");
-      }, 1000);
-    });
-    id("tablettab_cal_tense").addEventListener("click", (event) => {
-      onCalibrationButtonsClick("$TKSLK", "Apply Tension");
-      setTimeout(() => {
-        hideModal("calibration-popup");
-      }, 1000);
-    });
+    // id("tablettab_cal_calibrate").addEventListener("click", (event) => {
+    //   onCalibrationButtonsClick("$CAL", "Calibrate");
+    //   setTimeout(() => {
+    //     hideModal("calibration-popup");
+    //   }, 1000);
+    // });
+    // id("tablettab_cal_tense").addEventListener("click", (event) => {
+    //   onCalibrationButtonsClick("$TKSLK", "Apply Tension");
+    //   setTimeout(() => {
+    //     hideModal("calibration-popup");
+    //   }, 1000);
+    // });
     // id('tablettab_cal_homez').addEventListener('click', (event) => onCalibrationButtonsClick('$TKSLK','Home Z'));
     id("tablettab_cal_config").addEventListener("click", (event) => {
       loadConfigValues();
