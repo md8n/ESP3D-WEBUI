@@ -171,16 +171,10 @@ const startSocket = () => {
 					msg = "";
 					Monitor_output_Update(thismsg);
 					process_socket_response(thismsg);
-					if (
-						!(
-							thismsg.startsWith("<") ||
-							thismsg.startsWith("ok T:") ||
-							thismsg.startsWith("X:") ||
-							thismsg.startsWith("FR:") ||
-							thismsg.startsWith("echo:E0 Flow")
-						)
-					)
+					const noNeedToShowMsg = ["<", "ok T:", "X:", "FR:", "echo:E0 Flow"].some((msgStart) => this.msg.startsWith(msgStart));
+					if (!noNeedToShowMsg && this.msg !== "ok") {
 						console.log(thismsg);
+					}
 				}
 			}
 			wsmsg += msg;
