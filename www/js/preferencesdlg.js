@@ -556,25 +556,8 @@ const SavePreferences = () => {
     formData.append("path", "/");
     formData.append("myfile[]", file, prefFile);
 
-    SendFileHttp(
-        cmd,
-        formData,
-        preferencesdlgUploadProgressDisplay,
-        preferencesUploadsuccess,
-        preferencesUploadfailed,
-    );
+    SendFileHttp(cmd, formData, preferencesUploadsuccess, preferencesUploadfailed);
 };
-
-function preferencesdlgUploadProgressDisplay(oEvent) {
-    if (oEvent.lengthComputable) {
-        const percentComplete = (oEvent.loaded / oEvent.total) * 100;
-        setValue("preferencesdlg_prg", percentComplete);
-        setHTML("preferencesdlg_upload_percent", percentComplete.toFixed(0));
-        displayBlock("preferencesdlg_upload_msg");
-    } else {
-        // Impossible because size is unknown
-    }
-}
 
 function preferencesUploadsuccess(response) {
     displayNone("preferencesdlg_upload_msg");

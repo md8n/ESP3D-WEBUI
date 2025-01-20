@@ -166,13 +166,13 @@ const startSocket = () => {
 				msg += String.fromCharCode(bytes[i]);
 				if (bytes[i] === 10) {
 					wsmsg += msg.replace("\r\n", "\n");
-					const thismsg = wsmsg;
+					const thismsg = wsmsg.trim();
 					wsmsg = "";
 					msg = "";
 					Monitor_output_Update(thismsg);
 					process_socket_response(thismsg);
-					const noNeedToShowMsg = ["<", "ok T:", "X:", "FR:", "echo:E0 Flow"].some((msgStart) => this.msg.startsWith(msgStart));
-					if (!noNeedToShowMsg && this.msg !== "ok") {
+					const noNeedToShowMsg = ["<", "ok T:", "X:", "FR:", "echo:E0 Flow"].some((msgStart) => thismsg.startsWith(msgStart));
+					if (!noNeedToShowMsg && thismsg !== "ok") {
 						console.log(thismsg);
 					}
 				}

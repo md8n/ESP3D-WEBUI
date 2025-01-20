@@ -125,11 +125,10 @@ const buildGetCmd = (cmd, id, result_fn, error_fn) => {
 	return command;
 }
 
-const buildPostFileCmd = (cmd, postdata, result_fn, error_fn, progress_fn) => {
+const buildPostFileCmd = (cmd, postdata, result_fn, error_fn) => {
 	const command = buildBasicCmd(cmd, "POST");
 	command.isupload = true;
 	command.data = postdata;
-	command.progressfn = progress_fn;
 	setCmdFn(command, "resultfn", http_resultfn, result_fn);
 	setCmdFn(command, "errorfn", http_errorfn, error_fn);
 
@@ -219,7 +218,7 @@ const SendGetHttp = (cmd, result_fn, error_fn, id, max_id) => {
 	process_cmd();
 };
 
-function SendFileHttp(cmd, postdata, progress_fn, result_fn, error_fn) {
+function SendFileHttp(cmd, postdata, result_fn, error_fn) {
 	if (!checkForMaxListSize(`The command '${cmd}'`)) {
 		return;
 	}
@@ -229,7 +228,7 @@ function SendFileHttp(cmd, postdata, progress_fn, result_fn, error_fn) {
 		// biome-ignore lint/suspicious/noGlobalAssign: <explanation>
 		process = false;
 	}
-	http_cmd_list.push(buildPostFileCmd(cmd, postdata, progress_fn, result_fn, error_fn));
+	http_cmd_list.push(buildPostFileCmd(cmd, postdata, result_fn, error_fn));
 	process_cmd();
 }
 

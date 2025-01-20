@@ -71,19 +71,6 @@ function checkupdatefile() {
 	}
 }
 
-function UpdateProgressDisplay(oEvent) {
-	if (oEvent.lengthComputable) {
-		const percentComplete = (oEvent.loaded / oEvent.total) * 100;
-		setValue("prgfw", percentComplete);
-		setHTML(
-			"updatemsg",
-			`${trans_text_item("Uploading")} ${current_update_filename} ${percentComplete.toFixed(0)}%`,
-		);
-	} else {
-		// Impossible because size is unknown
-	}
-}
-
 function UploadUpdatefile() {
 	confirmdlg(trans_text_item("Please confirm"), trans_text_item("Update Firmware ?"), StartUploadUpdatefile);
 }
@@ -110,7 +97,7 @@ function StartUploadUpdatefile(response) {
 	displayBlock(["updatemsg", "prgfw"]);
 	current_update_filename = files.length === 1 ? files[0].name : "";
 	setHTML("updatemsg", `${trans_text_item("Uploading")} ${current_update_filename}`);
-	SendFileHttp(cmd, formData, UpdateProgressDisplay, updatesuccess, updatefailed);
+	SendFileHttp(cmd, formData, updatesuccess, updatefailed);
 }
 
 function updatesuccess(response) {

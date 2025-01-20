@@ -312,25 +312,19 @@ function SaveNewMacroList() {
 	const cmd = "/files";
 	formData.append("path", "/");
 	formData.append("myfile[]", file, "/macrocfg.json");
-	SendFileHttp(
-		cmd,
-		formData,
-		macrodlgUploadProgressDisplay,
-		macroUploadsuccess,
-		macroUploadfailed,
-	);
+	SendFileHttp( cmd, formData, macroUploadsuccess, macroUploadfailed );
 }
 
-function macrodlgUploadProgressDisplay(oEvent) {
-	if (oEvent.lengthComputable) {
-		const percentComplete = (oEvent.loaded / oEvent.total) * 100;
-		id("macrodlg_prg").value = percentComplete;
-		setHTML("macrodlg_upload_percent", percentComplete.toFixed(0));
-		displayBlock("macrodlg_upload_msg");
-	} else {
-		// Impossible because size is unknown
-	}
-}
+// function macrodlgUploadProgressDisplay(oEvent) {
+// 	if (oEvent.lengthComputable) {
+// 		const percentComplete = (oEvent.loaded / oEvent.total) * 100;
+// 		id("macrodlg_prg").value = percentComplete;
+// 		setHTML("macrodlg_upload_percent", percentComplete.toFixed(0));
+// 		displayBlock("macrodlg_upload_msg");
+// 	} else {
+// 		// Impossible because size is unknown
+// 	}
+// }
 
 const macroUploadsuccess = (response) => {
 	const common = new Common();

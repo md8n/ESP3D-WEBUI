@@ -310,16 +310,6 @@ function checkSPIFFSfiles() {
 	}
 }
 
-function SPIFFSUploadProgressDisplay(oEvent) {
-	if (oEvent.lengthComputable) {
-		const percentComplete = (oEvent.loaded / oEvent.total) * 100;
-		setValue("SPIFFS_prg", percentComplete);
-		setHTML("uploadSPIFFSmsg", `${trans_text_item("Uploading")} ${SPIFFS_currentfile} ${percentComplete.toFixed(0)}%`);
-	} else {
-		// Impossible because size is unknown
-	}
-}
-
 function SPIFFS_UploadFile() {
 	const common = new Common();
 	if (CheckForHttpCommLock()) {
@@ -341,7 +331,7 @@ function SPIFFS_UploadFile() {
 	displayBlock(["uploadSPIFFSmsg", "SPIFFS_prg"]);
 	SPIFFS_currentfile = (files.length === 1) ? files[0].name : "";
 	setHTML("uploadSPIFFSmsg", `${trans_text_item("Uploading")} ${SPIFFS_currentfile}`);
-	SendFileHttp(cmd, formData, SPIFFSUploadProgressDisplay, SPIFFSUploadsuccess, SPIFFSUploadfailed);
+	SendFileHttp(cmd, formData, SPIFFSUploadsuccess, SPIFFSUploadfailed);
 }
 
 function SPIFFSUploadsuccess(response) {

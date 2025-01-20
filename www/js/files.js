@@ -698,21 +698,22 @@ function files_start_upload() {
 	displayNone("files_navigation_buttons");
 
 	const cmd = "/upload";
-	SendFileHttp(cmd, formData, FilesUploadProgressDisplay, files_list_success, files_directSD_upload_failed);
+	SendFileHttp(cmd, formData, files_list_success, files_directSD_upload_failed);
+	// SendFileHttp(cmd, formData, FilesUploadProgressDisplay, files_list_success, files_directSD_upload_failed);
 	//console.log("send file");
 
 	setValue("files_input_file", "");
 }
 
-function FilesUploadProgressDisplay(oEvent) {
-	if (oEvent.lengthComputable) {
-		const percentComplete = (oEvent.loaded / oEvent.total) * 100;
-		id("files_prg").value = percentComplete;
-		setHTML("files_percent_upload", percentComplete.toFixed(0));
-	} else {
-		// Impossible because size is unknown
-	}
-}
+// function FilesUploadProgressDisplay(oEvent) {
+// 	if (oEvent.lengthComputable) {
+// 		const percentComplete = (oEvent.loaded / oEvent.total) * 100;
+// 		id("files_prg").value = percentComplete;
+// 		setHTML("files_percent_upload", percentComplete.toFixed(0));
+// 	} else {
+// 		// Impossible because size is unknown
+// 	}
+// }
 
 export {
 	build_file_filter_list,
