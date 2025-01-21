@@ -1,13 +1,11 @@
 // import conErr, displayBlock, displayInline, displayNone, id, closeModal, setactiveModal, showModal, SendGetHttp, logindlg, EventListenerSetup, startSocket,
 
 /** Connect Dialog */
-const connectdlg = (getFw = true) => {
+const connectdlg = (getFw = false) => {
 	const modal = setactiveModal("connectdlg.html");
 	if (modal == null) {
 		return;
 	}
-
-	id("connectbtn").addEventListener("click", (event) => retryconnect());
 
 	showModal();
 
@@ -102,12 +100,15 @@ const connectfailed = (error_code, response) => {
 	displayBlock("connectbtn");
 	displayBlock("failed_connect_msg");
 	displayNone("connecting_msg");
-	conErr(error_code, response, "Fw identification error");
+
+	id("connectbtn").addEventListener("click", retryconnect);
+
+	conErr(error_code, response, "FW identification error");
 };
 
 const connectsuccess = (response) => {
 	if (getFWdata(response)) {
-		console.log(`Fw identification:${response}`);
+		console.log(`FW identification:${response}`);
 		if (ESP3D_authentication) {
 			closeModal("Connection successful");
 			displayInline("menu_authentication");
@@ -126,6 +127,9 @@ const retryconnect = () => {
 	displayNone("connectbtn");
 	displayNone("failed_connect_msg");
 	displayBlock("connecting_msg");
+
+	id("connectbtn").removeEventListener("click", retryconnect);
+
 	const url = `/command?plain=${encodeURIComponent("[ESP800]")}`;
 	SendGetHttp(url, connectsuccess, connectfailed);
 };
