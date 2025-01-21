@@ -84,12 +84,17 @@ function init_files_panel(dorefresh = true) {
 	id("abort_btn").addEventListener("click", (event) => files_abort());
 	id("print_upload_btn").addEventListener("click", (event) => files_select_upload());
 
-	id("files_input_file").addEventListener("change", (event) => files_check_if_upload());
+	initFilesInputFile();
 
 	files_set_button_as_filter(files_filter_sd_list);
 	if (direct_sd && dorefresh) {
 		files_refreshFiles(files_currentPath);
 	}
+}
+
+/** Wire up the `files_input_file` handler */
+const initFilesInputFile = () => {
+	id("files_input_file").addEventListener("change", (event) => files_check_if_upload());
 }
 
 const files_set_button_as_filter = (isfilter) => setHTML("files_filter_glyph", get_icon_svg(!isfilter ? "filter" : "list-alt", "1em", "1em"));
@@ -571,8 +576,11 @@ function files_build_display_filelist(displaylist = true) {
 
 const files_abort = () => SendPrinterCommand("abort");
 
-/** Clicks the `files_input_file` element for you */
-const files_select_upload = () => id("files_input_file").click();
+/** Wires up, and clicks the `files_input_file` element for you */
+const files_select_upload = () => {
+	initFilesInputFile();
+	id("files_input_file").click();
+}
 
 function files_check_if_upload() {
 	const canupload = true;
