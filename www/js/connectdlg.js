@@ -16,7 +16,7 @@ import {
 } from "./common.js";
 
 /** Connect Dialog */
-const connectdlg = (getFw = true) => {
+const connectdlg = (getFw = false) => {
 	const modal = setactiveModal("connectdlg.html");
 	if (modal == null) {
 		return;
@@ -80,14 +80,14 @@ const getFWdata = (response) => {
 };
 
 const connectfailed = (error_code, response) => {
-	displayBlock(["connectbtn", "failed_connect_msg"]);
 	displayNone("connecting_msg");
-	conErr(error_code, response, "Fw identification error");
+	displayBlock(["connectbtn", "failed_connect_msg"]);
+	conErr(error_code, response, "FW identification error");
 };
 
 const connectsuccess = (response) => {
 	const fwData = getFWdata(response);
-	console.log("Fw identification:");
+	console.log("FW identification:");
 	console.log(fwData);
 	if (fwData.success) {
 		EventListenerSetup();

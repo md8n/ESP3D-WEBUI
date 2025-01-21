@@ -25,7 +25,7 @@ window.onload = () => {
 		if (!connectDlg && id("connectdlg.html")) {
 			connectDlg = "loading";
 			try {
-				connectdlg();
+				connectdlg(true);
 				connectDlg = "loaded";
 			} catch (err) {
 				console.error("Error loading connect dialog:", err);

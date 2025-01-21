@@ -9,6 +9,7 @@ import {
 	process_socket_response,
 	getValue,
 	setValue,
+	valueStartsWith,
 } from "./common.js";
 
 const CustomCommand_history = [];
