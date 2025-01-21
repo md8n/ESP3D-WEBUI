@@ -3,7 +3,6 @@ import {
   getValue,
   id,
   setValue,
-  JogFeedrate,
   numpad,
   SendPrinterCommand,
   files_currentPath,
@@ -13,6 +12,7 @@ import {
   SendRealtimeCmd,
   MPOS,
   WPOS,
+  AxisFeedRate,
   SendGetHttp,
   checkHomed,
   loadConfigValues,
@@ -24,6 +24,8 @@ import {
   sendCommand,
   arrayToXYZ, refreshGcode, tpDisplayer, tpInit,
   drawTPBtns,
+  getAxisFromValue,
+  valueStartsWith,
 } from "./common.js";
 
 let gCodeLoaded = false;
@@ -185,20 +187,10 @@ const toggleUnits = () => {
   sendCommand("$G");
 };
 
-// const btnSetDistance = () => {
-//   tabletClick();
-//   const distance = event.target.innerText;
-//   setValue("jog-distance", distance);
-// };
-
-// const setDistance = (distance) => {
-//   tabletClick();
-//   setValue("jog-distance", distance);
-// };
-
 const jogTo = (axisAndDistance) => {
+  const axis = getAxisFromValue(axisAndDistance);
   // Always force G90 mode because synchronization of modal reports is unreliable
-  let feedrate = JogFeedrate(axisAndDistance);
+  let feedrate = AxisFeedRate(axis);
   const common = new Common();
   if (common.modal.units === "G20") {
     feedrate /= 25.4;
@@ -219,67 +211,45 @@ const setAxisByValue = (axis, coordinate) => {
   sendCommand(`G10 L20 P0 ${axis}${coordinate}`);
 };
 
-// const setAxis = (axis, field) => {
-//   tabletClick();
-//   sendCommand(`G10 L20 P1 ${axis}${id(field).value}`);
-// };
+const checkParams = (params = {}) => {
+  if (!Object.keys(params).length) {
+    addMessage("Could not perform Jog. No jog parameters supplied. Programmer error.");
+    return "";
+  }
 
-// let longone = false;
-// function long_jog(target) {
-//   longone = true;
-//   distance = 1000;
-//   const axisAndDirection = target.value;
-//   let feedrate = JogFeedrate(axisAndDirection);
-//   const common = new Common();
-//   if (common.modal.units === "G20") {
-//     distance /= 25.4;
-//     distance = distance.toFixed(3);
-//     feedrate /= 25.4;
-//     feedrate = feedrate.toFixed(2);
-//   }
-//   // tabletShowMessage("Long Jog " + cmd);
-//   sendCommand(`$J=G91F${feedrate}${axisAndDirection}${distance}\n`);
-// }
+  if (!("Z" in params) && !checkHomed()) {
+    addMessage("Could not perform Jog. Belt lengths are unknown.");
+    return "";
+  }
+
+  const s = [];
+  for (const key in params) {
+    s.push(`${key}${params[key]}`);
+  }
+  return s.join();
+}
+
+const jog = (params = {}) => {
+  const cmd = checkParams(params);
+  if (!cmd) {
+    return;
+  }
+
+  addMessage(`Jog: ${cmd}`);
+  jogTo(cmd);
+}
+
+const move = (params = {}) => {
+  const cmd = checkParams(params);
+  if (!cmd) {
+    return;
+  }
+
+  moveTo(cmd);
+}
 
 const sendMove = (cmd) => {
   tabletClick();
-
-  const checkParams = (params = {}) => {
-    if (!Object.keys(params).length) {
-      addMessage("Could not perform Jog. No jog parameters supplied. Programmer error.");
-      return "";
-    }
-
-    if (!("Z" in params) && !checkHomed()) {
-      addMessage("Could not perform Jog. Belt lengths are unknown.");
-      return "";
-    }
-
-    const s = [];
-    for (const key in params) {
-      s.push(`${key}${params[key]}`);
-    }
-    return s.join();
-  }
-
-  const jog = (params = {}) => {
-    const cmd = checkParams(params);
-    if (!cmd) {
-      return;
-    }
-
-    addMessage(`Jog: ${cmd}`);
-    jogTo(cmd);
-  }
-
-  const move = (params = {}) => {
-    const cmd = checkParams(params);
-    if (!cmd) {
-      return;
-    }
-
-    moveTo(cmd);
-  }
 
   const distance = cmd.includes('Z') ? Number(id('disZ').innerText) || 0 : Number(id('disM').innerText) || 0
 
@@ -319,28 +289,8 @@ const moveHome = () => {
   const x = Number.parseFloat(id("mpos-x").innerText);
   const y = Number.parseFloat(id("mpos-y").innerText);
 
-  const jog = (params = {}) => {
-    let s = "";
-    for (key in params) {
-      s += key + params[key];
-    }
-    jogTo(s);
-  };
-
   jog({ X: -1 * x, Y: -1 * y });
 };
-
-// setInterval(checkOnHeartbeat, 500);
-// function checkOnHeartbeat() {
-//   if (new Date().getTime() - lastHeartBeatTime > 10000) {
-//     let msgWindow = document.getElementById('messages')
-//     let text = msgWindow.textContent
-//     text = text + '\n' + "No heartbeat from machine in 10 seconds. Please check connection."
-//     msgWindow.textContent = text
-//     msgWindow.scrollTop = msgWindow.scrollHeight
-//     lastHeartBeatTime = new Date().getTime();
-//   }
-// }
 
 /** save off the serial messages */
 const saveSerialMessages = () => {
@@ -377,20 +327,20 @@ const tabletShowMessage = (msg = "", collecting = false) => {
   if (collecting || !msg) {
     return;
   }
-  if (msg.startsWith("<") || msg.startsWith("ok") || msg.startsWith("\n") || msg.startsWith("\r")) {
+  if (valueStartsWith(msg, ["<", "ok", "\n", "\r"])) {
     return;
   }
   if (maslowInfoMsgHandling(msg)) {
     return;
   }
-  if (msg.startsWith("[GC")) {
+  if (valueStartsWith(msg, ["[GC"])) {
     return;
   }
 
   let errMsg = "";
 
   //These are used for populating the configuration popup
-  if (msg.startsWith("$/Maslow_") || msg.startsWith("$/maslow_")) {
+  if (valueStartsWith(msg, ["$/Maslow_", "$/maslow_"])) {
     errMsg = maslowMsgHandling(msg.substring(9));
     return; //We don't want to display these messages
   }

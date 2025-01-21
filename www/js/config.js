@@ -289,16 +289,6 @@ function config_revert_to_default(index, is_override) {
 	setInput(id_suffix, "default");
 }
 
-// function is_config_override_file() {
-// 	if (config_override_List.length > 5) {
-// 		for (i = 0; i < 5; i++) {
-// 			if (config_override_List[i].comment.startsWith("; No config override"))
-// 				return true;
-// 		}
-// 	}
-// 	return false;
-// }
-
 function configGetvalue(index, is_override) {
 	const id_suffix = suffix(index, is_override);
 	const item = is_override ? config_override_List[index] : config_configList[index];

@@ -17,18 +17,18 @@ import { trans_text_item } from "./common.js";
  * success is an empty string,
  * failure is an error message */
 const valueMinTest = (value, valueDef) => {
-	return "min" in valueDef && value < valueDef.min
-		? `'${valueDef.label}' ${trans_text_item("must be greater than or equal to")} ${valueDef.min}`
-		: "";
+  return "min" in valueDef && value < valueDef.min
+    ? `'${valueDef.label}' ${trans_text_item("must be greater than or equal to")} ${valueDef.min}`
+    : "";
 };
 
 /** Test the supplied numeric value against any defined `max` test (inclusive),
  * success is an empty string,
  * failure is an error message */
 const valueMaxTest = (value, valueDef) => {
-	return "max" in valueDef && value > valueDef.max
-		? `'${valueDef.label}' ${trans_text_item("must be less than or equal to")} ${valueDef.max}`
-		: "";
+  return "max" in valueDef && value > valueDef.max
+    ? `'${valueDef.label}' ${trans_text_item("must be less than or equal to")} ${valueDef.max}`
+    : "";
 };
 
 /** Test whether a value is an integer, and optionally within a certain range,
@@ -95,7 +95,7 @@ const checkValue = (value, valueDef, errorList = []) => {
     case "enctext":
     case "text":
       // These are both text string
-      errorList.push(valueIsText(value, valueDef)); 
+      errorList.push(valueIsText(value, valueDef));
       break;
     case "select":
       // This is effectively an enum - no specific test for this yet
@@ -103,11 +103,34 @@ const checkValue = (value, valueDef, errorList = []) => {
     default: {
       const valueDefError = `'${valueDef.label}' ${trans_text_item("is an unknown value type")} '${valueDef.valueType}'`;
       console.error(`${valueDefError}: ${JSON.stringify(value)}`);
-      errorList.push(valueDefError); 
+      errorList.push(valueDefError);
       break;
     }
   }
   return errorList.filter((err) => err);
 }
 
-export { checkValue, valueIsFloat };
+/** Tests if the supplied value starts with any of the supplied testText values.
+ * Notes:
+ * * any whitespace will not be trimmed from either the value or the testText values
+ * * a falsey or non-text value will always return `false`
+ * * all falsey or non-text values in the testText array will be eliminated
+ * * an empty testText array will result in `true` being returned
+ */
+const valueStartsWith = (value, testText) => {
+  if (typeof value !== "string" || !value) {
+    return false;
+  }
+  let tests = (typeof testText === "string") ? [testText] : testText;
+  if (!Array.isArray(tests)) {
+    console.error(`valueStartsWith was supplied with an unusable testText value: '${testText}'`);
+    return false;
+  }
+  tests = tests.filter((test) => {return typeof test === "string" && test});
+  if (tests.length === 0) {
+    return true;
+  }
+  return tests.some((test) => value.startsWith(test));
+}
+
+export { checkValue, valueIsFloat, valueStartsWith };

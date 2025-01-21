@@ -20,7 +20,7 @@ import {
 } from "./util.js";
 import { displayBlock, displayFlex, displayTable, displayInitial, displayInline, displayNone, displayUndoNone } from "./utilDisplay.js";
 import { numpad } from "./numpad.js";
-import { checkValue, valueIsFloat } from "./utilValidation.js";
+import { checkValue, valueIsFloat, valueStartsWith } from "./utilValidation.js";
 
 import { alertdlg } from "./alertdlg.js";
 import {
@@ -47,7 +47,6 @@ import {
 	ControlsPanel,
 	get_Position,
 	init_controls_panel,
-	JogFeedrate,
 	on_autocheck_position,
 } from "./controls.js";
 import { creditsdlg } from "./creditsdlg.js";
@@ -61,6 +60,7 @@ import {
 	init_files_panel,
 } from "./files.js";
 import {
+	getAxisFromValue,
 	build_axis_selection,
 	grblHandleMessage,
 	grbl_reset,
@@ -78,7 +78,7 @@ import {
 	StartProbeProcess,
 	MPOS,
 	WPOS,
-	AxisFeedrate,
+	AxisFeedRate,
 	setSpindleSpeed,
 } from "./grbl.js";
 import { grblpanel } from "./grblpanel.js";
@@ -344,7 +344,6 @@ export {
 	ControlsPanel,
 	get_Position,
 	init_controls_panel,
-	JogFeedrate,
 	on_autocheck_position,
 	// from creditsdlg.js
 	creditsdlg,
@@ -360,6 +359,7 @@ export {
 	files_select_upload,
 	init_files_panel,
 	// from grbl.js
+	getAxisFromValue,
 	build_axis_selection,
 	grblHandleMessage,
 	grbl_reset,
@@ -377,7 +377,7 @@ export {
 	StartProbeProcess,
 	MPOS,
 	WPOS,
-	AxisFeedrate,
+	AxisFeedRate,
 	setSpindleSpeed,
 	// from grblpanel.js
 	grblpanel,
@@ -527,4 +527,5 @@ export {
 	// from utilValidation.js
 	checkValue,
 	valueIsFloat,
+	valueStartsWith,
 };

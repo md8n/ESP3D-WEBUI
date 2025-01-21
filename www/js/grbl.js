@@ -6,6 +6,7 @@ import {
   getESPconfigSuccess,
   getValue,
   setValue,
+  getPrefValue,
   id,
   setChecked,
   setHTML,
@@ -18,6 +19,7 @@ import {
   tabletGrblState,
   tabletShowMessage,
   tabletUpdateModal,
+  valueStartsWith,
 } from "./common.js";
 
 /** interval timer ID */
@@ -43,13 +45,36 @@ const WPOS = (value) => {
   return wpos;
 };
 
-let axis_feedrate = [0, 0, 0, 0, 0, 0];
-/** gets/sets the GRBL axis feedrates [x, y, z, a, b, c] */
-const AxisFeedrate = (value) => {
-  if (Array.isArray(value) && value.length === 6) {
-    axis_feedrate = value;
+const axis_feedrate = { "XY": 0, "Z": 0, "A": 0, "B": 0, "C": 0 };
+
+/** Get the axis from the supplied value,
+ * which is assumed to start with an appropriate letter */
+const getAxisFromValue = (value) => {
+  const defaultAxis = "XY";
+  if (typeof value !== "string") {
+    // We don't know what this is, so return the default
+    return defaultAxis;
   }
-  return axis_feedrate;
+  const axis = value[0].toUpperCase();
+  // Note for "X" or "Y", or anything else we don't know, they will end up as the default
+  return (!Object.keys(axis_feedrate).includes(axis)) ? defaultAxis : axis;
+}
+
+/** intialises the AxisFeedRates from the preferences */
+const initAxisFeedRates = () => {
+  // biome-ignore lint/complexity/noForEach: <explanation>
+  Object.keys(axis_feedrate).forEach((key) => {
+    AxisFeedRate(key, floatOrZero(getPrefValue(`${key.toLowerCase()}_feedrate`)));
+  })
+}
+
+/** gets/sets an individual GRBL axis feedrate */
+const AxisFeedRate = (axis, value) => {
+  const useAxis = typeof axis !== "string" ? "XY" : axis.toUpperCase();
+  if (typeof value === "number") {
+    axis_feedrate[useAxis] = value;
+  }
+  return axis_feedrate[useAxis];
 }
 
 let last_axis_letter = "Z";
@@ -84,40 +109,28 @@ const build_axis_selection = () => {
     '<option value="C">C</option>',
   ];
 
-  const html = ["<select class='form-control wauto' id='control_select_axis' onchange='control_changeaxis()' >"];
+  const html = ["<select id='control_select_axis' class='form-control wauto'>"];
   for (let i = 3; i <= grblaxis; i++) {
     html.push(axisOpts[i - 3]);
   }
   html.push("</select>");
 
   setHTML("axis_selection", html.join("\n"));
-  setHTML("axis_label", `${translate_text_item('Axis')}:`);
+  setHTML("axis_label", `${trans_text_item('Axis')}:`);
+  id("control_select_axis").addEventListener("change", (event) => control_changeaxis())
   setClickability("axis_selection", true);
 }
 
-/** Change the selected axis. Relevant for axes "Z", "A", "B", "C". Not relevant for axes "X" or "Y" */
-function control_changeaxis() {
-  const letter = getValue('control_select_axis');
+/** Change the selected axis. Relevant for axes "Z", "A", "B", "C" when there are 4 or more axes. Not relevant for axes "X" or "Y" */
+const control_changeaxis = () => {
+  const letter = getValue('control_select_axis').toUpperCase();
   setHTML('axisup', `+${letter}`);
   setHTML('axisdown', `-${letter}`);
   setHTML('homeZlabel', ` ${letter} `);
 
-  const getLastNonXYFeedRate = getValue('controlpanel_z_feedrate');
-  switch (last_axis_letter) {
-    case 'Z': AxisFeedrate()[2] = getLastNonXYFeedRate; break;
-    case 'A': AxisFeedrate()[3] = getLastNonXYFeedRate; break;
-    case 'B': AxisFeedrate()[4] = getLastNonXYFeedRate; break;
-    case 'C': AxisFeedrate()[5] = getLastNonXYFeedRate; break;
-  }
-
+  AxisFeedRate(last_axis_letter, getValue('controlpanel_z_feedrate'));
   // Change over to the new axis that's been selected
-  switch (letter) {
-    case 'Z': setValue('controlpanel_z_feedrate', AxisFeedrate()[2]); break;
-    case 'A': setValue('controlpanel_z_feedrate', AxisFeedrate()[3]); break;
-    case 'B': setValue('controlpanel_z_feedrate', AxisFeedrate()[4]); break;
-    case 'C': setValue('controlpanel_z_feedrate', AxisFeedrate()[5]); break;
-  }
-
+  setValue('controlpanel_z_feedrate', AxisFeedRate(letter));
   // And keep a record of it
   last_axis_letter = letter;
 }
@@ -127,23 +140,13 @@ const floatOrZero = (value) => {
   return Number.isNaN(val) ? 0.0 : val;
 }
 
-/** This must be done after the preferences have been set */
-function init_grbl_panel() {
-  const prefList = (typeof preferencesList !== "undefined" && Array.isArray(preferenceList) && preferenceList.length > 0)
-    ? preferenceslist[0]
-    : default_preferenceslist[0];
+/** Initialise the GRBL control panel.
+ * Note: This must be done after the preferences have been set */
+const init_grbl_panel = () => {
+  initAxisFeedRates();
 
-  // Feed rate for X and Y Axes
-  AxisFeedrate()[0] = floatOrZero(prefList.xy_feedrate);
-  AxisFeedrate()[1] = floatOrZero(prefList.xy_feedrate);
-  
-  AxisFeedrate()[2] = floatOrZero(prefList.z_feedrate);
-  AxisFeedrate()[3] = floatOrZero(prefList.a_feedrate);
-  AxisFeedrate()[4] = floatOrZero(prefList.b_feedrate);
-  AxisFeedrate()[5] = floatOrZero(prefList.c_feedrate);
-
-  setValue('controlpanel_xy_feedrate', AxisFeedrate()[0]);
-  setValue('controlpanel_z_feedrate', AxisFeedrate()[2]);
+  // biome-ignore lint/complexity/noForEach: <explanation>
+  ["XY", "Z"].forEach((axis) => setValue(`controlpanel_${axis.toLowerCase()}_feedrate`, AxisFeedRate(axis)));
 
   grbl_set_probe_detected(false);
 }
@@ -647,7 +650,7 @@ const grblHandleMessage = (msg) => {
   // We handle these two before collecting data because they can be
   // sent at any time, maybe requested by a timer.
 
-  if (msg.startsWith("CLBM:")) {
+  if (valueStartsWith(msg, ["CLBM:"])) {
     const validJsonMSG = msg
       .replace(/(\b(?:bl|br|tr|tl)\b):/g, '"$1":')
       .replace("CLBM:", "")
@@ -655,11 +658,11 @@ const grblHandleMessage = (msg) => {
     const measurements = JSON.parse(validJsonMSG);
     handleCalibrationData(measurements);
   }
-  if (msg.startsWith("<")) {
+  if (valueStartsWith(msg, ["<"])) {
     grblProcessStatus(msg);
     return;
   }
-  if (msg.startsWith("[GC:")) {
+  if (valueStartsWith(msg, ["[GC:"])) {
     grblGetModal(msg);
     console.log(msg);
     return;
@@ -667,7 +670,7 @@ const grblHandleMessage = (msg) => {
 
   // Block data collection
   if (collecting) {
-    if (msg.startsWith("[MSG: EndData]")) {
+    if (valueStartsWith(msg, ["[MSG: EndData]"])) {
       collecting = false;
       // Finish collecting data
       if (collectHandler) {
@@ -681,7 +684,7 @@ const grblHandleMessage = (msg) => {
     }
     return;
   }
-  if (msg.startsWith("[MSG: BeginData]")) {
+  if (valueStartsWith(msg, ["[MSG: BeginData]"])) {
     // Start collecting data
     collectedData = "";
     collecting = true;
@@ -690,7 +693,7 @@ const grblHandleMessage = (msg) => {
 
   // Setting collection
   if (collectedSettings) {
-    if (msg.startsWith("ok")) {
+    if (valueStartsWith(msg, ["ok"])) {
       // Finish collecting settings
       getESPconfigSuccess(collectedSettings);
       collectedSettings = null;
@@ -705,7 +708,7 @@ const grblHandleMessage = (msg) => {
     }
     return;
   }
-  if (msg.startsWith("$0=") || msg.startsWith("$10=")) {
+  if (valueStartsWith(msg, ["$0=", "$10="])) {
     // Start collecting settings
     collectedSettings = msg;
     return;
@@ -713,7 +716,7 @@ const grblHandleMessage = (msg) => {
 
   // Handlers for standard Grbl protocol messages
 
-  if (msg.startsWith("ok")) {
+  if (valueStartsWith(msg, ["ok"])) {
     if (common.grbl_processfn) {
       common.grbl_processfn();
       common.grbl_processfn = null;
@@ -721,26 +724,21 @@ const grblHandleMessage = (msg) => {
     }
     return;
   }
-  if (msg.startsWith("[PRB:")) {
+  if (valueStartsWith(msg, ["[PRB:"])) {
     grblGetProbeResult(msg);
     return;
   }
-  if (msg.startsWith("[MSG:")) {
+  if (valueStartsWith(msg, ["[MSG:"])) {
     return;
   }
-  if (msg.startsWith("error:")) {
+  if (valueStartsWith(msg, ["error:"])) {
     if (common.grbl_errorfn) {
       common.grbl_errorfn();
       common.grbl_errorfn = null;
       common.grbl_processfn = null;
     }
   }
-  if (
-    msg.startsWith("error:") ||
-    msg.startsWith("ALARM:") ||
-    msg.startsWith("Hold:") ||
-    msg.startsWith("Door:")
-  ) {
+  if (valueStartsWith(msg, ["error:", "ALARM:", "Hold:", "Door:"])) {
     if (probe_progress_status !== 0) {
       probe_failed_notification();
     }
@@ -749,7 +747,7 @@ const grblHandleMessage = (msg) => {
     }
     return;
   }
-  if (msg.startsWith("Grbl ")) {
+  if (valueStartsWith(msg, ["Grbl "])) {
     console.log("Reset detected");
     return;
   }
@@ -801,6 +799,7 @@ const setSpindleSpeed = (speed) => {
 }
 
 export {
+  getAxisFromValue,
   build_axis_selection,
   grblHandleMessage,
   grbl_reset,
@@ -818,6 +817,6 @@ export {
   StartProbeProcess,
   MPOS,
   WPOS,
-  AxisFeedrate,
+  AxisFeedRate,
   setSpindleSpeed,
 };

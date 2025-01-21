@@ -48,7 +48,7 @@ function SendPrinterCommandFailed(error_code, response) {
 		: stdErrMsg(error_code, HTMLDecode(response), trans_text_item("Error"));
 	Monitor_output_Update(`${errMsg}\n`);
 
-	conErr(error_code, HTMLDecode(response), "printer cmd Error");
+	conErr(error_code, HTMLDecode(response), "SendPrinterCommand error");
 }
 
 export { SendPrinterCommand };

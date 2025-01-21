@@ -57,8 +57,10 @@ const sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay));
 
 /** Build a 'standard' format error message */
 const stdErrMsg = (error_code, response = "", error_prefix = "Error") => `${error_prefix} ${error_code} : ${response}`;
+
 /** Use `console.error` to report an error
- * If the response message is falsey, and the error_prefix is the default, we assume that we've been supplied with a stdErrMsg
+ * If the response message is falsey, and the error_prefix is the default,
+ * we assume that we've been supplied with a simple error message that's already structured correctly
  * Otherwise, we build a stdErrMsg with what was supplied
  */
 const conErr = (error_code, response, error_prefix = "Error") => {

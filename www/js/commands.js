@@ -66,37 +66,25 @@ const Monitor_output_Update = (message) => {
 			continue;
 		}
 		if (!isverbosefilter) {
-			if (
-				outlc === "wait" ||
-				outlc.startsWith("ok") ||
-				outlc.startsWith("[#]") ||
-				outlc.startsWith("x:") ||
-				outlc.startsWith("fr:") ||
-				outlc.startsWith("echo:") ||
-				outlc.startsWith("Config:") ||
-				outlc.startsWith('echo:Unknown command: "echo"') ||
-				outlc.startsWith("[MSG:INFO: Heartbeat]") ||
-				outlc.startsWith('echo:enqueueing "*"')
-			) {
+			if (outlc === "wait"
+				|| valueStartsWith(outlc, ["ok", "[#]", "x:", "fr:", "echo:", "Config:", 'echo:Unknown command: "echo"', "[MSG:INFO: Heartbeat]", 'echo:enqueueing "*"'])) {
 				continue;
 			}
 			//no status
-			if (outlc.startsWith("<") || outlc.startsWith("[echo:")) continue;
+			if (valueStartsWith(outlc, ["<", "[echo:"])) {
+				continue;
+			}
 		}
-		if (out.startsWith("[#]")) {
+		if (valueStartsWith(out, ["[#]"])) {
 			out = out.replace("[#]", "");
 		}
 		out = out.replace("&", "&amp;");
 		out = out.replace("<", "&lt;");
 		out = out.replace(">", "&gt;");
-		if (
-			out.startsWith("ALARM:") ||
-			out.startsWith("Hold:") ||
-			out.startsWith("Door:")
-		) {
+		if (valueStartsWith(out, ["ALARM:", "Hold:", "Door:"]) ) {
 			out = `<font color='orange'><b>${out}${trans_text_item(out.trim())}</b></font>\n`;
 		}
-		if (out.startsWith("error:")) {
+		if (valueStartsWith(out, ["error:"])) {
 			out = `<font color='red'><b>${out.toUpperCase()}${trans_text_item(out.trim())}</b></font>\n`;
 		}
 		output += out;

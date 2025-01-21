@@ -11,6 +11,7 @@ import {
 	clear_cmd_list,
 	trans_text_item,
 	UIdisableddlg,
+	valueStartsWith,
 } from "./common.js";
 
 const convertDHT2Fahrenheit = false;
@@ -171,8 +172,7 @@ const startSocket = () => {
 					msg = "";
 					Monitor_output_Update(thismsg);
 					process_socket_response(thismsg);
-					const noNeedToShowMsg = ["<", "ok T:", "X:", "FR:", "echo:E0 Flow"].some((msgStart) => thismsg.startsWith(msgStart));
-					if (!noNeedToShowMsg && thismsg !== "ok") {
+					if (!valueStartsWith(thismsg, ["<", "ok T:", "X:", "FR:", "echo:E0 Flow"]) && thismsg !== "ok") {
 						console.log(thismsg);
 					}
 				}

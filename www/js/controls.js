@@ -7,13 +7,12 @@ import {
 	setChecked,
 	setHTML,
 	alertdlg,
-	AxisFeedrate,
-	getPrefValue,
+	getAxisFromValue,
+	AxisFeedRate,
 	SendPrinterCommand,
 	SendGetHttp,
 	trans_text_item,
 	showmacrodlg,
-	valueIsFloat,
 } from "./common.js";
 
 let interval_position = -1;
@@ -185,38 +184,16 @@ function SendZerocommand(cmd) {
 	SendPrinterCommand(command, true, get_Position);
 }
 
-/** Get the Relevant Feed Rate for the Axis. It does not have to be the selected Axis */
-const GetAxisFeedRate = (axis = "XY") => {
-	switch (axis.toUpperCase()) {
-		case "XY": return AxisFeedrate()[0];
-		case "Z": return AxisFeedrate()[2];
-		case "A": return AxisFeedrate()[3];
-		case "B": return AxisFeedrate()[4];
-		case "C": return AxisFeedrate()[5];
-		default:
-			// "x", "y", "XY"
-			return AxisFeedrate()[0];
-	}
-}
-
-/** Get the relevant feed rate for jogging */
-function JogFeedrate(axis) {
-	const isZAxis = axis[0].toUpperCase() === "Z";
-	return GetAxisFeedRate(isZAxis ? "Z" : "XY");
-}
-
 /** This is extensively used in the jog dial SVGs */
 function SendJogcommand(cmd, feedrate) {
 	if (getChecked("lock_UI") !== "false") {
 		return;
 	}
 
-	let aCmd = cmd;
-	if (grblaxis > 3) {
-		aCmd = cmd.replace("Z", getValue("control_select_axis"));
-	}
+	// The SVGs are fixed and don't know that 'Z' could be something else
+	const aCmd = (grblaxis <= 3) ? cmd : cmd.replace("Z", getValue("control_select_axis"));
 
-	const feedrateValue = GetAxisFeedRate(feedrate[0].toUpperCase() === "Z" ? getValue("control_select_axis") : "XY");
+	const feedrateValue = AxisFeedRate(getAxisFromValue(aCmd));
 
 	const command = `$J=G91 G21 F${feedrateValue} ${aCmd}`;
 	console.log(command);
@@ -225,17 +202,12 @@ function SendJogcommand(cmd, feedrate) {
 
 const getFeedRateValue = (name) => floatOrZero(getValue(name) || 0);
 
-function control_resetaxis(axis = "") {
-	const letter = !axis ? getValue('control_select_axis') : axis;
+const control_resetaxis = (axis = "") => {
+	const letter = (!axis ? getValue('control_select_axis') : axis).toUpperCase();
+	const ctrlLetter = ["X", "Y", "XY"].includes(letter) ? "xy" : "z";
 
 	// Change over to the new axis that's been selected
-	switch (letter) {
-		case "XY": setValue('controlpanel_xy_feedrate', AxisFeedrate()[0]); break;
-		case 'Z': setValue('controlpanel_z_feedrate', AxisFeedrate()[2]); break;
-		case 'A': setValue('controlpanel_z_feedrate', AxisFeedrate()[3]); break;
-		case 'B': setValue('controlpanel_z_feedrate', AxisFeedrate()[4]); break;
-		case 'C': setValue('controlpanel_z_feedrate', AxisFeedrate()[5]); break;
-	}
+	setValue(`controlpanel_${ctrlLetter}_feedrate`, AxisFeedRate(letter));
 }
 
 function onXYFeedRateChange() {
@@ -245,9 +217,8 @@ function onXYFeedRateChange() {
 		control_resetaxis("XY");
 	}
 
-	// Set the XY feed rate values
-	AxisFeedrate()[0] = feedratevalue;
-	AxisFeedrate()[1] = feedratevalue;
+	// Set the XY feed rate value
+	AxisFeedRate("XY", feedratevalue);
 }
 
 function onNonXYFeedRateChange() {
@@ -259,7 +230,7 @@ function onNonXYFeedRateChange() {
 	}
 
 	// Flush the change through
-	control_changeaxis();
+	control_changeaxis(getValue('control_select_axis'), feedratevalue);
 }
 
 function processMacroSave(answer) {
@@ -325,7 +296,6 @@ export {
 	ControlsPanel,
 	get_Position,
 	init_controls_panel,
-	JogFeedrate,
 	on_autocheck_position,
 	SendHomecommand,
 	SendJogcommand,
