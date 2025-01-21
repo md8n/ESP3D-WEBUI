@@ -24,7 +24,7 @@ var defaultpreferenceslist = "[{\
                                             \"c_feedrate\":\"100\",\
                                             \"e_feedrate\":\"400\",\
                                             \"e_distance\":\"5\",\
-                                            \"f_filters\":\"gco;gcode\",\
+                                            \"f_filters\":\".g;.gc;.gco;.gcode;.nc;.txt;.G;.GC;.GCO;.GCODE;.NC;.TXT\",\
                                             \"enable_files_panel\":\"true\",\
                                             \"has_TFT_SD\":\"false\",\
                                             \"has_TFT_USB\":\"false\",\
