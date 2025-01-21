@@ -44,7 +44,7 @@ const WPOS = (value) => {
 };
 
 // biome-ignore lint/style/noVar: <explanation>
-var feedrate = [0, 0, 0, 0, 0, 0];
+var axis_feedrate = [0, 0, 0, 0, 0, 0];
 let last_axis_letter = "Z";
 
 function setClickability(element, visible) {

@@ -114,7 +114,7 @@ function init_files_panel(dorefresh = true) {
 	id("abort_btn").addEventListener("click", (event) => files_abort());
 	id("print_upload_btn").addEventListener("click", (event) => files_select_upload());
 
-	id("files_input_file").addEventListener("change", (event) => files_check_if_upload());
+	initFilesInputFile();
 
 	const iconOptions = { t: "translate(50,1200) scale(1,-1)" };
 	setHTML("files_filter_btn", `<span id="files_filter_glyph" style="position:relative; top:2px">${get_icon_svg("filter", iconOptions)}</span>`);
@@ -123,6 +123,11 @@ function init_files_panel(dorefresh = true) {
 	if (common.fwData.direct_sd && dorefresh) {
 		files_refreshFiles(files_currentPath);
 	}
+}
+
+/** Wiure up the `files_nput_files` handler */
+const initFilesInputFile = () => {
+	id("files_input_file").addEventListener("change", (event) => files_check_if_upload());
 }
 
 const files_set_button_as_filter = (isfilter) => setHTML("files_filter_glyph", get_icon_svg(!isfilter ? "filter" : "list-alt", { w: "1em", h: "1em" }));
@@ -627,13 +632,16 @@ function files_build_display_filelist(displaylist = true) {
 
 const files_abort = () => SendPrinterCommand("abort");
 
-/** Clicks the `files_input_file` element for you */
-const files_select_upload = () => id("files_input_file").click();
+/** Wires up, and clicks the `files_input_file` element for you */
+const files_select_upload = () => {
+	initFilesInputFile();
+	id("files_input_file").click();
+}
 
 function files_check_if_upload() {
 	const common = new Common();
-	const canupload = true;
-	const files = id("files_input_file").files;
+	// const canupload = true;
+	// const files = id("files_input_file").files;
 	if (common.fwData.direct_sd) {
 		SendPrinterCommand("[ESP200]", false, process_check_sd_presence, null);
 	} else {
