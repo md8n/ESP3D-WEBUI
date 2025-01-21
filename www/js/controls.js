@@ -7,6 +7,7 @@ import {
 	setChecked,
 	setHTML,
 	alertdlg,
+	AxisFeedrate,
 	getPrefValue,
 	SendPrinterCommand,
 	SendGetHttp,
@@ -187,14 +188,14 @@ function SendZerocommand(cmd) {
 /** Get the Relevant Feed Rate for the Axis. It does not have to be the selected Axis */
 const GetAxisFeedRate = (axis = "XY") => {
 	switch (axis.toUpperCase()) {
-		case "XY": return axis_feedrate[0];
-		case "Z": return axis_feedrate[2];
-		case "A": return axis_feedrate[3];
-		case "B": return axis_feedrate[4];
-		case "C": return axis_feedrate[5];
+		case "XY": return AxisFeedrate()[0];
+		case "Z": return AxisFeedrate()[2];
+		case "A": return AxisFeedrate()[3];
+		case "B": return AxisFeedrate()[4];
+		case "C": return AxisFeedrate()[5];
 		default:
 			// "x", "y", "XY"
-			return axis_feedrate[0];
+			return AxisFeedrate()[0];
 	}
 }
 
@@ -229,11 +230,11 @@ function control_resetaxis(axis = "") {
 
 	// Change over to the new axis that's been selected
 	switch (letter) {
-		case "XY": setValue('controlpanel_xy_feedrate', axis_feedrate[0]); break;
-		case 'Z': setValue('controlpanel_z_feedrate', axis_feedrate[2]); break;
-		case 'A': setValue('controlpanel_z_feedrate', axis_feedrate[3]); break;
-		case 'B': setValue('controlpanel_z_feedrate', axis_feedrate[4]); break;
-		case 'C': setValue('controlpanel_z_feedrate', axis_feedrate[5]); break;
+		case "XY": setValue('controlpanel_xy_feedrate', AxisFeedrate()[0]); break;
+		case 'Z': setValue('controlpanel_z_feedrate', AxisFeedrate()[2]); break;
+		case 'A': setValue('controlpanel_z_feedrate', AxisFeedrate()[3]); break;
+		case 'B': setValue('controlpanel_z_feedrate', AxisFeedrate()[4]); break;
+		case 'C': setValue('controlpanel_z_feedrate', AxisFeedrate()[5]); break;
 	}
 }
 
@@ -245,8 +246,8 @@ function onXYFeedRateChange() {
 	}
 
 	// Set the XY feed rate values
-	axis_feedrate[0] = feedratevalue;
-	axis_feedrate[1] = feedratevalue;
+	AxisFeedrate()[0] = feedratevalue;
+	AxisFeedrate()[1] = feedratevalue;
 }
 
 function onNonXYFeedRateChange() {

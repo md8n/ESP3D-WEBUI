@@ -43,8 +43,15 @@ const WPOS = (value) => {
   return wpos;
 };
 
-// biome-ignore lint/style/noVar: <explanation>
-var axis_feedrate = [0, 0, 0, 0, 0, 0];
+let axis_feedrate = [0, 0, 0, 0, 0, 0];
+/** gets/sets the GRBL axis feedrates [x, y, z, a, b, c] */
+const AxisFeedrate = (value) => {
+  if (Array.isArray(value) && value.length === 6) {
+    axis_feedrate = value;
+  }
+  return axis_feedrate;
+}
+
 let last_axis_letter = "Z";
 
 function setClickability(element, visible) {
@@ -97,18 +104,18 @@ function control_changeaxis() {
 
   const getLastNonXYFeedRate = getValue('controlpanel_z_feedrate');
   switch (last_axis_letter) {
-    case 'Z': axis_feedrate[2] = getLastNonXYFeedRate; break;
-    case 'A': axis_feedrate[3] = getLastNonXYFeedRate; break;
-    case 'B': axis_feedrate[4] = getLastNonXYFeedRate; break;
-    case 'C': axis_feedrate[5] = getLastNonXYFeedRate; break;
+    case 'Z': AxisFeedrate()[2] = getLastNonXYFeedRate; break;
+    case 'A': AxisFeedrate()[3] = getLastNonXYFeedRate; break;
+    case 'B': AxisFeedrate()[4] = getLastNonXYFeedRate; break;
+    case 'C': AxisFeedrate()[5] = getLastNonXYFeedRate; break;
   }
 
   // Change over to the new axis that's been selected
   switch (letter) {
-    case 'Z': setValue('controlpanel_z_feedrate', axis_feedrate[2]); break;
-    case 'A': setValue('controlpanel_z_feedrate', axis_feedrate[3]); break;
-    case 'B': setValue('controlpanel_z_feedrate', axis_feedrate[4]); break;
-    case 'C': setValue('controlpanel_z_feedrate', axis_feedrate[5]); break;
+    case 'Z': setValue('controlpanel_z_feedrate', AxisFeedrate()[2]); break;
+    case 'A': setValue('controlpanel_z_feedrate', AxisFeedrate()[3]); break;
+    case 'B': setValue('controlpanel_z_feedrate', AxisFeedrate()[4]); break;
+    case 'C': setValue('controlpanel_z_feedrate', AxisFeedrate()[5]); break;
   }
 
   // And keep a record of it
@@ -127,16 +134,16 @@ function init_grbl_panel() {
     : default_preferenceslist[0];
 
   // Feed rate for X and Y Axes
-  axis_feedrate[0] = floatOrZero(prefList.xy_feedrate);
-  axis_feedrate[1] = floatOrZero(prefList.xy_feedrate);
+  AxisFeedrate()[0] = floatOrZero(prefList.xy_feedrate);
+  AxisFeedrate()[1] = floatOrZero(prefList.xy_feedrate);
   
-  axis_feedrate[2] = floatOrZero(prefList.z_feedrate);
-  axis_feedrate[3] = floatOrZero(prefList.a_feedrate);
-  axis_feedrate[4] = floatOrZero(prefList.b_feedrate);
-  axis_feedrate[5] = floatOrZero(prefList.c_feedrate);
+  AxisFeedrate()[2] = floatOrZero(prefList.z_feedrate);
+  AxisFeedrate()[3] = floatOrZero(prefList.a_feedrate);
+  AxisFeedrate()[4] = floatOrZero(prefList.b_feedrate);
+  AxisFeedrate()[5] = floatOrZero(prefList.c_feedrate);
 
-  setValue('controlpanel_xy_feedrate', axis_feedrate[0]);
-  setValue('controlpanel_z_feedrate', axis_feedrate[2]);
+  setValue('controlpanel_xy_feedrate', AxisFeedrate()[0]);
+  setValue('controlpanel_z_feedrate', AxisFeedrate()[2]);
 
   grbl_set_probe_detected(false);
 }
@@ -811,5 +818,6 @@ export {
   StartProbeProcess,
   MPOS,
   WPOS,
+  AxisFeedrate,
   setSpindleSpeed,
 };

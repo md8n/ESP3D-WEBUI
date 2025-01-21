@@ -78,6 +78,7 @@ import {
 	StartProbeProcess,
 	MPOS,
 	WPOS,
+	AxisFeedrate,
 	setSpindleSpeed,
 } from "./grbl.js";
 import { grblpanel } from "./grblpanel.js";
@@ -376,6 +377,7 @@ export {
 	StartProbeProcess,
 	MPOS,
 	WPOS,
+	AxisFeedrate,
 	setSpindleSpeed,
 	// from grblpanel.js
 	grblpanel,
