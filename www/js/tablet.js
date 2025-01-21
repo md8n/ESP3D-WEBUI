@@ -448,16 +448,16 @@ function doPlayButton() {
   addMessage(`Starting File: ${document.getElementById('filelist').options[selectElement.selectedIndex].text}`);
 }
 
-var pauseButtonHandler
-function setPauseButton(isEnabled, color, text, click) {
-  setButton('pauseBtn', isEnabled, color, text);
-  pauseButtonHandler = click
-}
-function doPauseButton() {
-  if (pauseButtonHandler) {
-    pauseButtonHandler()
-  }
-}
+// var pauseButtonHandler
+// function setPauseButton(isEnabled, color, text, click) {
+//   setButton('pauseBtn', isEnabled, color, text);
+//   pauseButtonHandler = click
+// }
+// function doPauseButton() {
+//   if (pauseButtonHandler) {
+//     pauseButtonHandler()
+//   }
+// }
 
 var green = '#86f686'
 var red = '#f64646'
@@ -467,11 +467,11 @@ function setRunControls() {
   if (gCodeLoaded) {
     // A GCode file is ready to go
     setPlayButton(true, green, 'Start', runGCode)
-    setPauseButton(false, gray, 'Pause', null)
+    //setPauseButton(false, gray, 'Pause', null)
   } else {
     // Can't start because no GCode to run
     setPlayButton(false, gray, 'Start', null)
-    setPauseButton(false, gray, 'Pause', null)
+    //setPauseButton(false, gray, 'Pause', null)
   }
 }
 
@@ -557,24 +557,24 @@ function tabletGrblState(grbl, response) {
     case 'Sleep':
     case 'Alarm':
       setPlayButton(true, gray, 'Start', null)
-      setPauseButton(false, gray, 'Pause', null)
+      //setPauseButton(false, gray, 'Pause', null)
       break
     case 'Idle':
       setRunControls()
       break
     case 'Hold':
       setPlayButton(true, green, 'Resume', resumeGCode)
-      setPauseButton(true, red, 'Stop', stopAndRecover)
+      //setPauseButton(true, red, 'Stop', stopAndRecover)
       break
     case 'Jog':
     case 'Home':
     case 'Run':
       setPlayButton(false, gray, 'Start', null)
-      setPauseButton(true, red, 'Pause', pauseGCode)
+      //setPauseButton(true, red, 'Pause', pauseGCode)
       break
     case 'Check':
       setPlayButton(true, gray, 'Start', null)
-      setPauseButton(true, red, 'Stop', stopAndRecover)
+      //setPauseButton(true, red, 'Stop', stopAndRecover)
       break
   }
 
@@ -970,7 +970,7 @@ function handleKeyDown(event) {
       break
     case 'Escape':
     case 'Pause':
-      clickon('pauseBtn')
+      //clickon('pauseBtn')
       break
     case 'Shift':
       shiftDown()
