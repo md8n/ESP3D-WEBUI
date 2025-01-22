@@ -3,13 +3,15 @@ var grbl_errorfn = null;
 
 function noop() {}
 function SendPrinterCommand(cmd, echo_on, processfn, errorfn, id, max_id, extra_arg) {
-    var url = "/command?commandText=";
+    var cmdTxt = "/command?commandText=";
     var push_cmd = true;
     if (typeof echo_on !== 'undefined') {
         push_cmd = echo_on;
     }
     if (cmd.length == 0) return;
-    if (push_cmd) Monitor_output_Update("[#]" + cmd + "\n");
+    if (push_cmd) {
+        Monitor_output_Update("[#]" + cmd + "\n");
+    }
     //removeIf(production)
     console.log(cmd);
     if (typeof processfn !== 'undefined') processfn("Test response");
@@ -24,20 +26,20 @@ function SendPrinterCommand(cmd, echo_on, processfn, errorfn, id, max_id, extra_
         processfn = noop;
         errorfn = noop;
     }
-    cmd = encodeURI(cmd);
-    cmd = cmd.replace("#", "%23");
+    cmd = encodeURI(cmd).replace("#", "%23");
     if (extra_arg) {
         cmd += "&" + extra_arg;
     }
-    SendGetHttp(url + cmd, processfn, errorfn, id, max_id);
+    SendGetHttp(cmdTxt + cmd, processfn, errorfn, id, max_id);
     //console.log(cmd);
 }
 
 function SendPrinterSilentCommand(cmd, processfn, errorfn, id, max_id) {
-    var url = "/command_silent?commandText=";
-    if (cmd.length == 0) return;
+    if (!cmd) {
+        return;
+    }
     //removeIf(production)
-    console.log(cmd);
+    console.info(cmd);
     if (typeof processfn !== 'undefined') processfn("Test response");
     else SendPrinterCommandSuccess("Test response");
     return;
@@ -46,7 +48,8 @@ function SendPrinterSilentCommand(cmd, processfn, errorfn, id, max_id) {
     if (typeof errorfn === 'undefined' || errorfn == null) errorfn = SendPrinterCommandFailed;
     cmd = encodeURI(cmd);
     cmd = cmd.replace("#", "%23");
-    SendGetHttp(url + cmd, processfn, errorfn, id, max_id);
+    var cmdTxt = `/command_silent?commandText=${cmd}`;
+    SendGetHttp(cmdTxt, processfn, errorfn, id, max_id);
     //console.log(cmd);
 }
 

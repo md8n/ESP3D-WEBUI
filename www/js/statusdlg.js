@@ -98,6 +98,6 @@ function refreshstatus() {
 	const text = modal.element.getElementsByClassName("modal-text")[0];
 	text.innerHTML = "";
 	displayNone("status_msg");
-	const url = `/command?plain=${encodeURIComponent("[ESP420]plain")}`;
-	SendGetHttp(url, statussuccess, statusfailed);
+	const cmd = `/command?plain=${encodeURIComponent("[ESP420]plain")}`;
+	SendGetHttp(cmd, statussuccess, statusfailed);
 }

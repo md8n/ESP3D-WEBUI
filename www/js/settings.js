@@ -45,8 +45,8 @@ function refreshSettings(hide_setting_list) {
   displayNone('settings_refresh_btn')
 
   scl = []
-  var url = '/command?plain=' + encodeURIComponent('[ESP400]')
-  SendGetHttp(url, getESPsettingsSuccess, getESPsettingsfailed)
+  var cmd = '/command?plain=' + encodeURIComponent('[ESP400]')
+  SendGetHttp(cmd, getESPsettingsSuccess, getESPsettingsfailed)
 }
 
 function defval(i) {
@@ -467,8 +467,8 @@ function settingsetvalue(i, j) {
     setIcon(i, j, 'has-success ico_feedback')
     setIconHTML(i, j, get_icon_svg('ok'))
     setStatus(i, j, 'has-feedback has-success')
-    var url = '/command?plain=' + encodeURIComponent(cmd)
-    SendGetHttp(url, setESPsettingsSuccess, setESPsettingsfailed)
+    var cmdTxt = '/command?plain=' + encodeURIComponent(cmd)
+    SendGetHttp(cmdTxt, setESPsettingsSuccess, setESPsettingsfailed)
   }
 }
 

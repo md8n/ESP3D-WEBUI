@@ -37,25 +37,24 @@ function config_display_override(display_it) {
     }
 }
 
-function getprinterconfig(is_override) {
-    var cmd = commandtxt;
-    if ((typeof is_override != 'undefined') && is_override) {
-        cmd = "M503";
-        config_override_List = [];
-        is_override_config = true;
-    } else is_override_config = false;
-    var url = "/command?plain=" + encodeURIComponent(cmd);
-    SendGetHttp(url);
+function getprinterconfig(is_override = false) {
+    is_override_config = is_override;
+    if (is_override) {
+        // Clear out the list
+        config_override_List.length = 0;
+    }
+    var cmd = `/command?plain=${encodeURIComponent(is_override ? "M503" : commandtx)}`;
+    SendGetHttp(cmd);
 }
 
 function Apply_config_override() {
-    var url = "/command?plain=" + encodeURIComponent("M500");
-    SendGetHttp(url, getESPUpdateconfigSuccess);
+    var cmd = `/command?plain=${encodeURIComponent("M500")}`;
+    SendGetHttp(cmd, getESPUpdateconfigSuccess);
 }
 
 function Delete_config_override() {
-    var url = "/command?plain=" + encodeURIComponent("M502");
-    SendGetHttp(url, getESPUpdateconfigSuccess);
+    var cmd = `/command?plain=${encodeURIComponent("M502")}`;
+    SendGetHttp(cmd, getESPUpdateconfigSuccess);
 }
 
 function getESPUpdateconfigSuccess(response) {
@@ -290,8 +289,8 @@ function configGetvalue(index, is_override) {
         id('icon_config_' + prefix + index).className = "form-control-feedback has-success ico_feedback";
         id('icon_config_' + prefix + index).innerHTML = get_icon_svg("ok");
         id('status_config_' + prefix + index).className = "form-group has-feedback has-success";
-        var url = "/command?plain=" + encodeURIComponent(cmd);
-        SendGetHttp(url, setESPconfigSuccess, setESPconfigfailed);
+        var cmd = `/command?plain=${encodeURIComponent(cmd)}`;
+        SendGetHttp(cmd, setESPconfigSuccess, setESPconfigfailed);
     }
 }
 

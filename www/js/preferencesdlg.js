@@ -49,14 +49,14 @@ function initpreferences() {
 }
 
 function getpreferenceslist() {
-    var url = preferences_file_name;
+    var cmd = preferences_file_name;
     preferenceslist = [];
     //removeIf(production)
     var response = defaultpreferenceslist;
     processPreferencesGetSuccess(response);
     return;
     //endRemoveIf(production)
-    SendGetHttp(url, processPreferencesGetSuccess, processPreferencesGetFailed);
+    SendGetHttp(cmd, processPreferencesGetSuccess, processPreferencesGetFailed);
 }
 
 function prefs_toggledisplay(id_source, forcevalue) {

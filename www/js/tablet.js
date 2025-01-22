@@ -479,7 +479,7 @@ function scaleUnits(target) {
 
 function tabletUpdateModal() {
   const newUnits = modal.units === 'G21' ? 'mm' : 'Inch'
-  if (getText('units') !== newUnits) {
+  if (getValue('units') !== newUnits) {
     setText('units', newUnits)
     setJogSelector(modal.units)
     scaleUnits("disM")

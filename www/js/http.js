@@ -243,7 +243,7 @@ function ProcessGetHttp(cmd, resultfn, errorfn) {
     }
 
     if (cmd.startsWith("/command")) {
-        cmd += (url.indexOf("?") == -1) ? "?" : "&";
+        cmd += (cmd.indexOf("?") == -1) ? "?" : "&";
         cmd += `PAGEID=${pageID()}`;
     }
     //console.log("GET:" + cmd);
