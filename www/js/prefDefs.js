@@ -170,7 +170,7 @@ export const prefDefs = {
             "has_TFT_SD": { "defValue": false, "valueType": "bool", "label": "TFT SD card" },
             "has_TFT_USB": { "defValue": false, "valueType": "bool", "label": "TFT USB disk" },
             "f_filters": {
-                "defValue": "gco;gcode;nc",
+                "defValue": ".g;.gc;.gco;.gcode;.nc;.txt;.G;.GC;.GCO;.GCODE;.NC;.TXT",
                 "valueType": "text",
                 "label": "File extensions (use ; to separate)",
                 "inpClass": "w25",

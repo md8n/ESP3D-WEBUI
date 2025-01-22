@@ -22,8 +22,6 @@ const connectdlg = (getFw = false) => {
 		return;
 	}
 
-	id("connectbtn").addEventListener("click", (event) => retryconnect());
-
 	showModal();
 
 	if (getFw) {
@@ -82,6 +80,9 @@ const getFWdata = (response) => {
 const connectfailed = (error_code, response) => {
 	displayNone("connecting_msg");
 	displayBlock(["connectbtn", "failed_connect_msg"]);
+
+	id("connectbtn").addEventListener("click", retryconnect);
+
 	conErr(error_code, response, "FW identification error");
 };
 
@@ -109,6 +110,9 @@ const connectsuccess = (response) => {
 const retryconnect = () => {
 	displayNone(["connectbtn", "failed_connect_msg"]);
 	displayBlock("connecting_msg");
+
+	id("connectbtn").removeEventListener("click", retryconnect);
+
 	const cmd = `/command?plain=${encodeURIComponent("[ESP800]")}`;
 	SendGetHttp(cmd, connectsuccess, connectfailed);
 };

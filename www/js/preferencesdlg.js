@@ -45,7 +45,6 @@ import {
 
 //Preferences dialog
 
-
 const buildElem = (elem, contents, classVal) => {
     const elemPanel = document.createElement(elem);
     if (classVal) {

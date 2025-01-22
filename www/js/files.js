@@ -125,7 +125,7 @@ function init_files_panel(dorefresh = true) {
 	}
 }
 
-/** Wiure up the `files_nput_files` handler */
+/** Wire up the `files_input_file` handler */
 const initFilesInputFile = () => {
 	id("files_input_file").addEventListener("change", (event) => files_check_if_upload());
 }

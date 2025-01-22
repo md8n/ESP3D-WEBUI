@@ -432,16 +432,16 @@ function doPlayButton() {
   addMessage(`Starting File: ${document.getElementById('filelist').options[selectElement.selectedIndex].text}`);
 }
 
-let pauseButtonHandler;
-function setPauseButton(isEnabled, color, text, click) {
-  setButton("pauseBtn", isEnabled, color, text);
-  pauseButtonHandler = click;
-}
-function doPauseButton() {
-  if (pauseButtonHandler) {
-    pauseButtonHandler();
-  }
-}
+// var pauseButtonHandler
+// function setPauseButton(isEnabled, color, text, click) {
+//   setButton('pauseBtn', isEnabled, color, text);
+//   pauseButtonHandler = click
+// }
+// function doPauseButton() {
+//   if (pauseButtonHandler) {
+//     pauseButtonHandler()
+//   }
+// }
 
 const green = "#86f686";
 const red = "#f64646";
@@ -450,12 +450,12 @@ const gray = "#f6f6f6";
 function setRunControls() {
   if (gCodeLoaded) {
     // A GCode file is ready to go
-    setPlayButton(true, green, "Start", runGCode);
-    setPauseButton(false, gray, "Pause", null);
+    setPlayButton(true, green, 'Start', runGCode)
+    //setPauseButton(false, gray, 'Pause', null)
   } else {
     // Can't start because no GCode to run
-    setPlayButton(false, gray, "Start", null);
-    setPauseButton(false, gray, "Pause", null);
+    setPlayButton(false, gray, 'Start', null)
+    //setPauseButton(false, gray, 'Pause', null)
   }
 }
 
@@ -558,24 +558,24 @@ const tabletGrblState = (grbl, response) => {
     case "Sleep":
     case "Alarm":
       setPlayButton(true, gray, "Start", null);
-      setPauseButton(false, gray, "Pause", null);
+      //setPauseButton(false, gray, "Pause", null);
       break;
     case "Idle":
       setRunControls();
       break;
     case "Hold":
       setPlayButton(true, green, "Resume", resumeGCode);
-      setPauseButton(true, red, "Stop", stopAndRecover);
+      //setPauseButton(true, red, "Stop", stopAndRecover);
       break;
     case "Jog":
     case "Home":
     case "Run":
       setPlayButton(false, gray, "Start", null);
-      setPauseButton(true, red, "Pause", pauseGCode);
+      //setPauseButton(true, red, "Pause", pauseGCode);
       break;
     case "Check":
       setPlayButton(true, gray, "Start", null);
-      setPauseButton(true, red, "Stop", stopAndRecover);
+      //setPauseButton(true, red, "Stop", stopAndRecover);
       break;
   }
 
@@ -750,7 +750,7 @@ const tabletInit = () => {
 
     id("tablettab_gcode_upload").addEventListener("click", (event) => files_select_upload());
     id("tablettab_gcode_play").addEventListener("click", (event) => doPlayButton());
-    id("tablettab_gcode_pause").addEventListener("click", (event) => doPauseButton());
+    // id("tablettab_gcode_pause").addEventListener("click", (event) => doPauseButton());
     id("tablettab_gcode_stop").addEventListener("click", (event) => onCalibrationButtonsClick("$STOP", "Stop Maslow and Gcode"));
 
     id("tablettab_cal_retract").addEventListener("click", (event) => onCalibrationButtonsClick("$ALL", "Retract All"));
@@ -1038,7 +1038,7 @@ function handleKeyDown(event) {
       break;
     case "Escape":
     case "Pause":
-      clickon("pauseBtn");
+      // clickon("pauseBtn");
       break;
     case "Shift":
       shiftDown();
