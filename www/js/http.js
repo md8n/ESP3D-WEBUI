@@ -2,7 +2,6 @@ var http_communication_locked = false;
 var http_cmd_list = [];
 var processing_cmd = false;
 var xmlhttpupload;
-var page_id = ""
 
 var max_cmd = 100;
 
@@ -245,7 +244,7 @@ function ProcessGetHttp(cmd, resultfn, errorfn) {
 
     if (cmd.startsWith("/command")) {
         cmd += (url.indexOf("?") == -1) ? "?" : "&";
-        cmd += "PAGEID=" + page_id;
+        cmd += `PAGEID=${pageID()}`;
     }
     //console.log("GET:" + cmd);
     xmlhttp.open("GET", cmd, true);

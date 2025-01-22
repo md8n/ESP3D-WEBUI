@@ -74,13 +74,20 @@ const EventListenerSetup = () => {
 	}
 };
 
-const Init_events = (e) => {
-	page_id = e.data;
-	console.log(`connection id = ${page_id}`);
-};
+let page_id = "";
+/** Get/Set the current page_id */
+const pageID = (value) => {
+	if (typeof value !== "undefined") {
+		page_id = value;
+	}
+	return page_id;
+}
+
+/** Initialise the page_id from the event data */
+const Init_events = (e) => console.log(`connection id = ${pageID(e.data)}`);
 
 const ActiveID_events = (e) => {
-	if (page_id === e.data) {
+	if (pageID() === e.data) {
 		return;
 	}
 
@@ -165,13 +172,13 @@ const startSocket = () => {
 			const tval = msg.split(":");
 			if (tval.length >= 2) {
 				if (tval[0] === "CURRENT_ID") {
-					page_id = tval[1];
-					console.log(`connection id = ${page_id}`);
+					pageID(tval[1]);
+					console.log(`connection id = ${pageID()}`);
 				}
 				if (enable_ping) {
 					if (tval[0] === "PING") {
-						page_id = tval[1];
-						// console.log("ping from id = " + page_id);
+						pageID(tval[1]);
+						// console.log("ping from id = " + pageID());
 						last_ping = Date.now();
 						if (interval_ping === -1)
 							interval_ping = setInterval(() => {
@@ -180,7 +187,7 @@ const startSocket = () => {
 					}
 				}
 				if (tval[0] === "ACTIVE_ID") {
-					if (page_id !== tval[1]) {
+					if (pageID() !== tval[1]) {
 						Disable_interface();
 					}
 				}
