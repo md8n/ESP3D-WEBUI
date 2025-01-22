@@ -82,9 +82,6 @@ function setDisabled(selector, value) {
   }
 }
 
-function files(name) {
-  return id(name).files
-}
 /** Set a checkbox element's `value` (if the element exists) */
 const setChecked = (name, val) => {
   const checkBox = id(name);

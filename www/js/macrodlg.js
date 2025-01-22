@@ -9,10 +9,10 @@ function showmacrodlg(closefn) {
 		return;
 	}
 
-	id("macrodlg.html").addEventListener("click", (event) => clear_drop_menu(event));
-	id("MacroDialogClose").addEventListener("click", (event) => closeMacroDialog());
-	id("MacroDialogCancel").addEventListener("click", (event) => closeMacroDialog());
-	id("MacroDialogSave").addEventListener("click", (event) => SaveNewMacroList());
+	id("macrodlg.html").addEventListener("click", clear_drop_menu);
+	id("MacroDialogClose").addEventListener("click", closeMacroDialog);
+	id("MacroDialogCancel").addEventListener("click", closeMacroDialog);
+	id("MacroDialogSave").addEventListener("click", SaveNewMacroList);
 
 	build_dlg_macrolist_ui();
 	displayNone("macrodlg_upload_msg");
@@ -25,20 +25,18 @@ function build_color_selection(index, actions) {
 	const menu_pos = index > 3 ? "dropmenu-content-up" : "dropmenu-content-down";
 	content += `<div id='macro_color_line${index}' class='dropdownselect'>`;
 	content += `<button id='macro_color_line${index}_btn' class='btn ${entry.class}'>&nbsp;`;
-	content +=
-		"<svg width='0.8em' height='0.8em' viewBox='0 0 1300 1200' style='pointer-events:none'>";
+	content += "<svg width='0.8em' height='0.8em' viewBox='0 0 1300 1200' style='pointer-events:none'>";
 	content += "<g transform='translate(50,1200) scale(1, -1)'>";
-	content +=
-		"<path  fill='currentColor' d='M100 900h1000q41 0 49.5 -21t-20.5 -50l-494 -494q-14 -14 -35 -14t-35 14l-494 494q-29 29 -20.5 50t49.5 21z'></path>";
+	content += "<path  fill='currentColor' d='M100 900h1000q41 0 49.5 -21t-20.5 -50l-494 -494q-14 -14 -35 -14t-35 14l-494 494q-29 29 -20.5 50t49.5 21z'></path>";
 	content += "</g>";
 	content += "</svg>";
 	content += "</button>";
-	actions.push({ id: `macro_color_line${index}_btn`, type: "click", method: (event) => showhide_drop_menu(event) });
+	actions.push({ id: `macro_color_line${index}_btn`, type: "click", method: showhide_drop_menu });
 	content += `<div class='dropmenu-content ${menu_pos}' style='min-width:auto; padding-left: 4px;padding-right: 4px;'>`;
-	for ((col) in ["default", "primary", "info", "warning", "danger"]) {
+	["default", "primary", "info", "warning", "danger"].forEach((col) => {
 		content += `<button id='macro_select_color_${col}${index}_btn' class='btn btn-${col}'>&nbsp;</button>`;
 		actions.push({ id: `macro_select_color_${col}${index}_btn`, type: "click", method: (event) => macro_select_color(event, col, index) });
-	};
+	});
 	content += "</div>";
 	content += "</div>";
 	return content;
@@ -50,15 +48,13 @@ function build_target_selection(index, actions) {
 	const menu_pos = index > 3 ? "dropmenu-content-up" : "dropmenu-content-down";
 	content += `<div id='macro_target_line${index}' class='dropdownselect'>`;
 	content += `<button id='macro_target_line${index}_btn' class='btn btn-default' style='min-width:5em;'><span>${entry.target}</span>`;
-	content +=
-		"<svg width='0.8em' height='0.8em' viewBox='0 0 1300 1200' style='pointer-events:none'>";
+	content += "<svg width='0.8em' height='0.8em' viewBox='0 0 1300 1200' style='pointer-events:none'>";
 	content += "<g transform='translate(50,1200) scale(1, -1)'>";
-	content +=
-		"<path fill='currentColor' d='M100 900h1000q41 0 49.5 -21t-20.5 -50l-494 -494q-14 -14 -35 -14t-35 14l-494 494q-29 29 -20.5 50t49.5 21z'></path>";
+	content += "<path fill='currentColor' d='M100 900h1000q41 0 49.5 -21t-20.5 -50l-494 -494q-14 -14 -35 -14t-35 14l-494 494q-29 29 -20.5 50t49.5 21z'></path>";
 	content += "</g>";
 	content += "</svg>";
 	content += "</button>";
-	actions.push({ id: `macro_target_line${index}_btn`, type: "click", method: (event) => showhide_drop_menu(event) });
+	actions.push({ id: `macro_target_line${index}_btn`, type: "click", method: showhide_drop_menu });
 	content += `<div class='dropmenu-content ${menu_pos}' style='min-width:auto'>`;
 	content += `<a id='macro_select_targetESP${index}_link' href=#>ESP</a>`;
 	content += `<a id='macro_select_targetSD${index}_link' href=#>SD</a>`;
@@ -78,15 +74,13 @@ function build_glyph_selection(index, actions) {
 	const menu_pos = index > 3 ? "dropmenu-content-up" : "dropmenu-content-down";
 	content += `<div id='macro_glyph_line${index}' class='dropdownselect'>`;
 	content += `<button id='macro_glyph_line${index}_btn' class='btn ${entry.class}'><span>${get_icon_svg(entry.glyph)}</span>&nbsp;`;
-	content +=
-		"<svg width='0.8em' height='0.8em' viewBox='0 0 1300 1200' style='pointer-events:none'>";
+	content += "<svg width='0.8em' height='0.8em' viewBox='0 0 1300 1200' style='pointer-events:none'>";
 	content += "<g transform='translate(50,1200) scale(1, -1)'>";
-	content +=
-		"<path fill='currentColor' d='M100 900h1000q41 0 49.5 -21t-20.5 -50l-494 -494q-14 -14 -35 -14t-35 14l-494 494q-29 29 -20.5 50t49.5 21z'></path>";
+	content += "<path fill='currentColor' d='M100 900h1000q41 0 49.5 -21t-20.5 -50l-494 -494q-14 -14 -35 -14t-35 14l-494 494q-29 29 -20.5 50t49.5 21z'></path>";
 	content += "</g>";
 	content += "</svg>";
 	content += "</button>";
-	actions.push({ id: `macro_glyph_line${index}_btn`, type: "click", method: (event) => showhide_drop_menu(event) });
+	actions.push({ id: `macro_glyph_line${index}_btn`, type: "click", method: showhide_drop_menu });
 	content += `<div class='dropmenu-content ${menu_pos}' style='min-width:30em'>`;
 	for (const key in list_icon) {
 		if (key === "plus") {
@@ -149,7 +143,10 @@ function build_dlg_macrolist_line(index) {
 
 	setHTML(`macro_line_${index}`, content);
 	actions.forEach((action) => {
-		id(action.id).addEventListener(action.type, action.method);
+		const elem = id(action.id);
+		if (elem) {
+			elem.addEventListener(action.type, action.method);
+		}
 	});
 }
 
@@ -174,10 +171,7 @@ function on_macro_filename(event, index) {
 	const filename = event.value.trim();
 	entry.filename = event.value;
 	if (filename.length === 0) {
-		alertdlg(
-			translate_text_item("Out of range"),
-			translate_text_item("File name cannot be empty!"),
-		);
+		alertdlg(translate_text_item("Out of range"), translate_text_item("File name cannot be empty!"));
 	}
 	build_dlg_macrolist_line(index);
 }
@@ -235,7 +229,7 @@ function macro_select_target(event, target, index) {
 	build_dlg_macrolist_line(index);
 }
 
-function macro_select_glyph(event, glyph, index) {
+const macro_select_glyph = (event, glyph, index) => {
 	const entry = macrodlg_macrolist[index];
 	hide_drop_menu(event);
 	entry.glyph = glyph;
@@ -279,48 +273,26 @@ function process_macroCloseDialog(answer) {
 }
 
 function SaveNewMacroList() {
-	if (http_communication_locked) {
-		alertdlg(
-			translate_text_item("Busy..."),
-			translate_text_item(
-				"Communications are currently locked, please wait and retry.",
-			),
-		);
+	if (CheckForHttpCommLock()) {
 		return;
 	}
+
 	for (let i = 0; i < 9; i++) {
-		if (
-			macrodlg_macrolist[i].filename.length === 0 &&
-			macrodlg_macrolist[i].class !== ""
-		) {
-			alertdlg(
-				translate_text_item("Out of range"),
-				translate_text_item("File name cannot be empty!"),
-			);
+		const mItem = macrodlg_macrolist[i];
+		if (mItem.filename.length === 0 && mItem.class !== "") {
+			alertdlg(translate_text_item("Out of range"), translate_text_item("File name cannot be empty!"));
 			return;
 		}
 	}
 
-	const blob = new Blob([JSON.stringify(macrodlg_macrolist, null, " ")], {
-		type: "application/json",
-	});
-	let file;
-	if (browser_is("IE") || browser_is("Edge")) {
-		file = blob;
-		file.name = "/macrocfg.json";
-		file.lastModifiedDate = new Date();
-	} else file = new File([blob], "/macrocfg.json");
+	const macroFileName = "/macrocfg.json";
+	const blob = new Blob([JSON.stringify(macrodlg_macrolist, null, " ")], { type: "application/json" });
+	let file = new File([blob], macroFileName);
+	const cmd = "/files";
 	const formData = new FormData();
-	const url = "/files";
 	formData.append("path", "/");
-	formData.append("myfile[]", file, "/macrocfg.json");
-	SendFileHttp(
-		url,
-		formData,
-		macrodlgUploadProgressDisplay,
-		macroUploadsuccess,
-		macroUploadfailed,
-	);
+	formData.append("myfile[]", file, macroFileName);
+	SendFileHttp(cmd, formData, macrodlgUploadProgressDisplay, macroUploadsuccess, macroUploadfailed);
 }
 
 function macrodlgUploadProgressDisplay(oEvent) {

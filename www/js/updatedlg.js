@@ -75,32 +75,30 @@ function StartUploadUpdatefile(response) {
 	if (response !== "yes") {
 		return;
 	}
-	if (http_communication_locked) {
-		alertdlg(
-			translate_text_item("Busy..."),
-			translate_text_item("Communications are currently locked, please wait and retry."),
-		);
+	if (CheckForHttpCommLock()) {
 		return;
 	}
+
+	const fileList = [];
 	const files = id("fw-select").files;
 	const formData = new FormData();
-	const url = "/updatefw";
 	for (let i = 0; i < files.length; i++) {
 		const file = files[i];
 		const arg = `/${file.name}S`;
+		fileList.push(file.name);
 		//append file size first to check updload is complete
 		formData.append(arg, file.size);
 		formData.append("myfile[]", file, `/${file.name}`);
 	}
 	displayNone("fw-select_form");
 	displayNone("uploadfw-button");
-	update_ongoing = true;
 	displayBlock("updatemsg");
 	displayBlock("prgfw");
-	if (files.length === 1) current_update_filename = files[0].name;
-	else current_update_filename = "";
-	setHTML("updatemsg", `${translate_text_item("Uploading")} ${current_update_filename}`);
-	SendFileHttp(url, formData, UpdateProgressDisplay, updatesuccess, updatefailed);
+	update_ongoing = true;
+
+	setHTML("updatemsg", `${translate_text_item("Uploading")} ${fileList.join(" ")}}`);
+	const cmd = "/updatefw";
+	SendFileHttp(cmd, formData, UpdateProgressDisplay, updatesuccess, updatefailed);
 }
 
 function updatesuccess(response) {

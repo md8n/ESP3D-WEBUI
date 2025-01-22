@@ -12,20 +12,20 @@
             <div class="panel" id="SPIFFS">
                 <div class="panel-body">
                     <div class="panel-flex-row">
-                        <input type="file" style="display:none" id="SPIFFS-select" name="myfiles[]" multiple />
-                        <table id="SPIFFS-select_form">
+                        <input id="SPIFFS_select" type="file" style="display:none" name="myfiles[]" multiple />
+                        <table id="SPIFFS_select_form">
                             <tr>
                                 <td>
-                                    <button class="btn btn-info" type="button" id="SPIFFS_select_files" translate>Upload
+                                    <button id="SPIFFS_select_files" class="btn btn-info" type="button" translate>Upload
                                         files</button>
                                 </td>
                                 <td>
-                                    <div class="filetext no_overflow" id="SPIFFS_file_name"></div>
+                                    <div id="SPIFFS_file_name" class="filetext no_overflow"></div>
                                 </td>
                             </tr>
                         </table>
                         &nbsp;
-                        <button class="btn btn-primary btn-svg" type="button" id="SPIFFS_uploadbtn">
+                        <button id="SPIFFS_uploadbtn" class="btn btn-primary btn-svg" type="button">
                             <svg width='1.3em' height='1.2em' viewBox='0 0 1300 1200'>
                                 <g transform='translate(0,1200) scale(1, -1)'>
                                     <path fill='currentColor'
@@ -34,7 +34,7 @@
                                 </g>
                             </svg>
                         </button>
-                        <progress style="display:none;" name="prg" id="SPIFFS_prg" max="100"></progress>
+                        <progress id="SPIFFS_prg" style="display:none;" name="prg" max="100"></progress>
                         &nbsp;
                         <span id="uploadSPIFFSmsg" style="display:none;" translate>Uploading</span>
                     </div>
@@ -71,7 +71,7 @@
                                 <tbody id="SPIFFS_file_list"></tbody>
                             </table>
                         </div>
-                        <div class="panel-footer" id="SPIFFS_status"></div>
+                        <div id="SPIFFS_status" class="panel-footer"></div>
                     </div>
                 </div>
             </div>
@@ -87,7 +87,7 @@
                             <span class=""> &nbsp;&nbsp;</span>
                         </td>
                         <td>
-                            <button class="btn btn-primary" id="refreshSPIFFSbtn">
+                            <button id="refreshSPIFFSbtn" class="btn btn-primary">
                                 <svg width="1.3em" height="1.2em" viewBox="0 0 1300 1200">
                                     <g transform="translate(50,1200) scale(1, -1)">
                                         <path fill="currentColor"

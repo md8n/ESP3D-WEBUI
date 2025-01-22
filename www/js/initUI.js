@@ -35,7 +35,7 @@ const update_UI_firmware_target = () => {
 
 	const fif = id("files_input_file");
 	if (fif) {
-		fif.accept = " .g, .gco, .gcode, .txt, .ncc, .G, .GCO, .GCODE, .TXT, .NC";
+		fif.accept = ".g,.gc,.gco,.gcode,.nc,.txt,.G,.GC,.GCO,.GCODE,.NC,.TXT";
 	}
 	displayInitial("zero_xyz_btn");
 	displayInitial("zero_x_btn");
@@ -48,22 +48,22 @@ const update_UI_firmware_target = () => {
 		displayNone("z_feedrate_group");
 	}
 	if (grblaxis > 3) {
-		build_axis_selection();
-		grblzerocmd += " A0";
         id("zero_xyz_btn_txt").innerHTML += "A";
+		grblzerocmd += " A0";
+		build_axis_selection();
 		displayBlock("a_feedrate_group");
 		displayBlock("control_a_position_display");
 		id("positions_labels2").style.display = "inline-grid";
 	}
 	if (grblaxis > 4) {
-		grblzerocmd += " B0";
 		id("zero_xyz_btn_txt").innerHTML += "B";
+		grblzerocmd += " B0";
         displayBlock("b_feedrate_group");
         displayBlock("control_b_position_display");
 	}
 	if (grblaxis > 5) {
-		grblzerocmd += " C0";
 		id("zero_xyz_btn_txt").innerHTML += "C";
+		grblzerocmd += " C0";
 		displayBlock("c_feedrate_group");
 		displayBlock("control_c_position_display");
 	} else {
@@ -117,9 +117,7 @@ const initUI = () => {
 	console.log("Init UI - Step 1");
 
 	// Start up connect dialog, don't try and get the FW data
-	if (ESP3D_authentication) {
-		connectdlg(false);
-	}
+	connectdlg(false);
 
 	AddCmd(display_boot_progress);
 	//check FW

@@ -940,9 +940,19 @@ ToolpathDisplayer.prototype.cycleCameraAngle = function(gcode, modal, position) 
     displayer.showToolpath(gcode, modal, position);
 }
 
+/** Expects a simple array with 3 elements, and converts it to an xyz object */
+const arrayToXYZ = (arr) => {
+	return { x: arr[0], y: arr[1], z: arr[2] };
+};
+
+const updateGcodeViewerAngle = () => {
+	const gcode = id("tablettab_gcode").value;
+	tpDisplayer().cycleCameraAngle(gcode, arrayToXYZ(WPOS()));
+};
+
 canvas.addEventListener("mouseup", updateGcodeViewerAngle); 
 var refreshGcode = function() {
-    const gcode = id('gcode').value;
+    const gcode = id("tablettab_gcode").value;
     displayer.showToolpath(gcode, WPOS, MPOS, cameraAngle);
 }
 

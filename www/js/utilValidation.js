@@ -107,4 +107,27 @@ const checkValue = (value, valueDef, errorList = []) => {
   return errorList.filter((err) => err);
 }
 
-// export { checkValue, valueIsFloat };
+/** Tests if the supplied value starts with any of the supplied testText values.
+ * Notes:
+ * * any whitespace will not be trimmed from either the value or the testText values
+ * * a falsey or non-text value will always return `false`
+ * * all falsey or non-text values in the testText array will be eliminated
+ * * an empty testText array will result in `true` being returned
+ */
+const valueStartsWith = (value, testText) => {
+  if (typeof value !== "string" || !value) {
+    return false;
+  }
+  let tests = (typeof testText === "string") ? [testText] : testText;
+  if (!Array.isArray(tests)) {
+    console.error(`valueStartsWith was supplied with an unusable testText value: '${testText}'`);
+    return false;
+  }
+  tests = tests.filter((test) => {return typeof test === "string" && test});
+  if (tests.length === 0) {
+    return true;
+  }
+  return tests.some((test) => value.startsWith(test));
+}
+
+// export { checkValue, valueIsFloat, valueStartsWith };

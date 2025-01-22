@@ -24,7 +24,7 @@ var defaultpreferenceslist = "[{\
                                             \"c_feedrate\":\"100\",\
                                             \"e_feedrate\":\"400\",\
                                             \"e_distance\":\"5\",\
-                                            \"f_filters\":\".g;.gc;.gco;.gcode;.nc;.txt;.G;.GC;.GCO;.GCODE;.NC;.TXT\",\
+                                            \"f_filters\":\"g;gc;gco;gcode;nc;txt;G;GC;GCO;GCODE;NC;TXT\",\
                                             \"enable_files_panel\":\"true\",\
                                             \"has_TFT_SD\":\"false\",\
                                             \"has_TFT_USB\":\"false\",\
@@ -556,8 +556,7 @@ function process_preferencesCloseDialog(answer) {
 }
 
 function SavePreferences(current_preferences) {
-    if (http_communication_locked) {
-        alertdlg(translate_text_item("Busy..."), translate_text_item("Communications are currently locked, please wait and retry."));
+    if (CheckForHttpCommLock()) {
         return;
     }
     console.log("save prefs");
@@ -621,18 +620,16 @@ function SavePreferences(current_preferences) {
         preferenceslist = JSON.parse(saveprefs);
     }
     const blob = new Blob([JSON.stringify(preferenceslist, null, " ")], { type: 'application/json' });
-    var file;
-    if (browser_is("IE") || browser_is("Edge")) {
-        file = blob;
-        file.name = preferences_file_name;
-        file.lastModifiedDate = new Date();
-    } else file = new File([blob], preferences_file_name);
+    var file = new File([blob], preferences_file_name);
     var formData = new FormData();
-    var url = "/files";
+    var cmd = "/files";
     formData.append('path', '/');
     formData.append('myfile[]', file, preferences_file_name);
-    if ((typeof (current_preferences) != 'undefined') && current_preferences) SendFileHttp(url, formData);
-    else SendFileHttp(url, formData, preferencesdlgUploadProgressDisplay, preferencesUploadsuccess, preferencesUploadfailed);
+    if ((typeof (current_preferences) != 'undefined') && current_preferences) {
+        SendFileHttp(cmd, formData);
+    } else {
+        SendFileHttp(cmd, formData, preferencesdlgUploadProgressDisplay, preferencesUploadsuccess, preferencesUploadfailed);
+    }
 }
 
 function preferencesdlgUploadProgressDisplay(oEvent) {
