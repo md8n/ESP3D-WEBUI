@@ -235,7 +235,7 @@ const move = (params = {}) => {
 const sendMove = (cmd) => {
   tabletClick();
 
-  let distance = cmd.includes('Z') ? Number(id('disZ').innerText) || 0 : Number(id('disM').innerText) || 0;
+  let distance = cmd.includes('Z') ? Number(getText('disZ')) || 0 : Number(getText('disM')) || 0;
 
   const fn = {
     G28: () => sendCommand('G28'),
@@ -269,8 +269,8 @@ const moveHome = () => {
   }
 
   //We want to move to the opposite of the machine's current X,Y cordinates
-  const x = Number.parseFloat(id('mpos-x').innerText)
-  const y = Number.parseFloat(id('mpos-y').innerText)
+  const x = Number.parseFloat(getText('mpos-x'))
+  const y = Number.parseFloat(getText('mpos-y'))
 
   jog({ X: -1 * x, Y: -1 * y })
 }
@@ -372,7 +372,7 @@ function setJogSelector(units) {
   //   'jog22',
   //   'jog23',
   // ]
-  //buttonNames.forEach( function(n, i) { id(n).innerHTML = buttonDistances[i]; } );
+  //buttonNames.forEach( function(n, i) { setHTML(n, buttonDistances[i]); } );
 
   // var selector = id('jog-distance');
   // selector.length = 0;
@@ -466,12 +466,12 @@ function stopAndRecover() {
 var oldCannotClick = null
 
 function scaleUnits(target) {
-  //Scale the units to move when jogging down or up by 25 to keep them reasonable
+  //Scale the units to move when jogging down or up by 25.4 to keep them reasonable
   let disMElement = id(target);
   let currentValue = Number(disMElement.innerText);
 
   if (!Number.isNaN(currentValue)) {
-    disMElement.innerText = modal.units == 'G20' ? currentValue / 25 : currentValue * 25;
+    disMElement.innerText = modal.units == 'G20' ? currentValue / 25.4 : currentValue * 25.4;
   } else {
     console.error('Invalid number in disM element');
   }
@@ -1079,18 +1079,18 @@ window.addEventListener("keydown", handleKeyDown);
 window.addEventListener("keyup", handleKeyUp);
 
 function saveJogDists() {
-  localStorage.setItem("disM", id("disM").innerText);
-  localStorage.setItem("disZ", id("disZ").innerText);
+  localStorage.setItem("disM", getText("disM"));
+  localStorage.setItem("disZ", getText("disZ"));
 }
 
 function loadJogDists() {
   const disM = localStorage.getItem("disM");
   if (disM != null) {
-    id("disM").innerText = disM;
+    setText("disM", disM);
   }
   const disZ = localStorage.getItem("disZ");
   if (disZ != null) {
-    id("disZ").innerText = disZ;
+    setText("disZ", disZ);
   }
 }
 

@@ -34,29 +34,6 @@ function SendPrinterCommand(cmd, echo_on, processfn, errorfn, id, max_id, extra_
     //console.log(cmd);
 }
 
-function SendPrinterSilentCommand(cmd, processfn, errorfn, id, max_id) {
-    if (!cmd) {
-        return;
-    }
-    //removeIf(production)
-    console.info(cmd);
-    if (typeof processfn !== 'undefined') processfn("Test response");
-    else SendPrinterCommandSuccess("Test response");
-    return;
-    //endRemoveIf(production)
-    if (typeof processfn === 'undefined' || processfn == null) processfn = SendPrinterSilentCommandSuccess;
-    if (typeof errorfn === 'undefined' || errorfn == null) errorfn = SendPrinterCommandFailed;
-    cmd = encodeURI(cmd);
-    cmd = cmd.replace("#", "%23");
-    var cmdTxt = `/command_silent?commandText=${cmd}`;
-    SendGetHttp(cmdTxt, processfn, errorfn, id, max_id);
-    //console.log(cmd);
-}
-
-function SendPrinterSilentCommandSuccess(response) {
-    //console.log(response);
-}
-
 function SendPrinterCommandSuccess(response) {
 }
 

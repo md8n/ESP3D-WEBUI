@@ -49,12 +49,12 @@ function setupdlg() {
     setup_is_done = false;
     language_save = language;
     displayNone('main_ui');
-    id('settings_list_data').innerHTML = "";
+    setHTML('settings_list_data', "");
     active_wizard_page = 0;
 
     wizardDone("startsteplink");
 
-    id("wizard_button").innerHTML = translate_text_item("Start setup");
+    setHTML("wizard_button", translate_text_item("Start setup"));
 
     disableStep("wizard_line1", "step1link");
     disableStep("wizard_line2", "step2link");
@@ -65,7 +65,7 @@ function setupdlg() {
     disableStep("wizard_line4", "endsteplink");
 
     var content = table( td(get_icon_svg("flag") + "&nbsp;") + td(build_language_list("language_selection")));
-    id("setup_langage_list").innerHTML = content;
+    setHTML("setup_langage_list", content);
 
     var modal = setactiveModal('setupdlg.html', setupdone);
     if (modal == null) return;
@@ -114,12 +114,12 @@ function continue_setup_wizard() {
 function enablestep1() {
     var content = "";
     closeStep("startsteplink")
-    id("wizard_button").innerHTML = translate_text_item("Continue");
+    setHTML("wizard_button", translate_text_item("Continue"));
     openStep("wizard_line1", "step1link");
     content += heading("FluidNC Settings");
     content += item("Define ESP name:", EP_HOSTNAME);
 
-    id("step1").innerHTML = content
+    setHTML("step1", content);
     id("step1link").click();
 }
 
@@ -151,7 +151,7 @@ function enablestep2() {
 
     content += endDiv();
 
-    id("step2").innerHTML = content;
+    setHTML("step2", content);
     define_esp_role_from_pos(EP_WIFI_MODE);
     id("step2link").click();
 }
@@ -188,14 +188,14 @@ function enablestep3() {
 
     content += endDiv();
 
-    id("step3").innerHTML = content;
+    setHTML("step3", content);
     define_sd_role(get_index_from_eeprom_pos(EP_IS_DIRECT_SD));
     id("step3link").click();
 }
 
 function enablestep4() {
     closeStep("step3link");
-    id("wizard_button").innerHTML = translate_text_item("Close");
+    setHTML("wizard_button", translate_text_item("Close"));
     openStep("wizard_line4", "endsteplink");
     id("endsteplink").click();
 }

@@ -34,8 +34,8 @@ const CONFIG_TOOLTIPS = {
 
 function refreshSettings(hide_setting_list) {
   if (http_communication_locked) {
-    id('config_status').innerHTML = translate_text_item('Communication locked by another process, retry later.')
-    return
+    setHTML('config_status', translate_text_item('Communication locked by another process, retry later.'));
+    return;
   }
   do_not_build_settings = typeof hide_setting_list == 'undefined' ? false : !hide_setting_list
 
@@ -234,7 +234,7 @@ function build_HTML_setting_list(filter) {
       content += tr;
     }
   }
-  id('settings_list_data').innerHTML = content;
+  setHTML('settings_list_data', content);
   if (filter === 'tree') {
     document.querySelector('#setting_32_0').value = result;
   }
@@ -418,7 +418,7 @@ function setIcon(i, j, value) {
   id(sId(i, j, 'icon_')).className = `form-control-feedback ${value}`;
 }
 function setIconHTML(i, j, value) {
-  id(sId(i, j, 'icon_')).innerHTML = value;
+  setHTML(sId(i, j, 'icon_'), value);
 }
 
 function setting_revert_to_default(i, j) {
@@ -526,8 +526,9 @@ function setESPsettingsfailed(error_code, response) {
   alertdlg(translate_text_item('Set failed'), errMsg);
   conErr(errMsg);
   setBtn(setting_lasti, setting_lastj, 'btn-danger');
-  id('icon_setting_' + setting_lasti + '_' + setting_lastj).className = 'form-control-feedback has-error ico_feedback';
-  id('icon_setting_' + setting_lasti + '_' + setting_lastj).innerHTML = get_icon_svg('remove');
+  const idIcon = `icon_setting_${setting_lasti}_${setting_lastj}`;
+  id(idIcon).className = 'form-control-feedback has-error ico_feedback';
+  setHTML(idIcon, get_icon_svg('remove'));
   setStatus(setting_lasti, setting_lastj, 'has-feedback has-error');
 }
 
@@ -547,7 +548,7 @@ function getESPsettingsfailed(error_code, response) {
   conErr(error_code, response);
   displayNone('settings_loader');
   displayBlock('settings_status');
-  id('settings_status').innerHTML = stdErrMsg(error_code, response, translate_text_item('Failed'));
+  setHTML('settings_status', stdErrMsg(error_code, response, translate_text_item('Failed')));
   displayBlock('settings_refresh_btn');
 }
 

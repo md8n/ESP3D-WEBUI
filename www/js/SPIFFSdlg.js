@@ -268,7 +268,10 @@ function SPIFFSdispatchfilestatus(jsonresponse) {
 
 	setHTML("SPIFFS_file_list", content);
 	actions.forEach((action) => {
-		id(action.id).addEventListener("click", (event) => action.method(action.filename));
+		const elem = id(action.id);
+		if (elem) {
+			elem.addEventListener("click", (event) => action.method(action.path));
+		}
 	});
 
 	SPIFFSnavbar();

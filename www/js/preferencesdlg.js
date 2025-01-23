@@ -1,42 +1,38 @@
 //Preferences dialog
 var preferenceslist = [];
 var language_save = language;
-var default_preferenceslist = [];
-var defaultpreferenceslist = "[{\
-                                            \"language\":\"en\",\
-                                            \"enable_lock_UI\":\"false\",\
-                                            \"enable_ping\":\"true\",\
-                                            \"enable_DHT\":\"false\",\
-                                            \"enable_camera\":\"false\",\
-                                            \"auto_load_camera\":\"false\",\
-                                            \"camera_address\":\"\",\
-                                            \"enable_redundant\":\"false\",\
-                                            \"enable_probe\":\"false\",\
-                                            \"enable_control_panel\":\"true\",\
-                                            \"enable_grbl_panel\":\"false\",\
-                                            \"autoreport_interval\":\"50\",\
-                                            \"interval_positions\":\"3\",\
-                                            \"interval_status\":\"3\",\
-                                            \"xy_feedrate\":\"2500\",\
-                                            \"z_feedrate\":\"300\",\
-                                            \"a_feedrate\":\"100\",\
-                                            \"b_feedrate\":\"100\",\
-                                            \"c_feedrate\":\"100\",\
-                                            \"e_feedrate\":\"400\",\
-                                            \"e_distance\":\"5\",\
-                                            \"f_filters\":\"g;gc;gco;gcode;nc;txt;G;GC;GCO;GCODE;NC;TXT\",\
-                                            \"enable_files_panel\":\"true\",\
-                                            \"has_TFT_SD\":\"false\",\
-                                            \"has_TFT_USB\":\"false\",\
-                                            \"enable_commands_panel\":\"true\",\
-                                            \"enable_autoscroll\":\"true\",\
-                                            \"enable_verbose_mode\":\"true\",\
-                                            \"enable_grbl_probe_panel\":\"false\",\
-                                            \"probemaxtravel\":\"40\",\
-                                            \"probefeedrate\":\"100\",\
-                                            \"proberetract\":\"1.0\",\
-                                            \"probetouchplatethickness\":\"0.5\"\
-                                            }]";
+var default_preferenceslist = [{
+    "language": "en",
+    "enable_lock_UI": "false",
+    "enable_ping": "true",
+    "enable_DHT": "false",
+    "enable_camera": "false",
+    "auto_load_camera": "false",
+    "camera_address": "",
+    "enable_control_panel": "true",
+    "interval_positions": "3",
+    "xy_feedrate": "2500",
+    "z_feedrate": "300",
+    "a_feedrate": "100",
+    "b_feedrate": "100",
+    "c_feedrate": "100",
+    "enable_grbl_panel": "true",
+    "autoreport_interval": "50",
+    "interval_status": "3",
+    "enable_grbl_probe_panel": "false",
+    "probemaxtravel": "40",
+    "probefeedrate": "100",
+    "probetouchplatethickness": "0.5",
+    "proberetract": "1.0",
+    "enable_files_panel": "true",
+    "has_TFT_SD": "false",
+    "has_TFT_USB": "false",
+    "f_filters": "g;gc;gco;gcode;nc;txt;G;GC;GCO;GCODE;NC;TXT",
+    "enable_commands_panel": "true",
+    "enable_autoscroll": "true",
+    "enable_verbose_mode": "true"
+}];
+
 var preferences_file_name = '/preferences.json';
 
 function initpreferences() {
@@ -44,15 +40,13 @@ function initpreferences() {
     displayBlock('grbl_pref_panel');
     displayTable('has_tft_sd');
     displayTable('has_tft_usb');
-
-    default_preferenceslist = JSON.parse(defaultpreferenceslist);
 }
 
 function getpreferenceslist() {
     var cmd = preferences_file_name;
     preferenceslist = [];
     //removeIf(production)
-    var response = defaultpreferenceslist;
+    var response = JSON.stringify(default_preferenceslist);
     processPreferencesGetSuccess(response);
     return;
     //endRemoveIf(production)
@@ -92,23 +86,22 @@ function prefs_toggledisplay(id_source, forcevalue) {
 }
 
 function processPreferencesGetSuccess(response) {
-    Preferences_build_list(response.indexOf("<HTML>") == -1
-        ? Preferences_build_list(response)
-        : Preferences_build_list(defaultpreferenceslist));
+    Preferences_build_list(response);
 }
 
 function processPreferencesGetFailed(error_code, response) {
     conErr(error_code, response);
-    Preferences_build_list(defaultpreferenceslist);
+    Preferences_build_list("");
 }
 
 function Preferences_build_list(response_text) {
     preferenceslist = [];
     try {
-        preferenceslist = JSON.parse(response_text.length != 0 ? response_text : defaultpreferenceslist);
+        const prefTest = response_text ? response_text : JSON.stringify(default_preferenceslist)
+        preferenceslist = JSON.parse(prefTest);
     } catch (e) {
-        console.error("Parsing error:", e);
-        preferenceslist = JSON.parse(defaultpreferenceslist);
+        console.error("Preferences parsing error:", e);
+        preferenceslist = default_preferenceslist;
     }
     applypreferenceslist();
 }
@@ -295,7 +288,7 @@ function build_dlg_preferences_list() {
     content += `${get_icon_svg("flag")}&nbsp;</td><td>`;
     content += build_language_list("language_preferences");
     content += "</td></tr></table>";
-    id("preferences_langage_list").innerHTML = content;
+    setHTML("preferences_langage_list", content);
     //camera
     if (typeof (preferenceslist[0].enable_camera) !== 'undefined') {
         id('show_camera_panel').checked = (preferenceslist[0].enable_camera === 'true');
@@ -579,45 +572,50 @@ function SavePreferences(current_preferences) {
         if ((grblaxis > 5) && (!Checkvalues("preferences_control_c_velocity"))) return;
 
         preferenceslist = [];
-        let saveprefs = `[{\"language\":\"${language}`;
-        saveprefs += `\",\"enable_camera\":\"${id('show_camera_panel').checked}`;
-        saveprefs += `\",\"auto_load_camera\":\"${id('autoload_camera_panel').checked}`;
-        saveprefs += `\",\"camera_address\":\"${HTMLEncode(id('preferences_camera_webaddress').value)}`;
-        saveprefs += `\",\"enable_DHT\":\"${id('enable_DHT').checked}`;
-        saveprefs += `\",\"enable_lock_UI\":\"${id('enable_lock_UI').checked}`;
-        saveprefs += `\",\"enable_ping\":\"${id('enable_ping').checked}`;
-        saveprefs += `\",\"enable_control_panel\":\"${id('show_control_panel').checked}`;
-        saveprefs += `\",\"enable_grbl_probe_panel\":\"${id('show_grbl_probe_tab').checked}`;
-        saveprefs += `\",\"enable_grbl_panel\":\"${id('show_grbl_panel').checked}`;
-        saveprefs += `\",\"enable_files_panel\":\"${id('show_files_panel').checked}`;
-        saveprefs += `\",\"has_TFT_SD\":\"${id('has_tft_sd').checked}`;
-        saveprefs += `\",\"has_TFT_USB\":\"${id('has_tft_usb').checked}`;
-        saveprefs += `\",\"probemaxtravel\":\"${id('preferences_probemaxtravel').value}`;
-        saveprefs += `\",\"probefeedrate\":\"${id('preferences_probefeedrate').value}`;
-        saveprefs += `\",\"proberetract\":\"${id('preferences_proberetract').value}`;
-        saveprefs += `\",\"probetouchplatethickness\":\"${id('preferences_probetouchplatethickness').value}`;
-        saveprefs += `\",\"autoreport_interval\":\"${id('preferences_autoReport_Interval').value}`;
-        saveprefs += `\",\"interval_positions\":\"${id('preferences_pos_Interval_check').value}`;
-        saveprefs += `\",\"interval_status\":\"${id('preferences_status_Interval_check').value}`;
-        saveprefs += `\",\"xy_feedrate\":\"${id('preferences_control_xy_velocity').value}`;
+        let saveprefs = [`[{"language":"${language}"`];
+        saveprefs.push(`"enable_lock_UI":"${id('enable_lock_UI').checked}"`);
+        saveprefs.push(`"enable_ping":"${id('enable_ping').checked}"`);
+        saveprefs.push(`"enable_DHT":"${id('enable_DHT').checked}"`);
+
+        saveprefs.push(`"enable_camera":"${id('show_camera_panel').checked}"`);
+        saveprefs.push(`"auto_load_camera":"${id('autoload_camera_panel').checked}`);
+        saveprefs.push(`"camera_address":"${HTMLEncode(getValue('preferences_camera_webaddress') || "")}"`);
+
+        saveprefs.push(`"enable_control_panel":"${id('show_control_panel').checked}"`);
+        saveprefs.push(`"interval_positions":"${getValue('preferences_pos_Interval_check') || ""}"`);
+        saveprefs.push(`"xy_feedrate":"${getValue('preferences_control_xy_velocity') || ""}"`);
         if (grblaxis > 2) {
-            saveprefs += `\",\"z_feedrate\":\"${id('preferences_control_z_velocity').value}`;
+            saveprefs.push(`"z_feedrate":"${getValue('preferences_control_z_velocity') || ""}"`);
         }
         if (grblaxis > 3) {
-            saveprefs += `\",\"a_feedrate\":\"${id('preferences_control_a_velocity').value}`;
+            saveprefs.push(`"a_feedrate":"${getValue('preferences_control_a_velocity') || ""}"`);
         }
         if (grblaxis > 4) {
-            saveprefs += `\",\"b_feedrate\":\"${id('preferences_control_b_velocity').value}`;
+            saveprefs.push(`"b_feedrate":"${getValue('preferences_control_b_velocity') || ""}"`);
         }
         if (grblaxis > 5) {
-            saveprefs += `\",\"c_feedrate\":\"${id('preferences_control_c_velocity').value}`;
+            saveprefs.push(`"c_feedrate":"${getValue('preferences_control_c_velocity') || ""}"`);
         }
 
-        saveprefs += `\",\"f_filters\":\"${id('preferences_filters').value}`;
-        saveprefs += `\",\"enable_autoscroll\":\"${id('preferences_autoscroll').checked}`;
-        saveprefs += `\",\"enable_verbose_mode\":\"${id('preferences_verbose_mode').checked}`;
-        saveprefs += `\",\"enable_commands_panel\":\"${id('show_commands_panel').checked}\"}]`;
-        preferenceslist = JSON.parse(saveprefs);
+        saveprefs.push(`"enable_grbl_panel":"${id('show_grbl_panel').checked}"`);
+        saveprefs.push(`"autoreport_interval":"${getValue('preferences_autoReport_Interval') || ""}"`);
+        saveprefs.push(`"interval_status":"${getValue('preferences_status_Interval_check') || ""}"`);
+        saveprefs.push(`"enable_grbl_probe_panel":"${id('show_grbl_probe_tab').checked}"`);
+        saveprefs.push(`"probemaxtravel":"${getValue('preferences_probemaxtravel') || ""}"`);
+        saveprefs.push(`"probefeedrate":"${getValue('preferences_probefeedrate') || ""}"`);
+        saveprefs.push(`"probetouchplatethickness":"${getValue('preferences_probetouchplatethickness') || ""}"`);
+        saveprefs.push(`"proberetract":"${getValue('preferences_proberetract') || ""}"`);
+
+        saveprefs.push(`"enable_files_panel":"${id('show_files_panel').checked}"`);
+        saveprefs.push(`"has_TFT_SD":"${id('has_tft_sd').checked}"`);
+        saveprefs.push(`"has_TFT_USB":"${id('has_tft_usb').checked}"`);
+        saveprefs.push(`"f_filters":"${getValue('preferences_filters') || ""}"`);
+
+        saveprefs.push(`"enable_commands_panel":"${id('show_commands_panel').checked}"`);
+        saveprefs.push(`"enable_autoscroll":"${id('preferences_autoscroll').checked}"`);
+        saveprefs.push(`"enable_verbose_mode":"${id('preferences_verbose_mode').checked}"`);
+        saveprefs.push("}]");
+        preferenceslist = JSON.parse(saveprefs.join(""));
     }
     const blob = new Blob([JSON.stringify(preferenceslist, null, " ")], { type: 'application/json' });
     var file = new File([blob], preferences_file_name);
@@ -635,8 +633,8 @@ function SavePreferences(current_preferences) {
 function preferencesdlgUploadProgressDisplay(oEvent) {
     if (oEvent.lengthComputable) {
         var percentComplete = (oEvent.loaded / oEvent.total) * 100;
-        id('preferencesdlg_prg').value = percentComplete;
-        id('preferencesdlg_upload_percent').innerHTML = percentComplete.toFixed(0);
+        setValue('preferencesdlg_prg', percentComplete);
+        setHTML('preferencesdlg_upload_percent', percentComplete.toFixed(0));
         displayBlock('preferencesdlg_upload_msg');
     } else {
         // Impossible because size is unknown
@@ -743,12 +741,12 @@ function Checkvalues(id_2_check) {
     if (status) {
         id(`${id_2_check}_group`).classList.remove("has-feedback");
         id(`${id_2_check}_group`).classList.remove("has-error");
-        id(`${id_2_check}_icon`).innerHTML = "";
+        setHTML(`${id_2_check}_icon`, "");
     } else {
         // has-feedback hides the value so it is hard to fix it
         // id(id_2_check + "_group").classList.add("has-feedback");
         id(`${id_2_check}_group`).classList.add("has-error");
-        // id(id_2_check + "_icon").innerHTML = get_icon_svg("remove");
+        // setHTML(id_2_check + "_icon", get_icon_svg("remove"));
         alertdlg(translate_text_item("Out of range"), error_message);
     }
     return status;

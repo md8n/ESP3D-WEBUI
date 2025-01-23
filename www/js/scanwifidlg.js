@@ -84,7 +84,10 @@ function process_scanWifi_answer(response_text) {
 	setHTML("AP_scan_data", content);
 
 	actions.forEach((action) => {
-		id(action.id).addEventListener("click", (event) => action.method(action.index));
+		const elem = id(action.id);
+		if (elem) {
+			elem.addEventListener("click", (event) => action.method(action.index));
+		}
 	});
 
 	return result;

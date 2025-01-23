@@ -60,8 +60,8 @@ function ChangePasswordsuccess(response_text) {
 
 function SubmitChangePassword() {
 	const user = encodeURIComponent(id("current_ID").innerHTML.trim());
-	const password = encodeURIComponent(id("password_password_text").value.trim());
-	const newpassword = encodeURIComponent(id("password_password_text1").value.trim());
+	const password = encodeURIComponent((getValue("password_password_text") || "").trim());
+	const newpassword = encodeURIComponent((getValue("password_password_text1") || "").trim());
 	const cmd = `/login?USER=${user}&PASSWORD=${password}&NEWPASSWORD=${newpassword}&SUBMIT=yes`;
 	displayBlock("password_loader");
 	displayNone("change_password_content");
