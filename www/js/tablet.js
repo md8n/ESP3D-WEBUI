@@ -235,7 +235,9 @@ const move = (params = {}) => {
 const sendMove = (cmd) => {
   tabletClick();
 
-  let distance = cmd.includes('Z') ? Number(getText('disZ')) || 0 : Number(getText('disM')) || 0;
+  let distance = cmd.includes('Z')
+    ? Number(getText('disZ')) || 0
+    : Number(getText('disM')) || 0;
 
   const fn = {
     G28: () => sendCommand('G28'),
@@ -467,24 +469,26 @@ var oldCannotClick = null
 
 function scaleUnits(target) {
   //Scale the units to move when jogging down or up by 25.4 to keep them reasonable
-  let disMElement = id(target);
-  let currentValue = Number(disMElement.innerText);
+  let distanceElement = id(target);
+  let currentValue = Number(distanceElement.innerText);
 
   if (!Number.isNaN(currentValue)) {
-    disMElement.innerText = modal.units == 'G20' ? currentValue / 25.4 : currentValue * 25.4;
+    distanceElement.innerText = modal.units == 'G20' ? currentValue / 25.4 : currentValue * 25.4;
   } else {
     console.error('Invalid number in disM element');
   }
 }
 
 function tabletUpdateModal() {
-  const newUnits = modal.units === 'G21' ? 'mm' : 'Inch'
-  if (getValue('units') !== newUnits) {
-    setText('units', newUnits)
-    setJogSelector(modal.units)
-    scaleUnits("disM")
-    scaleUnits("disZ")
+  const newUnits = modal.units === "G21" ? "mm" : "Inch";
+  if (getValue("tablettab_toggle_units") === newUnits) {
+    return;
   }
+
+  setText("tablettab_toggle_units", newUnits);
+  setJogSelector(modal.units);
+  scaleUnits("disM");
+  scaleUnits("disZ");
 }
 
 function tabletGrblState(grbl, response) {

@@ -5,34 +5,35 @@ var xmlhttpupload;
 
 var max_cmd = 100;
 
+/** Clear all current commands, used by socket.js */
 const clear_cmd_list = () => {
     http_cmd_list.length = 0;
     processing_cmd = false;
 };
 
-const cleanFunc = (command, funcName, defFn) => {
-    return typeof command !== "undefined" && typeof command[funcName] === "function"
-        ? command[funcName]
-        : http_cmd_list.length > 0 && typeof http_cmd_list[0][funcName] === "function"
-            ? http_cmd_list[0][funcName]
-            : defFn;
+/** Do the final steps to 'complete' a command */
+const complete_cmd = () => {
+    http_cmd_list.shift();
+    processing_cmd = false;
+    // This should already be false, but we'll make sure
+    http_communication_locked = false;
+    process_cmd();
 }
 
+/** Add a cmd to the http_cmd_list and trigger processing */
+const add_cmd = (command) => {
+    http_cmd_list.push(command);
+    process_cmd();
+}
 
+/** A default success function */
 const http_resultfn = (response_text) => {
     console.info(`Success: ${response_text}`);
 }
 
 const http_handleSuccess = (command, response_text) => {
-    http_communication_locked = false;
-
-    const resultfn = cleanFunc(command, "resultfn", http_resultfn);
-
-    resultfn(response_text);
-
-    http_cmd_list.shift();
-    processing_cmd = false;
-    process_cmd();
+    command.resultfn(response_text);
+    complete_cmd();
 }
 
 const authErrorFound = (error_code, response_text) => {
@@ -50,18 +51,13 @@ const http_errorfn = (error_code, response_text) => {
 }
 
 function http_handleError(command, error_code, response_text) {
-    http_communication_locked = false;
-
     if (authErrorFound(error_code, response_text)) {
         // For now with an auth_error, we continue with regular error handling
     } else {
-        const errorfn = cleanFunc(command, "errorfn", http_errorfn);
-        errorfn(error_code, response_text);
+        command.errorfn(error_code, response_text);
     }
 
-    http_cmd_list.shift();
-    processing_cmd = false;
-    process_cmd();
+    complete_cmd();
 }
 
 /** A default progress event handler function */
@@ -92,9 +88,7 @@ function process_cmd() {
         // Note: NOT an actual http command, just something else to be done
         const fn = command.fn;
         fn();
-        http_cmd_list.shift();
-        processing_cmd = false;
-        process_cmd();
+        complete_cmd();
     } else {
         ProcessHttpCommand(command);
     }
@@ -155,7 +149,7 @@ const checkForMaxListSize = (desc) => {
     http_errorfn(999, translate_text_item("Server not responding"));
     console.error(`${desc} could not be added to the http_cmd_list. Maximum pending commands length has been exceeded.`);
 
-    console.info("Will attempt to continue processes commands");
+    console.info("Will attempt to continue processing commands");
     process_cmd();
 
     return false;
@@ -164,13 +158,12 @@ const checkForMaxListSize = (desc) => {
 /** Add some arbitrary command to the http_cmd_list.
  * Note: This is assumed to NOT be an actual HTTP command
  */
-const AddCmd = (fn, id) => {
+const SendCmdCmd = (fn, id) => {
     if (!checkForMaxListSize("An arbitrary function")) {
         return;
     }
 
-    http_cmd_list.push(buildCmdCmd(fn, id));
-    process_cmd();
+    add_cmd(buildCmdCmd(fn, id));
 }
 
 function GetIdentificationStatus() {
@@ -226,8 +219,7 @@ function SendGetHttp(cmd, result_fn, error_fn, id, max_id) {
         }
     }
 
-    http_cmd_list.push(buildGetCmd(cmd, cmd_id, result_fn, error_fn));
-    process_cmd();
+    add_cmd(buildGetCmd(cmd, cmd_id, result_fn, error_fn));
 }
 
 function SendFileHttp(cmd, postdata, result_fn, error_fn, progress_fn) {
@@ -235,33 +227,33 @@ function SendFileHttp(cmd, postdata, result_fn, error_fn, progress_fn) {
         return;
     }
 
-    if (http_cmd_list.length !== 0) {
+    if (http_cmd_list.length) {
         // TODO: figure out what, if anything this did
         // biome-ignore lint/suspicious/noGlobalAssign: <explanation>
         process = false;
     }
-    http_cmd_list.push(buildPostFileCmd(cmd, postdata, result_fn, error_fn, progress_fn));
-    process_cmd();
+    add_cmd(buildPostFileCmd(cmd, postdata, result_fn, error_fn, progress_fn));
 }
 
-
 const ProcessHttpCommand = (command) => {
-    if (http_communication_locked) {
+    const cmdType = command.type;
+
+    if (!["GET", "POST"].includes(cmdType)) {
+        // This is a safety check - if we're here then there's been a programmer error
+        return;
+    }
+    
+    if (http_communication_locked && cmdType !== "CMD") {
         http_errorfn(503, translate_text_item("Communication locked!"));
         console.warn("locked");
         return;
     }
 
-    const req = { method: command.type };
-    if (req.method === "POST") {
-        // Note: Only used for uploading files
-        req.body = command.postdata;
-    }
-
     var xmlhttp = new XMLHttpRequest();
     xmlhttp.onreadystatechange = function () {
-        if (xmlhttp.readyState == 4) {
-            if (xmlhttp.status == 200) {
+        http_communication_locked = false;
+        if (xmlhttp.readyState == XMLHttpRequest.DONE) {
+            if (xmlhttp.status === 0 || (xmlhttp.status >= 200 && xmlhttp.status < 400)) {
                 //console.log("*** " + command.cmd + " done");
                 http_handleSuccess(command, xmlhttp.responseText);
             } else {
@@ -272,14 +264,14 @@ const ProcessHttpCommand = (command) => {
             }
         }
     }
-    if (command.type === "POST") {
+    if (cmdType === "POST") {
         xmlhttp.upload.addEventListener("progress", command.progressfn, false);
     }
 
     http_communication_locked = true;
     //console.log("GET:" + cmd);
-    xmlhttp.open(command.type, command.cmd, true);
-    if (command.type === "GET") {
+    xmlhttp.open(cmdType, command.cmd, true);
+    if (cmdType === "GET") {
         xmlhttp.send();
     } else {
         // Note: Only used for uploading files

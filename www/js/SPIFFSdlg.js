@@ -1,5 +1,6 @@
 //import - get_icon_svg, conErr, stdErrMsg, displayBlock, displayNone, id, setValue, setHTML, closeModal, setactiveModal, showModal, alertdlg, confirmdlg, inputdlg, SendFileHttp, SendGetHttp, translate_text_item
 
+let SPIFFS_currentpath = "/";
 let SPIFFS_currentfile = "";
 let SPIFFS_upload_ongoing = false;
 
@@ -93,6 +94,7 @@ function processSPIFFS_Createdir(answer) {
 }
 
 function SPIFFSDownload(url) {
+	console.info(`Preparing to download ${url}`);
 	const anchor = document.createElement("a");
 	anchor.href = url;
 	anchor.download = url;
@@ -204,7 +206,7 @@ const buildSPIFFSTotalBar = (jsonresponse) => {
 };
 
 const upDirAndRelist = (previouspath) => {
-	SPIFFS_currentpath(previouspath);
+	SPIFFS_currentpath = previouspath;
 	SPIFFSSendCommand("list", "all");
 };
 
@@ -231,9 +233,9 @@ function SPIFFSdispatchfilestatus(jsonresponse) {
 		const filesize = jsonresponse.files[i].size;
 		const pathname = jsonresponse.path;
 		const filename = jsonresponse.files[i].name;
-		let filecontent = `<td  style='vertical-align:middle; color:#5BC0DE'>${get_icon_svg("file")}</td>`;
-		// filecontent += "<td  width='100%'  style='vertical-align:middle'><a href=\"" + pathname + filename + "\" target=_blank download><button  class=\"btn btn-link no_overflow\">" + filename + "</button></a></td>"
-		filecontent += `<td  width='100%'  style='vertical-align:middle'>${filename}</td>`;
+		let filecontent = `<td style='vertical-align:middle; color:#5BC0DE'>${get_icon_svg("file")}</td>`;
+		// filecontent += "<td width='100%' style='vertical-align:middle'><a href=\"" + pathname + filename + "\" target=_blank download><button  class=\"btn btn-link no_overflow\">" + filename + "</button></a></td>"
+		filecontent += `<td width='100%' style='vertical-align:middle'>${filename}</td>`;
 		filecontent += `<td nowrap  style='vertical-align:middle; text-align:right'>${filesize}</td>`;
 		filecontent += SPIFFSbutton(`${bIdF}download_${i}`, "btn-default", "download");
 		filecontent += SPIFFSbutton(`${bIdF}delete_${i}`, "btn-danger", "trash");
