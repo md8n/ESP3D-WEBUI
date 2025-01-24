@@ -98,7 +98,7 @@ function StartUploadUpdatefile(response) {
 
 	setHTML("updatemsg", `${translate_text_item("Uploading")} ${fileList.join(" ")}}`);
 	const cmd = "/updatefw";
-	SendFileHttp(cmd, formData, UpdateProgressDisplay, updatesuccess, updatefailed);
+	SendFileHttp(cmd, formData, updatesuccess, updatefailed, UpdateProgressDisplay);
 }
 
 function updatesuccess(response) {

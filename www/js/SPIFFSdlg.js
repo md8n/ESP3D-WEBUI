@@ -343,7 +343,7 @@ function SPIFFS_UploadFile() {
 	SPIFFS_upload_ongoing = true;
 	setHTML("uploadSPIFFSmsg", `${translate_text_item("Uploading")} ${fileList.join(" ")}`);
 	const cmd = "/files";
-	SendFileHttp(cmd, formData, SPIFFSUploadProgressDisplay, SPIFFSUploadsuccess, SPIFFSUploadfailed);
+	SendFileHttp(cmd, formData, SPIFFSUploadsuccess, SPIFFSUploadfailed, SPIFFSUploadProgressDisplay);
 }
 
 function SPIFFSUploadsuccess(response) {

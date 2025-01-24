@@ -626,7 +626,7 @@ function SavePreferences(current_preferences) {
     if ((typeof (current_preferences) != 'undefined') && current_preferences) {
         SendFileHttp(cmd, formData);
     } else {
-        SendFileHttp(cmd, formData, preferencesdlgUploadProgressDisplay, preferencesUploadsuccess, preferencesUploadfailed);
+        SendFileHttp(cmd, formData, preferencesUploadsuccess, preferencesUploadfailed, preferencesdlgUploadProgressDisplay);
     }
 }
 

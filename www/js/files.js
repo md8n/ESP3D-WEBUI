@@ -673,7 +673,7 @@ function files_start_upload() {
 	displayNone("files_navigation_buttons");
 	if (direct_sd) {
 		const cmd = "/upload";
-		SendFileHttp(cmd, formData, FilesUploadProgressDisplay, files_list_success, files_directSD_upload_failed);
+		SendFileHttp(cmd, formData, files_list_success, files_directSD_upload_failed, FilesUploadProgressDisplay);
 		//console.log("send file");
 	}
 	id("files_input_file").value = "";

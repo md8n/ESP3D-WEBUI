@@ -292,7 +292,7 @@ function SaveNewMacroList() {
 	const formData = new FormData();
 	formData.append("path", "/");
 	formData.append("myfile[]", file, macroFileName);
-	SendFileHttp(cmd, formData, macrodlgUploadProgressDisplay, macroUploadsuccess, macroUploadfailed);
+	SendFileHttp(cmd, formData, macroUploadsuccess, macroUploadfailed, macrodlgUploadProgressDisplay);
 }
 
 function macrodlgUploadProgressDisplay(oEvent) {
