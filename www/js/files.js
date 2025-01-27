@@ -5,8 +5,7 @@ let files_current_path = "/";
 const files_currentPath = (value) => {
 	if (typeof value === "string") {
 		files_current_path = value;
-	}
-	if (typeof files_currentPath !== "string") {
+	} else if (typeof value !== "string") {
 		files_current_path = "/";
 	}
 	return files_current_path;
@@ -659,11 +658,11 @@ function files_start_upload() {
 	formData.append("path", path);
 	for (let i = 0; i < files.length; i++) {
 		const file = files[i];
-		const arg = `${path + file.name}S`;
+		const fullFilename = `${path}${file.name}`;
 		//append file size first to check updload is complete
-		formData.append(arg, file.size);
-		formData.append("myfile[]", file, path + file.name);
-		//console.log( path +file.name);
+		formData.append(`${fullFilename}S`, file.size);
+		formData.append("myfile[]", file, fullFilename);
+		console.info(`Preparing ${fullFilename} for upload`);
 
 		files_error_status = `Upload ${file.name}`;
 		setHTML("files_currentUpload_msg", file.name);

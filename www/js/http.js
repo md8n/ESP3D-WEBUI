@@ -188,6 +188,12 @@ function GetIdentificationStatusSuccess(response_text) {
     }
 }
 
+/** Build the supplied data into a blob, then a file, ready for inclusion as form data */
+const BuildFormDataFiles = (filename, filedata, options) => {
+	const blob = new Blob(filedata, options);
+	return new File([blob], filename);
+}
+
 /** Check if HTTP comms are locked */
 const CheckForHttpCommLock = () => {
     if (http_communication_locked) {
@@ -249,8 +255,12 @@ const ProcessHttpCommand = (command) => {
         return;
     }
 
-    var xmlhttp = new XMLHttpRequest();
-    xmlhttp.onreadystatechange = function () {
+    const xErr = (pEvent) => {
+        http_communication_locked = false;
+        console.error(`Error sending file ${pEvent.type}: ${pEvent.loaded} bytes were transferred.`);
+    }
+
+    const rsc = (event, command) => {
         http_communication_locked = false;
         if (xmlhttp.readyState == XMLHttpRequest.DONE) {
             if (xmlhttp.status === 0 || (xmlhttp.status >= 200 && xmlhttp.status < 400)) {
@@ -264,13 +274,17 @@ const ProcessHttpCommand = (command) => {
             }
         }
     }
+
+    var xmlhttp = new XMLHttpRequest();
+    xmlhttp.addEventListener("error", xErr);
+    xmlhttp.addEventListener("readystatechange", (event) => rsc (event, command));
     if (cmdType === "POST") {
         xmlhttp.upload.addEventListener("progress", command.progressfn, false);
     }
 
-    http_communication_locked = true;
-    //console.log("GET:" + cmd);
     xmlhttp.open(cmdType, command.cmd, true);
+    http_communication_locked = true;
+
     if (cmdType === "GET") {
         xmlhttp.send();
     } else {

@@ -286,8 +286,7 @@ function SaveNewMacroList() {
 	}
 
 	const macroFileName = "/macrocfg.json";
-	const blob = new Blob([JSON.stringify(macrodlg_macrolist, null, " ")], { type: "application/json" });
-	let file = new File([blob], macroFileName);
+	const file = BuildFormDataFiles(macroFileName, [JSON.stringify(macrodlg_macrolist, null, " ")], { type: "application/json" });
 	const cmd = "/files";
 	const formData = new FormData();
 	formData.append("path", "/");

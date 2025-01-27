@@ -333,10 +333,11 @@ function SPIFFS_UploadFile() {
 	for (let i = 0; i < files.length; i++) {
 		const file = files[i];
 		fileList.push(file.name);
-		const arg = `${SPIFFS_currentpath}${file.name}S`;
+		const fullFilename = `${SPIFFS_currentpath}${file.name}`;
 		//append file size first to check upload is complete
-		formData.append(arg, file.size);
-		formData.append("myfile[]", file, `${SPIFFS_currentpath}${file.name}`);
+		formData.append(`${fullFilename}S`, file.size);
+		formData.append("myfile[]", file, fullFilename);
+		console.info(`Preparing ${fullFilename} for upload`);
 	}
 	displayNone("SPIFFS_select_form");
 	displayNone("SPIFFS_uploadbtn");

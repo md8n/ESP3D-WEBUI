@@ -613,17 +613,15 @@ function SavePreferences(current_preferences) {
 
         saveprefs.push(`"enable_commands_panel":"${id('show_commands_panel').checked}"`);
         saveprefs.push(`"enable_autoscroll":"${id('preferences_autoscroll').checked}"`);
-        saveprefs.push(`"enable_verbose_mode":"${id('preferences_verbose_mode').checked}"`);
-        saveprefs.push("}]");
-        preferenceslist = JSON.parse(saveprefs.join(""));
+        saveprefs.push(`"enable_verbose_mode":"${id('preferences_verbose_mode').checked}"}]`);
+        preferenceslist = JSON.parse(saveprefs.join(","));
     }
-    const blob = new Blob([JSON.stringify(preferenceslist, null, " ")], { type: 'application/json' });
-    var file = new File([blob], preferences_file_name);
+    const file = BuildFormDataFiles(preferences_file_name, [JSON.stringify(preferenceslist, null, " ")], { type: 'application/json' });
     var formData = new FormData();
     var cmd = "/files";
     formData.append('path', '/');
     formData.append('myfile[]', file, preferences_file_name);
-    if ((typeof (current_preferences) != 'undefined') && current_preferences) {
+    if ((typeof (current_preferences) !== 'undefined') && current_preferences) {
         SendFileHttp(cmd, formData);
     } else {
         SendFileHttp(cmd, formData, preferencesUploadsuccess, preferencesUploadfailed, preferencesdlgUploadProgressDisplay);

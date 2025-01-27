@@ -89,6 +89,7 @@ function StartUploadUpdatefile(response) {
 		//append file size first to check updload is complete
 		formData.append(arg, file.size);
 		formData.append("myfile[]", file, `/${file.name}`);
+		console.info(`Preparing ${fullFilename} for upload`);
 	}
 	displayNone("fw-select_form");
 	displayNone("uploadfw-button");
