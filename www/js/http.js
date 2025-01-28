@@ -25,23 +25,30 @@ function clear_cmd_list() {
     processing_cmd = false;
 }
 
+/** Standard actions to take after completing processing a command's reply */
+const postProcessCmd = () => {
+    http_cmd_list.shift();
+    processing_cmd = false;
+    process_cmd();
+}
+
 /** Build a full `/upload` GET command, encoding the supplied `name` and `cmdPath` values */
 const buildHttpFileCmd = (action, name, cmdPath = "") => {
-	const path = cmdPath || files_currentPath;
+    const path = cmdPath || files_currentPath;
 
-	const cmd = [`${httpCmd.fileUpload}?path=${encodeURIComponent(path)}`];
-	const cmdInfo = `Performing http '${httpCmd.fileUpload}' GET command for path:'${path}'`;
-	if (action) {
-		cmd.push(`action=${action}`);
-		cmdInfo.push(`with action:'${action}'`);
-	}
-	if (name) {
-		cmd.push(`filename=${encodeURIComponent(name)}`);
-		cmdInfo.push(`and file:'${name}'`);
-	}
+    const cmd = [`${httpCmd.fileUpload}?path=${encodeURIComponent(path)}`];
+    const cmdInfo = `Performing http '${httpCmd.fileUpload}' GET command for path:'${path}'`;
+    if (action) {
+        cmd.push(`action=${action}`);
+        cmdInfo.push(`with action:'${action}'`);
+    }
+    if (name) {
+        cmd.push(`filename=${encodeURIComponent(name)}`);
+        cmdInfo.push(`and file:'${name}'`);
+    }
 
-	console.info(cmdInfo.join(" "));
-	return cmd.join("&");
+    console.info(cmdInfo.join(" "));
+    return cmd.join("&");
 }
 
 /** Build a full `command/plain` GET command, fully encoding the supplied `plainCmd` value.
@@ -59,9 +66,7 @@ function http_resultfn(response_text) {
         var fn = http_cmd_list[0].resultfn;
         fn(response_text);
     } //else console.log ("No resultfn");
-    http_cmd_list.shift();
-    processing_cmd = false;
-    process_cmd();
+    postProcessCmd();
 }
 
 function http_errorfn(error_code, response_text) {
@@ -73,9 +78,7 @@ function http_errorfn(error_code, response_text) {
         }
         http_cmd_list[0].errorfn(error_code, response_text);
     } //else console.log ("No errorfn");
-    http_cmd_list.shift();
-    processing_cmd = false;
-    process_cmd();
+    postProcessCmd();
 }
 
 function process_cmd() {
@@ -89,9 +92,9 @@ function process_cmd() {
     const command = http_cmd_list[0];
     const cmdType = command.type;
     if (!["GET", "POST", "CMD"].includes(cmdType)) {
+        // This should never be true, but just in case we will handle it
         console.error(`Unknown command type ${cmdType} for command ${command.cmd}`);
-        // This should never be true, but just in case we'll deliberately set it to false
-        processing_cmd = false;
+        postProcessCmd();
         return;
     }
     // console.log("Processing 1/" + http_cmd_list.length);
@@ -99,21 +102,23 @@ function process_cmd() {
     processing_cmd = true;
     if (cmdType === "CMD") {
         // Note: NOT an actual http command, just something else to be done
-        const fn = command.fn;
+        const fn = command.cmd;
         fn();
-        complete_cmd();
-    } else {
-        switch (cmdType) {
-            case "GET":
-                ProcessGetHttp(command.cmd, http_resultfn, http_errorfn);
-                break;
-            case "POST":
-                // POST is only ever used for file uploading
-                //console.log("Uploading");
-                ProcessFileHttp(command.cmd, command.data, command.progressfn, http_resultfn, http_errorfn);
-                break;
-        }
+        postProcessCmd();
+        return;
     }
+
+    switch (cmdType) {
+        case "GET":
+            ProcessGetHttp(command.cmd, http_resultfn, http_errorfn);
+            break;
+        case "POST":
+            // POST is only ever used for file uploading
+            //console.log("Uploading");
+            ProcessFileHttp(command.cmd, command.data, command.progressfn, http_resultfn, http_errorfn);
+            break;
+    }
+
 }
 
 /** Add some arbitrary command to the http_cmd_list.
