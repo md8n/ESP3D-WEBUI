@@ -13,7 +13,7 @@ var defaultpreferenceslist = "[{\
                                             \"enable_redundant\":\"false\",\
                                             \"enable_probe\":\"false\",\
                                             \"enable_control_panel\":\"true\",\
-                                            \"enable_grbl_panel\":\"false\",\
+                                            \"enable_grbl_panel\":\"true\",\
                                             \"autoreport_interval\":\"50\",\
                                             \"interval_positions\":\"3\",\
                                             \"interval_status\":\"3\",\

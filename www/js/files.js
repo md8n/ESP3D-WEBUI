@@ -230,11 +230,11 @@ function process_files_Delete(answer) {
 }
 
 function files_delete_file(index) {
-	const fFile = files_file_list[index];
-	files_error_status = `Delete ${fFile.name}`;
-	if (!direct_sd) {
+	if (!direct_sd || (files_file_list.length - 1) < index) {
 		return;
 	}
+	const fFile = files_file_list[index];
+	files_error_status = `Delete ${fFile.name}`;
 
 	displayBlock("files_nav_loader");
 
