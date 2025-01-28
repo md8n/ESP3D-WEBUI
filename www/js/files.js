@@ -38,7 +38,9 @@ function build_accept(file_filters_list) {
 		for (let i = 0; i < tfiles_filters.length; i++) {
 			const v = tfiles_filters[i].trim();
 			if (v.length > 0) {
-				if (accept_txt.length > 0) accept_txt += ", ";
+				if (accept_txt.length > 0) {
+					accept_txt += ", ";
+				}
 				accept_txt += `.${v}`;
 			}
 		}
@@ -206,7 +208,7 @@ function files_create_dir(name) {
 	if (direct_sd) {
 		displayBlock("files_nav_loader");
 
-		const cmd = buildHttpFileCmd("createdir", name)
+		const cmd = buildHttpFileCmd({ action: "createdir", filename: name });
 		SendGetHttp(cmd, files_list_success, files_list_failed);
 	}
 }
@@ -236,7 +238,7 @@ function files_delete_file(index) {
 
 	displayBlock("files_nav_loader");
 
-	const cmd = buildHttpFileCmd(fFile.isdir ? "deletedir" : "delete", fFile.sdname);
+	const cmd = buildHttpFileCmd({ action: fFile.isdir ? "deletedir" : "delete", filename: fFile.sdname });
 	SendGetHttp(cmd, files_list_success, files_list_failed);
 }
 
@@ -259,8 +261,7 @@ function process_files_rename(new_file_name) {
 
 	displayBlock("files_nav_loader");
 
-	const newname = `newname=${encodeURIComponent(new_file_name)}`;
-	const cmd = `${buildHttpFileCmd("rename", old_file_name)}&${newname}`;
+	const cmd = buildHttpFileCmd({ action: "rename", filename: old_file_name, newname: new_file_name });
 	SendGetHttp(cmd, files_list_success, files_list_failed);
 }
 function files_download(index) {
@@ -340,7 +341,7 @@ function files_refreshFiles(path, usecache) {
 
 	//this is pure direct SD
 	if (direct_sd) {
-		const cmd = buildHttpFileCmd("", "", cmdpath);
+		const cmd = buildHttpFileCmd({ path: cmdpath });
 		SendGetHttp(cmd, files_list_success, files_list_failed);
 	}
 }
@@ -582,8 +583,6 @@ const files_select_upload = () => {
 }
 
 function files_check_if_upload() {
-	const canupload = true;
-	const files = id("files_input_file").files;
 	if (direct_sd) {
 		SendPrinterCommand("[ESP200]", false, process_check_sd_presence);
 	} else {
@@ -620,7 +619,7 @@ function files_start_upload() {
 	//console.log("upload from " + path );
 	const files = id("files_input_file").files;
 
-	if (files.value === "" || typeof files[0].name === "undefined") {
+	if (!files.length || typeof files[0].name === "undefined") {
 		console.log("nothing to upload");
 		return;
 	}

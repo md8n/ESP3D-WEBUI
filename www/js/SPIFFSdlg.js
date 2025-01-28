@@ -193,7 +193,7 @@ const buildSPIFFSTotalBar = (jsonresponse) => {
 };
 
 const upDirAndRelist = (previouspath) => {
-	SPIFFS_currentpath(previouspath);
+	SPIFFS_currentpath = previouspath;
 	SPIFFSSendCommand("list", "all");
 };
 

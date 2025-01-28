@@ -32,20 +32,30 @@ const postProcessCmd = () => {
     process_cmd();
 }
 
-/** Build a full `/upload` GET command, encoding the supplied `name` and `cmdPath` values */
-const buildHttpFileCmd = (action, name, cmdPath = "") => {
-    const path = cmdPath || files_currentPath;
-
+/** Build a full `/upload` GET command, encoding the supplied `name`, `newname` and `path` values */
+const buildHttpFileCmd = (params = { action: "", path: "", filename: "" }) => {
+    const getParam = (params, paramName, defaultValue = "") => {
+        return (paramName in params && params[paramName].trim())
+            ? params[paramName].trim()
+            : defaultValue;
+    }
+    // `path` is special, it always goes into the command, and it always goes first
+    const path = getParam(params, "path", files_currentPath);
+    const cmdInfo = [`Performing http '${httpCmd.fileUpload}' GET command for path:'${path}'`];
     const cmd = [`${httpCmd.fileUpload}?path=${encodeURIComponent(path)}`];
-    const cmdInfo = `Performing http '${httpCmd.fileUpload}' GET command for path:'${path}'`;
-    if (action) {
-        cmd.push(`action=${action}`);
-        cmdInfo.push(`with action:'${action}'`);
-    }
-    if (name) {
-        cmd.push(`filename=${encodeURIComponent(name)}`);
-        cmdInfo.push(`and file:'${name}'`);
-    }
+
+    Object.keys(params).forEach((key) => {
+        if (key !== "path") {
+            let pVal = getParam(params, key);
+            if (pVal) {
+                cmdInfo.push(`with ${key}:'${pVal}'`);
+                if (["name", "newname"].includes(key)) {
+                    pVal = encodeURIComponent(pVal);
+                }
+                cmd.push(`${key}=${pVal}`);
+            }
+        }
+    });
 
     console.info(cmdInfo.join(" "));
     return cmd.join("&");
@@ -56,7 +66,7 @@ const buildHttpFileCmd = (action, name, cmdPath = "") => {
  */
 const buildHttpPlainCmd = (plainCmd) => `${httpCmd.command}?plain=${encodeURIComponent(plainCmd).replace("#", "%23")}`;
 
-/** Build a full `command\commandText=` GET command, fully encoding the supplied `plainCmd` value.
+/** Build a full `command\commandText=` GET command, fully encoding the supplied `command` value.
  * Note: this includes replacing '#', because '#' is not encoded by `encodeURIComponent`.
  */
 const buildHttpCommandCmd = (command) => `${httpCmd.command}?commandText=${encodeURIComponent(command).replace("#", "%23")}`;
