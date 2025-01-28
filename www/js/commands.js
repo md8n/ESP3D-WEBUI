@@ -103,19 +103,20 @@ const Monitor_output_Update = (message) => {
 };
 
 function SendCustomCommand() {
-	let cmd = id("custom_cmd_txt").value;
-	const url = "/command?commandText=";
-	cmd = cmd.trim();
-	if (cmd.trim().length === 0) return;
-	CustomCommand_history.push(cmd);
+	let custCmd = id("custom_cmd_txt").value.trim();
+	if (custCmd.trim().length === 0) {
+		return;
+	}
+
+	CustomCommand_history.push(custCmd);
 	CustomCommand_history.slice(-40);
 	CustomCommand_history_index = CustomCommand_history.length;
+
 	id("custom_cmd_txt").value = "";
-	Monitor_output_Update(`${cmd}\n`);
-	cmd = encodeURI(cmd);
-	//because # is not encoded
-	cmd = cmd.replace("#", "%23");
-	SendGetHttp(url + cmd, SendCustomCommandSuccess, SendCustomCommandFailed);
+	Monitor_output_Update(`${custCmd}\n`);
+
+	const cmd = buildHttpCommandCmd(custCmd);
+	SendGetHttp(cmd, SendCustomCommandSuccess, SendCustomCommandFailed);
 }
 
 function CustomCommand_OnKeyUp(event) {

@@ -83,8 +83,8 @@ function StartUploadUpdatefile(response) {
 		return;
 	}
 	const files = id("fw-select").files;
+
 	const formData = new FormData();
-	const url = "/updatefw";
 	for (let i = 0; i < files.length; i++) {
 		const file = files[i];
 		const arg = `/${file.name}S`;
@@ -92,15 +92,16 @@ function StartUploadUpdatefile(response) {
 		formData.append(arg, file.size);
 		formData.append("myfile[]", file, `/${file.name}`);
 	}
+
 	displayNone("fw-select_form");
 	displayNone("uploadfw-button");
 	update_ongoing = true;
 	displayBlock("updatemsg");
 	displayBlock("prgfw");
-	if (files.length === 1) current_update_filename = files[0].name;
-	else current_update_filename = "";
+	current_update_filename = files.length === 1 ? files[0].name : "";
 	setHTML("updatemsg", `${translate_text_item("Uploading")} ${current_update_filename}`);
-	SendFileHttp(url, formData, UpdateProgressDisplay, updatesuccess, updatefailed);
+
+	SendFileHttp(httpCmd.fwUpdate, formData, UpdateProgressDisplay, updatesuccess, updatefailed);
 }
 
 function updatesuccess(response) {

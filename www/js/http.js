@@ -6,10 +6,53 @@ var page_id = ""
 
 var max_cmd = 20;
 
+/** 'Commands' to be sent as the first part of the URL after the host name */
+const httpCmd = {
+    "command": "/command",
+    "fileGet": "/",
+    /** Perform a GET file action. Mostly used by files.js (i.e. not SPIFFs) */
+    "fileUpload": "/upload",
+    /** Perform a POST file action. Used with FormData */
+    "files": "/files",
+    /** Perform a POST file action to update the firmware. Used with FormData */
+    "fwUpdate": "/updatefw",
+    /** Perform some auth related GET action */
+    "login": "/login",
+};
+
 function clear_cmd_list() {
     http_cmd_list = [];
     processing_cmd = false;
 }
+
+/** Build a full `/upload` GET command, encoding the supplied `name` and `cmdPath` values */
+const buildHttpFileCmd = (action, name, cmdPath = "") => {
+	const path = cmdPath || files_currentPath;
+
+	const cmd = [`${httpCmd.fileUpload}?path=${encodeURIComponent(path)}`];
+	const cmdInfo = `Performing http '${httpCmd.fileUpload}' GET command for path:'${path}'`;
+	if (action) {
+		cmd.push(`action=${action}`);
+		cmdInfo.push(`with action:'${action}'`);
+	}
+	if (name) {
+		cmd.push(`filename=${encodeURIComponent(name)}`);
+		cmdInfo.push(`and file:'${name}'`);
+	}
+
+	console.info(cmdInfo.join(" "));
+	return cmd.join("&");
+}
+
+/** Build a full `command/plain` GET command, fully encoding the supplied `plainCmd` value.
+ * Note: this includes replacing '#', because '#' is not encoded by `encodeURIComponent`.
+ */
+const buildHttpPlainCmd = (plainCmd) => `${httpCmd.command}?plain=${encodeURIComponent(plainCmd).replace("#", "%23")}`;
+
+/** Build a full `command\commandText=` GET command, fully encoding the supplied `plainCmd` value.
+ * Note: this includes replacing '#', because '#' is not encoded by `encodeURIComponent`.
+ */
+const buildHttpCommandCmd = (command) => `${httpCmd.command}?commandText=${encodeURIComponent(command).replace("#", "%23")}`;
 
 function http_resultfn(response_text) {
     if ((http_cmd_list.length > 0) && (typeof http_cmd_list[0].resultfn != 'undefined')) {
@@ -43,38 +86,39 @@ function process_cmd() {
         return;
     }
 
-    const cmdType = http_cmd_list[0].type;
+    const command = http_cmd_list[0];
+    const cmdType = command.type;
     if (!["GET", "POST", "CMD"].includes(cmdType)) {
-        console.error(`Unknown command type ${cmdType} for command ${http_cmd_list[0].cmd}`);
+        console.error(`Unknown command type ${cmdType} for command ${command.cmd}`);
         // This should never be true, but just in case we'll deliberately set it to false
         processing_cmd = false;
         return;
     }
     // console.log("Processing 1/" + http_cmd_list.length);
-    // console.log("Processing " + http_cmd_list[0].cmd);
+    // console.log("Processing " + command.cmd);
     processing_cmd = true;
-    switch (cmdType) {
-        case "GET":
-            ProcessGetHttp(http_cmd_list[0].cmd, http_resultfn, http_errorfn);
-            break;
-        case "POST":
-            if (!(http_cmd_list[0].isupload)) {
-                ProcessPostHttp(http_cmd_list[0].cmd, http_cmd_list[0].data, http_resultfn, http_errorfn);
-            } else {
+    if (cmdType === "CMD") {
+        // Note: NOT an actual http command, just something else to be done
+        const fn = command.fn;
+        fn();
+        complete_cmd();
+    } else {
+        switch (cmdType) {
+            case "GET":
+                ProcessGetHttp(command.cmd, http_resultfn, http_errorfn);
+                break;
+            case "POST":
+                // POST is only ever used for file uploading
                 //console.log("Uploading");
-                ProcessFileHttp(http_cmd_list[0].cmd, http_cmd_list[0].data, http_cmd_list[0].progressfn, http_resultfn, http_errorfn);
-            }
-            break;
-        case "CMD":
-            var fn = http_cmd_list[0].cmd;
-            fn();
-            http_cmd_list.shift();
-            processing_cmd = false;
-            process_cmd();
-            break;
+                ProcessFileHttp(command.cmd, command.data, command.progressfn, http_resultfn, http_errorfn);
+                break;
+        }
     }
 }
 
+/** Add some arbitrary command to the http_cmd_list.
+ * Note: This is assumed to NOT be an actual HTTP command
+ */
 function AddCmd(cmd_fn, id) {
     if (http_cmd_list.length > max_cmd) {
         http_errorfn(999, translate_text_item("Server not responding"));
@@ -139,7 +183,7 @@ function ProcessGetHttp(url, resultfn, errorfn) {
         return;
     }
     var xmlhttp = new XMLHttpRequest();
-    xmlhttp.onreadystatechange = function() {
+    xmlhttp.onreadystatechange = function () {
         if (xmlhttp.readyState == 4) {
             if (xmlhttp.status == 200) {
                 //console.log("*** " + url + " done");
@@ -160,44 +204,13 @@ function ProcessGetHttp(url, resultfn, errorfn) {
     xmlhttp.send();
 }
 
-function SendPostHttp(url, postdata, result_fn, error_fn, id, max_id) {
-    if ((http_cmd_list.length > max_cmd) && (max_cmd != -1)) {
-        error_fn(999, translate_text_item("Server not responding"));
-        return;
-    }
-    var cmd_id = 0;
-    var cmd_max_id = 1;
-    if (typeof id != 'undefined') {
-        cmd_id = id;
-        if (typeof max_id != 'undefined') cmd_max_id = max_id;
-        for (p = 0; p < http_cmd_list.length; p++) {
-            if (http_cmd_list[p].id == cmd_id) cmd_max_id--;
-            if (cmd_max_id <= 0) return;
-        }
-    }
-
-    //console.log("adding " + url);
-    var cmd = {
-        cmd: url,
-        type: "POST",
-        isupload: false,
-        data: postdata,
-        resultfn: result_fn,
-        errorfn: error_fn,
-        initfn: init_fn,
-        id: cmd_id
-    };
-    http_cmd_list.push(cmd);
-    process_cmd();
-}
-
 function ProcessPostHttp(url, postdata, resultfn, errorfn) {
     if (http_communication_locked) {
         errorfn(503, translate_text_item("Communication locked!"));
         return;
     }
     var xmlhttp = new XMLHttpRequest();
-    xmlhttp.onreadystatechange = function() {
+    xmlhttp.onreadystatechange = function () {
         if (xmlhttp.readyState == 4) {
             if (xmlhttp.status == 200) {
                 if (typeof resultfn != 'undefined' && resultfn != null) resultfn(xmlhttp.responseText);
@@ -241,7 +254,7 @@ function ProcessFileHttp(url, postdata, progressfn, resultfn, errorfn) {
     }
     http_communication_locked = true;
     xmlhttpupload = new XMLHttpRequest();
-    xmlhttpupload.onreadystatechange = function() {
+    xmlhttpupload.onreadystatechange = function () {
         if (xmlhttpupload.readyState == 4) {
             http_communication_locked = false;
             if (xmlhttpupload.status == 200) {

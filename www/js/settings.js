@@ -34,19 +34,19 @@ const CONFIG_TOOLTIPS = {
 
 function refreshSettings(hide_setting_list) {
   if (http_communication_locked) {
-    id('config_status').innerHTML = translate_text_item('Communication locked by another process, retry later.')
-    return
+    id('config_status').innerHTML = translate_text_item('Communication locked by another process, retry later.');
+    return;
   }
-  do_not_build_settings = typeof hide_setting_list == 'undefined' ? false : !hide_setting_list
+  do_not_build_settings = typeof hide_setting_list === 'undefined' ? false : !hide_setting_list;
 
-  displayBlock('settings_loader')
-  displayNone('settings_list_content')
-  displayNone('settings_status')
-  displayNone('settings_refresh_btn')
+  displayBlock('settings_loader');
+  displayNone('settings_list_content');
+  displayNone('settings_status');
+  displayNone('settings_refresh_btn');
 
-  scl = []
-  var url = '/command?plain=' + encodeURIComponent('[ESP400]')
-  SendGetHttp(url, getESPsettingsSuccess, getESPsettingsfailed)
+  scl = [];
+  const cmd = buildHttpPlainCmd("[ESP400]");
+  SendGetHttp(cmd, getESPsettingsSuccess, getESPsettingsfailed);
 }
 
 function defval(i) {
@@ -196,7 +196,8 @@ function build_control_from_pos(pos, extra) {
  * @see maslow.js maslowErrorMsgHandling()
  */
 function saveMaslowYaml() {
-  SendGetHttp('/command?plain=' + encodeURIComponent("$CO"));
+  const cmd = buildHttpPlainCmd("$CO");
+  SendGetHttp(cmd);
 }
 
 function build_HTML_setting_list(filter) {
@@ -436,39 +437,43 @@ function setting_revert_to_default(i, j) {
   setIconHTML(i, j, '');
 }
 
-function settingsetvalue(i, j) {
-  if (typeof j == 'undefined') j = 0
+function settingsetvalue(i, j = 0) {
   //remove possible spaces
-  value = setting(i, j).value.trim()
+  let value = setting(i, j).value.trim();
+
   //Apply flag here
-  if (scl[i].type == 'F') {
-    var tmp = defval(i)
-    if (value == '1') {
-      tmp |= getFlag(i, j)
+  if (scl[i].type === 'F') {
+    var tmp = defval(i);
+    if (value === '1') {
+      tmp |= getFlag(i, j);
     } else {
-      tmp &= ~getFlag(i, j)
+      tmp &= ~getFlag(i, j);
     }
-    value = tmp
+    value = tmp;
   }
-  if (value == defval(i)) return
+  if (value == defval(i)) {
+    return;
+  }
+
   //check validity of value
-  var isvalid = setting_check_value(value, i)
+  var isvalid = setting_check_value(value, i);
+
   //if not valid show error
   if (!isvalid) {
     setsettingerror(i)
-    alertdlg(translate_text_item('Out of range'), translate_text_item('Value must be ') + setting_error_msg + ' !')
+    alertdlg(translate_text_item('Out of range'), `${translate_text_item('Value must be ')}${setting_error_msg}!`);
   } else {
     //value is ok save it
-    var cmd = scl[i].cmd + value
-    setting_lasti = i
-    setting_lastj = j
-    scl[i].defaultvalue = value
-    setBtn(i, j, 'btn-success')
-    setIcon(i, j, 'has-success ico_feedback')
-    setIconHTML(i, j, get_icon_svg('ok'))
-    setStatus(i, j, 'has-feedback has-success')
-    var url = '/command?plain=' + encodeURIComponent(cmd)
-    SendGetHttp(url, setESPsettingsSuccess, setESPsettingsfailed)
+    setting_lasti = i;
+    setting_lastj = j;
+    scl[i].defaultvalue = value;
+    setBtn(i, j, 'btn-success');
+    setIcon(i, j, 'has-success ico_feedback');
+    setIconHTML(i, j, get_icon_svg('ok'));
+    setStatus(i, j, 'has-feedback has-success');
+
+    const cmd = buildHttpPlainCmd(`${scl[i].cmd}${value}`);
+    SendGetHttp(cmd, setESPsettingsSuccess, setESPsettingsfailed);
   }
 }
 

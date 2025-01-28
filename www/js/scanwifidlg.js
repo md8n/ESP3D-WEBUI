@@ -46,8 +46,8 @@ function refresh_scanwifi() {
 	getscanWifiSuccess(testResponse.join(""));
 	return;
 	//endRemoveIf(production)
-	const url = `/command?plain=${encodeURIComponent("[ESP410]")}`;
-	SendGetHttp(url, getscanWifiSuccess, getscanWififailed);
+	const cmd = buildHttpPlainCmd("[ESP410]");
+	SendGetHttp(cmd, getscanWifiSuccess, getscanWififailed);
 }
 
 function process_scanWifi_answer(response_text) {

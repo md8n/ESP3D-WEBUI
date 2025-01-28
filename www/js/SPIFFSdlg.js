@@ -311,8 +311,8 @@ function SPIFFS_UploadFile() {
 		return;
 	}
 	const files = id("SPIFFS-select").files;
+
 	const formData = new FormData();
-	const url = "/files";
 	formData.append("path", SPIFFS_currentpath);
 	for (let i = 0; i < files.length; i++) {
 		const file = files[i];
@@ -321,6 +321,7 @@ function SPIFFS_UploadFile() {
 		formData.append(arg, file.size);
 		formData.append("myfile[]", file, `${SPIFFS_currentpath}${file.name}`);
 	}
+
 	displayNone("SPIFFS-select_form");
 	displayNone("SPIFFS_uploadbtn");
 	SPIFFS_upload_ongoing = true;
@@ -328,7 +329,7 @@ function SPIFFS_UploadFile() {
 	displayBlock("SPIFFS_prg");
 	SPIFFS_currentfile = (files.length === 1) ? files[0].name : "";
 	setHTML("uploadSPIFFSmsg", `${translate_text_item("Uploading")} ${SPIFFS_currentfile}`);
-	SendFileHttp(url, formData, SPIFFSUploadProgressDisplay, SPIFFSUploadsuccess, SPIFFSUploadfailed);
+	SendFileHttp(httpCmd.files, formData, SPIFFSUploadProgressDisplay, SPIFFSUploadsuccess, SPIFFSUploadfailed);
 }
 
 function SPIFFSUploadsuccess(response) {

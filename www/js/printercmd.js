@@ -2,56 +2,43 @@ var grbl_processfn = null;
 var grbl_errorfn = null;
 
 function noop() {}
-function SendPrinterCommand(cmd, echo_on, processfn, errorfn, id, max_id, extra_arg) {
-    var url = "/command?commandText=";
-    var push_cmd = true;
-    if (typeof echo_on !== 'undefined') {
-        push_cmd = echo_on;
+function SendPrinterCommand(prnCmd, echo_on, processfn, errorfn, id, max_id, extra_arg) {
+    if (prnCmd.trim().length === 0) {
+        return;
     }
-    if (cmd.length == 0) return;
-    if (push_cmd) Monitor_output_Update("[#]" + cmd + "\n");
+
+    var push_cmd = typeof echo_on !== 'undefined' ? echo_on : true;
+    if (push_cmd) {
+        Monitor_output_Update(`[#]${prnCmd.trim()}\n`);
+    }
+
     //removeIf(production)
-    console.log(cmd);
-    if (typeof processfn !== 'undefined') processfn("Test response");
-    else SendPrinterCommandSuccess("Test response");
+    console.log(prnCmd);
+    if (typeof processfn !== 'undefined') {
+        processfn("Test response");
+    } else {
+        SendPrinterCommandSuccess("Test response");
+    }
     return;
     //endRemoveIf(production)
-    if (typeof processfn === 'undefined' || processfn == null) processfn = SendPrinterCommandSuccess;
-    if (typeof errorfn === 'undefined' || errorfn == null) errorfn = SendPrinterCommandFailed;
-    if (!cmd.startsWith("[ESP")) {
-        grbl_processfn = processfn;
-        grbl_errorfn = errorfn;
-        processfn = noop;
-        errorfn = noop;
+
+    // Ensure that we have valid functions defined for process and error returns
+    let procFn = typeof processfn === "function" ? processfn : SendPrinterCommandSuccess;
+    let errFn = typeof errorfn === "function" ? errorfn : SendPrinterCommandFailed;
+    if (!prnCmd.startsWith("[ESP")) {
+        grbl_processfn = procFn;
+        grbl_errorfn = errFn;
+        procFn = noop;
+        errFn = noop;
     }
-    cmd = encodeURI(cmd);
-    cmd = cmd.replace("#", "%23");
+
+	let cmd = buildHttpCommandCmd(prnCmd);
     if (extra_arg) {
-        cmd += "&" + extra_arg;
+        cmd += `&${extra_arg}`;
     }
-    SendGetHttp(url + cmd, processfn, errorfn, id, max_id);
-    //console.log(cmd);
-}
 
-function SendPrinterSilentCommand(cmd, processfn, errorfn, id, max_id) {
-    var url = "/command_silent?commandText=";
-    if (cmd.length == 0) return;
-    //removeIf(production)
-    console.log(cmd);
-    if (typeof processfn !== 'undefined') processfn("Test response");
-    else SendPrinterCommandSuccess("Test response");
-    return;
-    //endRemoveIf(production)
-    if (typeof processfn === 'undefined' || processfn == null) processfn = SendPrinterSilentCommandSuccess;
-    if (typeof errorfn === 'undefined' || errorfn == null) errorfn = SendPrinterCommandFailed;
-    cmd = encodeURI(cmd);
-    cmd = cmd.replace("#", "%23");
-    SendGetHttp(url + cmd, processfn, errorfn, id, max_id);
+    SendGetHttp(cmd, procFn, errFn, id, max_id);
     //console.log(cmd);
-}
-
-function SendPrinterSilentCommandSuccess(response) {
-    //console.log(response);
 }
 
 function SendPrinterCommandSuccess(response) {
@@ -61,6 +48,7 @@ function SendPrinterCommandFailed(error_code, response) {
     const errMsg = (error_code === 0)
         ? translate_text_item("Connection error")
         : stdErrMsg(error_code, HTMLDecode(response), translate_text_item("Error"));
+
     Monitor_output_Update(`${errMsg}\n`);
 
     conErr(error_code, HTMLDecode(response), "printer cmd Error");

@@ -626,13 +626,18 @@ function SavePreferences(current_preferences) {
         file = blob;
         file.name = preferences_file_name;
         file.lastModifiedDate = new Date();
-    } else file = new File([blob], preferences_file_name);
+    } else {
+        file = new File([blob], preferences_file_name);
+    }
+
     var formData = new FormData();
-    var url = "/files";
     formData.append('path', '/');
     formData.append('myfile[]', file, preferences_file_name);
-    if ((typeof (current_preferences) != 'undefined') && current_preferences) SendFileHttp(url, formData);
-    else SendFileHttp(url, formData, preferencesdlgUploadProgressDisplay, preferencesUploadsuccess, preferencesUploadfailed);
+    if ((typeof (current_preferences) != 'undefined') && current_preferences) {
+        SendFileHttp(httpCmd.files, formData);
+    } else {
+        SendFileHttp(httpCmd.files, formData, preferencesdlgUploadProgressDisplay, preferencesUploadsuccess, preferencesUploadfailed);
+    }
 }
 
 function preferencesdlgUploadProgressDisplay(oEvent) {
