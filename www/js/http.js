@@ -32,13 +32,48 @@ const postProcessCmd = () => {
     process_cmd();
 }
 
+/** Extract a named parameter value from the supplied params value,
+ * if it's falsey use the defaultValue */
+const getParam = (params, paramName, defaultValue = "") => {
+    return (paramName in params && params[paramName].trim())
+        ? params[paramName].trim()
+        : defaultValue;
+}
+
+/** Build a full `/login` GET command, encoding the supplied params excluding DISCONNECT (and SUBMIT) */
+const buildHttpLoginCmd = (params = { }) => {
+    const cmd = [];
+    // Do a deep copy of the params
+    let prms = JSON.parse(JSON.stringify(params));
+
+    if ("DISCONNECT" in prms && prms.DISCONNECT === "yes") {
+        // Disconnect - throw away any other parameters
+        prms = {"DISCONNECT": "yes"};
+    } else {
+        // Login / Change Password - add the submit param
+        prms.SUBMIT = "yes";
+    }
+
+    Object.keys(prms).forEach((key) => {
+        let pVal = getParam(prms, key);
+        if (pVal) {
+            if (!["DISCONNECT", "SUBMIT"].includes(key)) {
+                pVal = encodeURIComponent(pVal);
+            }
+            pVal = encodeURIComponent(pVal);
+            if (cmd.length) {
+                cmd.push(`${key}=${pVal}`);
+            } else {
+                cmd.push(`${httpCmd.login}?${key}=${pVal}`);
+            }
+        }
+    });
+
+    return cmd.join("&");
+}
+
 /** Build a full `/upload` GET command, encoding the supplied `name`, `newname` and `path` values */
 const buildHttpFileCmd = (params = { action: "", path: "", filename: "" }) => {
-    const getParam = (params, paramName, defaultValue = "") => {
-        return (paramName in params && params[paramName].trim())
-            ? params[paramName].trim()
-            : defaultValue;
-    }
     // `path` is special, it always goes into the command, and it always goes first
     const path = getParam(params, "path", files_currentPath);
     const cmdInfo = [`Performing http '${httpCmd.fileUpload}' GET command for path:'${path}'`];

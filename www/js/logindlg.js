@@ -84,13 +84,14 @@ function loginsuccess(response_text) {
 
 function SubmitLogin() {
 	const user = id("login_user_text").value.trim();
-	const userEnc = encodeURIComponent(user);
-	const password = encodeURIComponent(id("login_password_text").value.trim());
-	const cmd = `${httpCmd.login}?USER=${userEnc}&PASSWORD=${password}&SUBMIT=yes`;
+	const password = id("login_password_text").value.trim();
+
 	setHTML("current_ID", user);
 	setHTML("current_auth_level", "");
 	displayNone("login_content");
 	displayBlock("login_loader");
+
+	const cmd = buildHttpLoginCmd({"USER": user, "PASSWORD": password});
 	SendGetHttp(cmd, loginsuccess, loginfailed);
 }
 
@@ -113,7 +114,7 @@ function DisconnectionFailed(error_code, response) {
 
 function DisconnectLogin(answer) {
 	if (answer === "yes") {
-		const cmd = `${httpCmd.login}?DISCONNECT=yes`;
+		const cmd = buildHttpLoginCmd({"DISCONNECT": answer});
 		SendGetHttp(cmd, DisconnectionSuccess, DisconnectionFailed);
 	}
 }
