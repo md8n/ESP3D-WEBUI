@@ -9,10 +9,10 @@ function showmacrodlg(closefn) {
 		return;
 	}
 
-	id("macrodlg.html").addEventListener("click", (event) => clear_drop_menu(event));
-	id("MacroDialogClose").addEventListener("click", (event) => closeMacroDialog());
-	id("MacroDialogCancel").addEventListener("click", (event) => closeMacroDialog());
-	id("MacroDialogSave").addEventListener("click", (event) => SaveNewMacroList());
+	id("macrodlg.html").addEventListener("click", clear_drop_menu);
+	id("MacroDialogClose").addEventListener("click", closeMacroDialog);
+	id("MacroDialogCancel").addEventListener("click", closeMacroDialog);
+	id("MacroDialogSave").addEventListener("click", SaveNewMacroList);
 
 	build_dlg_macrolist_ui();
 	displayNone("macrodlg_upload_msg");
@@ -33,7 +33,7 @@ function build_color_selection(index, actions) {
 	content += "</g>";
 	content += "</svg>";
 	content += "</button>";
-	actions.push({ id: `macro_color_line${index}_btn`, type: "click", method: (event) => showhide_drop_menu(event) });
+	actions.push({ id: `macro_color_line${index}_btn`, type: "click", method: showhide_drop_menu });
 	content += `<div class='dropmenu-content ${menu_pos}' style='min-width:auto; padding-left: 4px;padding-right: 4px;'>`;
 	for ((col) in ["default", "primary", "info", "warning", "danger"]) {
 		content += `<button id='macro_select_color_${col}${index}_btn' class='btn btn-${col}'>&nbsp;</button>`;
@@ -58,7 +58,7 @@ function build_target_selection(index, actions) {
 	content += "</g>";
 	content += "</svg>";
 	content += "</button>";
-	actions.push({ id: `macro_target_line${index}_btn`, type: "click", method: (event) => showhide_drop_menu(event) });
+	actions.push({ id: `macro_target_line${index}_btn`, type: "click", method: showhide_drop_menu });
 	content += `<div class='dropmenu-content ${menu_pos}' style='min-width:auto'>`;
 	content += `<a id='macro_select_targetESP${index}_link' href=#>ESP</a>`;
 	content += `<a id='macro_select_targetSD${index}_link' href=#>SD</a>`;
@@ -86,7 +86,7 @@ function build_glyph_selection(index, actions) {
 	content += "</g>";
 	content += "</svg>";
 	content += "</button>";
-	actions.push({ id: `macro_glyph_line${index}_btn`, type: "click", method: (event) => showhide_drop_menu(event) });
+	actions.push({ id: `macro_glyph_line${index}_btn`, type: "click", method: showhide_drop_menu });
 	content += `<div class='dropmenu-content ${menu_pos}' style='min-width:30em'>`;
 	for (const key in list_icon) {
 		if (key === "plus") {
@@ -149,7 +149,10 @@ function build_dlg_macrolist_line(index) {
 
 	setHTML(`macro_line_${index}`, content);
 	actions.forEach((action) => {
-		id(action.id).addEventListener(action.type, action.method);
+		const elem = id(action.id);
+		if (elem) {
+			elem.addEventListener(action.type, action.method);
+		}
 	});
 }
 
@@ -174,10 +177,7 @@ function on_macro_filename(event, index) {
 	const filename = event.value.trim();
 	entry.filename = event.value;
 	if (filename.length === 0) {
-		alertdlg(
-			translate_text_item("Out of range"),
-			translate_text_item("File name cannot be empty!"),
-		);
+		alertdlg(translate_text_item("Out of range"), translate_text_item("File name cannot be empty!"));
 	}
 	build_dlg_macrolist_line(index);
 }

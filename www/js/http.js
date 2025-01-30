@@ -143,10 +143,10 @@ function ProcessGetHttp(url, resultfn, errorfn) {
         if (xmlhttp.readyState == 4) {
             if (xmlhttp.status == 200) {
                 //console.log("*** " + url + " done");
-                if (typeof resultfn != 'undefined' && resultfn != null) resultfn(xmlhttp.responseText);
+                if (typeof resultfn === "function") resultfn(xmlhttp.responseText);
             } else {
                 if (xmlhttp.status == 401) GetIdentificationStatus();
-                if (typeof errorfn != 'undefined' && errorfn != null) errorfn(xmlhttp.status, xmlhttp.responseText);
+                if (typeof errorfn === "function") errorfn(xmlhttp.status, xmlhttp.responseText);
             }
         }
     }
@@ -200,10 +200,10 @@ function ProcessPostHttp(url, postdata, resultfn, errorfn) {
     xmlhttp.onreadystatechange = function() {
         if (xmlhttp.readyState == 4) {
             if (xmlhttp.status == 200) {
-                if (typeof resultfn != 'undefined' && resultfn != null) resultfn(xmlhttp.responseText);
+                if (typeof resultfn === "function") resultfn(xmlhttp.responseText);
             } else {
                 if (xmlhttp.status == 401) GetIdentificationStatus();
-                if (typeof errorfn != 'undefined' && errorfn != null) errorfn(xmlhttp.status, xmlhttp.responseText);
+                if (typeof errorfn === "function") errorfn(xmlhttp.status, xmlhttp.responseText);
             }
         }
     }
@@ -245,15 +245,17 @@ function ProcessFileHttp(url, postdata, progressfn, resultfn, errorfn) {
         if (xmlhttpupload.readyState == 4) {
             http_communication_locked = false;
             if (xmlhttpupload.status == 200) {
-                if (typeof resultfn != 'undefined' && resultfn != null) resultfn(xmlhttpupload.responseText);
+                if (typeof resultfn === "function") resultfn(xmlhttpupload.responseText);
             } else {
                 if (xmlhttpupload.status == 401) GetIdentificationStatus();
-                if (typeof errorfn != 'undefined' && errorfn != null) errorfn(xmlhttpupload.status, xmlhttpupload.responseText);
+                if (typeof errorfn === "function") errorfn(xmlhttpupload.status, xmlhttpupload.responseText);
             }
         }
     }
     //console.log(url);
     xmlhttpupload.open("POST", url, true);
-    if (typeof progressfn != 'undefined' && progressfn != null) xmlhttpupload.upload.addEventListener("progress", progressfn, false);
+    if (typeof progressfn === "function") {
+        xmlhttpupload.upload.addEventListener("progress", progressfn, false);
+    }
     xmlhttpupload.send(postdata);
 }

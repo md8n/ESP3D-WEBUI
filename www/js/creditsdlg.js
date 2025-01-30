@@ -1,5 +1,8 @@
 // import - closeModal, setactiveModal, showModal, id
 
+const creditsDlgCancel = () => closeModal("cancel");
+const creditsDlgClose = () => closeModal("Ok");
+
 //Credits dialog
 const creditsdlg = () => {
 	const modal = setactiveModal("creditsdlg.html");
@@ -7,8 +10,8 @@ const creditsdlg = () => {
 		return;
 	}
 
-	id("creditsDlgCancel").addEventListener("click", (event) => closeModal("cancel"));
-	id("creditsDlgClose").addEventListener("click", (event) => closeModal("Ok"));
+	id("creditsDlgCancel").addEventListener("click", creditsDlgCancel);
+	id("creditsDlgClose").addEventListener("click", creditsDlgClose);
 
 	showModal();
 };

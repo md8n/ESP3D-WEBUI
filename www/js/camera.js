@@ -2,12 +2,12 @@
 
 /** Set up the event handlers for the camera tab */
 const cameratab = () => {
-	id("camera_webaddress").addEventListener("keyup", (event) => camera_OnKeyUp(event));
+	id("camera_webaddress").addEventListener("keyup", camera_OnKeyUp);
 
-	id("cameratab_loadframe").addEventListener("click", (event) => camera_loadframe());
-	id("cameratab_getaddress").addEventListener("click", (event) => camera_GetAddress());
-	id("cameratab_saveaddress").addEventListener("click", (event) => camera_saveaddress());
-	id("camera_detach_button").addEventListener("click", (event) => camera_detachcam());
+	id("cameratab_loadframe").addEventListener("click", camera_loadframe);
+	id("cameratab_getaddress").addEventListener("click", camera_GetAddress);
+	id("cameratab_saveaddress").addEventListener("click", camera_saveaddress);
+	id("camera_detach_button").addEventListener("click", camera_detachcam);
 };
 
 function cameraformataddress() {
@@ -51,9 +51,9 @@ function camera_OnKeyUp(event) {
 }
 
 function camera_saveaddress() {
-    cameraformataddress();
-    preferenceslist[0].camera_address = HTMLEncode(id('camera_webaddress').value);
-    SavePreferences(true);
+	cameraformataddress();
+	preferenceslist[0].camera_address = HTMLEncode(id('camera_webaddress').value);
+	SavePreferences(true);
 }
 
 function camera_detachcam() {
