@@ -326,7 +326,7 @@ function SPIFFS_UploadFile() {
 		formData.append(arg, file.size);
 		formData.append("myfile[]", file, `${SPIFFS_currentpath}${file.name}`);
 	}
-	displayNone("SPIFFS-select_form");
+	displayNone("SPIFFS_select_form");
 	displayNone("SPIFFS_uploadbtn");
 	SPIFFS_upload_ongoing = true;
 	displayBlock("uploadSPIFFSmsg");
@@ -339,7 +339,7 @@ function SPIFFS_UploadFile() {
 function SPIFFSUploadsuccess(response) {
 	setValue("SPIFFS_select", "");
 	setHTML("SPIFFS_file_name", translate_text_item("No file chosen"));
-	displayBlock("SPIFFS-select_form");
+	displayBlock("SPIFFS_select_form");
 	displayNone("SPIFFS_prg");
 	displayNone("SPIFFS_uploadbtn");
 	setHTML("uploadSPIFFSmsg", "");
@@ -350,7 +350,7 @@ function SPIFFSUploadsuccess(response) {
 }
 
 function SPIFFSUploadfailed(error_code, response) {
-	displayBlock("SPIFFS-select_form");
+	displayBlock("SPIFFS_select_form");
 	displayNone("SPIFFS_prg");
 	displayBlock("SPIFFS_uploadbtn");
 	setHTML("uploadSPIFFSmsg", "");
