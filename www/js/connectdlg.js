@@ -130,6 +130,6 @@ const retryconnect = () => {
 
 	id("connectbtn").removeEventListener("click", retryconnect);
 
-	const cmd = buildHttpPlainCmd("[ESP800]");
+	const cmd = buildHttpCommandCmd(httpCmdType.plain, "[ESP800]");
 	SendGetHttp(cmd, connectsuccess, connectfailed);
 };

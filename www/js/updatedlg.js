@@ -145,5 +145,5 @@ function updatefailed(error_code, response) {
 	}
 	conErr(error_code, response);
 	update_ongoing = false;
-	SendGetHttp("/updatefw");
+	SendGetHttp(httpCmd.fwUpdate);
 }

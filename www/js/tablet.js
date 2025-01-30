@@ -690,7 +690,7 @@ var watchPath = '';
 function tabletGetFileList(path) {
   // Clear/reset the gCodeFilename
   gCodeFilename = "";
-  const cmd = `${httpCmd.fileUpload}?path=${encodeURI(path)}`;
+  const cmd = buildHttpFileCmd({ path: path });
   SendGetHttp(cmd, files_list_success);
 }
 
@@ -1151,7 +1151,7 @@ const onCalibrationButtonsClick = async (command, msg = "") => {
   if (msg) {
     addMessage(msg);
   }
-  sendCommand(command);  
+  sendCommand(command);
 
   //Prints out the index.html version number when test is pressed
   if (command === '$TEST') {

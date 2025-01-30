@@ -32,7 +32,7 @@ function SendPrinterCommand(prnCmd, echo_on, processfn, errorfn, id, max_id, ext
         errFn = noop;
     }
 
-	let cmd = buildHttpCommandCmd(prnCmd);
+	let cmd = buildHttpCommandCmd(httpCmdType.commandText, prnCmd);
     if (extra_arg) {
         cmd += `&${extra_arg}`;
     }

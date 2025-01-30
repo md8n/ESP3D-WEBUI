@@ -115,7 +115,7 @@ function SendCustomCommand() {
 	id("custom_cmd_txt").value = "";
 	Monitor_output_Update(`${custCmd}\n`);
 
-	const cmd = buildHttpCommandCmd(custCmd);
+	const cmd = buildHttpCommandCmd(httpCmdType.commandText, custCmd);
 	SendGetHttp(cmd, SendCustomCommandSuccess, SendCustomCommandFailed);
 }
 

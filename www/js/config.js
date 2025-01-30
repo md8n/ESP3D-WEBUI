@@ -5,7 +5,7 @@ var config_error_msg = "";
 var config_lastindex_is_override = false;
 var commandtxt = "$$";
 var is_override_config = false;
-var config_file_name = "/sd/config";
+// var config_file_name = "/sd/config";
 
 
 function refreshconfig(is_override) {
@@ -43,17 +43,17 @@ function getprinterconfig(is_override = false) {
     if (is_override) {
         config_override_List = [];
     }
-    const cmd = buildHttpPlainCmd(plainCmd);
+    const cmd = buildHttpCommandCmd(httpCmdType.plain, plainCmd);
     SendGetHttp(cmd);
 }
 
 function Apply_config_override() {
-    const cmd = buildHttpPlainCmd("M500");
+    const cmd = buildHttpCommandCmd(httpCmdType.plain, "M500");
     SendGetHttp(cmd, getESPUpdateconfigSuccess);
 }
 
 function Delete_config_override() {
-    const cmd = buildHttpPlainCmd("M502");
+    const cmd = buildHttpCommandCmd(httpCmdType.plain, "M502");
     SendGetHttp(cmd, getESPUpdateconfigSuccess);
 }
 
@@ -291,7 +291,7 @@ function configGetvalue(index, is_override) {
         config_lastindex_is_override = is_override;
         item.defaultvalue = value;
 
-        var cmd = buildHttpPlainCmd(`${item.cmd}${value}`);
+        var cmd = buildHttpCommandCmd(httpCmdType.plain, `${item.cmd}${value}`);
         SendGetHttp(cmd, setESPconfigSuccess, setESPconfigfailed);
     }
 }

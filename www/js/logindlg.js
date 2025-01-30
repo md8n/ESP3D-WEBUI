@@ -91,7 +91,7 @@ function SubmitLogin() {
 	displayNone("login_content");
 	displayBlock("login_loader");
 
-	const cmd = buildHttpLoginCmd({"USER": user, "PASSWORD": password});
+	const cmd = buildHttpLoginCmd({ USER: user, PASSWORD: password });
 	SendGetHttp(cmd, loginsuccess, loginfailed);
 }
 
@@ -114,7 +114,7 @@ function DisconnectionFailed(error_code, response) {
 
 function DisconnectLogin(answer) {
 	if (answer === "yes") {
-		const cmd = buildHttpLoginCmd({"DISCONNECT": answer});
+		const cmd = buildHttpLoginCmd({ DISCONNECT: answer });
 		SendGetHttp(cmd, DisconnectionSuccess, DisconnectionFailed);
 	}
 }

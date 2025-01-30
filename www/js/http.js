@@ -8,16 +8,26 @@ var max_cmd = 20;
 
 /** 'Commands' to be sent as the first part of the URL after the host name */
 const httpCmd = {
-    "command": "/command",
-    "fileGet": "/",
+    command: "/command",
+    fileGet: "/",
     /** Perform a GET file action. Mostly used by files.js (i.e. not SPIFFs) */
-    "fileUpload": "/upload",
-    /** Perform a POST file action. Used with FormData */
-    "files": "/files",
-    /** Perform a POST file action to update the firmware. Used with FormData */
-    "fwUpdate": "/updatefw",
+    fileUpload: "/upload",
+    /** Perform a files action.
+     * For a POST this is used with FormData.
+     * For a GET this is used with parameters */
+    files: "/files",
+    /** Perform a firmware action.
+     * For a POST this is used with FormData the firmware.
+     * For a GET this this does something else? */
+    fwUpdate: "/updatefw",
     /** Perform some auth related GET action */
-    "login": "/login",
+    login: "/login",
+};
+
+/** Command Types for the http `/command` command */
+const httpCmdType = {
+    "plain": "plain",
+    "commandText": "commandText"
 };
 
 function clear_cmd_list() {
@@ -60,7 +70,27 @@ const buildHttpLoginCmd = (params = { }) => {
             if (!["DISCONNECT", "SUBMIT"].includes(key)) {
                 pVal = encodeURIComponent(pVal);
             }
-            pVal = encodeURIComponent(pVal);
+            if (cmd.length) {
+                cmd.push(`${key}=${pVal}`);
+            } else {
+                cmd.push(`${httpCmd.login}?${key}=${pVal}`);
+            }
+        }
+    });
+
+    return cmd.join("&");
+}
+
+/** Build a full `/files` GET command, encoding all the supplied params excluding `action` */
+const buildHttpFilesCmd = (params = { }) => {
+    const cmd = [];
+
+    Object.keys(params).forEach((key) => {
+        let pVal = getParam(params, key);
+        if (pVal) {
+            if (!["action"].includes(key)) {
+                pVal = encodeURIComponent(pVal);
+            }
             if (cmd.length) {
                 cmd.push(`${key}=${pVal}`);
             } else {
@@ -96,15 +126,13 @@ const buildHttpFileCmd = (params = { action: "", path: "", filename: "" }) => {
     return cmd.join("&");
 }
 
-/** Build a full `command/plain` GET command, fully encoding the supplied `plainCmd` value.
- * Note: this includes replacing '#', because '#' is not encoded by `encodeURIComponent`.
- */
-const buildHttpPlainCmd = (plainCmd) => `${httpCmd.command}?plain=${encodeURIComponent(plainCmd).replace("#", "%23")}`;
+/** Build a simple file GET command. For some reason the filename is not encoded */
+const buildHttpFileGetCmd = (filename) => `${httpCmd.fileGet}${filename}`;
 
-/** Build a full `command\commandText=` GET command, fully encoding the supplied `command` value.
- * Note: this includes replacing '#', because '#' is not encoded by `encodeURIComponent`.
+/** Build either form of the `command` GET command, fully encoding the supplied `cmd` value.
+ * * Note: this includes replacing '#', because '#' is not encoded by `encodeURIComponent`.
  */
-const buildHttpCommandCmd = (command) => `${httpCmd.command}?commandText=${encodeURIComponent(command).replace("#", "%23")}`;
+const buildHttpCommandCmd = (cmdType, cmd) => `${httpCmd.command}?${cmdType}=${encodeURIComponent(cmd).replace("#", "%23")}&PAGEID=${page_id}`;
 
 function http_resultfn(response_text) {
     if ((http_cmd_list.length > 0) && (typeof http_cmd_list[0].resultfn != 'undefined')) {
@@ -226,7 +254,7 @@ function SendGetHttp(url, result_fn, error_fn, id, max_id) {
     process_cmd();
 }
 
-function ProcessGetHttp(url, resultfn, errorfn) {
+function ProcessGetHttp(cmd, resultfn, errorfn) {
     if (http_communication_locked) {
         errorfn(503, translate_text_item("Communication locked!"));
         console.log("locked");
@@ -236,7 +264,7 @@ function ProcessGetHttp(url, resultfn, errorfn) {
     xmlhttp.onreadystatechange = function () {
         if (xmlhttp.readyState == 4) {
             if (xmlhttp.status == 200) {
-                //console.log("*** " + url + " done");
+                //console.log("*** " + cmd + " done");
                 if (typeof resultfn != 'undefined' && resultfn != null) resultfn(xmlhttp.responseText);
             } else {
                 if (xmlhttp.status == 401) GetIdentificationStatus();
@@ -245,16 +273,12 @@ function ProcessGetHttp(url, resultfn, errorfn) {
         }
     }
 
-    if (url.startsWith("/command")) {
-        url += (url.indexOf("?") == -1) ? "?" : "&";
-        url += "PAGEID=" + page_id;
-    }
-    //console.log("GET:" + url);
-    xmlhttp.open("GET", url, true);
+    //console.log("GET:" + cmd);
+    xmlhttp.open("GET", cmd, true);
     xmlhttp.send();
 }
 
-function ProcessPostHttp(url, postdata, resultfn, errorfn) {
+function ProcessPostHttp(cmd, postdata, resultfn, errorfn) {
     if (http_communication_locked) {
         errorfn(503, translate_text_item("Communication locked!"));
         return;
@@ -270,13 +294,12 @@ function ProcessPostHttp(url, postdata, resultfn, errorfn) {
             }
         }
     }
-    url += (url.indexOf("?") == -1) ? "?" : "&";
-    url += "PAGEID=" + page_id;
-    //console.log(url);
-    xmlhttp.open("POST", url, true);
+    //console.log(cmd);
+    xmlhttp.open("POST", cmd, true);
     xmlhttp.send(postdata);
 }
 
+/** POST the file FormData */
 function SendFileHttp(url, postdata, progress_fn, result_fn, error_fn) {
     if ((http_cmd_list.length > max_cmd) && (max_cmd != -1)) {
         error_fn(999, translate_text_item("Server not responding"));

@@ -3,41 +3,41 @@ var preferenceslist = [];
 var language_save = language;
 var default_preferenceslist = [];
 var defaultpreferenceslist = "[{\
-                                            \"language\":\"en\",\
-                                            \"enable_lock_UI\":\"false\",\
-                                            \"enable_ping\":\"true\",\
-                                            \"enable_DHT\":\"false\",\
-                                            \"enable_camera\":\"false\",\
-                                            \"auto_load_camera\":\"false\",\
-                                            \"camera_address\":\"\",\
-                                            \"enable_redundant\":\"false\",\
-                                            \"enable_probe\":\"false\",\
-                                            \"enable_control_panel\":\"true\",\
-                                            \"enable_grbl_panel\":\"true\",\
-                                            \"autoreport_interval\":\"50\",\
-                                            \"interval_positions\":\"3\",\
-                                            \"interval_status\":\"3\",\
-                                            \"xy_feedrate\":\"2500\",\
-                                            \"z_feedrate\":\"300\",\
-                                            \"a_feedrate\":\"100\",\
-                                            \"b_feedrate\":\"100\",\
-                                            \"c_feedrate\":\"100\",\
-                                            \"e_feedrate\":\"400\",\
-                                            \"e_distance\":\"5\",\
-                                            \"f_filters\":\"g;gc;gco;gcode;nc;txt;G;GC;GCO;GCODE;NC;TXT\",\
-                                            \"enable_files_panel\":\"true\",\
-                                            \"has_TFT_SD\":\"false\",\
-                                            \"has_TFT_USB\":\"false\",\
-                                            \"enable_commands_panel\":\"true\",\
-                                            \"enable_autoscroll\":\"true\",\
-                                            \"enable_verbose_mode\":\"true\",\
-                                            \"enable_grbl_probe_panel\":\"false\",\
-                                            \"probemaxtravel\":\"40\",\
-                                            \"probefeedrate\":\"100\",\
-                                            \"proberetract\":\"1.0\",\
-                                            \"probetouchplatethickness\":\"0.5\"\
-                                            }]";
-var preferences_file_name = '/preferences.json';
+    \"language\":\"en\",\
+    \"enable_lock_UI\":\"false\",\
+    \"enable_ping\":\"true\",\
+    \"enable_DHT\":\"false\",\
+    \"enable_camera\":\"false\",\
+    \"auto_load_camera\":\"false\",\
+    \"camera_address\":\"\",\
+    \"enable_redundant\":\"false\",\
+    \"enable_probe\":\"false\",\
+    \"enable_control_panel\":\"true\",\
+    \"enable_grbl_panel\":\"true\",\
+    \"autoreport_interval\":\"50\",\
+    \"interval_positions\":\"3\",\
+    \"interval_status\":\"3\",\
+    \"xy_feedrate\":\"2500\",\
+    \"z_feedrate\":\"300\",\
+    \"a_feedrate\":\"100\",\
+    \"b_feedrate\":\"100\",\
+    \"c_feedrate\":\"100\",\
+    \"e_feedrate\":\"400\",\
+    \"e_distance\":\"5\",\
+    \"f_filters\":\"g;gc;gco;gcode;nc;txt;G;GC;GCO;GCODE;NC;TXT\",\
+    \"enable_files_panel\":\"true\",\
+    \"has_TFT_SD\":\"false\",\
+    \"has_TFT_USB\":\"false\",\
+    \"enable_commands_panel\":\"true\",\
+    \"enable_autoscroll\":\"true\",\
+    \"enable_verbose_mode\":\"true\",\
+    \"enable_grbl_probe_panel\":\"false\",\
+    \"probemaxtravel\":\"40\",\
+    \"probefeedrate\":\"100\",\
+    \"proberetract\":\"1.0\",\
+    \"probetouchplatethickness\":\"0.5\"\
+    }]";
+const preferences_file_name = "preferences.json";
 
 function initpreferences() {
     displayNone('DHT_pref_panel');
@@ -49,14 +49,14 @@ function initpreferences() {
 }
 
 function getpreferenceslist() {
-    var url = preferences_file_name;
     preferenceslist = [];
     //removeIf(production)
     var response = defaultpreferenceslist;
     processPreferencesGetSuccess(response);
     return;
     //endRemoveIf(production)
-    SendGetHttp(url, processPreferencesGetSuccess, processPreferencesGetFailed);
+    const cmd = buildHttpFileGetCmd(preferences_file_name);
+    SendGetHttp(cmd, processPreferencesGetSuccess, processPreferencesGetFailed);
 }
 
 function prefs_toggledisplay(id_source, forcevalue) {
@@ -622,17 +622,18 @@ function SavePreferences(current_preferences) {
     }
     const blob = new Blob([JSON.stringify(preferenceslist, null, " ")], { type: 'application/json' });
     var file;
+    const prefsFilePath = `/${preferences_file_name}`;
     if (browser_is("IE") || browser_is("Edge")) {
         file = blob;
-        file.name = preferences_file_name;
+        file.name = prefsFilePath;
         file.lastModifiedDate = new Date();
     } else {
-        file = new File([blob], preferences_file_name);
+        file = new File([blob], prefsFilePath);
     }
 
     var formData = new FormData();
     formData.append('path', '/');
-    formData.append('myfile[]', file, preferences_file_name);
+    formData.append('myfile[]', file, prefsFilePath);
     if ((typeof (current_preferences) != 'undefined') && current_preferences) {
         SendFileHttp(httpCmd.files, formData);
     } else {

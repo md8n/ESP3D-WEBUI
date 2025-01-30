@@ -50,7 +50,7 @@ const refreshSettings = (hide_setting_list) => {
 
   // Clear all of the elements in the array
   scl.length = 0;
-  const cmd = buildHttpPlainCmd("[ESP400]");
+  const cmd = buildHttpCommandCmd(httpCmdType.plain, "[ESP400]");
   SendGetHttp(cmd, getESPsettingsSuccess, getESPsettingsfailed);
 };
 
@@ -223,7 +223,7 @@ const build_control_from_pos = (pos, actions, extra) => build_control_from_index
  */
 const saveMaslowYaml = () => {
   console.info(`Calling for a Config Overwrite to save the ${configFileName} file`);
-  const cmd = buildHttpPlainCmd("$CO");
+  const cmd = buildHttpCommandCmd(httpCmdType.plain, "$CO");
   SendGetHttp(cmd, saveConfigSuccess, saveConfigFail);
 }
 
@@ -552,7 +552,7 @@ function settingsetvalue(i, j = 0) {
     setIconHTML(i, j, get_icon_svg("ok"));
     setStatus(i, j, "has-feedback has-success");
 
-    const cmd = buildHttpPlainCmd(`${scl[i].cmd}${value}`);
+    const cmd = buildHttpCommandCmd(httpCmdType.plain, `${scl[i].cmd}${value}`);
     SendGetHttp(cmd, setESPsettingsSuccess, setESPsettingsfailed);
   }
 }

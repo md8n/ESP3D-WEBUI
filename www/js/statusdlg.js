@@ -99,6 +99,6 @@ function refreshstatus() {
 	text.innerHTML = "";
 	displayNone("status_msg");
 
-	const cmd = buildHttpPlainCmd("[ESP420]plain");
+	const cmd = buildHttpCommandCmd(httpCmdType.plain, "[ESP420]plain");
 	SendGetHttp(cmd, statussuccess, statusfailed);
 }

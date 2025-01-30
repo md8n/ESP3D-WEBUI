@@ -303,24 +303,19 @@ function SaveNewMacroList() {
 
 	const blob = new Blob([JSON.stringify(macrodlg_macrolist, null, " ")], { type: "application/json" });
 	let file;
+	const macroFilename = "/macrocfg.json";
 	if (browser_is("IE") || browser_is("Edge")) {
 		file = blob;
-		file.name = "/macrocfg.json";
+		file.name = macroFilename;
 		file.lastModifiedDate = new Date();
 	} else {
-		file = new File([blob], "/macrocfg.json");
+		file = new File([blob], macroFilename);
 	}
 
 	const formData = new FormData();
 	formData.append("path", "/");
-	formData.append("myfile[]", file, "/macrocfg.json");
-	SendFileHttp(
-		httpCmd.files,
-		formData,
-		macrodlgUploadProgressDisplay,
-		macroUploadsuccess,
-		macroUploadfailed,
-	);
+	formData.append("myfile[]", file, macroFilename);
+	SendFileHttp(httpCmd.files, formData, macrodlgUploadProgressDisplay, macroUploadsuccess, macroUploadfailed);
 }
 
 function macrodlgUploadProgressDisplay(oEvent) {
