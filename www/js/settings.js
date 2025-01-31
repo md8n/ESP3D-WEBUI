@@ -230,13 +230,13 @@ const saveMaslowYaml = () => {
 const saveConfigClearMessage = () => setTimeout(() => { setHTML(configSaveResultId, ""); }, 5000)
 
 const saveConfigSuccess = (response) => {
-  setHTML(configSaveResultId, `"Save" ${configFileName} succeeded`);
-  saveConfigClearMessage();
+	setHTML(configSaveResultId, `"Save" ${configFileName} succeeded`);
+	saveConfigClearMessage();
 }
 
 const saveConfigFail = (response) => {
-  setHTML(configSaveResultId, `"Save" ${configFileName} failed`);
-  saveConfigClearMessage();
+	setHTML(configSaveResultId, `"Save" ${configFileName} failed`);
+	saveConfigClearMessage();
 }
 
 /** Build the HTML for the list of settings */

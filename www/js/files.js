@@ -1,6 +1,16 @@
 // import - get_icon_svg, displayBlock, displayInline, displayNone, id, stdErrMsg, setHTML, alertdlg, confirmdlg, inputdlg, SendPrinterCommand, tryAutoReport, SendFileHttp, SendGetHttp, translate_text_item
 
-let files_currentPath = "/";
+let files_current_path = "/";
+/** get/set the current path used for files */
+const files_currentPath = (value) => {
+	if (typeof value === "string") {
+		files_current_path = value;
+	} else if (typeof value !== "string") {
+		files_current_path = "/";
+	}
+	return files_current_path;
+}
+
 let files_filter_sd_list = false;
 let files_file_list = [];
 let files_status_list = [];
@@ -56,48 +66,54 @@ function build_accept(file_filters_list) {
 	console.log(accept_txt);
 }
 
+const filesRefreshCurrent = () => files_refreshFiles(files_currentPath());
+const filesRefreshPrimarySD = () => files_refreshFiles(primary_sd);
+const filesRefreshSecondarySD = () => files_refreshFiles(secondary_sd);
+const filesRefreshPrinterSD = () => {
+	current_source = printer_sd;
+	files_refreshFiles(files_currentPath());
+}
+const filesRefreshTFTSD = () => {
+	current_source = tft_sd;
+	files_refreshFiles(files_currentPath());
+}
+const filesRefreshTFTUSB = () => {
+	current_source = tft_usb;
+	files_refreshFiles(files_currentPath());
+}
+
+/** Set up the event handlers for the files panel */
 function init_files_panel(dorefresh = true) {
 	displayInline("files_refresh_btn");
 	displayNone("files_refresh_primary_sd_btn");
 	displayNone("files_refresh_secondary_sd_btn");
 
-	id("files_createdir_btn").addEventListener("click", (event) => files_Createdir());
-	id("files_filter_btn").addEventListener("click", (event) => files_filter_button());
+	id("files_createdir_btn").addEventListener("click", files_Createdir);
+	id("files_filter_btn").addEventListener("click", files_filter_button);
 
-	id("files_refresh_btn").addEventListener("click", (event) => files_refreshFiles(files_currentPath));
-	id("files_refresh_primary_sd_btn").addEventListener("click", (event) => files_refreshFiles(primary_sd));
-	id("files_refresh_secondary_sd_btn").addEventListener("click", (event) => files_refreshFiles(secondary_sd));
+	id("files_refresh_btn").addEventListener("click", filesRefreshCurrent);
+	id("files_refresh_primary_sd_btn").addEventListener("click", filesRefreshPrimarySD);
+	id("files_refresh_secondary_sd_btn").addEventListener("click", filesRefreshSecondarySD);
 
-	id("files_refresh_printer_sd_btn").addEventListener("click", (event) => {
-		current_source = printer_sd;
-		files_refreshFiles(files_currentPath);
-	});
-	id("files_refresh_tft_sd_btn").addEventListener("click", (event) => {
-		current_source = tft_sd;
-		files_refreshFiles(files_currentPath);
-	});
-	id("files_refresh_tft_usb_btn").addEventListener("click", (event) => {
-		current_source = tft_usb;
-		files_refreshFiles(files_currentPath);
-	});
+	id("files_refresh_printer_sd_btn").addEventListener("click", filesRefreshPrinterSD);
+	id("files_refresh_tft_sd_btn").addEventListener("click", filesRefreshTFTSD);
+	id("files_refresh_tft_usb_btn").addEventListener("click", filesRefreshTFTUSB);
 
 	// TODO: Find out what happened to the `files_progress` method
-	// id('progress_btn').addEventListener('click', (event) => files_progress());
-	id("abort_btn").addEventListener("click", (event) => files_abort());
-	id("print_upload_btn").addEventListener("click", (event) => files_select_upload());
+	// id('progress_btn').addEventListener('click', files_progress);
+	id("abort_btn").addEventListener("click", files_abort);
+	id("print_upload_btn").addEventListener("click", files_select_upload);
 
 	initFilesInputFile();
 
 	files_set_button_as_filter(files_filter_sd_list);
 	if (direct_sd && dorefresh) {
-		files_refreshFiles(files_currentPath);
+		files_refreshFiles(files_currentPath());
 	}
 }
 
 /** Wire up the `files_input_file` handler */
-const initFilesInputFile = () => {
-	id("files_input_file").addEventListener("change", (event) => files_check_if_upload());
-}
+const initFilesInputFile = () => id("files_input_file").addEventListener("change", files_check_if_upload);
 
 const files_set_button_as_filter = (isfilter) => setHTML("files_filter_glyph", get_icon_svg(!isfilter ? "filter" : "list-alt", "1em", "1em"));
 
@@ -182,7 +198,7 @@ function files_build_file_line(index, actions) {
 
 function files_print(index) {
 	const file = files_file_list[index];
-	const path = files_currentPath + file.name;
+	const path = files_currentPath() + file.name;
 	tabletSelectGCodeFile(file.name);
 	tabletLoadGCodeFile(path, file.size);
 	files_print_filename(path);
@@ -205,12 +221,14 @@ function process_files_Createdir(answer) {
 }
 
 function files_create_dir(name) {
-	if (direct_sd) {
-		displayBlock("files_nav_loader");
-
-		const cmd = buildHttpFileCmd({ action: "createdir", filename: name });
-		SendGetHttp(cmd, files_list_success, files_list_failed);
+	if (!direct_sd) {
+		return;
 	}
+
+	displayBlock("files_nav_loader");
+
+	const cmd = buildHttpFileCmd({ action: "createdir", filename: name });
+	SendGetHttp(cmd, files_list_success, files_list_failed);
 }
 
 function files_delete(index) {
@@ -245,7 +263,7 @@ function files_delete_file(index) {
 
 const files_is_clickable = (index) => files_file_list[index].isdir ? true : direct_sd;
 
-const files_enter_dir = (name) => files_refreshFiles(`${files_currentPath + name}/`, true);
+const files_enter_dir = (name) => files_refreshFiles(`${files_currentPath()}${name}/`, true);
 
 let old_file_name;
 function files_rename(index) {
@@ -318,9 +336,9 @@ function files_showdeletebutton(index) {
 function files_refreshFiles(path, usecache) {
 	//console.log("refresh requested " + path);
 	const cmdpath = path;
-	files_currentPath = path;
+	files_currentPath(path);
 	if (current_source !== last_source) {
-		files_currentPath = "/";
+		files_currentPath("/");
 		path = "/";
 		last_source = current_source;
 	}
@@ -332,7 +350,7 @@ function files_refreshFiles(path, usecache) {
 	if (typeof usecache === "undefined") {
 		usecache = false;
 	}
-	setHTML("files_currentPath", files_currentPath);
+	setHTML("files_currentPath", files_currentPath());
 	files_file_list = [];
 	files_status_list = [];
 	files_build_display_filelist(false);
@@ -480,10 +498,10 @@ function files_directSD_upload_failed(error_code, response) {
 	displayBlock("files_navigation_buttons");
 }
 
-const need_up_level = () => files_currentPath !== "/";
+const need_up_level = () => files_currentPath() !== "/";
 
 function files_go_levelup() {
-	const tlist = files_currentPath.split("/");
+	const tlist = files_currentPath().split("/");
 	let path = "/";
 	let nb = 1;
 	while (nb < tlist.length - 2) {
@@ -494,7 +512,7 @@ function files_go_levelup() {
 }
 
 function files_build_display_filelist(displaylist = true) {
-	populateTabletFileSelector(files_file_list, files_currentPath);
+	populateTabletFileSelector(files_file_list, files_currentPath());
 
 	displayNone("files_uploading_msg");
 	displayNone("files_list_loader");
@@ -541,7 +559,7 @@ function files_build_display_filelist(displaylist = true) {
 	if (files_status_list.length === 0 && files_error_status !== "") {
 		files_status_list.push({
 			status: files_error_status,
-			path: files_currentPath,
+			path: files_currentPath(),
 			used: "-1",
 			total: "-1",
 			occupation: "-1",

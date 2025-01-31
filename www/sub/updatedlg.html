@@ -5,16 +5,16 @@
         <div class="modal-header">
             <span id="updateDlgCancel" class="close"><b>&times;</b></span>
             <h3>
-                <div class="modal-title" id="fw_update_dlg_title" translate>FluidNC Firmware Update</div>
+                <div id="fw_update_dlg_title" class="modal-title" translate>FluidNC Firmware Update</div>
             </h3>
         </div>
         <div class="modal-body">
             <table>
                 <tr>
                     <td>
-                        <input id="fw-select" type="file" style='display:none' name="myfiles[]"
+                        <input id="fw_select" type="file" style='display:none' name="myfiles[]"
                             accept=".bin, .bin.gz" />
-                        <table id="fw-select_form">
+                        <table id="fw_select_form">
                             <tr>
                                 <td>
                                     <button id="fw_select_files" class="btn btn-info" type="button" translate>Select
@@ -29,10 +29,10 @@
 
                     <td>&nbsp;</td>
                     <td>
-                        <button id="uploadfw-button" class="btn btn-primary" style='display:none;'
+                        <button id="uploadfw_button" class="btn btn-primary" style='display:none;'
                             translate>Update</button>
                     </td>
-                    <td><progress style='display:none;' name='prgfw' id='prgfw' max='100'></progress></td>
+                    <td><progress id='prgfw' name='prgfw' style='display:none;' max='100'></progress></td>
                     <td>&nbsp;</td>
                     <td>
                         <span id='updatemsg' style='display:none;' translate>Restarting, please wait....</span>

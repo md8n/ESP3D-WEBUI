@@ -2,17 +2,20 @@
 
 let statuspage = 0;
 let statuscontent = "";
-//status dialog
+
+const statusDlgCancel = () => closeModal("cancel");
+
+/** status dialog */
 const statusdlg = () => {
 	const modal = setactiveModal("statusdlg.html");
 	if (modal == null) {
 		return;
 	}
 
-	id("status_dlg_close").addEventListener("click", (event) => closeModal("cancel"));
-	id("next_status_btn").addEventListener("click", (event) => next_status());
-	id("status_dlg_btn_close").addEventListener("click", (event) => closeModal("cancel"));
-	id("status_dlg_refreshstatus").addEventListener("click", (event) => refreshstatus());
+	id("status_dlg_close").addEventListener("click", statusDlgCancel);
+	id("next_status_btn").addEventListener("click", next_status);
+	id("status_dlg_btn_close").addEventListener("click", statusDlgCancel);
+	id("status_dlg_refreshstatus").addEventListener("click", refreshstatus);
 
 	showModal();
 	refreshstatus();

@@ -694,6 +694,11 @@ function tabletGetFileList(path) {
   SendGetHttp(cmd, files_list_success);
 }
 
+const tabletTabActivate = () =>{
+  fullscreenIfMobile();
+  setBottomHeight();
+};
+
 function tabletInit() {
   // put in a timeout to allow things to settle. when they were here at startup ui froze from time to time.
   setTimeout(() => {
@@ -713,10 +718,7 @@ function tabletInit() {
     setJogSelector('mm');
     loadJogDists();
 
-    id("tablettablink").addEventListener("DOMActivate", () => {
-      fullscreenIfMobile();
-      setBottomHeight();
-    }, false);
+    id("tablettablink").addEventListener("DOMActivate", tabletTabActivate, false);
   }, 1000);
 }
 
@@ -1119,15 +1121,17 @@ function homeZ() {
   }, 26000)
 }
 
-document.addEventListener('click', (event) => {
+const tabletDocumentClick = (event) => {
   if (
     !document.getElementById('calibration-popup').contains(event.target) &&
     !document.getElementById('calibrationBTN').contains(event.target) &&
     !document.getElementById('numPad').contains(event.target)
   ) {
-    document.getElementById('calibration-popup').style.display = 'none'
+    document.getElementById('calibration-popup').style.display = 'none';
   }
-})
+};
+
+document.addEventListener('click', tabletDocumentClick);
 
 /* Calibration modal */
 
