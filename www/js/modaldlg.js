@@ -1,4 +1,4 @@
-import { id, displayBlock } from "./common.js";
+import { id } from "./common.js";
 
 /** A list of currently opened modals */
 const listmodal = [];

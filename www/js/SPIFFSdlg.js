@@ -14,6 +14,8 @@ import {
 	alertdlg,
 	confirmdlg,
 	inputdlg,
+	httpCmd,
+	buildHttpFilesCmd,
 	SendFileHttp,
 	SendGetHttp,
 	trans_text_item,
@@ -22,23 +24,29 @@ import {
 
 //SPIFFS dialog
 
+let SPIFFS_currentpath = "/";
 let SPIFFS_currentfile = "";
 let SPIFFS_upload_ongoing = false;
 
+const SPIFSSDialogClose = () => closeSPIFFSDialog("cancel");
+const SPIFFSSelectClick = () => document.getElementById("SPIFFS_select").click();
+const SPIFFSSelectFilesClick = () => document.getElementById("SPIFFS_select_files").click();
+
+/** SPIFFS dialog */
 const SPIFFSdlg = (root) => {
 	const modal = setactiveModal("SPIFFSdlg.html");
 	if (modal == null) {
 		return;
 	}
 
-	id("SPIFFS_span_close").addEventListener("click", (event) => closeSPIFFSDialog("cancel"));
-	id("SPIFFS-select").addEventListener("change", (event) => checkSPIFFSfiles());
-	id("SPIFFS_select_files").addEventListener("click", (event) => document.getElementById("SPIFFS-select").click());
-	id("SPIFFS_file_name").addEventListener("mouseup", (event) => document.getElementById("SPIFFS_select_files").click());
-	id("SPIFFS_uploadbtn").addEventListener("click", (event) => SPIFFS_UploadFile());
-	id("SPIFFS_create_dir_btn").addEventListener("click", (event) => SPIFFS_Createdir());
-	id("SPIFFS_btn_close").addEventListener("click", (event) => closeSPIFFSDialog("cancel"));
-	id("refreshSPIFFSbtn").addEventListener("click", (event) => refreshSPIFFS());
+	id("SPIFFS_span_close").addEventListener("click", SPIFSSDialogClose);
+	id("SPIFFS_select").addEventListener("change", checkSPIFFSfiles);
+	id("SPIFFS_select_files").addEventListener("click", SPIFFSSelectClick);
+	id("SPIFFS_file_name").addEventListener("mouseup", SPIFFSSelectFilesClick);
+	id("SPIFFS_uploadbtn").addEventListener("click", SPIFFS_UploadFile);
+	id("SPIFFS_create_dir_btn").addEventListener("click", SPIFFS_Createdir);
+	id("SPIFFS_btn_close").addEventListener("click", SPIFSSDialogClose);
+	id("refreshSPIFFSbtn").addEventListener("click", refreshSPIFFS);
 
 	const iconOptions = {t: "translate(50,1200) scale(1,-1)"};
 	setHTML("SPIFFS_uploadbtn", get_icon_svg("upload", iconOptions));
@@ -67,8 +75,9 @@ const buildTable = (content) => `<table>${content}</table>`;
 const buildTr = (content) => `<tr>${content}</tr>`;
 
 function SPIFFSselect_dir(directoryname) {
+	const needTraillingSlash = directoryname.endsWith("/") ? "" : "/";
 	const common = new Common();
-	common.SPIFFS_currentpath = directoryname + directoryname.endsWith("/") ? "" : "/";
+	common.SPIFFS_currentpath = directoryname + needTraillingSlash;
 	SPIFFSSendCommand("list", "all");
 }
 
@@ -157,16 +166,16 @@ function processSPIFFSRename(new_file_name) {
 		return;
 	}
 	const common = new Common();
-	const cmd = [`/files?action=rename&path=${encodeURIComponent(common.SPIFFS_currentpath)}`];
-	cmd.push(`&filename=${encodeURIComponent(old_file_name)}`);
-	cmd.push(`&newname=${encodeURIComponent(new_file_name)}`);
-	SendGetHttp(cmd.join(), SPIFFSsuccess, SPIFFSfailed);
+
+	const cmd = buildHttpFilesCmd({ action: "rename", path: common.SPIFFS_currentpath, filename: old_file_name, newname: new_file_name });
+	SendGetHttp(cmd, SPIFFSsuccess, SPIFFSfailed);
 }
 
 function SPIFFSSendCommand(action, filename) {
 	const common = new Common();
+
 	id("SPIFFS_loader").style.visibility = "visible";
-	const cmd = `/files?action=${action}&filename=${encodeURI(filename)}&path=${encodeURI(common.SPIFFS_currentpath)}`;
+	const cmd = buildHttpFilesCmd({ action: action, path: common.SPIFFS_currentpath, filename: filename });
 	console.log(cmd);
 	SendGetHttp(cmd, SPIFFSsuccess, SPIFFSfailed);
 }
@@ -209,7 +218,7 @@ const buildSPIFFSTotalBar = (jsonresponse) => {
 };
 
 const upDirAndRelist = (previouspath) => {
-	SPIFFS_currentpath(previouspath);
+	SPIFFS_currentpath = previouspath;
 	SPIFFSSendCommand("list", "all");
 };
 
@@ -285,7 +294,7 @@ function SPIFFSdispatchfilestatus(jsonresponse) {
 }
 
 function refreshSPIFFS() {
-	setValue("SPIFFS-select", "");
+	setValue("SPIFFS_select", "");
 	setHTML("uploadSPIFFSmsg", "");
 	setHTML("SPIFFS_file_name", trans_text_item("No file chosen"));
 	displayNone(["SPIFFS_uploadbtn", "refreshSPIFFSbtn", "SPIFFS_select_files"]);
@@ -293,7 +302,7 @@ function refreshSPIFFS() {
 }
 
 function checkSPIFFSfiles() {
-	const files = id("SPIFFS-select").files;
+	const files = id("SPIFFS_select").files;
 	displayNone("uploadSPIFFSmsg");
 	// No need to display the upload button because we will click it automatically
 	// displayFiles('SPIFFS_uploadbtn');
@@ -315,9 +324,8 @@ function SPIFFS_UploadFile() {
 	if (CheckForHttpCommLock()) {
 		return;
 	}
-	const files = id("SPIFFS-select").files;
+	const files = id("SPIFFS_select").files;
 	const formData = new FormData();
-	const cmd = "/files";
 	formData.append("path", common.SPIFFS_currentpath);
 	for (let i = 0; i < files.length; i++) {
 		const file = files[i];
@@ -330,8 +338,8 @@ function SPIFFS_UploadFile() {
 	SPIFFS_upload_ongoing = true;
 	displayBlock(["uploadSPIFFSmsg", "SPIFFS_prg"]);
 	SPIFFS_currentfile = (files.length === 1) ? files[0].name : "";
-	setHTML("uploadSPIFFSmsg", `${trans_text_item("Uploading")} ${SPIFFS_currentfile}`);
-	SendFileHttp(cmd, formData, SPIFFSUploadsuccess, SPIFFSUploadfailed);
+	setHTML("uploadSPIFFSmsg", `${trans_text_item("Uploading")} ${common.SPIFFS_currentfile}`);
+	SendFileHttp(httpCmd.files, formData, SPIFFSUploadsuccess, SPIFFSUploadfailed);
 }
 
 function SPIFFSUploadsuccess(response) {

@@ -63,7 +63,7 @@ const update_UI_firmware_target = () => {
 	// setHTML("tab_printer_configuration", "<span translate>GRBL</span>");
 	const fif = id("files_input_file");
 	if (fif) {
-		fif.accept = " .g, .gco, .gcode, .txt, .ncc, .G, .GCO, .GCODE, .TXT, .NC";
+		fif.accept = ".g,.gco,.gcode,.txt,.nc,.G,.GCO,.GCODE,.TXT,.NC";
 	}
 	displayInitial("zero_xyz_btn");
 	displayInitial("zero_x_btn");

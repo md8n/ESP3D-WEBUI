@@ -1,35 +1,39 @@
 import { Common, alertdlg, setHTML, trans_text_item, logindlg, pageID } from "./common.js";
 
-let http_cmd_list = [];
+const cmd_list = [];
 let processing_cmd = false;
-
 const max_cmd = 100;
 
 const clear_cmd_list = () => {
-	http_cmd_list = [];
-	processing_cmd = false;
-};
+    // Wipe the command list
+    cmd_list.length = 0;
+    processing_cmd = false;
+}
 
 const cleanFunc = (command, funcName, defFn) => {
 	return typeof command !== "undefined" && typeof command[funcName] === "function"
 	? command[funcName]
-	: http_cmd_list.length > 0 && typeof http_cmd_list[0][funcName] === "function"
-		? http_cmd_list[0][funcName]
+	: cmd_list.length > 0 && typeof cmd_list[0][funcName] === "function"
+		? cmd_list[0][funcName]
 		: defFn;
 }
 
+/** Standard actions to take after completing processing a command's reply */
+const postProcessCmd = () => {
+    cmd_list.shift();
+    processing_cmd = false;
+    process_cmd();
+}
+
+/** A default function for a successful result */
 function http_resultfn(response_text) {
 	console.info(`Success: ${response_text}`);;
 }
 
 function http_handleSuccess(command, response_text) {
 	const resultfn = cleanFunc(command, "resultfn", http_resultfn);
-
 	resultfn(response_text);
-
-	http_cmd_list.shift();
-	processing_cmd = false;
-	process_cmd();
+    postProcessCmd();
 }
 
 const authErrorFound = (error_code, response_text) => {
@@ -41,7 +45,7 @@ const authErrorFound = (error_code, response_text) => {
 	return false;
 }
 
-/** A default error function */
+/** A default function for aa  error result */
 function http_errorfn(error_code, response_text) {
 	console.error(`${error_code}:${response_text}`);
 }
@@ -54,37 +58,39 @@ function http_handleError(command, error_code, response_text) {
 		errorfn(error_code, response_text);
 	}
 
-	http_cmd_list.shift();
-	processing_cmd = false;
-	process_cmd();
+    postProcessCmd();
 }
 
 function process_cmd() {
-	if (!http_cmd_list.length || processing_cmd) {
-		// if (processing_cmd) { 
-		//     console.log("Currently processing a command");
-		// }
-		return;
-	}
+    if (!cmd_list.length) {
+        // No commands to process
+        return;
+    }
 
-	const command = http_cmd_list[0];
-	const cmdType = command.type;
-	if (!["GET", "POST", "CMD"].includes(cmdType)) {
-		console.error(`Unknown command type ${cmdType} for command ${command.cmd}`);
-		// This should never be true, but just in case we'll deliberately set it to false
-		processing_cmd = false;
-		return;
-	}
+    if (processing_cmd) {
+        // if (processing_cmd) { 
+        //     console.log("Currently processing a command");
+        // }
+        return;
+    }
 
-	processing_cmd = true;
-	if (cmdType === "CMD") {
-		// Note: NOT an actual http command, just something else to be done
-		const fn = command.fn;
-		fn();
-		http_cmd_list.shift();
-		processing_cmd = false;
-		process_cmd();
-	} else {
+    const command = cmd_list[0];
+    const cmdType = command.type;
+    if (!["GET", "POST", "CMD"].includes(cmdType)) {
+        // This should never be true, but just in case we will handle it
+        console.error(`Unknown command type ${cmdType} for command ${command.cmd}`);
+        postProcessCmd();
+        return;
+    }
+
+    processing_cmd = true;
+    if (cmdType === "CMD") {
+        // Note: NOT an actual http command, just something else to be done
+        const fn = command.fn;
+        fn();
+        postProcessCmd();
+        return;
+    } else {
 		ProcessHttpCommand(command);
 	}
 }
@@ -136,12 +142,12 @@ const buildPostFileCmd = (cmd, postdata, result_fn, error_fn) => {
 }
 
 const checkForMaxListSize = (desc) => {
-	if (http_cmd_list.length <= max_cmd) {
+	if (cmd_list.length <= max_cmd) {
 		return true;
 	}
 
 	http_errorfn(999, trans_text_item("Server not responding"));
-	console.error(`${desc} could not be added to the http_cmd_list. Maximum pending commands length has been exceeded.`);
+	console.error(`${desc} could not be added to the cmd_list. Maximum pending commands length has been exceeded.`);
 
 	console.info("Will attempt to continue processes commands");
 	process_cmd();
@@ -149,7 +155,7 @@ const checkForMaxListSize = (desc) => {
 	return false;
 }
 
-/** Add some arbitrary command to the http_cmd_list.
+/** Add some arbitrary command to the cmd_list.
  * Note: This is assumed to NOT be an actual HTTP command
  */
 const AddCmd = (fn, id) => {
@@ -157,7 +163,7 @@ const AddCmd = (fn, id) => {
 		return;
 	}
 
-	http_cmd_list.push(buildCmdCmd(fn, id));
+	cmd_list.push(buildCmdCmd(fn, id));
 	process_cmd();
 }
 
@@ -201,8 +207,8 @@ const SendGetHttp = (cmd, result_fn, error_fn, id, max_id) => {
 	// Some commands have a limit to how many times they are allowed in the queue
 	if (typeof id !== "undefined") {
 		let cmd_max_id = (typeof max_id !== "undefined") ? max_id : 1;
-		for (let p = 0; p < http_cmd_list.length; p++) {
-			if (http_cmd_list[p].id === cmd_id) {
+		for (let p = 0; p < cmd_list.length; p++) {
+			if (cmd_list[p].id === cmd_id) {
 				cmd_max_id--;
 			}
 			if (cmd_max_id <= 0) {
@@ -214,7 +220,7 @@ const SendGetHttp = (cmd, result_fn, error_fn, id, max_id) => {
 		}
 	}
 
-	http_cmd_list.push(buildGetCmd(cmd, cmd_id, result_fn, error_fn));
+	cmd_list.push(buildGetCmd(cmd, cmd_id, result_fn, error_fn));
 	process_cmd();
 };
 
@@ -223,12 +229,12 @@ function SendFileHttp(cmd, postdata, result_fn, error_fn) {
 		return;
 	}
 
-	if (http_cmd_list.length !== 0) {
+	if (cmd_list.length !== 0) {
 		// TODO: figure out what, if anything this did
 		// biome-ignore lint/suspicious/noGlobalAssign: <explanation>
 		process = false;
 	}
-	http_cmd_list.push(buildPostFileCmd(cmd, postdata, result_fn, error_fn));
+	cmd_list.push(buildPostFileCmd(cmd, postdata, result_fn, error_fn));
 	process_cmd();
 }
 

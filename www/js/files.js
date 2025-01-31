@@ -13,6 +13,8 @@ import {
 	inputdlg,
 	SendPrinterCommand,
 	tryAutoReport,
+	httpCmd,
+	buildHttpFileCmd,
 	SendFileHttp,
 	SendGetHttp,
 	showGCode,
@@ -26,13 +28,15 @@ let files_current_path = "/";
 const files_currentPath = (value) => {
 	if (typeof value === "string") {
 		files_current_path = value;
+	} else if (typeof value !== "string") {
+		files_current_path = "/";
 	}
 	return files_current_path;
 }
 
 let files_filter_sd_list = false;
-let files_file_list = [];
-let files_status_list = [];
+const files_file_list = [];
+const files_status_list = [];
 let files_current_file_index = -1;
 let files_error_status = "";
 let tfiles_filters;
@@ -49,13 +53,14 @@ function build_file_filter_list(filters_list) {
 
 function update_files_list() {
 	//console.log("Updating list");
-	if (files_file_list.length === 0) {
+	if (!files_file_list.length) {
 		return;
 	}
 	for (let i = 0; i < files_file_list.length; i++) {
-		const isdirectory = files_file_list[i].isdir;
-		const file_name = files_file_list[i].name;
-		files_file_list[i].isprintable = files_isgcode(file_name, isdirectory);
+		const fFile = files_file_list[i];
+		const isdirectory = fFile.isdir;
+		const file_name = fFile.name;
+		fFile.isprintable = files_isgcode(file_name, isdirectory);
 	}
 	files_build_display_filelist();
 }
@@ -67,7 +72,9 @@ function build_accept(file_filters_list) {
 		for (let i = 0; i < tfiles_filters.length; i++) {
 			const v = tfiles_filters[i].trim();
 			if (v.length > 0) {
-				if (accept_txt.length > 0) accept_txt += ", ";
+				if (accept_txt.length > 0) {
+					accept_txt += ", ";
+				}
 				accept_txt += `.${v}`;
 			}
 		}
@@ -83,36 +90,49 @@ function build_accept(file_filters_list) {
 	console.log(accept_txt);
 }
 
+const filesRefreshCurrent = () => files_refreshFiles(files_currentPath());
+const filesRefreshPrimarySD = () => {
+	const common = new Common();
+	files_refreshFiles(common.fwData.primary_sd);
+}
+const filesRefreshSecondarySD = () => {
+	const common = new Common();
+	files_refreshFiles(common.fwData.secondary_sd);
+}
+const filesRefreshPrinterSD = () => {
+	current_source = printer_sd;
+	files_refreshFiles(files_currentPath());
+}
+const filesRefreshTFTSD = () => {
+	current_source = tft_sd;
+	files_refreshFiles(files_currentPath());
+}
+const filesRefreshTFTUSB = () => {
+	current_source = tft_usb;
+	files_refreshFiles(files_currentPath());
+}
+
 /** Set up the event handlers for the files panel */
 function init_files_panel(dorefresh = true) {
 	const common = new Common();
 	displayInline("files_refresh_btn");
 	displayNone(["files_refresh_primary_sd_btn", "files_refresh_secondary_sd_btn"]);
 
-	id("files_createdir_btn").addEventListener("click", (event) => files_Createdir());
-	id("files_filter_btn").addEventListener("click", (event) => files_filter_button());
+	id("files_createdir_btn").addEventListener("click", files_Createdir);
+	id("files_filter_btn").addEventListener("click", files_filter_button);
 
-	id("files_refresh_btn").addEventListener("click", (event) => files_refreshFiles(files_currentPath));
-	id("files_refresh_primary_sd_btn").addEventListener("click", (event) => files_refreshFiles(common.fwData.primary_sd));
-	id("files_refresh_secondary_sd_btn").addEventListener("click", (event) => files_refreshFiles(common.fwData.secondary_sd));
+	id("files_refresh_btn").addEventListener("click", filesRefreshCurrent);
+	id("files_refresh_primary_sd_btn").addEventListener("click", filesRefreshPrimarySD);
+	id("files_refresh_secondary_sd_btn").addEventListener("click", filesRefreshSecondarySD);
 
-	id("files_refresh_printer_sd_btn").addEventListener("click", (event) => {
-		current_source = printer_sd;
-		files_refreshFiles(files_currentPath);
-	});
-	id("files_refresh_tft_sd_btn").addEventListener("click", (event) => {
-		current_source = tft_sd;
-		files_refreshFiles(files_currentPath);
-	});
-	id("files_refresh_tft_usb_btn").addEventListener("click", (event) => {
-		current_source = tft_usb;
-		files_refreshFiles(files_currentPath);
-	});
+	id("files_refresh_printer_sd_btn").addEventListener("click", filesRefreshPrinterSD);
+	id("files_refresh_tft_sd_btn").addEventListener("click", filesRefreshTFTSD);
+	id("files_refresh_tft_usb_btn").addEventListener("click", filesRefreshTFTUSB);
 
 	// TODO: Find out what happened to the `files_progress` method
-	// id('progress_btn').addEventListener('click', (event) => files_progress());
-	id("abort_btn").addEventListener("click", (event) => files_abort());
-	id("print_upload_btn").addEventListener("click", (event) => files_select_upload());
+	// id('progress_btn').addEventListener('click', files_progress);
+	id("abort_btn").addEventListener("click", files_abort);
+	id("print_upload_btn").addEventListener("click", files_select_upload);
 
 	initFilesInputFile();
 
@@ -126,9 +146,7 @@ function init_files_panel(dorefresh = true) {
 }
 
 /** Wire up the `files_input_file` handler */
-const initFilesInputFile = () => {
-	id("files_input_file").addEventListener("change", (event) => files_check_if_upload());
-}
+const initFilesInputFile = () => id("files_input_file").addEventListener("change", files_check_if_upload);
 
 const files_set_button_as_filter = (isfilter) => setHTML("files_filter_glyph", get_icon_svg(!isfilter ? "filter" : "list-alt", { w: "1em", h: "1em" }));
 
@@ -249,9 +267,9 @@ function files_create_dir(name) {
 		return;
 	}
 
-	const cmdpath = files_currentPath();
-	const cmd = `/upload?path=${encodeURIComponent(cmdpath)}&action=createdir&filename=${encodeURIComponent(name)}`;
 	displayBlock("files_nav_loader");
+
+	const cmd = buildHttpFileCmd({ action: "createdir", filename: name });
 	SendGetHttp(cmd, files_list_success, files_list_failed);
 }
 
@@ -273,15 +291,17 @@ function process_files_Delete(answer) {
 
 function files_delete_file(index) {
 	const common = new Common();
-	files_error_status = `Delete ${files_file_list[index].name}`;
-	if (!common.fwData.direct_sd) {
+	if (!common.fwData.direct_sd || (files_file_list.length - 1) < index) {
 		return;
 	}
-	const cmdpath = `path=${encodeURIComponent(files_currentPath())}`;
-	const action = `action=${files_file_list[index].isdir ? "deletedir" : "delete"}`;
-	const filename = `filename=${encodeURIComponent(files_file_list[index].sdname)}`;
-	const cmd = `/upload?${cmdpath}&${action}&${filename}`;
+
+	const fFile = files_file_list[index];
+	files_error_status = `Delete ${fFile.name}`;
+
 	displayBlock("files_nav_loader");
+
+	const action = fFile.isdir ? "deletedir" : "delete";
+	const cmd = buildHttpFileCmd({ action: action, filename: fFile.sdname });
 	SendGetHttp(cmd, files_list_success, files_list_failed);
 }
 
@@ -290,7 +310,7 @@ const files_is_clickable = (index) => {
 	files_file_list[index].isdir ? true : common.fwData.direct_sd;
 }
 
-const files_enter_dir = (name) => files_refreshFiles(`${files_currentPath() + name}/`, true);
+const files_enter_dir = (name) => files_refreshFiles(`${files_currentPath()}${name}/`, true);
 
 let old_file_name;
 function files_rename(index) {
@@ -305,19 +325,16 @@ function process_files_rename(new_file_name) {
 	}
 	files_error_status = `Rename ${old_file_name}`;
 
-	const cmdpath = `path=${encodeURIComponent((files_currentPath()))}`;
-	const action = "action=rename";
-	const filename = `filename=${encodeURIComponent(old_file_name)}`;
-	const newname = `newname=${encodeURIComponent(new_file_name)}`;
-	const cmd = `/upload?${cmdpath}&${action}&${filename}&${newname}`;
 	displayBlock("files_nav_loader");
+
+	const cmd = buildHttpFileCmd({ action: "rename", filename: old_file_name, newname: new_file_name });
 	SendGetHttp(cmd, files_list_success, files_list_failed);
 }
+
+const buildFileHref = (index) => encodeURIComponent(`SD/${files_currentPath}${files_file_list[index].sdname}`.replace("//", "/"));
 function files_download(index) {
-	const entry = files_file_list[index];
 	//console.log("file on direct SD");
-	const url = `SD/${files_currentPath()}${entry.sdname}`;
-	window.location.href = encodeURIComponent(url.replace("//", "/"));
+	window.location.href = buildFileHref(index);
 }
 function files_click_file(index) {
 	const entry = files_file_list[index];
@@ -329,8 +346,7 @@ function files_click_file(index) {
 	// if (false && common.fwData.direct_sd) {
 	// 	// Don't download on click; use the button
 	// 	//console.log("file on direct SD");
-	// 	const url = `SD/${files_currentPath()}${entry.sdname}`;
-	// 	window.location.href = encodeURIComponent(url.replace("//", "/"));
+	// 	window.location.href = buildFileHref(index);
 	// 	return;
 	// }
 }
@@ -382,13 +398,13 @@ function files_refreshFiles(path, usecache = false) {
 		displayBlock("print_upload_btn");
 	}
 	setHTML("filesCurrentPath", files_currentPath());
-	files_file_list = [];
-	files_status_list = [];
+	files_file_list.length = 0;
+	files_status_list.length = 0;
 	files_build_display_filelist(false);
 	displayBlock(["files_list_loader", "files_nav_loader"]);
 	//this is pure direct SD
 	if (common.fwData.direct_sd) {
-		const cmd = `/upload?path=${encodeURI(cmdpath)}`;
+		const cmd = buildHttpFileCmd({ path: cmdpath });
 		SendGetHttp(cmd, files_list_success, files_list_failed);
 	}
 }
@@ -455,7 +471,7 @@ const files_list_success = (response_text) => {
 		if (response_text.length) {
 			response = JSON.parse(response_text);
 		} else {
-			response = {files: []}
+			response = { files: [] }
 		}
 	} catch (e) {
 		console.error(`Parsing error: ${e}\n${response_text}`);
@@ -466,7 +482,7 @@ const files_list_success = (response_text) => {
 		return;
 	}
 	populateTabletFileSelector(response);
-	files_file_list = [];
+	files_file_list.length = 0;
 	if (Array.isArray(response.files)) {
 		for (let i = 0; i < response.files.length; i++) {
 			const file = response.files[i];
@@ -495,7 +511,7 @@ const files_list_success = (response_text) => {
 	if (typeof response.occupation !== "undefined") {
 		voccupation = response.occupation;
 	}
-	files_status_list = [];
+	files_status_list.length = 0;
 	files_status_list.push({
 		status: trans_text_item(response.status),
 		path: response.path,
@@ -594,7 +610,7 @@ function files_build_display_filelist(displaylist = true) {
 		displayBlock("files_fileList");
 	}
 
-	if (files_status_list.length === 0 && files_error_status !== "") {
+	if (!files_status_list.length && files_error_status !== "") {
 		files_status_list.push({
 			status: files_error_status,
 			path: files_currentPath(),
@@ -604,25 +620,22 @@ function files_build_display_filelist(displaylist = true) {
 		});
 	}
 	if (files_status_list.length > 0) {
-		if (files_status_list[0].total !== "-1") {
-			setHTML("files_sd_status_total", files_status_list[0].total);
-			setHTML("files_sd_status_used", files_status_list[0].used);
-			id("files_sd_status_occupation").value = files_status_list[0].occupation;
-			setHTML("files_sd_status_percent", files_status_list[0].occupation);
+		const fStatus = files_status_list[0];
+		if (fStatus.total !== "-1") {
+			setHTML("files_sd_status_total", fStatus.total);
+			setHTML("files_sd_status_used", fStatus.used);
+			id("files_sd_status_occupation").value = fStatus.occupation;
+			setHTML("files_sd_status_percent", fStatus.occupation);
 			displayTable("files_space_sd_status");
 		} else {
 			displayNone("files_space_sd_status");
 		}
-		if (
-			files_error_status !== "" &&
-			(files_status_list[0].status.toLowerCase() === "ok" ||
-				files_status_list[0].status.length === 0)
-		) {
-			files_status_list[0].status = files_error_status;
+		if (files_error_status !== "" && (fStatus.status.toLowerCase() === "ok" || fStatus.status.length === 0)) {
+			fStatus.status = files_error_status;
 		}
 		files_error_status = "";
-		if (files_status_list[0].status.toLowerCase() !== "ok") {
-			setHTML("files_sd_status_msg", trans_text_item(files_status_list[0].status, true));
+		if (fStatus.status.toLowerCase() !== "ok") {
+			setHTML("files_sd_status_msg", trans_text_item(fStatus.status, true));
 			displayTable("files_status_sd_status");
 		} else {
 			displayNone("files_status_sd_status");
@@ -705,10 +718,7 @@ function files_start_upload() {
 	displayBlock("files_uploading_msg");
 	displayNone("files_navigation_buttons");
 
-	const cmd = "/upload";
-	SendFileHttp(cmd, formData, files_list_success, files_directSD_upload_failed);
-	// SendFileHttp(cmd, formData, FilesUploadProgressDisplay, files_list_success, files_directSD_upload_failed);
-	//console.log("send file");
+	SendFileHttp(httpCmd.fileUpload, formData, files_list_success, files_directSD_upload_failed);
 
 	setValue("files_input_file", "");
 }

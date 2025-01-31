@@ -4,6 +4,8 @@ import {
 	getChecked,
 	id,
 	HTMLDecode,
+	httpCmdType,
+	buildHttpCommandCmd,
 	SendGetHttp,
 	trans_text_item,
 	process_socket_response,
@@ -18,11 +20,11 @@ let Monitor_output = [];
 
 /** Set up the event handlers for the commands panel */
 const init_command_panel = () => {
-	id("clear_monitor_btn").addEventListener("click", (event) => Monitor_output_Clear());
-	id("custom_cmd_txt").addEventListener("keyup", (event) => CustomCommand_OnKeyUp(event));
-	id("commandspanel_send").addEventListener("click", (event) => SendCustomCommand());
-	id("monitor_enable_autoscroll").addEventListener("click", (event) => Monitor_check_autoscroll());
-	id("monitor_enable_verbose_mode").addEventListener("click", (event) => Monitor_check_verbose_mode());
+	id("clear_monitor_btn").addEventListener("click", Monitor_output_Clear);
+	id("custom_cmd_txt").addEventListener("keyup", CustomCommand_OnKeyUp);
+	id("commandspanel_send").addEventListener("click", SendCustomCommand);
+	id("monitor_enable_autoscroll").addEventListener("click", Monitor_check_autoscroll);
+	id("monitor_enable_verbose_mode").addEventListener("click", Monitor_check_verbose_mode);
 };
 
 function Monitor_output_autoscrollcmd() {
@@ -103,20 +105,18 @@ const Monitor_output_Update = (message) => {
 };
 
 function SendCustomCommand() {
-	const cmd = (getValue("custom_cmd_txt") || "").trim();
-	if (!cmd) {
+		const custCmd = (getValue("custom_cmd_txt") || "").trim();
+	if (!custCmd) {
 		return;
 	}
-	CustomCommand_history.push(cmd);
+	CustomCommand_history.push(custCmd);
 	CustomCommand_history.slice(-40);
 	CustomCommand_history_index = CustomCommand_history.length;
 	setValue("custom_cmd_txt", "");
-	Monitor_output_Update(`${cmd}\n`);
+	Monitor_output_Update(`${custCmd}\n`);
 
-	// replace needed because # is not encoded
-	const fullCmd = `/command?commandText=${encodeURI(cmd).replace("#", "%23")}`;
-
-	SendGetHttp(fullCmd, SendCustomCommandSuccess, SendCustomCommandFailed);
+	const cmd = buildHttpCommandCmd(httpCmdType.commandText, custCmd);
+	SendGetHttp(cmd, SendCustomCommandSuccess, SendCustomCommandFailed);
 }
 
 function CustomCommand_OnKeyUp(event) {

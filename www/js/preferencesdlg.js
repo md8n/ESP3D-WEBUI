@@ -12,8 +12,6 @@ import {
     getValue,
     id,
     setChecked,
-    setValue,
-    setHTML,
     stdErrMsg,
     clear_drop_menu,
     closeModal,
@@ -30,6 +28,7 @@ import {
     onAutoReportIntervalChange,
     reportNone,
     grblpanel,
+	httpCmd,
     SendFileHttp,
     SendGetHttp,
     build_language_list,
@@ -324,10 +323,13 @@ const setupNavbar = () => {
     navbar_enableCamTab(getPrefValue("show_camera_panel"));
 };
 
+const prefsDlgenable_lock_UI = () => navbar_lockUI(getPrefValue("enable_lock_UI"));
+const prefsDlgenable_DHT = () => navbar_enableDHT(getPrefValue("enable_DHT"));
+const prefsDlgshow_camera_panel = () =>  navbar_enableCamTab(getPrefValue("show_camera_panel"));
 const setupNavbarHandlers = () => {
-    id("enable_lock_UI").addEventListener("change", (event) => navbar_lockUI(getPrefValue("enable_lock_UI")));
-    id("enable_DHT").addEventListener("change", (event) => navbar_enableDHT(getPrefValue("enable_DHT")));
-    id("show_camera_panel").addEventListener("change", (event) => navbar_enableCamTab(getPrefValue("show_camera_panel")));
+    id("enable_lock_UI").addEventListener("change", prefsDlgenable_lock_UI);
+    id("enable_DHT").addEventListener("change", prefsDlgenable_DHT);
+    id("show_camera_panel").addEventListener("change", prefsDlgshow_camera_panel);
 };
 
 const language_pref = (value) => {
@@ -339,8 +341,9 @@ const setupPreference = () => {
     language_pref(getPrefValue("language_preferences"));
 };
 
+const prefsDlglanguage = () => language_pref(getPrefValue("language_preferences"));
 const setupPreferenceHandlers = () => {
-    id("language_preferences").addEventListener("change", (event) => language_pref(getPrefValue("language_preferences")));
+    id("language_preferences").addEventListener("change", prefsDlglanguage);
 };
 
 const controls_showControlsPanel = (enable) => {
@@ -352,8 +355,9 @@ const setupControls = () => {
     controls_showControlsPanel(getPrefValue("show_control_panel"));
 };
 
+const prefsDlgshow_control_panel = () => controls_showControlsPanel(getPrefValue("show_control_panel"));
 const setupControlsHandlers = () => {
-    id("show_control_panel").addEventListener("change", (event) => controls_showControlsPanel(getPrefValue("show_control_panel")));
+    id("show_control_panel").addEventListener("change", prefsDlgshow_control_panel);
 };
 
 const grbl_showGRBLPanel = (enable) => {
@@ -385,11 +389,15 @@ const setupGRBL = () => {
     grbl_showProbeTab(getPrefValue("show_grbl_probe_tab"));
 };
 
+const prefsDlgshow_grbl_panel = () => grbl_showGRBLPanel(getPrefValue("show_grbl_panel"));
+const prefsDlgautoreport_interval = () => grbl_ReportIntervalChange(getPrefValue("autoreport_interval") || getPrefValue("interval_status"));
+const prefsDlginterval_status = () => grbl_ReportIntervalChange(getPrefValue("autoreport_interval") || getPrefValue("interval_status"));
+const prefsDlgshow_grbl_probe_tab = () => grbl_showProbeTab(getPrefValue("show_grbl_probe_tab"));
 const setupGRBLHandlers = () => {
-    id("show_grbl_panel").addEventListener("change", (event) => grbl_showGRBLPanel(getPrefValue("show_grbl_panel")));
-    id("autoreport_interval").addEventListener("change", (event) => grbl_ReportIntervalChange(getPrefValue("autoreport_interval") || getPrefValue("interval_status")));
-    id("interval_status").addEventListener("change", (event) => grbl_ReportIntervalChange(getPrefValue("autoreport_interval") || getPrefValue("interval_status")));
-    id("show_grbl_probe_tab").addEventListener("change", (event) => grbl_showProbeTab(getPrefValue("show_grbl_probe_tab")));
+    id("show_grbl_panel").addEventListener("change", prefsDlgshow_grbl_panel);
+    id("autoreport_interval").addEventListener("change", prefsDlgautoreport_interval);
+    id("interval_status").addEventListener("change", prefsDlginterval_status);
+    id("show_grbl_probe_tab").addEventListener("change", prefsDlgshow_grbl_probe_tab);
 };
 
 const files_showFilesPanel = (enable) => displayBlockOrNone("filesPanel", enable);
@@ -424,12 +432,16 @@ const setupFiles = () => {
     files_filterList(getPrefValue("f_filters"));
 };
 
+const prefsDlgshow_files_panel = () => files_showFilesPanel(getPrefValue("show_files_panel"));
+const prefsDlghas_TFT_SD = () => files_TFTSD(getPrefValue("has_TFT_SD"), getPrefValue("has_TFT_USB"));
+const prefsDlghas_TFT_USB = () => files_TFTUSB(getPrefValue("has_TFT_SD"), getPrefValue("has_TFT_USB"));
+const prefsDlgf_filters = () => files_filterList(getPrefValue("f_filters"));
 const setupFilesHandlers = () => {
-    id("show_files_panel").addEventListener("change", (event) => files_showFilesPanel(getPrefValue("show_files_panel")));
-    id("has_TFT_SD").addEventListener("change", (event) => files_TFTSD(getPrefValue("has_TFT_SD"), getPrefValue("has_TFT_USB")));
-    id("has_TFT_USB").addEventListener("change", (event) => files_TFTUSB(getPrefValue("has_TFT_SD"), getPrefValue("has_TFT_USB")));
+    id("show_files_panel").addEventListener("change", prefsDlgshow_files_panel);
+    id("has_TFT_SD").addEventListener("change", prefsDlghas_TFT_SD);
+    id("has_TFT_USB").addEventListener("change", prefsDlghas_TFT_USB);
     // TODO: Check if this one needs a debounce
-    id("f_filters").addEventListener("change", (event) => files_filterList(getPrefValue("f_filters")));
+    id("f_filters").addEventListener("change", prefsDlgf_filters);
 };
 
 const commands_showCommandsPanel = (enable) => displayBlockOrNone("commandsPanel", enable);
@@ -455,10 +467,13 @@ const setupCommands = () => {
     commands_verboseMode(getPrefValue("enable_verbose_mode"));
 };
 
+const prefsDlgshow_commands_panel = () => commands_showCommandsPanel(getPrefValue("show_commands_panel"));
+const prefsDlgenable_autoscroll = () => commands_autoScroll(getPrefValue("enable_autoscroll"));
+const prefsDlgenable_verbose_mode = () => commands_verboseMode(getPrefValue("enable_verbose_mode"));
 const setupCommandsHandlers = () => {
-    id("show_commands_panel").addEventListener("change", (event) => commands_showCommandsPanel(getPrefValue("show_commands_panel")));
-    id("enable_autoscroll").addEventListener("change", (event) => commands_autoScroll(getPrefValue("enable_autoscroll")));
-    id("enable_verbose_mode").addEventListener("change", (event) => commands_verboseMode(getPrefValue("enable_verbose_mode")));
+    id("show_commands_panel").addEventListener("change", prefsDlgshow_commands_panel);
+    id("enable_autoscroll").addEventListener("change", prefsDlgenable_autoscroll);
+    id("enable_verbose_mode").addEventListener("change", prefsDlgenable_verbose_mode);
 };
 
 /** Gets a Select, Text, Int or Float's new value after a change, and stores it in the preferences */
@@ -505,6 +520,7 @@ const Preferences_build_list = (response_text = "") => {
     handlePing();
 }
 
+const prefsDlgpreferencesdlg = (event) => clear_drop_menu(event);
 const showpreferencesdlg = () => {
     const modal = setactiveModal("preferencesdlg.html");
     if (modal == null) {
@@ -513,10 +529,10 @@ const showpreferencesdlg = () => {
 
     initpreferences();
 
-    id("preferencesdlg.html").addEventListener("click", (event) => clear_drop_menu(event));
-    id("PreferencesDialogClose").addEventListener("click", (event) => closePreferencesDialog());
-    id("PreferencesDialogCancel").addEventListener("click", (event) => closePreferencesDialog());
-    id("PreferencesDialogSave").addEventListener("click", (event) => SavePreferences());
+    id("preferencesdlg.html").addEventListener("click", prefsDlgpreferencesdlg);
+    id("PreferencesDialogClose").addEventListener("click", closePreferencesDialog);
+    id("PreferencesDialogCancel").addEventListener("click", closePreferencesDialog);
+    id("PreferencesDialogSave").addEventListener("click", SavePreferences);
 
     displayNone("preferencesdlg_upload_msg");
     showModal();
@@ -551,11 +567,10 @@ const SavePreferences = () => {
     const file = new File([blob], prefFile);
 
     const formData = new FormData();
-    const cmd = "/files";
     formData.append("path", "/");
     formData.append("myfile[]", file, prefFile);
 
-    SendFileHttp(cmd, formData, preferencesUploadsuccess, preferencesUploadfailed);
+    SendFileHttp(httpCmd.files, formData, preferencesUploadsuccess, preferencesUploadfailed);
 };
 
 function preferencesUploadsuccess(response) {

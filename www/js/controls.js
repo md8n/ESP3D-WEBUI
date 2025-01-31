@@ -10,6 +10,7 @@ import {
 	getAxisFromValue,
 	AxisFeedRate,
 	SendPrinterCommand,
+	buildHttpFileGetCmd,
 	SendGetHttp,
 	trans_text_item,
 	showmacrodlg,
@@ -22,29 +23,38 @@ const init_controls_panel = () => {
 	loadmacrolist();
 };
 
+const controlsPanelZeroGrbl = () => SendZerocommand(grblzerocmd);
+const controlsPanelZeroX = () => SendZerocommand("X0");
+const controlsPanelZeroY = () => SendZerocommand("Y0");
+const controlsPanelZeroZ = () => SendZerocommand("Z0");
+const controlsPanelZeroA = () => SendZerocommand("A0");
+const controlsPanelZeroB = () => SendZerocommand("B0");
+const controlsPanelZeroC = () => SendZerocommand("C0");
+
 /** Set up the event handlers for the Controls Panel */
 const ControlsPanel = () => {
-	id("autocheck_position").addEventListener("click", (event) => on_autocheck_position());
-	id("controlpanel_interval_positions").addEventListener("change", (event) => onPosIntervalChange());
+	id("autocheck_position").addEventListener("click", on_autocheck_position);
+	id("controlpanel_interval_positions").addEventListener("change", onPosIntervalChange);
 
-	id("zero_xyz_btn").addEventListener("click", (event) => SendZerocommand(grblzerocmd));
-	id("zero_x_btn").addEventListener("click", (event) => SendZerocommand("X0"));
-	id("zero_y_btn").addEventListener("click", (event) => SendZerocommand("Y0"));
-	id("zero_z_btn").addEventListener("click", (event) => SendZerocommand("Z0"));
-	id("zero_a_btn").addEventListener("click", (event) => SendZerocommand("A0"));
-	id("zero_b_btn").addEventListener("click", (event) => SendZerocommand("B0"));
-	id("zero_c_btn").addEventListener("click", (event) => SendZerocommand("C0"));
+	id("zero_xyz_btn").addEventListener("click", controlsPanelZeroGrbl);
+	id("zero_x_btn").addEventListener("click", controlsPanelZeroX);
+	id("zero_y_btn").addEventListener("click", controlsPanelZeroY);
+	id("zero_z_btn").addEventListener("click", controlsPanelZeroZ);
+	id("zero_a_btn").addEventListener("click", controlsPanelZeroA);
+	id("zero_b_btn").addEventListener("click", controlsPanelZeroB);
+	id("zero_c_btn").addEventListener("click", controlsPanelZeroC);
 
-	id("controlpanel_xy_feedrate").addEventListener("change", (event) => onXYFeedRateChange());
-	id("controlpanel_z_feedrate").addEventListener("change", (event) => onNonXYFeedRateChange());
+	id("controlpanel_xy_feedrate").addEventListener("change", onXYFeedRateChange);
+	id("controlpanel_z_feedrate").addEventListener("change", onNonXYFeedRateChange);
 
-	id("motor_off_control").addEventListener("click", (event) => control_motorsOff());
+	id("motor_off_control").addEventListener("click", control_motorsOff);
 };
 
 function loadmacrolist() {
 	const common = new Common();
 	common.control_macrolist = [];
-	const cmd = "/macrocfg.json";
+
+	const cmd = buildHttpFileGetCmd("macrocfg.json");
 	SendGetHttp(cmd, processMacroGetSuccess, processMacroGetFailed);
 }
 

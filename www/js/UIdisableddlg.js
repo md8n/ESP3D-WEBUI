@@ -7,6 +7,8 @@ import {
 	saveSerialMessages,
 } from "./common.js";
 
+const UIdisabledDlgReconnect = () => window.location.reload();
+
 //UIdisabled dialog
 const UIdisableddlg = (lostcon) => {
 	const modal = setactiveModal("UIdisableddlg.html");
@@ -14,8 +16,8 @@ const UIdisableddlg = (lostcon) => {
 		return;
 	}
 
-	id("UIdisabled_reconnect").addEventListener("click", (event) => window.location.reload());
-	id("UIdisabled_save_serial_msg").addEventListener("click", (event) => saveSerialMessages());
+	id("UIdisabled_reconnect").addEventListener("click", UIdisabledDlgReconnect);
+	id("UIdisabled_save_serial_msg").addEventListener("click", saveSerialMessages);
 
 	if (lostcon) {
 		setHTML("disconnection_msg", trans_text_item("Connection lost for more than 20s"));

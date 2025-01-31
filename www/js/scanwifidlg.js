@@ -11,12 +11,16 @@ import {
 	closeModal,
 	setactiveModal,
 	showModal,
+	httpCmdType,
+	buildHttpCommandCmd,
 	SendGetHttp,
 	trans_text_item,
 } from "./common.js";
 
 let ssid_item_scanwifi = -1;
 let ssid_subitem_scanwifi = -1;
+
+const scanWiFiDlgCancel = () => closeModal("cancel");
 
 /** scanwifi dialog */
 const scanwifidlg = (item, subitem) => {
@@ -25,9 +29,9 @@ const scanwifidlg = (item, subitem) => {
 		return;
 	}
 
-	id("scanWiFiDlgCancel").addEventListener("click", (event) => closeModal("cancel"));
-	id("scanWiFiDlgClose").addEventListener("click", (event) => closeModal("cancel"));
-	id("refresh_scanwifi_btn").addEventListener("click", (event) => refresh_scanwifi());
+	id("scanWiFiDlgCancel").addEventListener("click", scanWiFiDlgCancel);
+	id("scanWiFiDlgClose").addEventListener("click", scanWiFiDlgCancel);
+	id("refresh_scanwifi_btn").addEventListener("click", refresh_scanwifi);
 
 	const iconOptions = {t: "translate(50,1200) scale(1,-1)"};
 	setHTML("refresh_scanwifi_btn", get_icon_svg("refresh", iconOptions));
@@ -42,7 +46,7 @@ function refresh_scanwifi() {
 	displayBlock(["AP_scan_loader", "AP_scan_status"]);
 	displayNone(["AP_scan_list", "refresh_scanwifi_btn"]);
 	setHTML("AP_scan_status", trans_text_item("Scanning"));
-	const cmd = `/command?plain=${encodeURIComponent("[ESP410]")}`;
+	const cmd = buildHttpCommandCmd(httpCmdType.plain, "[ESP410]");
 	SendGetHttp(cmd, getscanWifiSuccess, getscanWififailed);
 }
 

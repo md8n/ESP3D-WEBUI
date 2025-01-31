@@ -21,6 +21,7 @@ import {
 import { displayBlock, displayFlex, displayTable, displayInitial, displayInline, displayNone, displayUndoNone } from "./utilDisplay.js";
 import { numpad } from "./numpad.js";
 import { checkValue, valueIsFloat, valueStartsWith } from "./utilValidation.js";
+import { httpCmd, httpCmdType, buildHttpLoginCmd, buildHttpFilesCmd, buildHttpFileCmd, buildHttpFileGetCmd, buildHttpCommandCmd } from "./httpCmdBuilders.js";
 
 import { alertdlg } from "./alertdlg.js";
 import {
@@ -381,6 +382,8 @@ export {
 	setSpindleSpeed,
 	// from grblpanel.js
 	grblpanel,
+	// from httpCmdBuilders.js
+	httpCmd, httpCmdType, buildHttpLoginCmd, buildHttpFilesCmd, buildHttpFileCmd, buildHttpFileGetCmd, buildHttpCommandCmd,
 	// from http.js
 	AddCmd,
 	clear_cmd_list,

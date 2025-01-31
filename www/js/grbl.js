@@ -117,7 +117,7 @@ const build_axis_selection = () => {
 
   setHTML("axis_selection", html.join("\n"));
   setHTML("axis_label", `${trans_text_item('Axis')}:`);
-  id("control_select_axis").addEventListener("change", (event) => control_changeaxis())
+  id("control_select_axis").addEventListener("change", control_changeaxis);
   setClickability("axis_selection", true);
 }
 
@@ -623,17 +623,19 @@ let collectHandler = undefined;
 // the legacy protocol messages  $0= ... ok
 let collectedSettings = null;
 
+const docGrblCalEvent = (event) => {
+  const calData = event.detail.dataToSend;
+  const common = new Common();
+  console.info(
+    `Received calibration results that were ${calData.good ? "good" : "not good"} and ${calData.final ? "final" : "not final"}`,
+  );
+  if (calData.good && calData.final) {
+    common.calibrationResults = calData.bestGuess;
+  }
+};
+
 async function handleCalibrationData(measurements) {
-  document.body.addEventListener(CALIBRATION_EVENT_NAME, (event) => {
-    const calData = event.detail.dataToSend;
-    const common = new Common();
-    console.info(
-      `Received calibration results that were ${calData.good ? "good" : "not good"} and ${calData.final ? "final" : "not final"}`,
-    );
-    if (calData.good && calData.final) {
-      common.calibrationResults = calData.bestGuess;
-    }
-  });
+  document.body.addEventListener(CALIBRATION_EVENT_NAME, docGrblCalEvent);
 
   document.querySelector("#messages").textContent +=
     "\nComputing... This may take several minutes";

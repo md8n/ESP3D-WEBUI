@@ -9,13 +9,15 @@ import {
 	setClassName,
 	setHTML,
 	alertdlg,
+	httpCmdType,
+	buildHttpCommandCmd,
 	SendGetHttp,
 	trans_text_item,
 	CheckForHttpCommLock,
 } from "./common.js";
 
-let config_configList = [];
-let config_override_List = [];
+const config_configList = [];
+const config_override_List = [];
 let config_lastindex = -1;
 let config_error_msg = "";
 let config_lastindex_is_override = false;
@@ -34,9 +36,9 @@ const refreshconfig = (is_override) => {
 	displayBlock("config_loader");
 	displayNone(["config_list_content", "config_status", "config_refresh_btn"]);
 	if (!is_override) {
-		config_configList = [];
+		 config_configList.length = 0;
 	}
-	config_override_List = [];
+	config_override_List.length = 0;
 	getprinterconfig(is_override_config);
 };
 
@@ -53,23 +55,24 @@ function config_display_override(display_it) {
 }
 
 function getprinterconfig(is_override = false) {
+	const plainCmd = is_override ? "M503" : commandtxt;
 	is_override_config = is_override;
 	if (is_override) {
 		config_override_List.length = 0;
 	}
-	const cmd = `/command?plain=${encodeURIComponent((is_override) ? "M503" : commandtxt)}`;
+	const cmd = buildHttpCommandCmd(httpCmdType.plain, plainCmd);
 	SendGetHttp(cmd);
 }
 
-const Apply_config_override = () => {
-	const cmd = `/command?plain=${encodeURIComponent("M500")}`;
+function Apply_config_override() {
+	const cmd = buildHttpCommandCmd(httpCmdType.plain, "M500");
 	SendGetHttp(cmd, getESPUpdateconfigSuccess);
-};
+}
 
-const Delete_config_override = () => {
-	const cmd = `/command?plain=${encodeURIComponent("M502")}`;
+function Delete_config_override() {
+	const cmd = buildHttpCommandCmd(httpCmdType.plain, "M502");
 	SendGetHttp(cmd, getESPUpdateconfigSuccess);
-};
+}
 
 function getESPUpdateconfigSuccess(response) {
 	refreshconfig(true);
@@ -82,10 +85,12 @@ function build_HTML_config_list() {
 		: config_configList.length;
 	const prefix = is_override_config ? "override" : "";
 	const actions = [];
+
 	for (let i = 0; i < array_len; i++) {
 		const item = is_override_config
 			? config_override_List[i]
 			: config_configList[i];
+
 		content += "<tr>";
 		if (item.showcomment) {
 			content += "<td colspan='3' class='info'>";
@@ -137,7 +142,7 @@ function build_HTML_config_list() {
 		}
 		content += "</td>";
 		content += "</tr>\n";
-	}
+	}			
 	if (content.length > 0) {
 		setHTML("config_list_data", content);
 		// biome-ignore lint/complexity/noForEach: <explanation>
@@ -292,14 +297,16 @@ function config_revert_to_default(index, is_override) {
 function configGetvalue(index, is_override) {
 	const id_suffix = suffix(index, is_override);
 	const item = is_override ? config_override_List[index] : config_configList[index];
+    const cnfId = `config_${prefix}${index}`;
 
-	//remove possible spaces
-	value = id(`config_${id_suffix}`).value.trim();
-	if (value === item.defaultvalue) {
-		return;
-	}
-	//check validity of value
-	const isvalid = config_check_value(value, index, is_override);
+    // remove possible spaces
+    const value = id(cnfId).value.trim();
+    if (value === item.defaultvalue) {
+        return;
+    }
+    // check validity of value
+    const isvalid = config_check_value(value, index, is_override);
+
 	//if not valid show error
 	if (!isvalid) {
 		setInput(id_suffix, "danger");
@@ -313,8 +320,8 @@ function configGetvalue(index, is_override) {
 
 		setInput(id_suffix, "success");
 
-		const cmd = `/command?plain=${encodeURIComponent(item.cmd + value)}`;
-		SendGetHttp(cmd, setESPconfigSuccess, setESPconfigfailed);
+        var cmd = buildHttpCommandCmd(httpCmdType.plain, `${item.cmd}${value}`);
+        SendGetHttp(cmd, setESPconfigSuccess, setESPconfigfailed);
 	}
 }
 

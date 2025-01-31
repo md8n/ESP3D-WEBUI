@@ -11,18 +11,27 @@ import {
 	updatedlg,
 } from "./common.js";
 
+const settingsTabnvs_setting_filter = () => build_HTML_setting_list("nvs");
+const settingsTabtree_setting_filter = () => build_HTML_setting_list("tree");
+
+const settingsTabsettings_SPIFFS_btn = () => SPIFFSdlg("/");
+
+const settingsTabsettings_refresh_btn = () => {
+const common = new Common();
+	refreshSettings(common.current_setting_filter);
+}
+
 /** Set up the event handlers for the settings tab */
 const settingstab = () => {
-	id("nvs_setting_filter").addEventListener("click", (event) => build_HTML_setting_list("nvs"));
-	id("tree_setting_filter").addEventListener("click", (event) => build_HTML_setting_list("tree"));
+	id("nvs_setting_filter").addEventListener("click", settingsTabnvs_setting_filter);
+	id("tree_setting_filter").addEventListener("click", settingsTabtree_setting_filter);
 
-	id("settings_status_btn").addEventListener("click", (event) => statusdlg());
-	id("settings_SPIFFS_btn").addEventListener("click", (event) => SPIFFSdlg("/"));
-	id("settings_update_fw_btn").addEventListener("click", (event) => updatedlg());
-	id("settings_restart_btn").addEventListener("click", (event) => restart_esp());
+	id("settings_status_btn").addEventListener("click", statusdlg);
+	id("settings_SPIFFS_btn").addEventListener("click", settingsTabsettings_SPIFFS_btn);
+	id("settings_update_fw_btn").addEventListener("click", updatedlg);
+	id("settings_restart_btn").addEventListener("click", restart_esp);
 
-	const common = new Common();
-	id("settings_refresh_btn").addEventListener("click", (event) => refreshSettings(common.current_setting_filter));
+	id("settings_refresh_btn").addEventListener("click", settingsTabsettings_refresh_btn);
 
 	const iconOptions = { t: "translate(50,1200) scale(1,-1)" };
 	setHTML("settings_status_btn", get_icon_svg("th-list", iconOptions));

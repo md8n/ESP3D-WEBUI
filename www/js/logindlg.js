@@ -8,6 +8,8 @@ import {
 	closeModal,
 	setactiveModal,
 	showModal,
+	httpCmd,
+	buildHttpLoginCmd,
 	SendGetHttp,
 } from "./common.js";
 
@@ -18,9 +20,9 @@ const logindlg = (closefunc, check_first = false) => {
 		return;
 	}
 
-	id("login_user_text").addEventListener("keyup", (event) => login_id_OnKeyUp(event));
-	id("login_password_text").addEventListener("keyup", (event) => login_password_OnKeyUp(event));
-	id("login_submit_btn").addEventListener("click", (event) => SubmitLogin());
+	id("login_user_text").addEventListener("keyup", login_id_OnKeyUp);
+	id("login_password_text").addEventListener("keyup", login_password_OnKeyUp);
+	id("login_submit_btn").addEventListener("click", SubmitLogin);
 
 	const iconOptions = { t: "translate(50,1200) scale(1,-1)" };
 	const buildTitle = (icon, label) => `${get_icon_svg(icon, iconOptions)}<span id="login_title">${trans_text_item(label)}</span>`;
@@ -30,8 +32,7 @@ const logindlg = (closefunc, check_first = false) => {
 	displayBlock("login_content");
 
 	if (check_first) {
-		const cmd = "/login";
-		SendGetHttp(cmd, checkloginsuccess);
+		SendGetHttp(httpCmd.login, checkloginsuccess);
 	} else {
 		showModal();
 	}
@@ -86,12 +87,12 @@ function loginsuccess(response_text) {
 function SubmitLogin() {
 	const user = id("login_user_text").value.trim();
 	const password = id("login_password_text").value.trim();
-	const cmd =
-		`/login?USER=${encodeURIComponent(user)}&PASSWORD=${encodeURIComponent(password)}&SUBMIT=yes`;
 	setHTML("current_ID", user);
 	setHTML("current_auth_level", "");
 	displayNone("login_content");
 	displayBlock("login_loader");
+
+	const cmd = buildHttpLoginCmd({ USER: user, PASSWORD: password });
 	SendGetHttp(cmd, loginsuccess, loginfailed);
 }
 
@@ -110,7 +111,7 @@ function DisconnectionFailed(error_code, response) {
 
 function DisconnectLogin(answer) {
 	if (answer === "yes") {
-		const cmd = "/login?DISCONNECT=yes";
+		const cmd = buildHttpLoginCmd({ DISCONNECT: answer });
 		SendGetHttp(cmd, DisconnectionSuccess, DisconnectionFailed);
 	}
 }

@@ -9,6 +9,8 @@ import {
 	closeModal,
 	setactiveModal,
 	showModal,
+	httpCmdType,
+	buildHttpCommandCmd,
 	SendGetHttp,
 	logindlg,
 	EventListenerSetup,
@@ -113,7 +115,7 @@ const retryconnect = () => {
 
 	id("connectbtn").removeEventListener("click", retryconnect);
 
-	const cmd = `/command?plain=${encodeURIComponent("[ESP800]")}`;
+	const cmd = buildHttpCommandCmd(httpCmdType.plain, "[ESP800]");
 	SendGetHttp(cmd, connectsuccess, connectfailed);
 };
 

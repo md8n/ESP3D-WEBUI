@@ -15,6 +15,7 @@ import {
 	showModal,
 	alertdlg,
 	confirmdlg,
+	httpCmd,
 	SendFileHttp,
 	trans_text_item,
 	CheckForHttpCommLock,
@@ -29,17 +30,17 @@ function showmacrodlg(closefn) {
 		return;
 	}
 
-	id("macrodlg.html").addEventListener("click", (event) => clear_drop_menu(event));
-	id("MacroDialogClose").addEventListener("click", (event) => closeMacroDialog());
-	id("MacroDialogCancel").addEventListener("click", (event) => closeMacroDialog());
-	id("MacroDialogSave").addEventListener("click", (event) => SaveNewMacroList());
+	id("macrodlg.html").addEventListener("click", clear_drop_menu);
+	id("MacroDialogClose").addEventListener("click", closeMacroDialog);
+	id("MacroDialogCancel").addEventListener("click", closeMacroDialog);
+	id("MacroDialogSave").addEventListener("click", SaveNewMacroList);
 
 	build_dlg_macrolist_ui();
 	displayNone("macrodlg_upload_msg");
 	showModal();
 }
 
-const iconDownTri = () => get_icon_svg("triangle-bottom", {h:'0.8em', w:'0.8em', s:'pointer-events:none', t:'translate(50,1200) scale(1, -1)'});
+const iconDownTri = () => get_icon_svg("triangle-bottom", { h: '0.8em', w: '0.8em', s: 'pointer-events:none', t: 'translate(50,1200) scale(1, -1)' });
 
 function build_color_selection(index, actions) {
 	let content = "";
@@ -49,7 +50,7 @@ function build_color_selection(index, actions) {
 	content += `<button id='macro_color_line${index}_btn' class='btn ${entry.class}'>&nbsp;`;
 	content += iconDownTri();
 	content += "</button>";
-	actions.push({ id: `macro_color_line${index}_btn`, type: "click", method: (event) => showhide_drop_menu(event) });
+	actions.push({ id: `macro_color_line${index}_btn`, type: "click", method: showhide_drop_menu });
 	content += `<div class='dropmenu-content ${menu_pos}' style='min-width:auto; padding-left: 4px;padding-right: 4px;'>`;
 	// biome-ignore lint/complexity/noForEach: <explanation>
 	["default", "primary", "info", "warning", "danger"].forEach((col) => {
@@ -69,7 +70,7 @@ function build_target_selection(index, actions) {
 	content += `<button id='macro_target_line${index}_btn' class='btn btn-default' style='min-width:5em;'><span>${entry.target}</span>`;
 	content += iconDownTri();
 	content += "</button>";
-	actions.push({ id: `macro_target_line${index}_btn`, type: "click", method: (event) => showhide_drop_menu(event) });
+	actions.push({ id: `macro_target_line${index}_btn`, type: "click", method: showhide_drop_menu });
 	content += `<div class='dropmenu-content ${menu_pos}' style='min-width:auto'>`;
 	content += `<a id='macro_select_targetESP${index}_link' href=#>ESP</a>`;
 	content += `<a id='macro_select_targetSD${index}_link' href=#>SD</a>`;
@@ -91,7 +92,7 @@ function build_glyph_selection(index, actions) {
 	content += `<button id='macro_glyph_line${index}_btn' class='btn ${entry.class}'><span>${get_icon_svg(entry.glyph)}</span>&nbsp;`;
 	content += iconDownTri();
 	content += "</button>";
-	actions.push({ id: `macro_glyph_line${index}_btn`, type: "click", method: (event) => showhide_drop_menu(event) });
+	actions.push({ id: `macro_glyph_line${index}_btn`, type: "click", method: showhide_drop_menu });
 	content += `<div class='dropmenu-content ${menu_pos}' style='min-width:30em'>`;
 	for (const key in list_icon) {
 		if (key === "plus") {
@@ -297,22 +298,22 @@ function SaveNewMacroList() {
 		}
 	}
 
-	const blob = new Blob([JSON.stringify(macrodlg_macrolist, null, " ")], {
-		type: "application/json",
-	});
+	const blob = new Blob([JSON.stringify(macrodlg_macrolist, null, " ")], { type: "application/json" });
 	let file;
+	const macroFilename = "/macrocfg.json";
 	if (browser_is("IE") || browser_is("Edge")) {
 		file = blob;
-		file.name = "/macrocfg.json";
+		file.name = macroFilename;
 		file.lastModifiedDate = new Date();
 	} else {
-		file = new File([blob], "/macrocfg.json");
+		file = new File([blob], macroFilename);
 	}
+
 	const formData = new FormData();
-	const cmd = "/files";
 	formData.append("path", "/");
-	formData.append("myfile[]", file, "/macrocfg.json");
-	SendFileHttp( cmd, formData, macroUploadsuccess, macroUploadfailed );
+	formData.append("myfile[]", file, macroFilename);
+
+	SendFileHttp(httpCmd.files, formData, macroUploadsuccess, macroUploadfailed);
 }
 
 // function macrodlgUploadProgressDisplay(oEvent) {

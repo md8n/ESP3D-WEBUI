@@ -7,9 +7,12 @@ import {
 	closeModal,
 	setactiveModal,
 	showModal,
+	buildHttpLoginCmd,
 	SendGetHttp,
 	trans_text_item,
 } from "./common.js";
+
+const passwordDlgCancel = () => closeModal("cancel");
 
 /** Change Password dialog */
 const changepassworddlg = () => {
@@ -18,11 +21,11 @@ const changepassworddlg = () => {
 		return;
 	}
 
-	id("passwordDlgClose").addEventListener("click", (event) => closeModal("cancel"));
-	id("password_password_text1").addEventListener("keyup", (event) => checkpassword());
-	id("password_password_text2").addEventListener("keyup", (event) => checkpassword());
-	id("passwordDlgCancel").addEventListener("click", (event) => closeModal("cancel"));
-	id("change_password_btn").addEventListener("click", (event) => SubmitChangePassword());
+	id("passwordDlgClose").addEventListener("click", passwordDlgCancel);
+	id("password_password_text1").addEventListener("keyup", checkpassword);
+	id("password_password_text2").addEventListener("keyup", checkpassword);
+	id("passwordDlgCancel").addEventListener("click", passwordDlgCancel);
+	id("change_password_btn").addEventListener("click", SubmitChangePassword);
 
 	displayNone(["password_loader", "change_password_btn"]);
 	displayBlock("change_password_content");
@@ -66,12 +69,14 @@ function ChangePasswordsuccess(response_text) {
 }
 
 function SubmitChangePassword() {
-	const user = encodeURIComponent(id("current_ID").innerHTML.trim());
-	const password = encodeURIComponent(id("password_password_text").value.trim());
-	const newpassword = encodeURIComponent(id("password_password_text1").value.trim());
-	const cmd = `/login?USER=${user}&PASSWORD=${password}&NEWPASSWORD=${newpassword}&SUBMIT=yes`;
 	displayBlock("password_loader");
 	displayNone("change_password_content");
+
+	const user = id("current_ID").innerHTML.trim();
+	const password = id("password_password_text").value.trim();
+	const newpassword = id("password_password_text1").value.trim();
+
+	const cmd = buildHttpLoginCmd({ USER: user, PASSWORD: password, NEWPASSWORD: newpassword });
 	SendGetHttp(cmd, ChangePasswordsuccess, ChangePasswordfailed);
 }
 

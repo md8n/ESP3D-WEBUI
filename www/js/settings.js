@@ -16,6 +16,8 @@ import {
   alertdlg,
   confirmdlg,
   init_files_panel,
+  httpCmdType,
+  buildHttpCommandCmd,
   SendGetHttp,
   trans_text_item,
   restartdlg,
@@ -29,7 +31,7 @@ let setting_error_msg = "";
 let setting_lasti = -1;
 let setting_lastj = -1;
 
- const CONFIG_TOOLTIPS = {
+const CONFIG_TOOLTIPS = {
   Maslow_vertical: `If the ${M} is oriented horizontally, set this to false`,
   Maslow_calibration_offset_X: "mm offset from the edge of the frame, X",
   Maslow_calibration_offset_Y: "mm offset from the edge of the frame, Y",
@@ -65,7 +67,7 @@ const refreshSettings = (hide_setting_list) => {
 
   // Clear all of the elements in the array
   scl.length = 0;
-  const cmd = `/command?plain=${encodeURIComponent("[ESP400]")}`;
+  const cmd = buildHttpCommandCmd(httpCmdType.plain, "[ESP400]");
   SendGetHttp(cmd, getESPsettingsSuccess, getESPsettingsfailed);
 };
 
@@ -184,6 +186,7 @@ const build_control_from_index = (i, actions, extra_set_function = (i) => { }) =
       content += "<span class='input-group-addon hide_it' ></span>";
       content += "</div>";
       content += "</td></tr></table>";
+
       content += "<div class='input-group'>";
       content += "<input class='hide_it'></input>";
       content += "<div class='input-group-btn'>";
@@ -238,7 +241,8 @@ const build_control_from_pos = (pos, actions, extra) => build_control_from_index
  */
 const saveMaslowYaml = () => {
   console.info(`Calling for a Config Overwrite to save the ${configFileName} file`);
-  SendGetHttp(`/command?plain=${encodeURIComponent("$CO")}`, saveConfigSuccess, saveConfigFail);
+  const cmd = buildHttpCommandCmd(httpCmdType.plain, "$CO");
+  SendGetHttp(cmd, saveConfigSuccess, saveConfigFail);
 }
 
 const saveConfigClearMessage = () => setTimeout(() => { setHTML(configSaveResultId, ""); }, 5000)
@@ -301,6 +305,7 @@ const build_HTML_setting_list = (filter) => {
       content += tr;
     }
   }
+
   // From settingstab
   setHTML("settings_list_data", content);
   // biome-ignore lint/complexity/noForEach: <explanation>
@@ -526,23 +531,33 @@ function setIconHTML(i, j, value) {
 // 	setIconHTML(i, j, "");
 // }
 
+const applyFlag = (value, defVal, i, j = 0) => {
+  const sEntry = scl[i];
+  if (sEntry.type !== "F") {
+    return value;
+  }
+
+  //console.log("it is flag value");
+  let tmp = defVal;
+  if (value === "1") {
+    tmp |= getFlag(i, j);
+  } else {
+    tmp &= ~getFlag(i, j);
+  }
+  return tmp;
+}
+
 function settingsetvalue(i, j = 0) {
   //remove possible spaces
   let value = setting(i, j).value.trim();
   const defVal = defval(i);
+  
   //Apply flag here
-  if (scl[i].type === "F") {
-    let tmp = defVal;
-    if (value === "1") {
-      tmp |= getFlag(i, j);
-    } else {
-      tmp &= ~getFlag(i, j);
-    }
-    value = tmp;
-  }
+  value = applyFlag(value, defVal, i, j);
   if (value === defVal) {
     return;
   }
+
   //check validity of value
   const isvalid = setting_check_value(value, i);
   //if not valid show error
@@ -558,7 +573,8 @@ function settingsetvalue(i, j = 0) {
     setIcon(i, j, "has-success ico_feedback");
     setIconHTML(i, j, get_icon_svg("ok"));
     setStatus(i, j, "has-feedback has-success");
-    const cmd = `/command?plain=${encodeURIComponent(scl[i].cmd + value)}`;
+
+    const cmd = buildHttpCommandCmd(httpCmdType.plain, `${scl[i].cmd}${value}`);
     SendGetHttp(cmd, setESPsettingsSuccess, setESPsettingsfailed);
   }
 }
@@ -573,17 +589,10 @@ function setting_checkchange(i, j) {
   } else {
     val = setting(i, j).value.trim();
   }
+
   const defVal = sEntry.defaultvalue;
-  if (sEntry.type === "F") {
-    //console.log("it is flag value");
-    let tmp = defVal;
-    if (val === "1") {
-      tmp |= getFlag(i, j);
-    } else {
-      tmp &= ~getFlag(i, j);
-    }
-    val = tmp;
-  }
+  val = applyFlag(val, defVal, i, j);
+
   //console.log("value: " + val);
   //console.log("default value: " + defVal);
   if (defVal === val) {

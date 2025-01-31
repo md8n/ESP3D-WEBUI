@@ -13,6 +13,7 @@ import {
   MPOS,
   WPOS,
   AxisFeedRate,
+  buildHttpFileCmd,
   SendGetHttp,
   checkHomed,
   loadConfigValues,
@@ -684,9 +685,67 @@ const tabletGrblState = (grbl, response) => {
 
 function tabletGetFileList(path) {
   const common = new Common();
+  // Clear/reset the gCodeFilename
   common.gCodeFilename = "";
-  SendGetHttp(`/upload?path=${encodeURI(path)}`, files_list_success);
+  const cmd = buildHttpFileCmd({ path: path });
+  SendGetHttp(cmd, files_list_success);
 }
+
+const tabletTabActivate = () => {
+  fullscreenIfMobile();
+  setBottomHeight();
+};
+
+const stopProp = (event) => event.stopPropagation();
+
+const tabletTabzUp = () => sendMove("Z+");
+const tabletTabtopLeft = () => sendMove("X-Y+");
+const tabletTabtop = () => sendMove("Y+");
+const tabletTabtopRight = () => sendMove("X+Y+");
+
+const tabletTabCalibration = () => {
+  loadCornerValues();
+  openModal("calibration-popup");
+};
+
+const tabletTableft = () => sendMove("X-");
+const tabletTabright = () => sendMove("X+");
+
+const tabletTabzDown = () => sendMove("Z-");
+const tabletTabbottomLeft = () => sendMove("X-Y-");
+const tabletTabbottom = () => sendMove("Y-");
+const tabletTabbottomRight = () => sendMove("X+Y-");
+
+const tabletTabset_z_home = () => zeroAxis("Z");
+
+const tabletTabCalgcode_stop = () => onCalibrationButtonsClick("$STOP", "Stop Maslow and Gcode");
+const tabletTabCalretract = () => onCalibrationButtonsClick("$ALL", "Retract All");
+const tabletTabCalextend = () => onCalibrationButtonsClick("$EXT", "Extend All");
+
+// const tabletTabCalcalibrate = () => {
+//   onCalibrationButtonsClick("$CAL", "Calibrate");
+//   setTimeout(() => {
+//     hideModal("calibration-popup");
+//   }, 1000);
+// };
+// const tabletTabCaltense = () => {
+//   onCalibrationButtonsClick("$TKSLK", "Apply Tension");
+//   setTimeout(() => {
+//     hideModal("calibration-popup");
+//   }, 1000);
+// };
+// const tabletTabCalhomez = () => onCalibrationButtonsClick('$TKSLK','Home Z');
+const tabletTabCalconfig = () => {
+  loadConfigValues();
+  openModal("configuration-popup");
+};
+const tabletTabCalstop = () => onCalibrationButtonsClick("$STOP", "Stop");
+const tabletTabCalzstop = () => onCalibrationButtonsClick("$SETZSTOP", "Set Z-Stop");
+const tabletTabCaltest = () => onCalibrationButtonsClick("$TEST", "Test");
+const tabletTabCalrelax = () => onCalibrationButtonsClick("$CMP", "Release Tension");
+
+const tabletTabCalpopup = () => hideModal("calibration-popup");
+const tabletTabConfpopup = () =>  hideModal("configuration-popup");
 
 const tabletInit = () => {
   tpInit();
@@ -714,77 +773,58 @@ const tabletInit = () => {
     setJogSelector('mm');
     loadJogDists();
 
-    id("tablettablink").addEventListener("DOMActivate", () => {
-      fullscreenIfMobile();
-      setBottomHeight();
-    });
+    id("tablettablink").addEventListener("DOMActivate", tabletTabActivate, false);
 
-    id("filelist").addEventListener("change", (event) => selectFile());
-    id("tabelttab_config_popup_content").addEventListener("click", (event) => event.stopPropagation(),);
+    id("filelist").addEventListener("change", selectFile);
+    id("tabelttab_config_popup_content").addEventListener("click", stopProp);
 
-    id("tablettab_zUp").addEventListener("click", (event) => sendMove("Z+"));
-    id("tablettab_topLeft").addEventListener("click", (event) => sendMove("X-Y+"),);
-    id("tablettab_top").addEventListener("click", (event) => sendMove("Y+"));
-    id("tablettab_topRight").addEventListener("click", (event) => sendMove("X+Y+"),);
+    id("tablettab_zUp").addEventListener("click", tabletTabzUp);
+    id("tablettab_topLeft").addEventListener("click", tabletTabtopLeft);
+    id("tablettab_top").addEventListener("click", tabletTabtop);
+    id("tablettab_topRight").addEventListener("click", tabletTabtopRight);
 
-    id("calibrationBTN").addEventListener("click", (event) => {
-      loadCornerValues();
-      openModal("calibration-popup");
-    });
+    id("calibrationBTN").addEventListener("click", tabletTabCalibration);
 
-    id("tablettab_left").addEventListener("click", (event) => sendMove("X-"));
-    id("tablettab_right").addEventListener("click", (event) => sendMove("X+"));
+    id("tablettab_left").addEventListener("click", tabletTableft);
+    id("tablettab_right").addEventListener("click", tabletTabright);
 
-    id("tablettab_zDown").addEventListener("click", (event) => sendMove("Z-"));
-    id("tablettab_bottomLeft").addEventListener("click", (event) => sendMove("X-Y-"));
-    id("tablettab_bottom").addEventListener("click", (event) => sendMove("Y-"));
-    id("tablettab_bottomRight").addEventListener("click", (event) => sendMove("X+Y-"));
+    id("tablettab_zDown").addEventListener("click", tabletTabzDown);
+    id("tablettab_bottomLeft").addEventListener("click", tabletTabbottomLeft);
+    id("tablettab_bottom").addEventListener("click", tabletTabbottom);
+    id("tablettab_bottomRight").addEventListener("click", tabletTabbottomRight);
 
-    id("tablettab_set_z_home").addEventListener("mousedown", (event) => zeroAxis("Z"));
-    id("tablettab_set_z_home").addEventListener("mouseup", (event) => refreshGcode());
-    id("tablettab_move_to_xy_home").addEventListener("click", (event) => moveHome());
-    id("tablettab_toggle_units").addEventListener("click", (event) => toggleUnits());
-    id("tablettab_set_xy_home").addEventListener("mousedown", (event) => setHomeClickDown());
-    id("tablettab_set_xy_home").addEventListener("mouseup", (event) => setHomeClickUp());
-    id("tablettab_set_xy_home").addEventListener("dblclick", (event) => setXYHome());
+    id("tablettab_set_z_home").addEventListener("mousedown", tabletTabset_z_home);
+    id("tablettab_set_z_home").addEventListener("mouseup", refreshGcode);
+    id("tablettab_move_to_xy_home").addEventListener("click", moveHome);
+    id("tablettab_toggle_units").addEventListener("click", toggleUnits);
+    id("tablettab_set_xy_home").addEventListener("mousedown", setHomeClickDown);
+    id("tablettab_set_xy_home").addEventListener("mouseup", setHomeClickUp);
+    id("tablettab_set_xy_home").addEventListener("dblclick", setXYHome);
 
-    id("tablettab_gcode_upload").addEventListener("click", (event) => files_select_upload());
-    id("tablettab_gcode_play").addEventListener("click", (event) => doPlayButton());
-    // id("tablettab_gcode_pause").addEventListener("click", (event) => doPauseButton());
-    id("tablettab_gcode_stop").addEventListener("click", (event) => onCalibrationButtonsClick("$STOP", "Stop Maslow and Gcode"));
+    id("tablettab_gcode_upload").addEventListener("click", files_select_upload);
+    id("tablettab_gcode_play").addEventListener("click", doPlayButton);
+    // id("tablettab_gcode_pause").addEventListener("click", doPauseButton);
+    id("tablettab_gcode_stop").addEventListener("click", tabletTabCalgcode_stop);
 
-    id("tablettab_cal_retract").addEventListener("click", (event) => onCalibrationButtonsClick("$ALL", "Retract All"));
-    id("tablettab_cal_extend").addEventListener("click", (event) => onCalibrationButtonsClick("$EXT", "Extend All"));
-    // id("tablettab_cal_calibrate").addEventListener("click", (event) => {
-    //   onCalibrationButtonsClick("$CAL", "Calibrate");
-    //   setTimeout(() => {
-    //     hideModal("calibration-popup");
-    //   }, 1000);
-    // });
-    // id("tablettab_cal_tense").addEventListener("click", (event) => {
-    //   onCalibrationButtonsClick("$TKSLK", "Apply Tension");
-    //   setTimeout(() => {
-    //     hideModal("calibration-popup");
-    //   }, 1000);
-    // });
-    // id('tablettab_cal_homez').addEventListener('click', (event) => onCalibrationButtonsClick('$TKSLK','Home Z'));
-    id("tablettab_cal_config").addEventListener("click", (event) => {
-      loadConfigValues();
-      openModal("configuration-popup");
-    });
-    id("tablettab_cal_stop").addEventListener("click", (event) => onCalibrationButtonsClick("$STOP", "Stop"),);
-    id("tablettab_cal_zstop").addEventListener("click", (event) => onCalibrationButtonsClick("$SETZSTOP", "Set Z-Stop"),);
-    id("tablettab_cal_test").addEventListener("click", (event) => onCalibrationButtonsClick("$TEST", "Test"),);
-    id("tablettab_cal_relax").addEventListener("click", (event) => onCalibrationButtonsClick("$CMP", "Release Tension"),);
-    id("tablettab_config_save").addEventListener("click", (event) => saveConfigValues(),);
+    id("tablettab_cal_retract").addEventListener("click", tabletTabCalretract);
+    id("tablettab_cal_extend").addEventListener("click", tabletTabCalextend);
+    // id("tablettab_cal_calibrate").addEventListener("click", tabletTabCalcalibrate);
+    // id("tablettab_cal_tense").addEventListener("click", tabletTabCaltense);
+    // id('tablettab_cal_homez').addEventListener('click', tabletTabCalhomez);
+    id("tablettab_cal_config").addEventListener("click", tabletTabCalconfig);
+    id("tablettab_cal_stop").addEventListener("click", tabletTabCalstop);
+    id("tablettab_cal_zstop").addEventListener("click", tabletTabCalzstop);
+    id("tablettab_cal_test").addEventListener("click", tabletTabCaltest);
+    id("tablettab_cal_relax").addEventListener("click", tabletTabCalrelax,);
+    id("tablettab_config_save").addEventListener("click", saveConfigValues);
 
-    id("tablettab_save_serial_msg").addEventListener("click", (event) => saveSerialMessages(),);
+    id("tablettab_save_serial_msg").addEventListener("click", saveSerialMessages);
 
-    id("calibration-popup").addEventListener("click", (event) => hideModal("calibration-popup"),);
-    id("calibration_popup_content").addEventListener("click", (event) => event.stopPropagation(),);
-    id("configuration-popup").addEventListener("click", (event) => hideModal("configuration-popup"),);
+    id("calibration-popup").addEventListener("click", tabletTabCalpopup);
+    id("calibration_popup_content").addEventListener("click", stopProp);
+    id("configuration-popup").addEventListener("click", tabletTabConfpopup);
 
-    id("systemStatus").addEventListener("click", (event) => clearAlarm());
+    id("systemStatus").addEventListener("click", clearAlarm);
 
     drawTPBtns();
 
@@ -1175,7 +1215,7 @@ window.onresize = setBottomHeight;
 //   setTimeout(() => { zeroAxis("Z"); }, 26000);
 // }
 
-document.addEventListener("click", (event) => {
+const tabletDocumentClick = (event) => {
   const elemIdsToTest = ["calibration-popup", "calibrationBTN", "numPad"];
   const turnOffCalPopup = elemIdsToTest.every((elemId) => {
     const elem = document.getElementById(elemId);
@@ -1184,7 +1224,9 @@ document.addEventListener("click", (event) => {
   if (turnOffCalPopup) {
     document.getElementById("calibration-popup").style.display = "none";
   }
-});
+};
+
+document.addEventListener('click', tabletDocumentClick);
 
 /* Calibration modal */
 

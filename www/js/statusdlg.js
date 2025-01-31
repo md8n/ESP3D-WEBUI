@@ -11,20 +11,24 @@ import {
 	getactiveModal,
 	setactiveModal,
 	showModal,
+	httpCmdType,
+	buildHttpCommandCmd,
 	SendGetHttp,
 	trans_text_item,
 } from "./common.js";
 
-//status dialog
+const statusDlgCancel = () => closeModal("cancel");
+
+/** status dialog */
 const statusdlg = () => {
 	const modal = setactiveModal("statusdlg.html");
 	if (modal == null) {
 		return;
 	}
 
-	id("status_dlg_close").addEventListener("click", (event) => closeModal("cancel"));
-	id("status_dlg_btn_close").addEventListener("click", (event) => closeModal("cancel"));
-	id("status_dlg_refreshstatus").addEventListener("click", (event) => refreshstatus());
+	id("status_dlg_close").addEventListener("click", statusDlgCancel);
+	id("status_dlg_btn_close").addEventListener("click", statusDlgCancel);
+	id("status_dlg_refreshstatus").addEventListener("click", refreshstatus);
 
 	const iconOptions = {t: "translate(50,1200) scale(1,-1)"};
 	setHTML("status_dlg_refreshstatus", get_icon_svg("refresh", iconOptions));
@@ -88,7 +92,8 @@ function refreshstatus() {
 	const text = modal.element.getElementsByClassName("modal-text")[0];
 	text.innerHTML = "";
 	displayNone("status_msg");
-	const cmd = `/command?plain=${encodeURIComponent("[ESP420]plain")}`;
+
+	const cmd = buildHttpCommandCmd(httpCmdType.plain, "[ESP420]plain");
 	SendGetHttp(cmd, statussuccess, statusfailed);
 }
 

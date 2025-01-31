@@ -33,6 +33,9 @@ const wizardSteps = [
     { name: "endstep", icon: "ok", link: "endsteplink", wizardLine: "wizard_line4", contAct: () => step4Content(), next: "close" },
 ];
 
+const setupDlgCancel = () => closeModal("cancel");
+const setupDlgContinue = () => continueSetupWizard();
+
 /** Set up the event handlers and state machine for the setup wizard */
 const setupdlg = () => {
     const common = new Common();
@@ -50,7 +53,7 @@ const setupdlg = () => {
         return;
     }
 
-    id("setupDlgCancel").addEventListener("click", (event) => closeModal("cancel"));
+    id("setupDlgCancel").addEventListener("click", setupDlgCancel);
 
     const actions = [];
     const content = ["<div class='steplinks spacer'></div>"];
@@ -65,7 +68,7 @@ const setupdlg = () => {
     setHTML("wizard_button", trans_text_item("Start"));
     // point the wizard button at the next step
     id("wizard_button").title = wizardSteps[0].next;
-    id("wizard_button").addEventListener("click", (event) => continueSetupWizard());
+    id("wizard_button").addEventListener("click", setupDlgContinue);
 
     // biome-ignore lint/complexity/noForEach: <explanation>
     wizardSteps.forEach((step) => {

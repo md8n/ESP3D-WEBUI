@@ -12,6 +12,7 @@ import {
 	showModal,
 	alertdlg,
 	confirmdlg,
+	httpCmd,
 	SendFileHttp,
 	SendGetHttp,
 	trans_text_item,
@@ -21,6 +22,10 @@ import {
 let update_ongoing = false;
 let current_update_filename = "";
 
+const updateDlgCancel = () => closeUpdateDialog("cancel");
+const updateDlgSelect = () => document.getElementById("fw_select").click();
+const updateDlgFileMouseUp = () => document.getElementById("fw_select_files").click();
+
 /** update dialog */
 const updatedlg = () => {
 	const modal = setactiveModal("updatedlg.html");
@@ -28,13 +33,13 @@ const updatedlg = () => {
 		return;
 	}
 
-	id("updateDlgCancel").addEventListener("click", (event) => closeUpdateDialog("cancel"));
-	id("updateDlgClose").addEventListener("click", (event) => closeUpdateDialog("cancel"));
+	id("updateDlgCancel").addEventListener("click", updateDlgCancel);
+	id("updateDlgClose").addEventListener("click", updateDlgCancel);
 
-	id("fw-select").addEventListener("change", (event) => checkupdatefile());
-	id("fw_select_files").addEventListener("click", (event) => document.getElementById("fw-select").click());
-	id("fw_file_name").addEventListener("mouseup", (event) => document.getElementById("fw_select_files").click());
-	id("uploadfw-button").addEventListener("click", (event) => UploadUpdatefile());
+	id("fw_select").addEventListener("change", checkupdatefile);
+	id("fw_select_files").addEventListener("click", updateDlgSelect);
+	id("fw_file_name").addEventListener("mouseup", updateDlgFileMouseUp);
+	id("uploadfw_button").addEventListener("click", UploadUpdatefile);
 
 	setHTML("fw_file_name", trans_text_item("No file chosen"));
 	displayNone(["prgfw", "uploadfw-button"]);
@@ -54,14 +59,14 @@ function closeUpdateDialog(msg) {
 
 function checkupdatefile() {
 	displayNone("updatemsg");
-	const files = id("fw-select").files;
+	const files = id("fw_select").files;
 	switch (files.length) {
 		case 0:
 			displayNone("uploadfw-button");
 			setHTML("fw_file_name", trans_text_item("No file chosen"));
 			break;
 		case 1:
-			displayBlock("uploadfw-button");
+			displayBlock("uploadfw_button");
 			setHTML("fw_file_name", files[0].name);
 			break;
 		default:
@@ -82,9 +87,8 @@ function StartUploadUpdatefile(response) {
 	if (CheckForHttpCommLock()) {
 		return;
 	}
-	const files = id("fw-select").files;
+	const files = id("fw_select").files;
 	const formData = new FormData();
-	const cmd = "/updatefw";
 	for (let i = 0; i < files.length; i++) {
 		const file = files[i];
 		const arg = `/${file.name}S`;
@@ -97,7 +101,8 @@ function StartUploadUpdatefile(response) {
 	displayBlock(["updatemsg", "prgfw"]);
 	current_update_filename = files.length === 1 ? files[0].name : "";
 	setHTML("updatemsg", `${trans_text_item("Uploading")} ${current_update_filename}`);
-	SendFileHttp(cmd, formData, updatesuccess, updatefailed);
+
+	SendFileHttp(httpCmd.fwUpdate, formData, UpdateProgressDisplay, updatesuccess, updatefailed);
 }
 
 function updatesuccess(response) {
@@ -126,11 +131,11 @@ function updatesuccess(response) {
 }
 
 function updatefailed(error_code, response) {
-	displayBlock("fw-select_form");
-	displayNone(["prgfw", "uploadfw-button"]);
+	displayBlock("fw_select_form");
+	displayNone(["prgfw", "uploadfw_button"]);
 	setHTML("fw_file_name", trans_text_item("No file chosen"));
-	//setHTML('updatemsg', "");
-	id("fw-select").value = "";
+	displayNone("uploadfw_button");
+	id("fw_select").value = "";
 	const common = new Common();
 	if (common.esp_error_code !== 0) {
 		alertdlg(trans_text_item("Error"), stdErrMsg(`(${common.esp_error_code})`, common.esp_error_message));
@@ -142,7 +147,7 @@ function updatefailed(error_code, response) {
 	}
 	conErr(error_code, response);
 	update_ongoing = false;
-	SendGetHttp("/updatefw");
+	SendGetHttp(httpCmd.fwUpdate);
 }
 
 export { updatedlg };
