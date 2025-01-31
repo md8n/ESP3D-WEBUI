@@ -98,7 +98,7 @@ function init_files_panel(dorefresh = true) {
 	id("files_refresh_tft_usb_btn").addEventListener("click", filesRefreshTFTUSB);
 
 	// TODO: Find out what happened to the `files_progress` method
-	// id('progress_btn').addEventListener('click', (event) => files_progress());
+	// id('progress_btn').addEventListener('click', files_progress);
 	id("abort_btn").addEventListener("click", files_abort);
 	id("print_upload_btn").addEventListener("click", files_select_upload);
 
@@ -266,8 +266,7 @@ function files_delete_file(index) {
 }
 
 const files_is_clickable = (index) => files_file_list[index].isdir ? true : direct_sd;
-
-const files_enter_dir = (name) => files_refreshFiles(`${files_currentPath() + name}/`);
+const files_enter_dir = (name) => files_refreshFiles(`${files_currentPath()}${name}/`);
 
 let old_file_name;
 function files_rename(index) {
@@ -356,7 +355,6 @@ function files_refreshFiles(path) {
 	} else {
 		displayBlock("print_upload_btn");
 	}
-
 	setHTML("files_currentPath", files_currentPath());
 	files_file_list = [];
 	files_status_list = [];

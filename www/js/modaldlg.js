@@ -11,8 +11,7 @@ function setactiveModal(html_template, closefunc) {
     modal.element = id(html_template);
     modal.id = listmodal.length;
     modal.name = html_template;
-    if (typeof closefunc !== 'undefined') modal.closefn = closefunc;
-    else modal.closefn = myfnclose;
+    modal.closefn = (typeof closefunc === "function") ? closefunc : myfnclose;
     listmodal.push(modal)
     //console.log("Creation of modal  " +  modal.name + " with ID " +modal.id);
     return listmodal[listmodal.length - 1];;
@@ -34,7 +33,7 @@ function showModal() {
 // When the user clicks on <span> (x), close the modal
 function closeModal(response) {
     var currentmodal = getactiveModal();
-    if (currentmodal != null) {
+    if (currentmodal !== null) {
         currentmodal.element.style.display = "none";
         var closefn = currentmodal.closefn;
         //console.log("Deletetion of modal " +  currentmodal.name + " with ID "  + currentmodal.id);
@@ -48,5 +47,5 @@ function closeModal(response) {
 }
 //default close function
 function myfnclose(value) {
-    //console.log("modale closed: " + value);
+    //console.log("modal closed: " + value);
 }

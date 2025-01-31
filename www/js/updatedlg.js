@@ -3,6 +3,10 @@
 let update_ongoing = false;
 let current_update_filename = "";
 
+const updateDlgCancel = () => closeUpdateDialog("cancel");
+const updateDlgSelect = () => document.getElementById("fw_select").click();
+const updateDlgFileMouseUp = () => document.getElementById("fw_select_files").click();
+
 /** update dialog */
 const updatedlg = () => {
 	const modal = setactiveModal("updatedlg.html");
@@ -10,19 +14,19 @@ const updatedlg = () => {
 		return;
 	}
 
-	id("updateDlgCancel").addEventListener("click", (event) => closeUpdateDialog("cancel"));
-	id("updateDlgClose").addEventListener("click", (event) => closeUpdateDialog("cancel"));
+	id("updateDlgCancel").addEventListener("click", updateDlgCancel);
+	id("updateDlgClose").addEventListener("click", updateDlgCancel);
 
-	id("fw-select").addEventListener("change", (event) => checkupdatefile());
-	id("fw_select_files").addEventListener("click", (event) => document.getElementById("fw-select").click());
-	id("fw_file_name").addEventListener("mouseup", (event) => document.getElementById("fw_select_files").click());
-	id("uploadfw-button").addEventListener("click", (event) => UploadUpdatefile());
+	id("fw_select").addEventListener("change", checkupdatefile);
+	id("fw_select_files").addEventListener("click", updateDlgSelect);
+	id("fw_file_name").addEventListener("mouseup", updateDlgFileMouseUp);
+	id("uploadfw_button").addEventListener("click", UploadUpdatefile);
 
 	setHTML("fw_file_name", translate_text_item("No file chosen"));
 	displayNone("prgfw");
-	displayNone("uploadfw-button");
+	displayNone("uploadfw_button");
 	setHTML("updatemsg", "");
-	setValue("fw-select", "");
+	setValue("fw_select", "");
 	setHTML("fw_update_dlg_title", translate_text_item("ESP3D Update").replace("ESP3D", "FluidNC"));
 	showModal();
 };
@@ -37,18 +41,18 @@ function closeUpdateDialog(msg) {
 
 function checkupdatefile() {
 	displayNone("updatemsg");
-	const files = id("fw-select").files;
+	const files = id("fw_select").files;
 	switch (files.length) {
 		case 0:
-			displayNone("uploadfw-button");
+			displayNone("uploadfw_button");
 			setHTML("fw_file_name", translate_text_item("No file chosen"));
 			break;
 		case 1:
-			displayBlock("uploadfw-button");
+			displayBlock("uploadfw_button");
 			setHTML("fw_file_name", files[0].name);
 			break;
 		default:
-			displayBlock("uploadfw-button");
+			displayBlock("uploadfw_button");
 			setHTML("fw_file_name", translate_text_item("$n files").replace("$n", files.length));
 			break;
 	}
@@ -80,7 +84,7 @@ function StartUploadUpdatefile(response) {
 	}
 
 	const fileList = [];
-	const files = id("fw-select").files;
+	const files = id("fw_select").files;
 	const formData = new FormData();
 	for (let i = 0; i < files.length; i++) {
 		const file = files[i];
@@ -91,8 +95,8 @@ function StartUploadUpdatefile(response) {
 		formData.append("myfile[]", file, `/${file.name}`);
 		console.info(`Preparing ${fullFilename} for upload`);
 	}
-	displayNone("fw-select_form");
-	displayNone("uploadfw-button");
+	displayNone("fw_select_form");
+	displayNone("uploadfw_button");
 	displayBlock("updatemsg");
 	displayBlock("prgfw");
 	update_ongoing = true;
@@ -127,12 +131,12 @@ function updatesuccess(response) {
 }
 
 function updatefailed(error_code, response) {
-	displayBlock("fw-select_form");
+	displayBlock("fw_select_form");
 	displayNone("prgfw");
 	setHTML("fw_file_name", translate_text_item("No file chosen"));
-	displayNone("uploadfw-button");
+	displayNone("uploadfw_button");
 	//setHTML('updatemsg', "");
-	id("fw-select").value = "";
+	id("fw_select").value = "";
 	if (esp_error_code !== 0) {
 		alertdlg(translate_text_item("Error"), stdErrMsg(`(${esp_error_code})`, esp_error_message));
 		setHTML("updatemsg", translate_text_item("Upload failed : ") + esp_error_message);

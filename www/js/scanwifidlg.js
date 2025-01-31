@@ -3,6 +3,8 @@
 let ssid_item_scanwifi = -1;
 let ssid_subitem_scanwifi = -1;
 
+const scanWiFiDlgCancel = () => closeModal("cancel");
+
 /** scanwifi dialog */
 const scanwifidlg = (item, subitem) => {
 	const modal = setactiveModal("scanwifidlg.html", scanwifidlg_close);
@@ -10,9 +12,9 @@ const scanwifidlg = (item, subitem) => {
 		return;
 	}
 
-	id("scanWiFiDlgCancel").addEventListener("click", (event) => closeModal("cancel"));
-	id("scanWiFiDlgClose").addEventListener("click", (event) => closeModal("cancel"));
-	id("refresh_scanwifi_btn").addEventListener("click", (event) => refresh_scanwifi());
+	id("scanWiFiDlgCancel").addEventListener("click", scanWiFiDlgCancel);
+	id("scanWiFiDlgClose").addEventListener("click", scanWiFiDlgCancel);
+	id("refresh_scanwifi_btn").addEventListener("click", refresh_scanwifi);
 
 	ssid_item_scanwifi = item;
 	ssid_subitem_scanwifi = subitem;
@@ -62,8 +64,8 @@ function process_scanWifi_answer(response_text) {
 			const aplist = response.AP_LIST;
 			//console.log("found " + aplist.length + " AP");
 			aplist.sort((a, b) => Number.parseInt(a.SIGNAL) < Number.parseInt(b.SIGNAL)
-					? -1
-					: Number.parseInt(a.SIGNAL) > Number.parseInt(b.SIGNAL) ? 1 : 0);
+				? -1
+				: Number.parseInt(a.SIGNAL) > Number.parseInt(b.SIGNAL) ? 1 : 0);
 			for (let i = aplist.length - 1; i >= 0; i--) {
 				const protIcon = aplist[i].IS_PROTECTED === "1" ? get_icon_svg("lock") : "";
 				const escapedSSID = aplist[i].SSID.replace("'", "\\'").replace('"', '\\"',);
@@ -74,7 +76,7 @@ function process_scanWifi_answer(response_text) {
 				content += `<td style='text-align:center;vertical-align:middle'>${protIcon}</td>`;
 				content += `<td><button id="${btnId}" class='btn btn-primary'>${get_icon_svg("ok")}</button></td>`;
 				content += "</tr>";
-				actions.push({ id: btnId, type: "click", method:select_ap_ssid, index:escapedSSID });
+				actions.push({ id: btnId, type: "click", method: select_ap_ssid, index: escapedSSID });
 			}
 		}
 	} catch (e) {

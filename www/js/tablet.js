@@ -1155,7 +1155,7 @@ window.onresize = setBottomHeight
 //   }, 26000)
 // }
 
-document.addEventListener("click", (event) => {
+const tabletDocumentClick = (event) => {
   const elemIdsToTest = ["calibration-popup", "calibrationBTN", "numPad"];
   const turnOffCalPopup = elemIdsToTest.every((elemId) => {
     const elem = document.getElementById(elemId);
@@ -1164,7 +1164,9 @@ document.addEventListener("click", (event) => {
   if (turnOffCalPopup) {
     document.getElementById("calibration-popup").style.display = "none";
   }
-});
+};
+
+document.addEventListener('click', tabletDocumentClick);
 
 /* Calibration modal */
 

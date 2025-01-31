@@ -1,23 +1,31 @@
 // import - disable_items, displayNone, getChecked, id, setChecked, setHTML, opentab, creditsdlg, cameratab, configtab, changepassworddlg, showpreferencesdlg, translate_text_item, DisconnectLogin, setupdlg, settingstab
 
+const navBarMainTabLink = (event) => opentab(event, "maintab", "mainuitabscontent", "mainuitablinks");
+const navBarCamTabLink = (event) => opentab(event, "cameratab", "mainuitabscontent", "mainuitablinks");
+const navBarConfigTabLink = (event) => opentab(event, "configtab", "mainuitabscontent", "mainuitablinks");
+const navBarSettingTabLink = (event) => opentab(event, "settingstab", "mainuitabscontent", "mainuitablinks");
+const navBarTabletTabLink = (event) => opentab(event, "tablettab", "mainuitabscontent", "mainuitablinks");
+
+const navBarLogout = () => confirmdlg(translate_text_item("Disconnection requested"), translate_text_item("Please confirm disconnection."), DisconnectLogin);
+
 /** Set up the event handlers for the navbar */
 const navbar = () => {
-	id("toggleLockUI").addEventListener("click", (event) => ontoggleLock());
+	id("toggleLockUI").addEventListener("click", ontoggleLock);
 
-	id("showPreferencesDlg").addEventListener("click", (event) => showpreferencesdlg());
-	id("showSetupDlg").addEventListener("click", (event) => setupdlg());
-	id("showCreditsDlg").addEventListener("click", (event) => creditsdlg());
+	id("showPreferencesDlg").addEventListener("click", showpreferencesdlg);
+	id("showSetupDlg").addEventListener("click", setupdlg);
+	id("showCreditsDlg").addEventListener("click", creditsdlg);
 
 	// Note: for `maintab` see dashtab.html
-	id("maintablink").addEventListener("click", (event) => opentab(event, "maintab", "mainuitabscontent", "mainuitablinks"));
-	id("camtablink").addEventListener("click", (event) => opentab(event, "cameratab", "mainuitabscontent", "mainuitablinks"));
-	id("configtablink").addEventListener("click", (event) => opentab(event, "configtab", "mainuitabscontent", "mainuitablinks"));
-	id("settingtablink").addEventListener("click", (event) => opentab(event, "settingstab", "mainuitabscontent", "mainuitablinks"));
-	id("tablettablink").addEventListener("click", (event) => opentab(event, "tablettab", "mainuitabscontent", "mainuitablinks"));
+	id("maintablink").addEventListener("click", navBarMainTabLink);
+	id("camtablink").addEventListener("click", navBarCamTabLink);
+	id("configtablink").addEventListener("click", navBarConfigTabLink);
+	id("settingtablink").addEventListener("click", navBarSettingTabLink);
+	id("tablettablink").addEventListener("click", navBarTabletTabLink);
 
-	id("password_menu").addEventListener("click", (event) => changepassworddlg());
-	id("showLoginDlg").addEventListener("click", (event) => logindlg());
-	id("logout_menu").addEventListener("click", (event) => confirmdlg(translate_text_item("Disconnection requested"), translate_text_item("Please confirm disconnection."), DisconnectLogin,));
+	id("password_menu").addEventListener("click", changepassworddlg);
+	id("showLoginDlg").addEventListener("click", logindlg);
+	id("logout_menu").addEventListener("click", navBarLogout);
 
 	cameratab();
 	configtab();

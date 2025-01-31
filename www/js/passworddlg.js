@@ -1,5 +1,7 @@
 // import conErr, displayBlock, displayNone, id, setHTML, closeModal, setactiveModal, showModal, SendGetHttp, translate_text_item 
 
+const passwordDlgCancel = () => closeModal("cancel");
+
 /** Change Password dialog */
 const changepassworddlg = () => {
 	const modal = setactiveModal("passworddlg.html");
@@ -7,11 +9,11 @@ const changepassworddlg = () => {
 		return;
 	}
 
-	id("passwordDlgClose").addEventListener("click", (event) => closeModal("cancel"));
-	id("password_password_text1").addEventListener("keyup", (event) => checkpassword());
-	id("password_password_text2").addEventListener("keyup", (event) => checkpassword());
-	id("passwordDlgCancel").addEventListener("click", (event) => closeModal("cancel"));
-	id("change_password_btn").addEventListener("click", (event) => SubmitChangePassword());
+	id("passwordDlgClose").addEventListener("click", passwordDlgCancel);
+	id("password_password_text1").addEventListener("keyup", checkpassword);
+	id("password_password_text2").addEventListener("keyup", checkpassword);
+	id("passwordDlgCancel").addEventListener("click", passwordDlgCancel);
+	id("change_password_btn").addEventListener("click", SubmitChangePassword);
 
 	displayNone("password_loader");
 	displayBlock("change_password_content");
