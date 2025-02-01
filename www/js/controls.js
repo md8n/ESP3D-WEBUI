@@ -249,13 +249,6 @@ function onNonXYFeedRateChange() {
 	control_changeaxis();
 }
 
-function processMacroSave(answer) {
-	if (answer == "ok") {
-		//console.log("now rebuild list");
-		control_build_macro_ui();
-	}
-}
-
 function control_build_macro_button(index, entry) {
 	const noGlyph = entry.glyph.length === 0;
 	const btnStyle = noGlyph ? " style='display:none'" : "";
@@ -268,13 +261,23 @@ function control_build_macro_button(index, entry) {
 	return content;
 }
 
+const processMacroSave = (answer) => {
+	if (answer !== "ok") {
+		return;
+	}
+	//console.log("now rebuild list");
+	control_build_macro_ui();
+}
+
+const initMacroDlg = () => showmacrodlg(processMacroSave);
+
 function control_build_macro_ui() {
 	const actions = [];
 
 	var content = "<div class='tooltip'>";
 	content += "<span class='tooltip-text'>Manage macros</span>"
 	content += "<button id='control_btn_show_macro_dlg' class='btn btn-primary'>";
-	actions.push({ id: "control_btn_show_macro_dlg", method: (event) => showmacrodlg(processMacroSave) });
+	actions.push({ id: "control_btn_show_macro_dlg", method: initMacroDlg});
 	content += "<span class='badge'>";
 	content += "<svg width='1.3em' height='1.2em' viewBox='0 0 1300 1200'>";
 	content += "<g transform='translate(50,1200) scale(1, -1)'>";
