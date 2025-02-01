@@ -243,13 +243,6 @@ function onNonXYFeedRateChange() {
 	control_changeaxis(getValue('control_select_axis'), feedratevalue);
 }
 
-function processMacroSave(answer) {
-	if (answer === "ok") {
-		//console.log("now rebuild list");
-		control_build_macro_ui();
-	}
-}
-
 function control_build_macro_button(index, entry) {
 	const noGlyph = entry.glyph.length === 0;
 	const btnStyle = noGlyph ? " style='display:none'" : "";
@@ -262,6 +255,16 @@ function control_build_macro_button(index, entry) {
 	return content;
 }
 
+const processMacroSave = (answer) => {
+	if (answer !== "ok") {
+		return;
+	}
+	//console.log("now rebuild list");
+	control_build_macro_ui();
+}
+
+const initMacroDlg = () => showmacrodlg(processMacroSave);
+
 function control_build_macro_ui() {
 	const common = new Common();
 	const actions = [];
@@ -271,7 +274,7 @@ function control_build_macro_ui() {
 	let content = "<div class='tooltip'>";
 	content += "<span class='tooltip-text'>Manage macros</span>"
 	content += "<button id='control_btn_show_macro_dlg' class='btn btn-primary'>";
-	actions.push({ id: "control_btn_show_macro_dlg", method: (event) => showmacrodlg(processMacroSave) });
+	actions.push({ id: "control_btn_show_macro_dlg", method: initMacroDlg});
 	content += "<span class='badge'>";
 	content += get_icon_svg("star", iconOptions);
 	content += get_icon_svg("pencil", iconOptions);;
