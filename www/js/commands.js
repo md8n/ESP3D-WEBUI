@@ -103,8 +103,8 @@ const Monitor_output_Update = (message) => {
 };
 
 function SendCustomCommand() {
-	let custCmd = id("custom_cmd_txt").value.trim();
-	if (custCmd.trim().length === 0) {
+	const custCmd = getValue("custom_cmd_txt")?.trim() || "";
+	if (!custCmd) {
 		return;
 	}
 
@@ -112,7 +112,7 @@ function SendCustomCommand() {
 	CustomCommand_history.slice(-40);
 	CustomCommand_history_index = CustomCommand_history.length;
 
-	id("custom_cmd_txt").value = "";
+	setValue("custom_cmd_txt", "");
 	Monitor_output_Update(`${custCmd}\n`);
 
 	const cmd = buildHttpCommandCmd(httpCmdType.commandText, custCmd);
