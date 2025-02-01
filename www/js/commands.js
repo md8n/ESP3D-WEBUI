@@ -103,22 +103,19 @@ const Monitor_output_Update = (message) => {
 };
 
 function SendCustomCommand() {
-	let elem = id("custom_cmd_txt");
-	if (!elem) {
-		return;
-	}
-	let cmdTxt = elem.value.trim();
-	if (!cmdTxt) {
+	const custCmd = getValue("custom_cmd_txt")?.trim() || "";
+	if (!custCmd) {
 		return;
 	}
 
-	CustomCommand_history.push(cmdTxt);
+	CustomCommand_history.push(custCmd);
 	CustomCommand_history.slice(-40);
 	CustomCommand_history_index = CustomCommand_history.length;
-	id("custom_cmd_txt").value = "";
-	Monitor_output_Update(`${cmdTxt}\n`);
 
-	const cmd = `/command?commandText=${encodeURI(cmd).replace("#", "%23")}`;
+	setValue("custom_cmd_txt", "");
+	Monitor_output_Update(`${custCmd}\n`);
+
+	const cmd = `/command?commandText=${encodeURI(custCmd).replace("#", "%23")}`;
 	SendGetHttp( cmd, SendCustomCommandSuccess, SendCustomCommandFailed);
 }
 
