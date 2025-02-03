@@ -239,7 +239,7 @@ function tabletSelectGCodeFile(filename) {
 
 function files_print(index) {
 	const file = files_file_list[index];
-	const path = files_currentPath() + file.name;
+	const path = `${files_currentPath()}${file.name}`;
 	tabletSelectGCodeFile(file.name);
 	tabletLoadGCodeFile(path, file.size);
 	files_print_filename(path);
