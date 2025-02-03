@@ -882,9 +882,7 @@ function selectFile() {
     gCodeFilename = "";
     files_enter_dir(filename);
   } else {
-    const fullPath = files_currentPath() + filename;
-    console.log(`loading file '${fullPath}'`);
-    tabletLoadGCodeFile(fullPath, file.size);
+    tabletLoadGCodeFile(`${files_currentPath()}${filename}`, file.size);
   }
 }
 // function toggleDropdown() {
