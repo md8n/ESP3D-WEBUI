@@ -2,7 +2,7 @@ var grbl_processfn = null;
 var grbl_errorfn = null;
 
 function noop() {}
-function SendPrinterCommand(prnCmd, echo_on, processfn, errorfn, id, max_id, extra_arg) {
+function SendPrinterCommand(prnCmd, echo_on, processfn, errorfn, cmd_code, max_cmd_code, extra_arg) {
     if (prnCmd.trim().length === 0) {
         return;
     }
@@ -37,7 +37,7 @@ function SendPrinterCommand(prnCmd, echo_on, processfn, errorfn, id, max_id, ext
         cmd += `&${extra_arg}`;
     }
 
-    SendGetHttp(cmd, procFn, errFn, id, max_id);
+    SendGetHttp(cmd, procFn, errFn, cmd_code, max_cmd_code);
     //console.log(cmd);
 }
 

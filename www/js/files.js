@@ -198,7 +198,7 @@ function files_build_file_line(index, actions) {
 
 function files_print(index) {
 	const file = files_file_list[index];
-	const path = files_currentPath() + file.name;
+	const path = `${files_currentPath()}${file.name}`;
 	tabletSelectGCodeFile(file.name);
 	tabletLoadGCodeFile(path, file.size);
 	files_print_filename(path);
@@ -284,7 +284,7 @@ function process_files_rename(new_file_name) {
 	SendGetHttp(cmd, files_list_success, files_list_failed);
 }
 
-const buildFileHref = (index) => encodeURIComponent(`SD/${files_currentPath}${files_file_list[index].sdname}`.replace("//", "/"));
+const buildFileHref = (index) => encodeURIComponent(`SD/${files_currentPath()}${files_file_list[index].sdname}`.replace("//", "/"));
 function files_download(index) {
 	//console.log("file on direct SD");
 	window.location.href = buildFileHref(index);
@@ -633,7 +633,7 @@ function files_start_upload() {
 		return;
 	}
 
-	const path = files_currentPath;
+	const path = files_currentPath();
 	//console.log("upload from " + path );
 	const files = id("files_input_file").files;
 
