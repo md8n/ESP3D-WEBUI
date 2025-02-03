@@ -324,7 +324,7 @@ function tabletShowMessage(msg, collecting) {
     return;
   }
 
-  let errMsg = "";
+  // let errMsg = "";
 
   //These are used for populating the configuration popup
   if (valueStartsWith(msg, ["$/Maslow_", "$/maslow_"])) {
@@ -609,7 +609,7 @@ function tabletGrblState(grbl, response) {
   }
   //setText('active-state', stateText);
 
-  var modeText = `${modal.distance} ${modal.wcs} ${modal.units} T${modal.tool} F${modal.feedrate} S${modal.spindle}`;
+  // var modeText = `${modal.distance} ${modal.wcs} ${modal.units} T${modal.tool} F${modal.feedrate} S${modal.spindle}`;
 
   if (grbl.lineNumber && ["Run", "Hold", "Stop"].includes(stateName)) {
     //setText('line', grbl.lineNumber);
