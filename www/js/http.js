@@ -41,11 +41,6 @@ const getRandomIntExclusive = (min = 0, max = 10000) => {
 
 const zeroPrefixedString = (value, prefix = "00000") => `${prefix}${value}`.slice(-prefix.length);
 
-/** Build a hopefully unique ID */
-const buildCmdId = () => `T${Date.now()}R${zeroPrefixedString(getRandomIntExclusive())}`;
-
-const isKnownCmdType = (cmdType) => ["GET", "POST"].includes(cmdType);
-
 /** Remove the command with the specified Id */
 const removeCmd = (cmdId) => {
     const ix = cmd_list.findIndex((c) => c.id === cmdId);
@@ -56,31 +51,35 @@ const removeCmd = (cmdId) => {
     }
 }
 
-/** A semaphore (sorta mutex) for working with the cmd_list */
-var cmd_lock = false;
-
-/** Process the supplied cmd through the various stages in its life cycle */
-const process_cmd_list = (cmd, step = "") => {
+const validateProcessing = (cmd, step = "") => {
     if (cmd_lock) {
         // Currently doing a cmd_list process, so this should probably be retried
         return -1;
     }
 
-    const isCmdObject = typeof cmd === "object";
-    const isKnownStep = ["add", "process", "remove", "purge"].includes(step);
-    if (!isCmdObject || !isKnownStep) {
-        // The cmd is invalid, so this should be discarded
+    if (!["add", "process", "remove", "purge"].includes(step)) {
+        // The step is invalid, so the associated command should be discarded
         return -3;
     }
-
+    
     if (cmd_list.length > max_cmd) {
         http_errorfn(cmd, 503, translate_text_item("Server not responding"));
         // Exceeded the cmd_list maximum size, this should probably be retried once other commands have been processed and removed
         return -2;
     }
 
+    return 0;
+}
+
+const validateCommand = (cmd, step = "") => {
+    const isCmdObject = typeof cmd === "object";
+    if (!isCmdObject) {
+        // The cmd is invalid, so this should be discarded
+        return -3;
+    }
+
     const cmdType = cmd?.type || "";
-    if (!isKnownCmdType(cmdType)) {
+    if (!["GET", "POST"].includes(cmdType)) {
         // The cmd is invalid, so this should be discarded
         return -3;
     }
@@ -91,11 +90,29 @@ const process_cmd_list = (cmd, step = "") => {
         return -3;
     }
 
+    return 0;
+}
+
+/** A semaphore (sorta mutex) for working with the cmd_list */
+var cmd_lock = false;
+
+/** Process the supplied cmd through the various stages in its life cycle */
+const process_cmd_list = (cmd, step = "") => {
+    let validationState = validateProcessing(cmd, step);
+    if (validationState < 0) {
+        return validationState;
+    }
+
+    validationState = validateCommand(cmd, step);
+    if (validationState < 0) {
+        return validationState;
+    }
+
     cmd_lock = true;
 
     if (!("id" in cmd) && step === "add") {
-        // Ensure there's always an id when adding a command
-        cmd.id = buildCmdId();
+        // Ensure there's always an id when adding a command. Hopefully unique
+        cmd.id = `T${Date.now()}R${zeroPrefixedString(getRandomIntExclusive())}`;
     }
 
     let doNext = false;
@@ -114,7 +131,6 @@ const process_cmd_list = (cmd, step = "") => {
             break;
         case "remove":
             // Clean up after processing the cmd
-            // we do the following just in case we're not processing the first command in the list
             removeCmd(cmd.id);
 
             if (cmd_list.length) {
@@ -127,7 +143,7 @@ const process_cmd_list = (cmd, step = "") => {
             processing_cmd = false;
             break;
         case "purge":
-            // Wipe the command list
+            // Wipe the command list 
             cmd_list.length = 0;
             clearInterval(cmdInterval);
             cmdInterval = 0;
@@ -203,9 +219,7 @@ function SendGetHttp(url, result_fn, error_fn, cmd_code, max_cmd_code) {
     var cmd_code_id = 0;
     /** The maximum number of times that this cmd_code can be added to the list */
     var max_of_cmd_code = 1;
-    //console.log("ID = " + cmd_code);
-    //console.log("Max ID = " + max_cmd_code);
-    //console.log("+++ " + url);
+
     if (typeof cmd_code !== 'undefined') {
         cmd_code_id = cmd_code;
         if (typeof max_cmd_code !== 'undefined') {
@@ -224,7 +238,7 @@ function SendGetHttp(url, result_fn, error_fn, cmd_code, max_cmd_code) {
             }
         }
     } //else console.log("No ID defined");
-    //console.log("adding " + url);
+
     const cmd = {
         cmd: url,
         type: "GET",
