@@ -836,7 +836,7 @@ function selectFile() {
     gCodeFilename = '';
     files_enter_dir(filename);
   } else {
-    tabletLoadGCodeFile(files_currentPath + filename, file.size);
+    tabletLoadGCodeFile(`${files_currentPath()}${filename}`, file.size);
   }
 }
 function toggleDropdown() {
