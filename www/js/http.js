@@ -1,201 +1,268 @@
 var http_communication_locked = false;
+/** A list of various command objects that can be used as a queue */
 const cmd_list = [];
 var processing_cmd = false;
 var xmlhttpupload;
+var max_cmd = 40;
+var cmdInterval = 0;
 
-var max_cmd = 20;
+const processNextCmd = () => {
+    if (!cmd_list.length) {
+        console.warn("Command list empty, no messages to process at this time");
+        clearInterval(cmdInterval);
+        cmdInterval = 0;
+    }
 
-function clear_cmd_list() {
-    // Wipe the command list
-    cmd_list.length = 0;
-    processing_cmd = false;
+    switch (process_cmd_list(cmd_list[0], "process")) {
+        case 1:
+            // Success, job done, move on ...
+            break;
+        case -3:
+            // Malformed command, remove from the list without changing anything else
+            cmd_list.splice(0, 1);
+            break;
+        case -2:
+            // TODO: Too many commands in the cmd_list, this should be reprocessed later
+            break;
+        case -1:
+            // TODO: Currently processing a command, this should be retried
+            break;
+        default:
+            break;
+    }
 }
 
-/** Standard actions to take after completing processing a command's reply */
-const postProcessCmd = () => {
-    cmd_list.shift();
-    processing_cmd = false;
-    process_cmd();
+/** This comes straight out of the Mozilla website for Math.random */
+const getRandomIntExclusive = (min = 0, max = 10000) => {
+    const minCeiled = Math.ceil(min);
+    const maxFloored = Math.floor(max);
+    return Math.floor(Math.random() * (maxFloored - minCeiled) + minCeiled);
 }
 
-function http_resultfn(response_text) {
-    if ((cmd_list.length > 0) && (typeof cmd_list[0].resultfn != 'undefined')) {
-        var fn = cmd_list[0].resultfn;
-        fn(response_text);
-    } //else console.log ("No resultfn");
-    postProcessCmd();
+const zeroPrefixedString = (value, prefix = "00000") => `${prefix}${value}`.slice(-prefix.length);
+
+/** Build a hopefully unique ID */
+const buildCmdId = () => `T${Date.now()}R${zeroPrefixedString(getRandomIntExclusive())}`;
+
+const isKnownCmdType = (cmdType) => ["GET", "POST"].includes(cmdType);
+
+/** Remove the command with the specified Id */
+const removeCmd = (cmdId) => {
+    const ix = cmd_list.findIndex((c) => c.id === cmdId);
+    if (ix !== -1) {
+        cmd_list.splice(ix, 1);
+    } else {
+        console.warn(`Wanted to remove the command with id:'${cmdId}', but no matching command found in the list. The command list has probably been purged.`);
+    }
 }
 
-function http_errorfn(error_code, response_text) {
-    var fn = cmd_list[0].errorfn;
-    if ((cmd_list.length > 0) && (typeof cmd_list[0].errorfn != 'undefined') && cmd_list[0].errorfn != null) {
+/** A semaphore (sorta mutex) for working with the cmd_list */
+var cmd_lock = false;
+
+/** Process the supplied cmd through the various stages in its life cycle */
+const process_cmd_list = (cmd, step = "") => {
+    if (cmd_lock) {
+        // Currently doing a cmd_list process, so this should probably be retried
+        return -1;
+    }
+
+    const isCmdObject = typeof cmd === "object";
+    const isKnownStep = ["add", "process", "remove", "purge"].includes(step);
+    if (!isCmdObject || !isKnownStep) {
+        // The cmd is invalid, so this should be discarded
+        return -3;
+    }
+
+    if (cmd_list.length > max_cmd) {
+        http_errorfn(cmd, 503, translate_text_item("Server not responding"));
+        // Exceeded the cmd_list maximum size, this should probably be retried once other commands have been processed and removed
+        return -2;
+    }
+
+    const cmdType = cmd?.type || "";
+    if (!isKnownCmdType(cmdType)) {
+        // The cmd is invalid, so this should be discarded
+        return -3;
+    }
+
+    // Make sure that any step (except for "add" and "purge") already has an id in the cmd
+    if (!("id" in cmd) && ["process", "remove"].includes(step)) {
+        // The cmd is invalid, so this should be discarded, although this does imply a programmer error
+        return -3;
+    }
+
+    cmd_lock = true;
+
+    if (!("id" in cmd) && step === "add") {
+        // Ensure there's always an id when adding a command
+        cmd.id = buildCmdId();
+    }
+
+    let doNext = false;
+
+    switch (step) {
+        case "add":
+            // Add a new cmd to the list
+            cmd_list.push(cmd);
+            doNext = true;
+            break;
+        case "process":
+            // Pass the supplied cmd from the list off for processing
+            process_cmd(cmd);
+            // Nothing more to do because the XHR callbacks take over from here
+            doNext = false;
+            break;
+        case "remove":
+            // Clean up after processing the cmd
+            // we do the following just in case we're not processing the first command in the list
+            removeCmd(cmd.id);
+
+            if (cmd_list.length) {
+                doNext = true;
+            } else {
+                clearInterval(cmdInterval);
+                cmdInterval = 0;
+            }
+
+            processing_cmd = false;
+            break;
+        case "purge":
+            // Wipe the command list
+            cmd_list.length = 0;
+            clearInterval(cmdInterval);
+            cmdInterval = 0;
+            doNext = false;
+            processing_cmd = false;
+            break;
+    }
+    cmd_lock = false;
+
+    if (doNext) {
+        // setInterval is used here to ensure that this call goes onto the event loop
+        // i.e. so that it is effectively treated asynchronously
+        const throttleInterval = 10;
+        if (!cmdInterval) {
+            cmdInterval = setInterval(() => processNextCmd(), throttleInterval);
+        }
+    }
+
+    // Success
+    return 1;
+}
+
+/** Wipe the command list - Nuclear option */
+const clear_cmd_list = () => {
+    process_cmd_list({ "id": "0" }, "purge");
+}
+
+function http_resultfn(cmd, response_text) {
+    if (typeof cmd.resultfn === "function") {
+        cmd.resultfn(response_text);
+    }
+    process_cmd_list(cmd, "remove");
+}
+
+function http_errorfn(cmd, error_code, response_text) {
+    if (typeof cmd.errorfn === "function") {
         if (error_code == 401) {
             logindlg();
             console.log("Authentication issue pls log");
         }
-        cmd_list[0].errorfn(error_code, response_text);
-    } //else console.log ("No errorfn");
-    postProcessCmd();
+        cmd.errorfn(error_code, response_text);
+    } else {
+        console.error(`Error '${error_code}' with response '${response_text}'`);
+    }
+    process_cmd_list(cmd, "remove");
 }
 
-function process_cmd() {
-    if (!cmd_list.length) {
-        // No commands to process
-        return;
-    }
-
+const process_cmd = (cmd) => {
     if (processing_cmd) {
-        // if (processing_cmd) { 
-        //     console.log("Currently processing a command");
-        // }
         return;
     }
 
-    const command = cmd_list[0];
-    const cmdType = command.type;
-    if (!["GET", "POST", "CMD"].includes(cmdType)) {
-        // This should never be true, but just in case we will handle it
-        console.error(`Unknown command type ${cmdType} for command ${command.cmd}`);
-        postProcessCmd();
-        return;
-    }
-    // console.log("Processing 1/" + cmd_list.length);
-    // console.log("Processing " + command.cmd);
+    const cmdType = cmd.type;
     processing_cmd = true;
-    if (cmdType === "CMD") {
-        // Note: NOT an actual http command, just something else to be done
-        const fn = command.cmd;
-        fn();
-        postProcessCmd();
-        return;
-    }
-
     switch (cmdType) {
         case "GET":
-            ProcessGetHttp(command.cmd, http_resultfn, http_errorfn);
+            ProcessGetHttp(cmd);
             break;
         case "POST":
             // POST is only ever used for file uploading
             //console.log("Uploading");
-            ProcessFileHttp(command.cmd, command.data, command.progressfn, http_resultfn, http_errorfn);
+            ProcessFileHttp(cmd);
+            break;
+        default:
+            // Unknown command type
+            // This should never be true, but just in case we will handle it
+            http_errorfn(cmd, 400, translate_text_item(`Unknown command type '${cmdType}'`));
             break;
     }
-
 }
 
-/** Add some arbitrary command to the cmd_list.
- * Note: This is assumed to NOT be an actual HTTP command
- */
-function AddCmd(cmd_fn, id) {
-    if (cmd_list.length > max_cmd) {
-        http_errorfn(999, translate_text_item("Server not responding"));
-        return;
-    }
-    const cmd_id = (typeof id !== 'undefined') ? id : 0;
-    //console.log("adding command");
-    var cmd = {
-        cmd: cmd_fn,
-        type: "CMD",
-        id: cmd_id
-    };
-    cmd_list.push(cmd);
-    //console.log("Now " + cmd_list.length);
-    process_cmd();
-}
-
-function SendGetHttp(url, result_fn, error_fn, id, max_id) {
-    if ((cmd_list.length > max_cmd) && (max_cmd != -1)) {
-        error_fn(999, translate_text_item("Server not responding"));
-        return;
-    }
-    var cmd_id = 0;
-    var cmd_max_id = 1;
-    //console.log("ID = " + id);
-    //console.log("Max ID = " + max_id);
+function SendGetHttp(url, result_fn, error_fn, cmd_code, max_cmd_code) {
+    var cmd_code_id = 0;
+    /** The maximum number of times that this cmd_code can be added to the list */
+    var max_of_cmd_code = 1;
+    //console.log("ID = " + cmd_code);
+    //console.log("Max ID = " + max_cmd_code);
     //console.log("+++ " + url);
-    if (typeof id != 'undefined') {
-        cmd_id = id;
-        if (typeof max_id != 'undefined') cmd_max_id = max_id;
+    if (typeof cmd_code !== 'undefined') {
+        cmd_code_id = cmd_code;
+        if (typeof max_cmd_code !== 'undefined') {
+            max_of_cmd_code = max_cmd_code;
+        }
         //else console.log("No Max ID defined");
         for (p = 0; p < cmd_list.length; p++) {
-            //console.log("compare " + (max_id - cmd_max_id));
-            if (cmd_list[p].id == cmd_id) {
-                cmd_max_id--;
-                //console.log("found " + cmd_list[p].id + " and " + cmd_id);
+            //console.log("compare " + (max_cmd_code - max_of_cmd_code));
+            if (cmd_list[p].cmd_code == cmd_code_id) {
+                max_of_cmd_code--;
+                //console.log("found " + cmd_list[p].cmd_code + " and " + cmd_code_id);
             }
-            if (cmd_max_id <= 0) {
-                console.log("Limit reached for " + id);
+            if (max_of_cmd_code <= 0) {
+                console.log("Limit reached for " + cmd_code);
                 return;
             }
         }
     } //else console.log("No ID defined");
     //console.log("adding " + url);
-    var cmd = {
+    const cmd = {
         cmd: url,
         type: "GET",
         isupload: false,
         resultfn: result_fn,
         errorfn: error_fn,
-        id: cmd_id
+        cmd_code: cmd_code_id
     };
-    cmd_list.push(cmd);
-    //console.log("Now " + cmd_list.length);
-    process_cmd();
+    process_cmd_list(cmd, "add");
 }
 
-function ProcessGetHttp(cmd, resultfn, errorfn) {
+function ProcessGetHttp(cmd) {
     if (http_communication_locked) {
-        errorfn(503, translate_text_item("Communication locked!"));
+        http_errorfn(cmd, 503, translate_text_item("Communication locked!"));
         console.log("locked");
         return;
     }
+
     var xmlhttp = new XMLHttpRequest();
     xmlhttp.onreadystatechange = function () {
         if (xmlhttp.readyState == 4) {
             if (xmlhttp.status == 200) {
                 //console.log("*** " + url + " done");
-                if (typeof resultfn === "function") resultfn(xmlhttp.responseText);
+                http_resultfn(cmd, xmlhttp.responseText);
             } else {
                 if (xmlhttp.status == 401) GetIdentificationStatus();
-                if (typeof errorfn === "function") errorfn(xmlhttp.status, xmlhttp.responseText);
+                http_errorfn(cmd, xmlhttp.status, xmlhttp.responseText);
             }
         }
     }
 
-    //console.log("GET:" + cmd);
-    xmlhttp.open("GET", cmd, true);
+    xmlhttp.open("GET", cmd.cmd, true);
     xmlhttp.send();
-}
-
-function ProcessPostHttp(cmd, postdata, resultfn, errorfn) {
-    if (http_communication_locked) {
-        errorfn(503, translate_text_item("Communication locked!"));
-        return;
-    }
-    var xmlhttp = new XMLHttpRequest();
-    xmlhttp.onreadystatechange = function () {
-        if (xmlhttp.readyState == 4) {
-            if (xmlhttp.status == 200) {
-                if (typeof resultfn === "function") resultfn(xmlhttp.responseText);
-            } else {
-                if (xmlhttp.status == 401) GetIdentificationStatus();
-                if (typeof errorfn === "function") errorfn(xmlhttp.status, xmlhttp.responseText);
-            }
-        }
-    }
-    //console.log(cmd);
-    xmlhttp.open("POST", cmd, true);
-    xmlhttp.send(postdata);
 }
 
 /** POST the file FormData */
 function SendFileHttp(url, postdata, progress_fn, result_fn, error_fn) {
-    if ((cmd_list.length > max_cmd) && (max_cmd != -1)) {
-        error_fn(999, translate_text_item("Server not responding"));
-        return;
-    }
-    if (cmd_list.length != 0) process = false;
-    var cmd = {
+    const cmd = {
         cmd: url,
         type: "POST",
         isupload: true,
@@ -203,34 +270,34 @@ function SendFileHttp(url, postdata, progress_fn, result_fn, error_fn) {
         progressfn: progress_fn,
         resultfn: result_fn,
         errorfn: error_fn,
-        id: 0
+        cmd_code: 0
     };
-    cmd_list.push(cmd);
-    process_cmd();
+    process_cmd_list(cmd, "add");
 }
 
-function ProcessFileHttp(url, postdata, progressfn, resultfn, errorfn) {
+function ProcessFileHttp(cmd) {
     if (http_communication_locked) {
-        errorfn(503, translate_text_item("Communication locked!"));
+        http_errorfn(cmd, 503, translate_text_item("Communication locked!"));
         return;
     }
+
     http_communication_locked = true;
+
     xmlhttpupload = new XMLHttpRequest();
     xmlhttpupload.onreadystatechange = function () {
         if (xmlhttpupload.readyState == 4) {
             http_communication_locked = false;
             if (xmlhttpupload.status == 200) {
-                if (typeof resultfn === "function") resultfn(xmlhttpupload.responseText);
+                http_resultfn(cmd, xmlhttpupload.responseText);
             } else {
                 if (xmlhttpupload.status == 401) GetIdentificationStatus();
-                if (typeof errorfn === "function") errorfn(xmlhttpupload.status, xmlhttpupload.responseText);
+                http_errorfn(cmd, xmlhttpupload.status, xmlhttpupload.responseText);
             }
         }
     }
-    //console.log(url);
-    xmlhttpupload.open("POST", url, true);
-    if (typeof progressfn === "function") {
-        xmlhttpupload.upload.addEventListener("progress", progressfn, false);
+    xmlhttpupload.open("POST", cmd.cmd, true);
+    if (typeof cmd.progressfn === "function") {
+        xmlhttpupload.upload.addEventListener("progress", cmd.progressfn, false);
     }
-    xmlhttpupload.send(postdata);
+    xmlhttpupload.send(cmd.data);
 }
