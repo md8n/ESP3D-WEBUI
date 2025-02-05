@@ -1,82 +1,93 @@
 var http_communication_locked = false;
-var http_cmd_list = [];
+const cmd_list = [];
 var processing_cmd = false;
 var xmlhttpupload;
-var page_id = ""
 
 var max_cmd = 20;
 
 function clear_cmd_list() {
-    http_cmd_list = [];
+    // Wipe the command list
+    cmd_list.length = 0;
     processing_cmd = false;
 }
 
-function http_resultfn(response_text) {
-    if ((http_cmd_list.length > 0) && (typeof http_cmd_list[0].resultfn != 'undefined')) {
-        var fn = http_cmd_list[0].resultfn;
-        fn(response_text);
-    } //else console.log ("No resultfn");
-    http_cmd_list.shift();
+/** Standard actions to take after completing processing a command's reply */
+const postProcessCmd = () => {
+    cmd_list.shift();
     processing_cmd = false;
     process_cmd();
 }
 
+function http_resultfn(response_text) {
+    if ((cmd_list.length > 0) && (typeof cmd_list[0].resultfn != 'undefined')) {
+        var fn = cmd_list[0].resultfn;
+        fn(response_text);
+    } //else console.log ("No resultfn");
+    postProcessCmd();
+}
+
 function http_errorfn(error_code, response_text) {
-    var fn = http_cmd_list[0].errorfn;
-    if ((http_cmd_list.length > 0) && (typeof http_cmd_list[0].errorfn != 'undefined') && http_cmd_list[0].errorfn != null) {
+    var fn = cmd_list[0].errorfn;
+    if ((cmd_list.length > 0) && (typeof cmd_list[0].errorfn != 'undefined') && cmd_list[0].errorfn != null) {
         if (error_code == 401) {
             logindlg();
             console.log("Authentication issue pls log");
         }
-        http_cmd_list[0].errorfn(error_code, response_text);
+        cmd_list[0].errorfn(error_code, response_text);
     } //else console.log ("No errorfn");
-    http_cmd_list.shift();
-    processing_cmd = false;
-    process_cmd();
+    postProcessCmd();
 }
 
 function process_cmd() {
-    if (!http_cmd_list.length || processing_cmd) {
+    if (!cmd_list.length) {
+        // No commands to process
+        return;
+    }
+
+    if (processing_cmd) {
         // if (processing_cmd) { 
         //     console.log("Currently processing a command");
         // }
         return;
     }
 
-    const cmdType = http_cmd_list[0].type;
+    const command = cmd_list[0];
+    const cmdType = command.type;
     if (!["GET", "POST", "CMD"].includes(cmdType)) {
-        console.error(`Unknown command type ${cmdType} for command ${http_cmd_list[0].cmd}`);
-        // This should never be true, but just in case we'll deliberately set it to false
-        processing_cmd = false;
+        // This should never be true, but just in case we will handle it
+        console.error(`Unknown command type ${cmdType} for command ${command.cmd}`);
+        postProcessCmd();
         return;
     }
-    // console.log("Processing 1/" + http_cmd_list.length);
-    // console.log("Processing " + http_cmd_list[0].cmd);
+    // console.log("Processing 1/" + cmd_list.length);
+    // console.log("Processing " + command.cmd);
     processing_cmd = true;
+    if (cmdType === "CMD") {
+        // Note: NOT an actual http command, just something else to be done
+        const fn = command.cmd;
+        fn();
+        postProcessCmd();
+        return;
+    }
+
     switch (cmdType) {
         case "GET":
-            ProcessGetHttp(http_cmd_list[0].cmd, http_resultfn, http_errorfn);
+            ProcessGetHttp(command.cmd, http_resultfn, http_errorfn);
             break;
         case "POST":
-            if (!(http_cmd_list[0].isupload)) {
-                ProcessPostHttp(http_cmd_list[0].cmd, http_cmd_list[0].data, http_resultfn, http_errorfn);
-            } else {
-                //console.log("Uploading");
-                ProcessFileHttp(http_cmd_list[0].cmd, http_cmd_list[0].data, http_cmd_list[0].progressfn, http_resultfn, http_errorfn);
-            }
-            break;
-        case "CMD":
-            var fn = http_cmd_list[0].cmd;
-            fn();
-            http_cmd_list.shift();
-            processing_cmd = false;
-            process_cmd();
+            // POST is only ever used for file uploading
+            //console.log("Uploading");
+            ProcessFileHttp(command.cmd, command.data, command.progressfn, http_resultfn, http_errorfn);
             break;
     }
+
 }
 
+/** Add some arbitrary command to the cmd_list.
+ * Note: This is assumed to NOT be an actual HTTP command
+ */
 function AddCmd(cmd_fn, id) {
-    if (http_cmd_list.length > max_cmd) {
+    if (cmd_list.length > max_cmd) {
         http_errorfn(999, translate_text_item("Server not responding"));
         return;
     }
@@ -87,13 +98,13 @@ function AddCmd(cmd_fn, id) {
         type: "CMD",
         id: cmd_id
     };
-    http_cmd_list.push(cmd);
-    //console.log("Now " + http_cmd_list.length);
+    cmd_list.push(cmd);
+    //console.log("Now " + cmd_list.length);
     process_cmd();
 }
 
 function SendGetHttp(url, result_fn, error_fn, id, max_id) {
-    if ((http_cmd_list.length > max_cmd) && (max_cmd != -1)) {
+    if ((cmd_list.length > max_cmd) && (max_cmd != -1)) {
         error_fn(999, translate_text_item("Server not responding"));
         return;
     }
@@ -106,11 +117,11 @@ function SendGetHttp(url, result_fn, error_fn, id, max_id) {
         cmd_id = id;
         if (typeof max_id != 'undefined') cmd_max_id = max_id;
         //else console.log("No Max ID defined");
-        for (p = 0; p < http_cmd_list.length; p++) {
+        for (p = 0; p < cmd_list.length; p++) {
             //console.log("compare " + (max_id - cmd_max_id));
-            if (http_cmd_list[p].id == cmd_id) {
+            if (cmd_list[p].id == cmd_id) {
                 cmd_max_id--;
-                //console.log("found " + http_cmd_list[p].id + " and " + cmd_id);
+                //console.log("found " + cmd_list[p].id + " and " + cmd_id);
             }
             if (cmd_max_id <= 0) {
                 console.log("Limit reached for " + id);
@@ -127,19 +138,19 @@ function SendGetHttp(url, result_fn, error_fn, id, max_id) {
         errorfn: error_fn,
         id: cmd_id
     };
-    http_cmd_list.push(cmd);
-    //console.log("Now " + http_cmd_list.length);
+    cmd_list.push(cmd);
+    //console.log("Now " + cmd_list.length);
     process_cmd();
 }
 
-function ProcessGetHttp(url, resultfn, errorfn) {
+function ProcessGetHttp(cmd, resultfn, errorfn) {
     if (http_communication_locked) {
         errorfn(503, translate_text_item("Communication locked!"));
         console.log("locked");
         return;
     }
     var xmlhttp = new XMLHttpRequest();
-    xmlhttp.onreadystatechange = function() {
+    xmlhttp.onreadystatechange = function () {
         if (xmlhttp.readyState == 4) {
             if (xmlhttp.status == 200) {
                 //console.log("*** " + url + " done");
@@ -151,53 +162,18 @@ function ProcessGetHttp(url, resultfn, errorfn) {
         }
     }
 
-    if (url.startsWith("/command")) {
-        url += (url.indexOf("?") == -1) ? "?" : "&";
-        url += "PAGEID=" + page_id;
-    }
-    //console.log("GET:" + url);
-    xmlhttp.open("GET", url, true);
+    //console.log("GET:" + cmd);
+    xmlhttp.open("GET", cmd, true);
     xmlhttp.send();
 }
 
-function SendPostHttp(url, postdata, result_fn, error_fn, id, max_id) {
-    if ((http_cmd_list.length > max_cmd) && (max_cmd != -1)) {
-        error_fn(999, translate_text_item("Server not responding"));
-        return;
-    }
-    var cmd_id = 0;
-    var cmd_max_id = 1;
-    if (typeof id != 'undefined') {
-        cmd_id = id;
-        if (typeof max_id != 'undefined') cmd_max_id = max_id;
-        for (p = 0; p < http_cmd_list.length; p++) {
-            if (http_cmd_list[p].id == cmd_id) cmd_max_id--;
-            if (cmd_max_id <= 0) return;
-        }
-    }
-
-    //console.log("adding " + url);
-    var cmd = {
-        cmd: url,
-        type: "POST",
-        isupload: false,
-        data: postdata,
-        resultfn: result_fn,
-        errorfn: error_fn,
-        initfn: init_fn,
-        id: cmd_id
-    };
-    http_cmd_list.push(cmd);
-    process_cmd();
-}
-
-function ProcessPostHttp(url, postdata, resultfn, errorfn) {
+function ProcessPostHttp(cmd, postdata, resultfn, errorfn) {
     if (http_communication_locked) {
         errorfn(503, translate_text_item("Communication locked!"));
         return;
     }
     var xmlhttp = new XMLHttpRequest();
-    xmlhttp.onreadystatechange = function() {
+    xmlhttp.onreadystatechange = function () {
         if (xmlhttp.readyState == 4) {
             if (xmlhttp.status == 200) {
                 if (typeof resultfn === "function") resultfn(xmlhttp.responseText);
@@ -207,19 +183,18 @@ function ProcessPostHttp(url, postdata, resultfn, errorfn) {
             }
         }
     }
-    url += (url.indexOf("?") == -1) ? "?" : "&";
-    url += "PAGEID=" + page_id;
-    //console.log(url);
-    xmlhttp.open("POST", url, true);
+    //console.log(cmd);
+    xmlhttp.open("POST", cmd, true);
     xmlhttp.send(postdata);
 }
 
+/** POST the file FormData */
 function SendFileHttp(url, postdata, progress_fn, result_fn, error_fn) {
-    if ((http_cmd_list.length > max_cmd) && (max_cmd != -1)) {
+    if ((cmd_list.length > max_cmd) && (max_cmd != -1)) {
         error_fn(999, translate_text_item("Server not responding"));
         return;
     }
-    if (http_cmd_list.length != 0) process = false;
+    if (cmd_list.length != 0) process = false;
     var cmd = {
         cmd: url,
         type: "POST",
@@ -230,7 +205,7 @@ function SendFileHttp(url, postdata, progress_fn, result_fn, error_fn) {
         errorfn: error_fn,
         id: 0
     };
-    http_cmd_list.push(cmd);
+    cmd_list.push(cmd);
     process_cmd();
 }
 
@@ -241,7 +216,7 @@ function ProcessFileHttp(url, postdata, progressfn, resultfn, errorfn) {
     }
     http_communication_locked = true;
     xmlhttpupload = new XMLHttpRequest();
-    xmlhttpupload.onreadystatechange = function() {
+    xmlhttpupload.onreadystatechange = function () {
         if (xmlhttpupload.readyState == 4) {
             http_communication_locked = false;
             if (xmlhttpupload.status == 200) {

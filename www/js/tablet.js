@@ -688,8 +688,10 @@ var filename = 'TEST.NC';
 var watchPath = '';
 
 function tabletGetFileList(path) {
-  gCodeFilename = ''
-  SendGetHttp(`/upload?path=${encodeURI(path)}`, files_list_success)
+  // Clear/reset the gCodeFilename
+  gCodeFilename = "";
+  const cmd = buildHttpFileCmd({ path: path });
+  SendGetHttp(cmd, files_list_success);
 }
 
 const tabletTabActivate = () =>{
@@ -1153,7 +1155,7 @@ const onCalibrationButtonsClick = async (command, msg = "") => {
   if (msg) {
     addMessage(msg);
   }
-  sendCommand(command);  
+  sendCommand(command);
 
   //Prints out the index.html version number when test is pressed
   if (command === '$TEST') {

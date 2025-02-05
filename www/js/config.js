@@ -5,7 +5,7 @@ var config_error_msg = "";
 var config_lastindex_is_override = false;
 var commandtxt = "$$";
 var is_override_config = false;
-var config_file_name = "/sd/config";
+// var config_file_name = "/sd/config";
 
 
 function refreshconfig(is_override) {
@@ -37,25 +37,24 @@ function config_display_override(display_it) {
     }
 }
 
-function getprinterconfig(is_override) {
-    var cmd = commandtxt;
-    if ((typeof is_override != 'undefined') && is_override) {
-        cmd = "M503";
+function getprinterconfig(is_override = false) {
+    const plainCmd = is_override ? "M503" : commandtxt;
+    is_override_config = is_override;
+    if (is_override) {
         config_override_List = [];
-        is_override_config = true;
-    } else is_override_config = false;
-    var url = "/command?plain=" + encodeURIComponent(cmd);
-    SendGetHttp(url);
+    }
+    const cmd = buildHttpCommandCmd(httpCmdType.plain, plainCmd);
+    SendGetHttp(cmd);
 }
 
 function Apply_config_override() {
-    var url = "/command?plain=" + encodeURIComponent("M500");
-    SendGetHttp(url, getESPUpdateconfigSuccess);
+    const cmd = buildHttpCommandCmd(httpCmdType.plain, "M500");
+    SendGetHttp(cmd, getESPUpdateconfigSuccess);
 }
 
 function Delete_config_override() {
-    var url = "/command?plain=" + encodeURIComponent("M502");
-    SendGetHttp(url, getESPUpdateconfigSuccess);
+    const cmd = buildHttpCommandCmd(httpCmdType.plain, "M502");
+    SendGetHttp(cmd, getESPUpdateconfigSuccess);
 }
 
 function getESPUpdateconfigSuccess(response) {
@@ -99,7 +98,7 @@ function build_HTML_config_list() {
             content += "<span class='input-group-addon hide_it' ></span>";
             content += "<input id='config_" + prefix + i + "' type='text' class='form-control' style='width:";
             content += "auto";
-            content += "'  value='" + item.defaultvalue + "' onkeyup='config_checkchange(" + i + "," + is_override_config + ")' />";
+            content += "' value='" + item.defaultvalue + "' onkeyup='config_checkchange(" + i + "," + is_override_config + ")' />";
             content += "<span id='icon_config_" + prefix + i + "'class='form-control-feedback ico_feedback' ></span>";
             content += "<span class='input-group-addon hide_it' ></span>";
             content += "</div>";
@@ -262,36 +261,38 @@ function is_config_override_file() {
 }
 
 function configGetvalue(index, is_override) {
-    var prefix = "";
-    var item = config_configList[index];
-    if (is_override) {
-        prefix = "_override";
-        item = config_override_List[index];
+    const prefix = is_override ? "_override" : "";
+    const item = is_override
+        ? config_override_List[index]
+        : config_configList[index];
+
+    const cnfId = `config_${prefix}${index}`;
+
+    // remove possible spaces
+    const value = id(cnfId).value.trim();
+    if (value === item.defaultvalue) {
+        return;
     }
-    //remove possible spaces
-    value = id('config_' + prefix + index).value.trim();
-    if (value == item.defaultvalue) return;
-    //check validity of value
-    var isvalid = config_check_value(value, index, is_override);
+
+    // check validity of value
+    const isvalid = config_check_value(value, index, is_override);
+
     //if not valid show error
+    id(`btn_${cnfId}`).className = `btn ${!isvalid ? "btn-danger" : "btn-success"}`;
+    id(`icon_${cnfId}`).className = `form-control-feedback ${!isvalid ? "has-error" : "has-success"} ico_feedback`;
+    id(`icon_${cnfId}`).innerHTML = isvalid ? get_icon_svg("remove") : get_icon_svg("ok");
+    id(`status_${cnfId}`).className = `form-group has-feedback ${!isvalid ? "has-error" : "has-success"}`;
+
     if (!isvalid) {
-        id('btn_config_' + prefix + index).className = "btn btn-danger";
-        id('icon_config_' + prefix + index).className = "form-control-feedback has-error ico_feedback";
-        id('icon_config_' + prefix + index).innerHTML = get_icon_svg("remove");
-        id('status_config_' + prefix + index).className = "form-group has-feedback has-error";
-        alertdlg(translate_text_item("Out of range"), translate_text_item("Value ") + config_error_msg + " !");
+        alertdlg(translate_text_item("Out of range"), `${translate_text_item("Value ")}${config_error_msg} !`);
     } else {
         //value is ok save it
-        var cmd = item.cmd + value;
         config_lastindex = index;
         config_lastindex_is_override = is_override;
         item.defaultvalue = value;
-        id('btn_config_' + prefix + index).className = "btn btn-success";
-        id('icon_config_' + prefix + index).className = "form-control-feedback has-success ico_feedback";
-        id('icon_config_' + prefix + index).innerHTML = get_icon_svg("ok");
-        id('status_config_' + prefix + index).className = "form-group has-feedback has-success";
-        var url = "/command?plain=" + encodeURIComponent(cmd);
-        SendGetHttp(url, setESPconfigSuccess, setESPconfigfailed);
+
+        var cmd = buildHttpCommandCmd(httpCmdType.plain, `${item.cmd}${value}`);
+        SendGetHttp(cmd, setESPconfigSuccess, setESPconfigfailed);
     }
 }
 

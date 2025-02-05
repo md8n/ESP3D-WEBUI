@@ -44,7 +44,9 @@ const Disable_interface = (lostconnection) => {
 	//block all communication
 	http_communication_locked = true;
 	log_off = true;
-	if (interval_ping !== -1) clearInterval(interval_ping);
+	if (interval_ping !== -1) {
+		clearInterval(interval_ping);
+	}
 	//clear all waiting commands
 	clear_cmd_list();
 	//no camera
