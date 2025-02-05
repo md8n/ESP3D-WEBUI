@@ -226,16 +226,16 @@ const saveMaslowYaml = () => {
 	SendGetHttp(`/command?plain=${encodeURIComponent("$CO")}`, saveConfigSuccess, saveConfigFail);
 }
 
-const saveConfigClearMessage = () =>  setTimeout(() => {setHTML(configSaveResultId, "");}, 5000)
+const saveConfigClearMessage = () => setTimeout(() => { setHTML(configSaveResultId, ""); }, 5000)
 
 const saveConfigSuccess = (response) => {
 	setHTML(configSaveResultId, `"Save" ${configFileName} succeeded`);
-    saveConfigClearMessage();
+	saveConfigClearMessage();
 }
 
 const saveConfigFail = (response) => {
 	setHTML(configSaveResultId, `"Save" ${configFileName} failed`);
-    saveConfigClearMessage();
+	saveConfigClearMessage();
 }
 
 /** Build the HTML for the list of settings */

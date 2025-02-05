@@ -6,23 +6,31 @@ const init_controls_panel = () => {
 	loadmacrolist();
 };
 
+const controlsPanelZeroGrbl = () => SendZerocommand(grblzerocmd);
+const controlsPanelZeroX = () => SendZerocommand("X0");
+const controlsPanelZeroY = () => SendZerocommand("Y0");
+const controlsPanelZeroZ = () => SendZerocommand("Z0");
+const controlsPanelZeroA = () => SendZerocommand("A0");
+const controlsPanelZeroB = () => SendZerocommand("B0");
+const controlsPanelZeroC = () => SendZerocommand("C0");
+
 /** Set up the event handlers for the Controls Panel */
 const ControlsPanel = () => {
-	id("autocheck_position").addEventListener("click", (event) => on_autocheck_position());
-	id("controlpanel_interval_positions").addEventListener("change", (event) => onPosIntervalChange());
+	id("autocheck_position").addEventListener("click", on_autocheck_position);
+	id("controlpanel_interval_positions").addEventListener("change", onPosIntervalChange);
 
-	id("zero_xyz_btn").addEventListener("click", (event) => SendZerocommand(grblzerocmd));
-	id("zero_x_btn").addEventListener("click", (event) => SendZerocommand("X0"));
-	id("zero_y_btn").addEventListener("click", (event) => SendZerocommand("Y0"));
-	id("zero_z_btn").addEventListener("click", (event) => SendZerocommand("Z0"));
-	id("zero_a_btn").addEventListener("click", (event) => SendZerocommand("A0"));
-	id("zero_b_btn").addEventListener("click", (event) => SendZerocommand("B0"));
-	id("zero_c_btn").addEventListener("click", (event) => SendZerocommand("C0"));
+	id("zero_xyz_btn").addEventListener("click", controlsPanelZeroGrbl);
+	id("zero_x_btn").addEventListener("click", controlsPanelZeroX);
+	id("zero_y_btn").addEventListener("click", controlsPanelZeroY);
+	id("zero_z_btn").addEventListener("click", controlsPanelZeroZ);
+	id("zero_a_btn").addEventListener("click", controlsPanelZeroA);
+	id("zero_b_btn").addEventListener("click", controlsPanelZeroB);
+	id("zero_c_btn").addEventListener("click", controlsPanelZeroC);
 
-	id("controlpanel_xy_feedrate").addEventListener("change", (event) => onXYFeedRateChange());
-	id("controlpanel_z_feedrate").addEventListener("change", (event) => onNonXYFeedRateChange());
+	id("controlpanel_xy_feedrate").addEventListener("change", onXYFeedRateChange);
+	id("controlpanel_z_feedrate").addEventListener("change", onNonXYFeedRateChange);
 
-	id("motor_off_control").addEventListener("click", (event) => control_motorsOff());
+	id("motor_off_control").addEventListener("click", control_motorsOff);
 };
 
 function loadmacrolist() {
@@ -241,13 +249,6 @@ function onNonXYFeedRateChange() {
 	control_changeaxis();
 }
 
-function processMacroSave(answer) {
-	if (answer == "ok") {
-		//console.log("now rebuild list");
-		control_build_macro_ui();
-	}
-}
-
 function control_build_macro_button(index, entry) {
 	const noGlyph = entry.glyph.length === 0;
 	const btnStyle = noGlyph ? " style='display:none'" : "";
@@ -260,13 +261,23 @@ function control_build_macro_button(index, entry) {
 	return content;
 }
 
+const processMacroSave = (answer) => {
+	if (answer !== "ok") {
+		return;
+	}
+	//console.log("now rebuild list");
+	control_build_macro_ui();
+}
+
+const initMacroDlg = () => showmacrodlg(processMacroSave);
+
 function control_build_macro_ui() {
 	const actions = [];
 
 	var content = "<div class='tooltip'>";
 	content += "<span class='tooltip-text'>Manage macros</span>"
 	content += "<button id='control_btn_show_macro_dlg' class='btn btn-primary'>";
-	actions.push({ id: "control_btn_show_macro_dlg", method: (event) => showmacrodlg(processMacroSave) });
+	actions.push({ id: "control_btn_show_macro_dlg", method: initMacroDlg});
 	content += "<span class='badge'>";
 	content += "<svg width='1.3em' height='1.2em' viewBox='0 0 1300 1200'>";
 	content += "<g transform='translate(50,1200) scale(1, -1)'>";

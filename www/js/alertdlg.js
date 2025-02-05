@@ -1,5 +1,8 @@
 // This uses: closeModal, setactiveModal, showModal, id
 
+const alertDlgCancel = () => closeModal("cancel");
+const alertDlgClose = () => closeModal("Ok");
+
 /** alert dialog */
 const alertdlg = (titledlg, textdlg, closefunc) => {
 	const modal = setactiveModal("alertdlg.html", closefunc);
@@ -7,8 +10,8 @@ const alertdlg = (titledlg, textdlg, closefunc) => {
 		return;
 	}
 
-	id("cancelAlertDlg").addEventListener("click", (event) => closeModal("cancel"));
-	id("closeAlertDlg").addEventListener("click", (event) => closeModal("Ok"));
+	id("cancelAlertDlg").addEventListener("click", alertDlgCancel);
+	id("closeAlertDlg").addEventListener("click", alertDlgClose);
 
 	const title = modal.element.getElementsByClassName("modal-title")[0];
 	const body = modal.element.getElementsByClassName("modal-text")[0];

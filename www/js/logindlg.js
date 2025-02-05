@@ -7,9 +7,9 @@ const logindlg = (closefunc, check_first = false) => {
 		return;
 	}
 
-	id("login_user_text").addEventListener("keyup", (event) => login_id_OnKeyUp(event));
-	id("login_password_text").addEventListener("keyup", (event) => login_password_OnKeyUp(event));
-	id("login_submit_btn").addEventListener("click", (event) => SubmitLogin());
+	id("login_user_text").addEventListener("keyup", login_id_OnKeyUp);
+	id("login_password_text").addEventListener("keyup", login_password_OnKeyUp);
+	id("login_submit_btn").addEventListener("click", SubmitLogin);
 
 	setHTML("login_title", translate_text_item("Identification requested"));
 	displayNone("login_loader");
