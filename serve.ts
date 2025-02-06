@@ -1,38 +1,24 @@
+import index from "./www/index.html" with { type: "text/html" };
+
 import EEPROMFake from "./EEPROMDummyResponse.json" with { type: "json" };
 
 const server = Bun.serve({
 	port: 3000,
+	// Add HTML imports to `static`
 	static: {
-		// serve a file by buffering it in memory
-		"/index.html": new Response(await Bun.file("./www/index.html").bytes(), {
-			headers: { "Content-Type": "text/html" },
-		}),
+		"/index.html": index,
+		"/index.html#": index,
+
 		"/favicon.ico": new Response(await Bun.file("./favicon.ico").bytes(), {
 			headers: { "Content-Type": "image/x-icon" },
 		}),
 	},
+	// Enable development mode for:
+	// - Detailed error messages
+	// - Rebuild on request
+	development: true,
 	async fetch(req) {
 		const url = new URL(req.url);
-
-		// URL {
-		//   href: "http://localhost:3000/command?plain=%5BESP800%5D&PAGEID=",
-		//   origin: "http://localhost:3000",
-		//   protocol: "http:",
-		//   username: "",
-		//   password: "",
-		//   host: "localhost:3000",
-		//   hostname: "localhost",
-		//   port: "3000",
-		//   pathname: "/command",
-		//   hash: "",
-		//   search: "?plain=%5BESP800%5D&PAGEID=",
-		//   searchParams: URLSearchParams {
-		//     "plain": "[ESP800]",
-		//     "PAGEID": "",
-		//   },
-		//   toJSON: [Function: toJSON],
-		//   toString: [Function: toString],
-		// }
 
 		const fileExists = async (path: string) => {
 			const checkFile = Bun.file(path);
@@ -127,7 +113,6 @@ const server = Bun.serve({
 			}
 		}
 
-
 		const checkFileBase = `./www${url.pathname}`;
 
 		// Handle the special files
@@ -199,4 +184,4 @@ const server = Bun.serve({
 
 // FW version: FluidNC v0.87 (Maslow-Main-ec171155-dirty) # FW target:grbl-embedded  # FW HW:Direct SD  # primary sd:/sd # secondary sd:none  # authentication:no # webcommunication: Sync: 81:192.168.1.100 # hostname:maslow # axis:3
 
-console.log(`Listening on http://localhost:${server.port} ...`);
+console.log(`Listening on ${server.url} ...`);
