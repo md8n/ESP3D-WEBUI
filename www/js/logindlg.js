@@ -16,8 +16,7 @@ const logindlg = (closefunc, check_first = false) => {
 	displayBlock("login_content");
 
 	if (check_first) {
-		const cmd = "/login";
-		SendGetHttp(cmd, checkloginsuccess);
+		SendGetHttp(httpCmd.login, checkloginsuccess);
 	} else {
 		showModal();
 	}
@@ -86,11 +85,12 @@ function loginsuccess(response_text) {
 function SubmitLogin() {
 	const user = id("login_user_text").value.trim();
 	const password = id("login_password_text").value.trim();
-	const cmd = `/login?USER=${encodeURIComponent(user)}&PASSWORD=${encodeURIComponent(password)}&SUBMIT=yes`;
 	setHTML("current_ID", user);
 	setHTML("current_auth_level", "");
 	displayNone("login_content");
 	displayBlock("login_loader");
+
+	const cmd = buildHttpLoginCmd({ USER: user, PASSWORD: password });
 	SendGetHttp(cmd, loginsuccess, loginfailed);
 }
 
@@ -113,7 +113,7 @@ function DisconnectionFailed(error_code, response) {
 
 function DisconnectLogin(answer) {
 	if (answer === "yes") {
-		const cmd = "/login?DISCONNECT=yes";
+		const cmd = buildHttpLoginCmd({ DISCONNECT: answer });
 		SendGetHttp(cmd, DisconnectionSuccess, DisconnectionFailed);
 	}
 }

@@ -50,7 +50,7 @@ function refreshSettings(hide_setting_list) {
 
   // Clear all of the elements in the array
   scl.length = 0;
-  const cmd = `/command?plain=${encodeURIComponent("[ESP400]")}`;
+  const cmd = buildHttpCommandCmd(httpCmdType.plain, "[ESP400]");
   SendGetHttp(cmd, getESPsettingsSuccess, getESPsettingsfailed);
 };
 
@@ -223,7 +223,8 @@ const build_control_from_pos = (pos, actions, extra) => build_control_from_index
  */
 const saveMaslowYaml = () => {
   console.info(`Calling for a Config Overwrite to save the ${configFileName} file`);
-  SendGetHttp(`/command?plain=${encodeURIComponent("$CO")}`, saveConfigSuccess, saveConfigFail);
+  const cmd = buildHttpCommandCmd(httpCmdType.plain, "$CO");
+  SendGetHttp(cmd, saveConfigSuccess, saveConfigFail);
 }
 
 const saveConfigClearMessage = () => setTimeout(() => { setHTML(configSaveResultId, ""); }, 5000)
@@ -240,78 +241,78 @@ const saveConfigFail = (response) => {
 
 /** Build the HTML for the list of settings */
 const build_HTML_setting_list = (filter) => {
-	// this to prevent concurrent process to update after we clean content
-	if (do_not_build_settings) {
-		return;
-	}
+  // this to prevent concurrent process to update after we clean content
+  if (do_not_build_settings) {
+    return;
+  }
 
-	const buildTR = (tds) => `<tr>${tds}</tr>`;
-	const buildTD = (tc, colspan = 0) => `<td${colspan > 0 ? ` colspan="${colspan}"` : ""}>${tc}</td>`;
+  const buildTR = (tds) => `<tr>${tds}</tr>`;
+  const buildTD = (tc, colspan = 0) => `<td${colspan > 0 ? ` colspan="${colspan}"` : ""}>${tc}</td>`;
 
-	const actions = [];
+  const actions = [];
 
-	let content = buildTR(buildTD('Click "Set" after changing a value to set it', 2));
-	if (filter === "tree") {
-		content += buildTR(buildTD(`Click "Save" to save any changes you make to ${configFileName}</br>Then click the "restart" icon above, to Restart FluidNC for the changes to take effect`, 2));
-		const instr = buildTD(`"Save" to ${configFileName}`);
-		const btnId = "maslow_save_btn";
-		const btn = buildTD(`<button id="${btnId}" type="button" class="btn btn-success">Save</button><span id="${configSaveResultId}"></span>`);
-		content += buildTR(instr + btn);
-		actions.push({ id: btnId, type: "click", method: saveMaslowYaml });
-	}
+  let content = buildTR(buildTD('Click "Set" after changing a value to set it', 2));
+  if (filter === "tree") {
+    content += buildTR(buildTD(`Click "Save" to save any changes you make to ${configFileName}</br>Then click the "restart" icon above, to Restart FluidNC for the changes to take effect`, 2));
+    const instr = buildTD(`"Save" to ${configFileName}`);
+    const btnId = "maslow_save_btn";
+    const btn = buildTD(`<button id="${btnId}" type="button" class="btn btn-success">Save</button><span id="${configSaveResultId}"></span>`);
+    content += buildTR(instr + btn);
+    actions.push({ id: btnId, type: "click", method: saveMaslowYaml });
+  }
 
-	current_setting_filter = filter;
-	setChecked(`${current_setting_filter}_setting_filter`, true);
+  current_setting_filter = filter;
+  setChecked(`${current_setting_filter}_setting_filter`, true);
 
-	for (let i = 0; i < scl.length; i++) {
-		const fname = scl[i].F.trim().toLowerCase();
-		if (fname === "network" || fname === filter || filter === "all") {
-			let tr = `<tr><td style='vertical-align:middle'>${translate_text_item(scl[i].label, true)}`;
-			const tooltip = CONFIG_TOOLTIPS[scl[i].label.substring(1)];
-			if (tooltip) {
-				tr += '<div class="tooltip" style="padding-left: 20px; margin-top: 10px;">';
-				tr += '<svg width="16" height="16" fill="#3276c3" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 416.979 416.979" xml:space="preserve" stroke="#3276c3">';
-				tr += '<g id="SVGRepo_bgCarrier" stroke-width="0"></g>';
-				tr += '<g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>';
-				tr += '<g id="SVGRepo_iconCarrier"> <g> <path d="M356.004,61.156c-81.37-81.47-213.377-81.551-294.848-0.182c-81.47,81.371-81.552,213.379-0.181,294.85 c81.369,81.47,213.378,81.551,294.849,0.181C437.293,274.636,437.375,142.626,356.004,61.156z M237.6,340.786 c0,3.217-2.607,5.822-5.822,5.822h-46.576c-3.215,0-5.822-2.605-5.822-5.822V167.885c0-3.217,2.607-5.822,5.822-5.822h46.576 c3.215,0,5.822,2.604,5.822,5.822V340.786z M208.49,137.901c-18.618,0-33.766-15.146-33.766-33.765 c0-18.617,15.147-33.766,33.766-33.766c18.619,0,33.766,15.148,33.766,33.766C242.256,122.755,227.107,137.901,208.49,137.901z"></path> </g> </g>';
-				tr += '</svg>';
-				tr += `<span class="tooltip-text">${tooltip}</span>`;
-				tr += '</div>';
-			}
-			tr += "</td>\n";
-			tr += `<td style='vertical-align:middle'><table><tr><td>${build_control_from_index(i, actions)}</td></tr></table></td>\n`;
-			tr += "</tr>\n";
-			content += tr;
-		}
-	}
+  for (let i = 0; i < scl.length; i++) {
+    const fname = scl[i].F.trim().toLowerCase();
+    if (fname === "network" || fname === filter || filter === "all") {
+      let tr = `<tr><td style='vertical-align:middle'>${translate_text_item(scl[i].label, true)}`;
+      const tooltip = CONFIG_TOOLTIPS[scl[i].label.substring(1)];
+      if (tooltip) {
+        tr += '<div class="tooltip" style="padding-left: 20px; margin-top: 10px;">';
+        tr += '<svg width="16" height="16" fill="#3276c3" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 416.979 416.979" xml:space="preserve" stroke="#3276c3">';
+        tr += '<g id="SVGRepo_bgCarrier" stroke-width="0"></g>';
+        tr += '<g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>';
+        tr += '<g id="SVGRepo_iconCarrier"> <g> <path d="M356.004,61.156c-81.37-81.47-213.377-81.551-294.848-0.182c-81.47,81.371-81.552,213.379-0.181,294.85 c81.369,81.47,213.378,81.551,294.849,0.181C437.293,274.636,437.375,142.626,356.004,61.156z M237.6,340.786 c0,3.217-2.607,5.822-5.822,5.822h-46.576c-3.215,0-5.822-2.605-5.822-5.822V167.885c0-3.217,2.607-5.822,5.822-5.822h46.576 c3.215,0,5.822,2.604,5.822,5.822V340.786z M208.49,137.901c-18.618,0-33.766-15.146-33.766-33.765 c0-18.617,15.147-33.766,33.766-33.766c18.619,0,33.766,15.148,33.766,33.766C242.256,122.755,227.107,137.901,208.49,137.901z"></path> </g> </g>';
+        tr += '</svg>';
+        tr += `<span class="tooltip-text">${tooltip}</span>`;
+        tr += '</div>';
+      }
+      tr += "</td>\n";
+      tr += `<td style='vertical-align:middle'><table><tr><td>${build_control_from_index(i, actions)}</td></tr></table></td>\n`;
+      tr += "</tr>\n";
+      content += tr;
+    }
+  }
 
-	// From settingstab
-	setHTML("settings_list_data", content);
-	// biome-ignore lint/complexity/noForEach: <explanation>
-	actions.forEach((action) => {
-		const elem = id(action.id);
-		if (elem) {
-			elem.addEventListener(action.type, action.method);
-		}
-	});
+  // From settingstab
+  setHTML("settings_list_data", content);
+  // biome-ignore lint/complexity/noForEach: <explanation>
+  actions.forEach((action) => {
+    const elem = id(action.id);
+    if (elem) {
+      elem.addEventListener(action.type, action.method);
+    }
+  });
 
-	if (filter === "tree") {
-		// TODO: figure out what the correct 'result' should be here - this is a guess
-		document.querySelector("#setting__meta_0").value = result;
-	}
-	// set calibration values if exists
-	const calRes = calibrationResults;
-	if (Object.keys(calRes).length) {
-		document.querySelector("#setting__Maslow_brX_0").value = calRes.br.x;
-		document.querySelector("#setting__Maslow_brY_0").value = calRes.br.y;
-		document.querySelector("#setting__Maslow_tlX_0").value = calRes.tl.x;
-		document.querySelector("#setting__Maslow_tlY_0").value = calRes.tl.y;
-		document.querySelector("#setting__Maslow_trX_0").value = calRes.tr.x;
-		document.querySelector("#setting__Maslow_trY_0").value = calRes.tr.y;
-		document.querySelector("#setting__Maslow_blX_0").value = calRes.bl.x;
-		document.querySelector("#setting__Maslow_blY_0").value = calRes.bl.y;
-	}
-	// set calibration values if exists END
+  if (filter === "tree") {
+    // TODO: figure out what the correct 'result' should be here - this is a guess
+    document.querySelector("#setting__meta_0").value = result;
+  }
+  // set calibration values if exists
+  const calRes = calibrationResults;
+  if (Object.keys(calRes).length) {
+    document.querySelector("#setting__Maslow_brX_0").value = calRes.br.x;
+    document.querySelector("#setting__Maslow_brY_0").value = calRes.br.y;
+    document.querySelector("#setting__Maslow_tlX_0").value = calRes.tl.x;
+    document.querySelector("#setting__Maslow_tlY_0").value = calRes.tl.y;
+    document.querySelector("#setting__Maslow_trX_0").value = calRes.tr.x;
+    document.querySelector("#setting__Maslow_trY_0").value = calRes.tr.y;
+    document.querySelector("#setting__Maslow_blX_0").value = calRes.bl.x;
+    document.querySelector("#setting__Maslow_blY_0").value = calRes.bl.y;
+  }
+  // set calibration values if exists END
 }
 
 function setting_check_value(value, i) {
@@ -508,21 +509,29 @@ function setIconHTML(i, j, value) {
 // 	setIconHTML(i, j, "");
 // }
 
+const applyFlag = (value, defVal, i, j = 0) => {
+  const sEntry = scl[i];
+  if (sEntry.type !== "F") {
+    return value;
+  }
+
+  //console.log("it is flag value");
+  let tmp = defVal;
+  if (value === "1") {
+    tmp |= getFlag(i, j);
+  } else {
+    tmp &= ~getFlag(i, j);
+  }
+  return tmp;
+}
+
 function settingsetvalue(i, j = 0) {
   //remove possible spaces
-  value = setting(i, j).value.trim()
+  let value = setting(i, j).value.trim();
   const defVal = defval(i);
 
   //Apply flag here
-  if (scl[i].type === "F") {
-    let tmp = defVal;
-    if (value === "1") {
-      tmp |= getFlag(i, j);
-    } else {
-      tmp &= ~getFlag(i, j);
-    }
-    value = tmp;
-  }
+  value = applyFlag(value, defVal, i, j);
   if (value === defVal) {
     return;
   }
@@ -532,7 +541,7 @@ function settingsetvalue(i, j = 0) {
   //if not valid show error
   if (!isvalid) {
     setsettingerror(i);
-    alertdlg(translate_text_item("Out of range"), `${translate_text_item("Value must be ") + setting_error_msg} !`);
+    alertdlg(translate_text_item("Out of range"), `${translate_text_item("Value must be ")} ${setting_error_msg}!`);
   } else {
     //value is ok save it
     setting_lasti = i;
@@ -542,7 +551,8 @@ function settingsetvalue(i, j = 0) {
     setIcon(i, j, "has-success ico_feedback");
     setIconHTML(i, j, get_icon_svg("ok"));
     setStatus(i, j, "has-feedback has-success");
-    const cmd = `/command?plain=${encodeURIComponent(scl[i].cmd + value)}`;
+
+    const cmd = buildHttpCommandCmd(httpCmdType.plain, `${scl[i].cmd}${value}`);
     SendGetHttp(cmd, setESPsettingsSuccess, setESPsettingsfailed);
   }
 }
@@ -559,16 +569,8 @@ function setting_checkchange(i, j) {
   }
 
   const defVal = sEntry.defaultvalue;
-  if (sEntry.type === "F") {
-    //console.log("it is flag value");
-    let tmp = defVal;
-    if (val === "1") {
-      tmp |= getFlag(i, j);
-    } else {
-      tmp &= ~getFlag(i, j);
-    }
-    val = tmp;
-  }
+  val = applyFlag(val, defVal, i, j);
+
   //console.log("value: " + val);
   //console.log("default value: " + defVal);
   if (defVal === val) {
@@ -606,14 +608,14 @@ function setESPsettingsSuccess(response) {
 }
 
 function setESPsettingsfailed(error_code, response) {
-	const errMsg = stdErrMsg(error_code, response);
-	alertdlg(translate_text_item("Set failed"), errMsg);
-	conErr(errMsg);
-	setBtn(setting_lasti, setting_lastj, "btn-danger");
-	const iconName = `icon_setting_${setting_lasti}_${setting_lastj}`;
-	setClassName(iconName, "form-control-feedback has-error ico_feedback");
-	setHTML(iconName, get_icon_svg("remove"));
-	setStatus(setting_lasti, setting_lastj, "has-feedback has-error");
+  const errMsg = stdErrMsg(error_code, response);
+  alertdlg(translate_text_item("Set failed"), errMsg);
+  conErr(errMsg);
+  setBtn(setting_lasti, setting_lastj, "btn-danger");
+  const iconName = `icon_setting_${setting_lasti}_${setting_lastj}`;
+  setClassName(iconName, "form-control-feedback has-error ico_feedback");
+  setHTML(iconName, get_icon_svg("remove"));
+  setStatus(setting_lasti, setting_lastj, "has-feedback has-error");
 }
 
 function getESPsettingsSuccess(response) {
@@ -629,11 +631,11 @@ function getESPsettingsSuccess(response) {
 }
 
 function getESPsettingsfailed(error_code, response) {
-	conErr(error_code, response);
-	displayNone("settings_loader");
-	displayBlock('settings_status');
-	displayBlock('settings_refresh_btn');
-	setHTML("settings_status", stdErrMsg(error_code, response, translate_text_item("Failed")));
+  conErr(error_code, response);
+  displayNone("settings_loader");
+  displayBlock('settings_status');
+  displayBlock('settings_refresh_btn');
+  setHTML("settings_status", stdErrMsg(error_code, response, translate_text_item("Failed")));
 }
 
 const restart_esp = () => {

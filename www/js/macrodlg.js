@@ -285,13 +285,13 @@ function SaveNewMacroList() {
 		}
 	}
 
-	const macroFileName = "/macrocfg.json";
-	const file = BuildFormDataFiles(macroFileName, [JSON.stringify(macrodlg_macrolist, null, " ")], { type: "application/json" });
-	const cmd = "/files";
+	const macroFilename = "/macrocfg.json";
+	const file = BuildFormDataFiles(macroFilename, [JSON.stringify(macrodlg_macrolist, null, " ")], { type: "application/json" });
+
 	const formData = new FormData();
 	formData.append("path", "/");
-	formData.append("myfile[]", file, macroFileName);
-	SendFileHttp(cmd, formData, macroUploadsuccess, macroUploadfailed, macrodlgUploadProgressDisplay);
+	formData.append("myfile[]", file, macroFilename);
+	SendFileHttp(httpCmd.files, formData, macrodlgUploadProgressDisplay, macroUploadsuccess, macroUploadfailed);
 }
 
 function macrodlgUploadProgressDisplay(oEvent) {

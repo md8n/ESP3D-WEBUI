@@ -101,6 +101,7 @@ function refreshstatus() {
 	const text = modal.element.getElementsByClassName("modal-text")[0];
 	text.innerHTML = "";
 	displayNone("status_msg");
-	const cmd = `/command?plain=${encodeURIComponent("[ESP420]plain")}`;
+
+	const cmd = buildHttpCommandCmd(httpCmdType.plain, "[ESP420]plain");
 	SendGetHttp(cmd, statussuccess, statusfailed);
 }

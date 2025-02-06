@@ -43,13 +43,13 @@ function initpreferences() {
 }
 
 function getpreferenceslist() {
-    var cmd = preferences_file_name;
     preferenceslist = [];
     //removeIf(production)
     var response = JSON.stringify(default_preferenceslist);
     processPreferencesGetSuccess(response);
     return;
     //endRemoveIf(production)
+    const cmd = buildHttpFileGetCmd(preferences_file_name);
     SendGetHttp(cmd, processPreferencesGetSuccess, processPreferencesGetFailed);
 }
 
@@ -618,13 +618,12 @@ function SavePreferences(current_preferences) {
     }
     const file = BuildFormDataFiles(preferences_file_name, [JSON.stringify(preferenceslist, null, " ")], { type: 'application/json' });
     var formData = new FormData();
-    var cmd = "/files";
     formData.append('path', '/');
     formData.append('myfile[]', file, preferences_file_name);
-    if ((typeof (current_preferences) !== 'undefined') && current_preferences) {
-        SendFileHttp(cmd, formData);
+    if ((typeof (current_preferences) != 'undefined') && current_preferences) {
+        SendFileHttp(httpCmd.files, formData);
     } else {
-        SendFileHttp(cmd, formData, preferencesUploadsuccess, preferencesUploadfailed, preferencesdlgUploadProgressDisplay);
+        SendFileHttp(httpCmd.files, formData, preferencesdlgUploadProgressDisplay, preferencesUploadsuccess, preferencesUploadfailed);
     }
 }
 

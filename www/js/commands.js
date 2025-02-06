@@ -115,8 +115,8 @@ function SendCustomCommand() {
 	setValue("custom_cmd_txt", "");
 	Monitor_output_Update(`${custCmd}\n`);
 
-	const cmd = `/command?commandText=${encodeURI(custCmd).replace("#", "%23")}`;
-	SendGetHttp( cmd, SendCustomCommandSuccess, SendCustomCommandFailed);
+	const cmd = buildHttpCommandCmd(httpCmdType.commandText, custCmd);
+	SendGetHttp(cmd, SendCustomCommandSuccess, SendCustomCommandFailed);
 }
 
 function CustomCommand_OnKeyUp(event) {

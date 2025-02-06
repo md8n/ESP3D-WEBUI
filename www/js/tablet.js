@@ -640,8 +640,10 @@ var filename = 'TEST.NC';
 var watchPath = '';
 
 function tabletGetFileList(path) {
-  gCodeFilename = ''
-  SendGetHttp(`/upload?path=${encodeURI(path)}`, files_list_success)
+  // Clear/reset the gCodeFilename
+  gCodeFilename = "";
+  const cmd = buildHttpFileCmd({ path: path });
+  SendGetHttp(cmd, files_list_success);
 }
 
 const tabletDOMActivate = () => {

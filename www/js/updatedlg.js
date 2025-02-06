@@ -101,9 +101,10 @@ function StartUploadUpdatefile(response) {
 	displayBlock("prgfw");
 	update_ongoing = true;
 
-	setHTML("updatemsg", `${translate_text_item("Uploading")} ${fileList.join(" ")}}`);
-	const cmd = "/updatefw";
-	SendFileHttp(cmd, formData, updatesuccess, updatefailed, UpdateProgressDisplay);
+	current_update_filename = files.length === 1 ? files[0].name : "";
+	setHTML("updatemsg", `${translate_text_item("Uploading")} ${fileList.join(" ")}`);
+
+	SendFileHttp(httpCmd.fwUpdate, formData, UpdateProgressDisplay, updatesuccess, updatefailed);
 }
 
 function updatesuccess(response) {
@@ -147,5 +148,5 @@ function updatefailed(error_code, response) {
 	}
 	conErr(error_code, response);
 	update_ongoing = false;
-	SendGetHttp("/updatefw");
+	SendGetHttp(httpCmd.fwUpdate);
 }

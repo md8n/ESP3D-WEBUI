@@ -49,7 +49,8 @@ const buildTable = (content) => `<table>${content}</table>`;
 const buildTr = (content) => `<tr>${content}</tr>`;
 
 function SPIFFSselect_dir(directoryname) {
-	SPIFFS_currentpath = directoryname + directoryname.endsWith("/") ? "" : "/";
+	const needTraillingSlash = directoryname.endsWith("/") ? "" : "/";
+	SPIFFS_currentpath = directoryname + needTraillingSlash;
 	SPIFFSSendCommand("list", "all");
 }
 
@@ -136,10 +137,8 @@ function processSPIFFSRename(new_file_name) {
 	if (!new_file_name) {
 		return;
 	}
-	const cmd = [`/files?action=rename&path=${encodeURIComponent(SPIFFS_currentpath)}`];
-	cmd.push(`&filename=${encodeURIComponent(old_file_name)}`);
-	cmd.push(`&newname=${encodeURIComponent(new_file_name)}`);
-	SendGetHttp(cmd.join(), SPIFFSsuccess, SPIFFSfailed);
+	const cmd = buildHttpFilesCmd({ action: "rename", path: SPIFFS_currentpath, filename: old_file_name, newname: new_file_name });
+	SendGetHttp(cmd, SPIFFSsuccess, SPIFFSfailed);
 }
 
 const testResponse = [
@@ -159,8 +158,8 @@ function SPIFFSSendCommand(action, filename) {
 	SPIFFSsuccess(testResponse.join(""));
 	return;
 	//endRemoveIf(production)
-	let cmd = `/files?action=${action}&filename=${encodeURI(filename)}&path=${encodeURI(SPIFFS_currentpath)}`;
 	id("SPIFFS_loader").style.visibility = "visible";
+	const cmd = buildHttpFilesCmd({ action: action, path: SPIFFS_currentpath, filename: filename });
 	console.log(cmd);
 	SendGetHttp(cmd, SPIFFSsuccess, SPIFFSfailed);
 }
@@ -345,8 +344,7 @@ function SPIFFS_UploadFile() {
 	displayBlock("SPIFFS_prg");
 	SPIFFS_upload_ongoing = true;
 	setHTML("uploadSPIFFSmsg", `${translate_text_item("Uploading")} ${fileList.join(" ")}`);
-	const cmd = "/files";
-	SendFileHttp(cmd, formData, SPIFFSUploadsuccess, SPIFFSUploadfailed, SPIFFSUploadProgressDisplay);
+	SendFileHttp(httpCmd.files, formData, SPIFFSUploadProgressDisplay, SPIFFSUploadsuccess, SPIFFSUploadfailed);
 }
 
 function SPIFFSUploadsuccess(response) {
