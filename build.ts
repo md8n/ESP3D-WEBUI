@@ -150,7 +150,7 @@ const loadAndReplaceHTML = async (filePath: string, fileContents: string) => {
 
 const build = async () => {
 	await Bun.build({
-		entrypoints: ["./www/index.html", "./js/app.js"],
+		entrypoints: ["./www/index.html", "./www/js/app.js"],
 		outdir: "./dist",
 		target: "browser",
 		format: "esm",
