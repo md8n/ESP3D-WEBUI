@@ -105,7 +105,7 @@ const update_UI_firmware_target = () => {
 }
 
 const total_boot_steps = 5;
-let current_boot_steps = 0;
+var current_boot_steps = 0;
 
 const display_boot_progress = () => {
 	current_boot_steps++;
@@ -121,7 +121,7 @@ const initUI = () => {
 		connectdlg(false);
 	}
 
-	AddCmd(display_boot_progress);
+	display_boot_progress();
 	//check FW
 	update_UI_firmware_target();
 	//set title using hostname
@@ -145,7 +145,7 @@ const initUI = () => {
 /** InitUI step2 - get settings from ESP3D and start processing them */
 function initUI_2() {
 	console.log("Init UI - Step 2 - Get Settings");
-	AddCmd(display_boot_progress);
+	display_boot_progress();
 	//query settings but do not update list in case wizard is showed
 	refreshSettings(true);
 	initUI_3();
@@ -154,7 +154,7 @@ function initUI_2() {
 /** InitUI step3 - Initialise the control and GRBL panels, get the preferences */
 function initUI_3() {
 	console.log("Init UI - Step 3 - Initialise the control and GRBL panels, get the preferences");
-	AddCmd(display_boot_progress);
+	display_boot_progress();
 	//init panels
 	init_controls_panel();
 	init_grbl_panel();
@@ -165,23 +165,23 @@ function initUI_3() {
 /** InitUI step4 - Initialise the command and files panels, determine if the setup wizard needs to be run */
 function initUI_4() {
 	console.log("Init UI - Step 4 - Initialise the command and files panels, determine if the setup wizard needs to be run");
-	AddCmd(display_boot_progress);
+	display_boot_progress();
 	init_command_panel();
 	init_files_panel(false);
 	//check if we need setup
 	if (target_firmware === "???") {
 		console.log("Launch Setup");
-		AddCmd(display_boot_progress);
+		display_boot_progress();
 		closeModal("Connection successful");
 		setupdlg();
 	} else {
 		//wizard is done UI can be updated
 	    setup_is_done = true;
 		do_not_build_settings = false;
-		AddCmd(display_boot_progress);
+		display_boot_progress();
 		build_HTML_setting_list(current_setting_filter);
-		AddCmd(closeModal);
-		AddCmd(show_main_UI);
+		closeModal();
+		show_main_UI();
 	}
 }
 
