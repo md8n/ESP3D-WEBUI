@@ -273,7 +273,7 @@ function configGetvalue(index, is_override) {
     const cnfId = `config_${prefix}${index}`;
 
     // remove possible spaces
-    const value = id(cnfId).value.trim();
+    const value = getValue(cnfId).trim();
     if (value === item.defaultvalue) {
         return;
     }
@@ -284,7 +284,7 @@ function configGetvalue(index, is_override) {
     //if not valid show error
     id(`btn_${cnfId}`).className = `btn ${!isvalid ? "btn-danger" : "btn-success"}`;
     id(`icon_${cnfId}`).className = `form-control-feedback ${!isvalid ? "has-error" : "has-success"} ico_feedback`;
-    id(`icon_${cnfId}`).innerHTML = isvalid ? get_icon_svg("remove") : get_icon_svg("ok");
+    setHTML(`icon_${cnfId}`, isvalid ? get_icon_svg("remove") : get_icon_svg("ok"));
     id(`status_${cnfId}`).className = `form-group has-feedback ${!isvalid ? "has-error" : "has-success"}`;
 
     if (!isvalid) {

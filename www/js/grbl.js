@@ -225,7 +225,7 @@ function tryAutoReport() {
     disablePolling();
   }
   reportType = "auto";
-  const interval = id("grblpanel_autoreport_interval").value ?? 0;
+  const interval = getValue("grblpanel_autoreport_interval") ?? 0;
   if (interval === 0) {
     enablePolling();
     return;

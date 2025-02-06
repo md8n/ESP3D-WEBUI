@@ -26,8 +26,8 @@ const changepassworddlg = () => {
 };
 
 function checkpassword() {
-	const pwd1 = id("password_password_text1").value.trim();
-	const pwd2 = id("password_password_text2").value.trim();
+	const pwd1 = getValue("password_password_text1").trim();
+	const pwd2 = getValue("password_password_text2").trim();
 	setHTML("password_content", "");
 	displayNone("change_password_btn");
 	if (pwd1 !== pwd2) {

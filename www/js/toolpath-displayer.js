@@ -946,13 +946,13 @@ const arrayToXYZ = (arr) => {
 };
 
 const updateGcodeViewerAngle = () => {
-	const gcode = id("tablettab_gcode").value;
+	const gcode = getValue("tablettab_gcode");
 	tpDisplayer().cycleCameraAngle(gcode, arrayToXYZ(WPOS()));
 };
 
 canvas.addEventListener("mouseup", updateGcodeViewerAngle); 
 var refreshGcode = function() {
-    const gcode = id("tablettab_gcode").value;
+    const gcode = getValue("tablettab_gcode");
     displayer.showToolpath(gcode, WPOS, MPOS, cameraAngle);
 }
 

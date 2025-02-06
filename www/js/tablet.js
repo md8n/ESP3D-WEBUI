@@ -58,7 +58,7 @@ const MDIcmd = (value) => {
 }
 
 // const MDI = (field) => {
-//   MDIcmd(id(field).value)
+//   MDIcmd(getValue(field))
 // }
 
 // const enterFullscreen = () => {
