@@ -141,7 +141,7 @@ function init_files_panel(dorefresh = true) {
 
 	files_set_button_as_filter(files_filter_sd_list);
 	if (common.fwData.direct_sd && dorefresh) {
-		files_refreshFiles(files_currentPath);
+		files_refreshFiles(files_currentPath());
 	}
 }
 
@@ -331,7 +331,7 @@ function process_files_rename(new_file_name) {
 	SendGetHttp(cmd, files_list_success, files_list_failed);
 }
 
-const buildFileHref = (index) => encodeURIComponent(`SD/${files_currentPath}${files_file_list[index].sdname}`.replace("//", "/"));
+const buildFileHref = (index) => encodeURIComponent(`SD/${files_currentPath()}${files_file_list[index].sdname}`.replace("//", "/"));
 function files_download(index) {
 	//console.log("file on direct SD");
 	window.location.href = buildFileHref(index);

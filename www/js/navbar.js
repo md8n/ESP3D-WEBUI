@@ -12,6 +12,7 @@ import {
 	changepassworddlg,
 	showpreferencesdlg,
 	trans_text_item,
+	logindlg,
 	DisconnectLogin,
 	setupdlg,
 	settingstab,
@@ -36,7 +37,7 @@ const navbar = () => {
 	// Note: for `maintab` see dashtab.html
 	id("maintablink").addEventListener("click", navBarMainTabLink);
 	id("camtablink").addEventListener("click", navBarCamTabLink);
-	id("configtablink").addEventListener("click", navBarConfigTabLink);
+	// id("configtablink").addEventListener("click", navBarConfigTabLink);
 	id("settingtablink").addEventListener("click", navBarSettingTabLink);
 	id("tablettablink").addEventListener("click", navBarTabletTabLink);
 

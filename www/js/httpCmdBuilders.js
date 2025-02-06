@@ -1,4 +1,5 @@
 // Various helper methods for building http commands
+import { files_currentPath } from "./common.js";
 
 var page_id = ""
 
@@ -89,7 +90,7 @@ const buildHttpFilesCmd = (params = {}) => {
 /** Build a full `/upload` GET command, encoding the supplied `name`, `newname` and `path` values */
 const buildHttpFileCmd = (params = { action: "", path: "", filename: "" }) => {
     // `path` is special, it always goes into the command, and it always goes first
-    const path = getParam(params, "path", files_currentPath);
+    const path = getParam(params, "path", files_currentPath());
     const cmdInfo = [`Performing http '${httpCmd.fileUpload}' GET command for path:'${path}'`];
     const cmd = [`${httpCmd.fileUpload}?path=${encodeURIComponent(path)}`];
 
