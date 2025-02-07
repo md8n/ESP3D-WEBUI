@@ -47,11 +47,6 @@ function tabletClick() {
   // beep(3, 400, 10)
 }
 
-const moveTo = (location) => {
-  // Always force G90 mode because synchronization of modal reports is unreliable
-  sendCommand(`G90 G0 ${location}`);
-}
-
 const MDIcmd = (value) => {
   tabletClick();
   sendCommand(value);
@@ -172,6 +167,56 @@ const toggleUnits = () => {
 //   id('jog-distance').value = distance
 // }
 
+const goAxisByValue = (axis, coordinate) => {
+  tabletClick()
+  moveTo(axis + coordinate)
+}
+
+const setAxisByValue = (axis, coordinate) => {
+  tabletClick();
+  const cmd = `G10 L20 P0 ${axis}${coordinate}`;
+  sendCommand(cmd);
+}
+
+const setAxis = (axis, field) => {
+  tabletClick();
+  const cmd = `G10 L20 P1 ${axis}${getValue(field)}`;
+  sendCommand(cmd);
+}
+
+var timeout_id = 0,
+  hold_time = 1000
+
+/** Check the parameters used by jog and move commands,
+ * and return them as a composite string */
+const checkParams = (params = {}) => {
+  if (!Object.keys(params).length) {
+    addMessage("Could not perform Jog. No jog parameters supplied. Programmer error.");
+    return "";
+  }
+
+  if (!("Z" in params) && !checkHomed()) {
+    addMessage("Could not perform Jog. Belt lengths are unknown.");
+    return "";
+  }
+
+  const s = [];
+  for (key in params) {
+    s.push(`${key}${params[key]}`);
+  }
+  return s.join();
+}
+
+/** Perform a jog command */
+const jog = (params = {}) => {
+  const axisAndDistance = checkParams(params);
+  if (!axisAndDistance) {
+    return;
+  }
+
+  jogTo(axisAndDistance);
+}
+
 const jogTo = (axisAndDistance) => {
   // Always force G90 mode because synchronization of modal reports is unreliable
   // JogFeedRate is defined in controls.js
@@ -181,87 +226,34 @@ const jogTo = (axisAndDistance) => {
     feedrate = feedrate.toFixed(2);
   }
 
-  // tabletShowMessage("JogTo " + cmd);
-  sendCommand(`$J=G91F${feedrate}${axisAndDistance}\n`);
+  const cmd = `$J=G91F${feedrate}${axisAndDistance}\n`;
+  addMessage(`JogTo: '${cmd}'`);
+  sendCommand(cmd);
 }
 
-const goAxisByValue = (axis, coordinate) => {
-  tabletClick()
-  moveTo(axis + coordinate)
-}
-
-const setAxisByValue = (axis, coordinate) => {
-  tabletClick();
-  sendCommand(`G10 L20 P0 ${axis}${coordinate}`);
-}
-
-const setAxis = (axis, field) => {
-  tabletClick();
-  sendCommand(`G10 L20 P1 ${axis}${id(field).value}`);
-}
-var timeout_id = 0,
-  hold_time = 1000
-
-var longone = false
-function long_jog(target) {
-  longone = true
-  distance = 1000
-  const axisAndDirection = target.value
-  // JogFeedRate is defined in controls.js
-  let feedrate = JogFeedrate(axisAndDirection);
-  if (modal.units === 'G20') {
-    distance /= 25.4
-    distance = distance.toFixed(3)
-    feedrate /= 25.4
-    feedrate = feedrate.toFixed(2)
+/** Peform a move command */
+const move = (params = {}) => {
+  const location = checkParams(params);
+  if (!location) {
+    return;
   }
-  // tabletShowMessage("Long Jog " + cmd);
-  sendCommand(`$J=G91F${feedrate}${axisAndDirection}${distance}\n`)
+
+  moveTo(location);
 }
 
+const moveTo = (location) => {
+  // Always force G90 mode because synchronization of modal reports is unreliable
+  const cmd = `G90 G0 ${location}`;
+  sendCommand(cmd);
+}
+
+/** Perform jog or move commands based on the supplied command */
 const sendMove = (cmd) => {
   tabletClick();
 
-  const checkParams = (params = {}) => {
-    if (!Object.keys(params).length) {
-      addMessage("Could not perform Jog. No jog parameters supplied. Programmer error.");
-      return "";
-    }
-
-    if (!("Z" in params) && !checkHomed()) {
-      addMessage("Could not perform Jog. Belt lengths are unknown.");
-      return "";
-    }
-
-    const s = [];
-    for (key in params) {
-      s.push(`${key}${params[key]}`);
-    }
-    return s.join();
-  }
-
-  const jog = (params = {}) => {
-    const cmd = checkParams(params);
-    if (!cmd) {
-      return;
-    }
-
-    addMessage(`Jog: ${cmd}`);
-    jogTo(cmd);
-  }
-
-  const move = (params = {}) => {
-    const cmd = checkParams(params);
-    if (!cmd) {
-      return;
-    }
-
-    moveTo(cmd);
-  }
-
   let distance = cmd.includes('Z') ? Number(id('disZ').innerText) || 0 : Number(id('disM').innerText) || 0;
 
-  const fn = {
+  const jogMoveFnList = {
     G28: () => sendCommand('G28'),
     G30: () => sendCommand('G30'),
     X0Y0Z0: () => move({ X: 0, Y: 0, Z: 0 }),
@@ -282,9 +274,13 @@ const sendMove = (cmd) => {
       // She's got legs ♫
       move({ Z: 70 });
     },
-  }[cmd]
+  };
 
-  fn && fn();
+  if (cmd in jogMoveFnList) {
+    jogMoveFnList[cmd]();
+  } else {
+    addMessage(`Invalid jog/move command: ${cmd}`);
+  }
 }
 
 const moveHome = () => {
@@ -296,18 +292,8 @@ const moveHome = () => {
   const x = Number.parseFloat(id('mpos-x').innerText)
   const y = Number.parseFloat(id('mpos-y').innerText)
 
-  const jog = (params) => {
-    params = params || {}
-    let s = ''
-    for (key in params) {
-      s += key + params[key]
-    }
-    jogTo(s)
-  }
-
   jog({ X: -1 * x, Y: -1 * y })
 }
-
 
 // setInterval(checkOnHeartbeat, 500);
 // function checkOnHeartbeat() {
@@ -503,7 +489,6 @@ function scaleUnits(target) {
   }
 }
 
-
 function tabletUpdateModal() {
   const newUnits = modal.units === 'G21' ? 'mm' : 'Inch'
   if (getText('units') !== newUnits) {
@@ -580,18 +565,10 @@ function tabletGrblState(grbl, response) {
 
   if (grbl.spindleDirection) {
     switch (grbl.spindleDirection) {
-      case 'M3':
-        spindleDirection = 'CW'
-        break
-      case 'M4':
-        spindleDirection = 'CCW'
-        break
-      case 'M5':
-        spindleDirection = 'Off'
-        break
-      default:
-        spindleDirection = ''
-        break
+      case 'M3': spindleDirection = 'CW'; break;
+      case 'M4': spindleDirection = 'CCW'; break;
+      case 'M5': spindleDirection = 'Off'; break;
+      default: spindleDirection = ''; break;
     }
   }
 
@@ -694,7 +671,7 @@ function tabletGetFileList(path) {
   SendGetHttp(cmd, files_list_success);
 }
 
-const tabletTabActivate = () =>{
+const tabletTabActivate = () => {
   fullscreenIfMobile();
   setBottomHeight();
 };
@@ -789,8 +766,11 @@ function scrollToLine(lineNumber) {
 }
 
 function runGCode() {
-  gCodeFilename && sendCommand(`$sd/run=${gCodeFilename}`)
-  setTimeout(() => { SendRealtimeCmd(0x7e); }, 1500)
+  if (gCodeFilename) {
+    const cmd = `$sd/run=${gCodeFilename}`;
+    sendCommand(cmd);
+  }
+  setTimeout(() => { SendRealtimeCmd(0x7e); }, 1500);
   // expandVisualizer()
 }
 
@@ -884,12 +864,15 @@ const cycleDistance = (up) => {
   //    sel.selectedIndex = newIndex;
   //}
 }
+
+/** "Click" on the named button/element */
 const clickon = (name) => {
   //    $('[data-route="workspace"] .btn').removeClass('active');
-  var button = id(name)
-  button.classList.add('active')
-  button.dispatchEvent(new Event('click'))
+  var button = id(name);
+  button.classList.add('active');
+  button.dispatchEvent(new Event('click'));
 }
+
 var ctrlDown = false
 var oldIndex = null
 var newChild = null
@@ -928,15 +911,12 @@ function altDown() {
   newChild = addJogDistance(distance / 10)
 }
 
-function jogClick(name) {
-  clickon(name)
-}
-
 // Reports whether a text input box has focus - see the next comment
 var isInputFocused = false
 function tabletIsActive() {
   return id('tablettab').style.display !== 'none';
 }
+
 function handleKeyDown(event) {
   // When we are in a modal input field like the MDI text boxes
   // or the numeric entry boxes, disable keyboard jogging so those
@@ -947,31 +927,33 @@ function handleKeyDown(event) {
   if (isInputFocused) {
     return
   }
+
+  const dirKeyToBtnId = {
+    'ArrowRight': 'jog-x-plus',
+    'ArrowLeft': 'jog-x-minus',
+    'ArrowUp': 'jog-y-plus',
+    'ArrowDown': 'jog-y-minus',
+    'PageUp': 'jog-z-plus',
+    'PageDown': 'jog-z-minus',
+  }
+  if (event.key in dirKeyToBtnId) {
+    clickon(dirKeyToBtnId[event.key]);
+    event.preventDefault();
+    return;
+  }
+
+  const mathKeyToDir = {
+    '=': true,
+    '+': true,
+    '-': false,
+  }
+  if (event.key in mathKeyToDir) {
+    cycleDistance(mathKeyToDir[event.key]);
+    event.preventDefault();
+    return;
+  }
+
   switch (event.key) {
-    case 'ArrowRight':
-      jogClick('jog-x-plus')
-      event.preventDefault()
-      break
-    case 'ArrowLeft':
-      jogClick('jog-x-minus')
-      event.preventDefault()
-      break
-    case 'ArrowUp':
-      jogClick('jog-y-plus')
-      event.preventDefault()
-      break
-    case 'ArrowDown':
-      jogClick('jog-y-minus')
-      event.preventDefault()
-      break
-    case 'PageUp':
-      jogClick('jog-z-plus')
-      event.preventDefault()
-      break
-    case 'PageDown':
-      jogClick('jog-z-minus')
-      event.preventDefault()
-      break
     case 'Escape':
     case 'Pause':
       //clickon('pauseBtn')
@@ -985,19 +967,11 @@ function handleKeyDown(event) {
     case 'Alt':
       altDown()
       break
-    case '=': // = is unshifted + on US keyboards
-    case '+':
-      cycleDistance(true)
-      event.preventDefault()
-      break
-    case '-':
-      cycleDistance(false)
-      event.preventDefault()
-      break
     default:
-      console.log(event)
+      console.warn(`Received an unmatched keydown event for ${event.key}`);
   }
 }
+
 function handleKeyUp(event) {
   if (!tabletIsActive()) {
     return
@@ -1006,15 +980,9 @@ function handleKeyUp(event) {
     return
   }
   switch (event.key) {
-    case 'Shift':
-      shiftUp()
-      break
-    case 'Control':
-      ctrlDown = false
-      break
-    case 'Alt':
-      altUp()
-      break
+    case 'Shift': shiftUp(); break;
+    case 'Control': ctrlDown = false; break;
+    case 'Alt': altUp(); break;
   }
 }
 
@@ -1099,26 +1067,14 @@ function showCalibrationPopup() {
 }
 
 function homeZ() {
-  console.log('Homing Z latest')
+  console.log('Homing Z latest');
 
-  const move = (params) => {
-    params = params || {}
-    let s = ''
-    for (key in params) {
-      s += key + params[key]
-    }
-    moveTo(s)
-  }
-
-  move({ Z: 85 })
-  sendCommand('G91 G0 Z-28')
+  move({ Z: 85 });
+  const cmd = 'G91 G0 Z-28';
+  sendCommand(cmd);
   //This is a total hack to make set the z to zero after the moves complete and should be done better
-  setTimeout(() => {
-    sendCommand('$HZ')
-  }, 25000)
-  setTimeout(() => {
-    zeroAxis('Z')
-  }, 26000)
+  setTimeout(() => { sendCommand('$HZ') }, 25000);
+  setTimeout(() => { zeroAxis('Z') }, 26000);
 }
 
 const tabletDocumentClick = (event) => {
