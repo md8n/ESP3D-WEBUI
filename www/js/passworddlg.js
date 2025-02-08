@@ -26,8 +26,8 @@ const changepassworddlg = () => {
 };
 
 function checkpassword() {
-	const pwd1 = id("password_password_text1").value.trim();
-	const pwd2 = id("password_password_text2").value.trim();
+	const pwd1 = getValueTrimmed("password_password_text1");
+	const pwd2 = getValueTrimmed("password_password_text2");
 	setHTML("password_content", "");
 	displayNone("change_password_btn");
 	if (pwd1 !== pwd2) {
@@ -65,8 +65,8 @@ function SubmitChangePassword() {
 	displayNone("change_password_content");
 
 	const user = id("current_ID").innerHTML.trim();
-	const password = id("password_password_text").value.trim();
-	const newpassword = id("password_password_text1").value.trim();
+	const password = getValueTrimmed("password_password_text");
+	const newpassword = getValueTrimmed("password_password_text1");
 
 	const cmd = buildHttpLoginCmd({ USER: user, PASSWORD: password, NEWPASSWORD: newpassword });
 	SendGetHttp(cmd, ChangePasswordsuccess, ChangePasswordfailed);

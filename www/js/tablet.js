@@ -10,7 +10,7 @@ var sndok = true
 var versionNumber = 0.88
 
 const addMessage = (msg, scroll = true, clear = false) => {
-  const msgWindow = document.getElementById("messages");
+  const msgWindow = id("messages");
   if (msgWindow) {
     msgWindow.textContent = clear ? msg : `${msgWindow.textContent}\n${msg}`;
     if (scroll) {
@@ -53,7 +53,7 @@ const MDIcmd = (value) => {
 }
 
 // const MDI = (field) => {
-//   MDIcmd(id(field).value)
+//   MDIcmd(getValue(field))
 // }
 
 // const enterFullscreen = () => {
@@ -93,8 +93,8 @@ const xyHomeLabelDefault = "Define XY Home";
 const xyHomeLabelInstr = "Press+Hold Tap_x2";
 const xyHomeLabelRedefined = "XY Home Redefined";
 
-const getXYHomeBtnText = () => document.getElementById(xyHomeBtnId).textContent || "";
-const setXYHomeBtnText = (xyText = xyHomeLabelDefault) => { document.getElementById(xyHomeBtnId).textContent = xyText; };
+const getXYHomeBtnText = () => getText(xyHomeBtnId) || "";
+const setXYHomeBtnText = (xyText = xyHomeLabelDefault) => { setText(xyHomeBtnId, xyText); };
 
 const clearXYHomeTimer = () => {
   if (xyHomeTimerId) {
@@ -159,12 +159,12 @@ const toggleUnits = () => {
 // const btnSetDistance = () => {
 //   tabletClick()
 //   var distance = event.target.innerText
-//   id('jog-distance').value = distance
+//   setValue('jog-distance', distance)
 // }
 
 // const setDistance = (distance) => {
 //   tabletClick()
-//   id('jog-distance').value = distance
+//   setValue('jog-distance', distance)
 // }
 
 const goAxisByValue = (axis, coordinate) => {
@@ -251,7 +251,7 @@ const moveTo = (location) => {
 const sendMove = (cmd) => {
   tabletClick();
 
-  let distance = cmd.includes('Z') ? Number(id('disZ').innerText) || 0 : Number(id('disM').innerText) || 0;
+  let distance = cmd.includes('Z') ? Number(getText('disZ')) || 0 : Number(getText('disM')) || 0;
 
   const jogMoveFnList = {
     G28: () => sendCommand('G28'),
@@ -289,8 +289,8 @@ const moveHome = () => {
   }
 
   //We want to move to the opposite of the machine's current X,Y cordinates
-  const x = Number.parseFloat(id('mpos-x').innerText)
-  const y = Number.parseFloat(id('mpos-y').innerText)
+  const x = Number.parseFloat(getText('mpos-x'));
+  const y = Number.parseFloat(getText('mpos-y'));
 
   jog({ X: -1 * x, Y: -1 * y })
 }
@@ -308,7 +308,7 @@ const moveHome = () => {
 // }
 function saveSerialMessages() {
   // save off the serial messages
-  const msgs = document.getElementById('messages').value;
+  const msgs = getValue('messages') || "";
   const link = document.createElement('a');
   link.setAttribute('href', `data:text/plain;charset=utf-8,${encodeURI(msgs)}`);
   link.setAttribute('download', "Maslow-serial.log");
@@ -352,7 +352,7 @@ function tabletShowMessage(msg, collecting) {
 function tabletShowResponse(response) { }
 
 function clearAlarm() {
-  if (id('systemStatus').innerText === 'Alarm') {
+  if (getText('systemStatus') === 'Alarm') {
     id('systemStatus').classList.remove('system-status-alarm')
     SendPrinterCommand('$X', true, null, null, 114, 1)
   }
@@ -387,7 +387,7 @@ function setJogSelector(units) {
     'jog22',
     'jog23',
   ]
-  //buttonNames.forEach( function(n, i) { id(n).innerHTML = buttonDistances[i]; } );
+  //buttonNames.forEach( function(n, i) { setHTML(n, buttonDistances[i]); } );
 
   // var selector = id('jog-distance');
   // selector.length = 0;
@@ -431,7 +431,7 @@ function doPlayButton() {
     playButtonHandler()
   }
 
-  addMessage(`Starting File: ${document.getElementById('filelist').options[selectElement.selectedIndex].text}`);
+  addMessage(`Starting File: ${id('filelist').options[selectElement.selectedIndex].text}`);
 }
 
 // var pauseButtonHandler
@@ -710,10 +710,10 @@ function arrayToXYZ(a) {
 function showGCode(gcode) {
   gCodeLoaded = gcode !== '';
   if (!gCodeLoaded) {
-    id('gcode').value = '(No GCode loaded)';
+    setValue('gcode', '(No GCode loaded)');
     displayer.clear();
   } else {
-    id('gcode').value = gcode;
+    setValue('gcode', gcode);
     // const initialPosition = {
     //   x: WPOS[0],
     //   y: WPOS[1],
@@ -780,6 +780,7 @@ function tabletSelectGCodeFile(filename) {
   const option = options.find((item) => item.text === filename);
   option.selected = true;
 }
+
 function tabletLoadGCodeFile(path, size) {
   gCodeFilename = path
   if ((Number.isNaN(size) && size.endsWith('GB')) || size > 10000000) {
@@ -1008,18 +1009,18 @@ numpad.attach({ target: 'disZ', axis: 'Z' })
 //numpad.attach({target: "wpos-a", axis: "A"});
 
 function saveJogDists() {
-  localStorage.setItem("disM", id('disM').innerText);
-  localStorage.setItem("disZ", id('disZ').innerText);
+  localStorage.setItem("disM", getText('disM'));
+  localStorage.setItem("disZ", getText('disZ'));
 }
 
 function loadJogDists() {
   const disM = localStorage.getItem("disM");
-  if (disM != null) {
-    id('disM').innerText = disM;
+  if (disM !== null) {
+    setText('disM', disM);
   }
   const disZ = localStorage.getItem("disZ");
-  if (disZ != null) {
-    id('disZ').innerText = disZ;
+  if (disZ !== null) {
+    setText('disZ', disZ);
   }
 }
 
@@ -1058,12 +1059,12 @@ function setBottomHeight() {
 window.onresize = setBottomHeight
 
 function updateGcodeViewerAngle() {
-  const gcode = id('gcode').value
+  const gcode = getValue('gcode');
   displayer.cycleCameraAngle(gcode, modal, arrayToXYZ(WPOS))
 }
 
 function showCalibrationPopup() {
-  document.getElementById('calibration-popup').style.display = 'block'
+  displayBlock('calibration-popup');
 }
 
 function homeZ() {
@@ -1083,7 +1084,7 @@ const tabletDocumentClick = (event) => {
     !document.getElementById('calibrationBTN').contains(event.target) &&
     !document.getElementById('numPad').contains(event.target)
   ) {
-    document.getElementById('calibration-popup').style.display = 'none';
+    displayNone('calibration-popup');
   }
 };
 

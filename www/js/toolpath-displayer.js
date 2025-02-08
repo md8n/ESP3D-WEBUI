@@ -942,8 +942,8 @@ ToolpathDisplayer.prototype.cycleCameraAngle = function(gcode, modal, position) 
 
 canvas.addEventListener("mouseup", updateGcodeViewerAngle); 
 var refreshGcode = function() {
-    const gcode = id('gcode').value;
+    const gcode = getValue('gcode') || "";
     displayer.showToolpath(gcode, WPOS, MPOS, cameraAngle);
 }
 
-// id("small-toolpath").addEventListener("mouseup", updateGcodeViewerAngle); 
+// document.getElementById("small-toolpath").addEventListener("mouseup", updateGcodeViewerAngle); 

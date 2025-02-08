@@ -11,27 +11,48 @@ const setValue = (name, val) => {
     elem.value = val;
   }
 }
+
 /** Return an element's `value` value, or its `innerText` value.
- * If the element does not exist or does not have a `value` or `innerText` value `undefined` is returned */
+ * If the element does not exist or does not have a `value` or `innerText` value `undefined` is returned.
+ * This does the opposite of getText, which checks the innerText value first. */
 const getValue = (name) => id(name)?.value || id(name)?.innerText;
 
-function setTextContent(name, val) {
-  id(name).textContent = val
-}
-/** Set the innerHTML if the element with an id matching the supplied name.
- * If the element cannot be found - nothing happens
+/** Gets an element's `value` value, or its `innerText` value.
+ * Ensures that it is a string, and trims it.
+ * If the element does not exist or does not have a `value` or `innerText` value an empty string is returned
  */
+const getValueTrimmed = (name) => String(getValue(name) || "").trim();
+
+/** Return an element's `innerText` value, or its `value` value.
+ * If the element does not exist or does not have a `value` or `innerText` value `undefined` is returned.
+ * This does the opposite of getValue, which checks the `value` value first. */
+const getText = (name) => id(name)?.innerText || id(name)?.value;
+
+/** Set the textContent of the element with an id matching the supplied name.
+ * If the element cannot be found - nothing happens */
+const setTextContent = (name, val) => {
+  const elem = id(name);
+  if (elem) {
+    elem.textContent = val;
+  }
+}
+
+/** Set the innerHTML of the element with an id matching the supplied name.
+ * If the element cannot be found - nothing happens */
 const setHTML = (name, val) => {
   const elem = id(name);
   if (elem) {
     elem.innerHTML = val;
   }
 }
-function setText(name, val) {
-  id(name).innerText = val
-}
-function getText(name) {
-  return id(name).innerText
+
+/** Set the innerText of the element with an id matching the supplied name.
+ * If the element cannot be found - nothing happens */
+const setText = (name, val) => {
+  const elem = id(name);
+  if (elem) {
+    elem.innerText = val;
+  }
 }
 
 /** Set the display style of the element identified by name to the supplied value */
@@ -99,7 +120,6 @@ const getChecked = (name) => {
   const checkBox = id(name);
   return checkBox?.value || "false";
 }
-
 
 const sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay));
 

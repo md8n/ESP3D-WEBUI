@@ -11,7 +11,7 @@ const cameratab = () => {
 };
 
 function cameraformataddress() {
-	let saddress = id("camera_webaddress").value.trim();
+	let saddress = getValueTrimmed("camera_webaddress");
 	const saddressl = saddress.toLowerCase();
 	if (saddress.length > 0) {
 		if (
@@ -26,18 +26,18 @@ function cameraformataddress() {
 			saddress = `http://${saddress}`;
 		}
 	}
-	id("camera_webaddress").value = saddress;
+	setValue("camera_webaddress", saddress);
 }
 
 function camera_loadframe() {
-	const saddress = id("camera_webaddress").value.trim();
+	const saddress = getValueTrimmed("camera_webaddress");
 	if (saddress.length === 0) {
 		id("camera_frame").src = "";
 		displayNone("camera_frame_display");
 		displayNone("camera_detach_button");
 	} else {
 		cameraformataddress();
-		id("camera_frame").src = id("camera_webaddress").value;
+		id("camera_frame").src = getValue("camera_webaddress");
 		displayBlock("camera_frame_display");
 		displayTable("camera_detach_button");
 	}
@@ -52,7 +52,7 @@ function camera_OnKeyUp(event) {
 
 function camera_saveaddress() {
 	cameraformataddress();
-	preferenceslist[0].camera_address = HTMLEncode(id('camera_webaddress').value);
+	preferenceslist[0].camera_address = HTMLEncode(getValue('camera_webaddress'));
 	SavePreferences(true);
 }
 
@@ -65,8 +65,8 @@ function camera_detachcam() {
 }
 
 function camera_GetAddress() {
-	id("camera_webaddress").value =
+	setValue("camera_webaddress",
 		typeof (preferenceslist[0].camera_address) !== "undefined"
 			? HTMLDecode(preferenceslist[0].camera_address)
-			: "";
+			: "");
 }

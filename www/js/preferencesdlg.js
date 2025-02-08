@@ -131,7 +131,7 @@ function applypreferenceslist() {
     //Assign each control state
     translate_text(preferenceslist[0].language);
     build_HTML_setting_list(current_setting_filter);
-    if (typeof id('camtab') !== "undefined") {
+    if (id('camtab')) {
         let camoutput = false;
         if (typeof (preferenceslist[0].enable_camera) !== 'undefined') {
             if (preferenceslist[0].enable_camera === 'true') {
@@ -139,7 +139,7 @@ function applypreferenceslist() {
                 camera_GetAddress();
                 if (typeof (preferenceslist[0].auto_load_camera) !== 'undefined') {
                     if (preferenceslist[0].auto_load_camera === 'true') {
-                        const saddress = id('camera_webaddress').value
+                        // const saddress = getValue('camera_webaddress');
                         camera_loadframe();
                         camoutput = true;
                     }
@@ -233,22 +233,22 @@ function applypreferenceslist() {
     } else displayNone('commandsPanel');
 
     const autoReportValue = Number.parseInt(preferenceslist[0].autoreport_interval);
-    const autoReportChanged = id("preferences_autoReport_Interval").value !== autoReportValue;
+    const autoReportChanged = getValue("preferences_autoReport_Interval") !== autoReportValue;
     if (autoReportChanged) {
-        id("preferences_autoReport_Interval").value = autoReportValue;
+        setValue("preferences_autoReport_Interval", autoReportValue);
     }
     const statusIntervalValue = Number.parseInt(preferenceslist[0].interval_status);
-    statusIntervalChanged = id('preferences_status_Interval_check').value !== statusIntervalValue;
+    statusIntervalChanged = getValue('preferences_status_Interval_check') !== statusIntervalValue;
     if (statusIntervalChanged) {
-        id('preferences_status_Interval_check').value = statusIntervalValue;
+        setValue('preferences_status_Interval_check', statusIntervalValue);
     }
     if (autoReportChanged || statusIntervalChanged) {
         onAutoReportIntervalChange();
     }
 
-    id('preferences_pos_Interval_check').value = Number.parseInt(preferenceslist[0].interval_positions);
-    id('preferences_control_xy_velocity').value = Number.parseFloat(preferenceslist[0].xy_feedrate);
-    id('preferences_control_z_velocity').value = Number.parseFloat(preferenceslist[0].z_feedrate);
+    setValue('preferences_pos_Interval_check', Number.parseInt(preferenceslist[0].interval_positions));
+    setValue('preferences_control_xy_velocity', Number.parseFloat(preferenceslist[0].xy_feedrate));
+    setValue('preferences_control_z_velocity', Number.parseFloat(preferenceslist[0].z_feedrate));
 
     if (grblaxis > 2) axis_Z_feedrate = Number.parseFloat(preferenceslist[0].z_feedrate);
     if (grblaxis > 3) axis_A_feedrate = Number.parseFloat(preferenceslist[0].a_feedrate);
@@ -295,7 +295,7 @@ function build_dlg_preferences_list() {
     content += `${get_icon_svg("flag")}&nbsp;</td><td>`;
     content += build_language_list("language_preferences");
     content += "</td></tr></table>";
-    id("preferences_langage_list").innerHTML = content;
+    setHTML("preferences_langage_list", content);
     //camera
     if (typeof (preferenceslist[0].enable_camera) !== 'undefined') {
         id('show_camera_panel').checked = (preferenceslist[0].enable_camera === 'true');
@@ -645,7 +645,7 @@ function preferencesdlgUploadProgressDisplay(oEvent) {
     if (oEvent.lengthComputable) {
         var percentComplete = (oEvent.loaded / oEvent.total) * 100;
         id('preferencesdlg_prg').value = percentComplete;
-        id('preferencesdlg_upload_percent').innerHTML = percentComplete.toFixed(0);
+        setHTML('preferencesdlg_upload_percent', percentComplete.toFixed(0));
         displayBlock('preferencesdlg_upload_msg');
     } else {
         // Impossible because size is unknown
@@ -752,12 +752,12 @@ function Checkvalues(id_2_check) {
     if (status) {
         id(`${id_2_check}_group`).classList.remove("has-feedback");
         id(`${id_2_check}_group`).classList.remove("has-error");
-        id(`${id_2_check}_icon`).innerHTML = "";
+        setHTML(`${id_2_check}_icon`, "");
     } else {
         // has-feedback hides the value so it is hard to fix it
         // id(id_2_check + "_group").classList.add("has-feedback");
         id(`${id_2_check}_group`).classList.add("has-error");
-        // id(id_2_check + "_icon").innerHTML = get_icon_svg("remove");
+        // setHTML(id_2_check + "_icon", get_icon_svg("remove"));
         alertdlg(translate_text_item("Out of range"), error_message);
     }
     return status;

@@ -94,7 +94,7 @@ function on_autocheck_position(use_value) {
 		id('autocheck_position').checked = use_value;
 	}
 	if (id('autocheck_position').checked) {
-		var interval = parseInt(id('controlpanel_interval_positions').value);
+		var interval = parseInt(getValue('controlpanel_interval_positions'));
 		if (!Number.isNaN(interval) && interval > 0 && interval < 100) {
 			if (interval_position != -1) {
 				clearInterval(interval_position);
@@ -102,7 +102,7 @@ function on_autocheck_position(use_value) {
 			interval_position = setInterval(function () { get_Position() }, interval * 1000);
 		} else {
 			id('autocheck_position').checked = false;
-			id('controlpanel_interval_positions').value = 0;
+			setValue('controlpanel_interval_positions', 0);
 			if (interval_position != -1) {
 				clearInterval(interval_position);
 			}
@@ -117,12 +117,12 @@ function on_autocheck_position(use_value) {
 }
 
 function onPosIntervalChange() {
-	var interval = parseInt(id('controlpanel_interval_positions').value);
+	var interval = parseInt(getValue('controlpanel_interval_positions'));
 	if (!Number.isNaN(interval) && interval > 0 && interval < 100) {
 		on_autocheck_position();
 	} else {
 		id('autocheck_position').checked = false;
-		id('controlpanel_interval_positions').value = 0;
+		setValue('controlpanel_interval_positions', 0);
 		if (interval != 0) {
 			alertdlg(translate_text_item("Out of range"), translate_text_item("Value of auto-check must be between 0s and 99s !!"));
 		}
@@ -297,7 +297,7 @@ function control_build_macro_ui() {
 		content += control_build_macro_button(i, entry);
 		actions.push({ id: `control_macro_${i}`, method: (event) => macro_command(entry.target, entry.filename) });
 	}
-	id("Macro_list").innerHTML = content;
+	setHTML("Macro_list", content);
 	actions.forEach((action) => {
 		id(action.id).addEventListener("click", action.method);
 	});

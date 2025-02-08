@@ -569,7 +569,7 @@ function files_build_display_filelist(displaylist = true) {
 		if (files_status_list[0].total !== "-1") {
 			setHTML("files_sd_status_total", files_status_list[0].total);
 			setHTML("files_sd_status_used", files_status_list[0].used);
-			id("files_sd_status_occupation").value = files_status_list[0].occupation;
+			setValue("files_sd_status_occupation", files_status_list[0].occupation);
 			setHTML("files_sd_status_percent", files_status_list[0].occupation);
 			displayTable("files_space_sd_status");
 		} else {
@@ -662,13 +662,13 @@ function files_start_upload() {
 		SendFileHttp(httpCmd.fileUpload, formData, FilesUploadProgressDisplay, files_list_success, files_directSD_upload_failed);
 		//console.log("send file");
 	}
-	id("files_input_file").value = "";
+	setValue("files_input_file", "");
 }
 
 function FilesUploadProgressDisplay(oEvent) {
 	if (oEvent.lengthComputable) {
 		const percentComplete = (oEvent.loaded / oEvent.total) * 100;
-		id("files_prg").value = percentComplete;
+		setValue("files_prg", percentComplete);
 		setHTML("files_percent_upload", percentComplete.toFixed(0));
 	} else {
 		// Impossible because size is unknown
