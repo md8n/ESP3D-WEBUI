@@ -47,11 +47,6 @@ function tabletClick() {
   // beep(3, 400, 10)
 }
 
-const moveTo = (location) => {
-  // Always force G90 mode because synchronization of modal reports is unreliable
-  sendCommand(`G90 G0 ${location}`);
-}
-
 const MDIcmd = (value) => {
   tabletClick();
   sendCommand(value);
@@ -172,29 +167,28 @@ const toggleUnits = () => {
 //   id('jog-distance').value = distance
 // }
 
-const jogTo = (axisAndDistance) => {
-  // Always force G90 mode because synchronization of modal reports is unreliable
-  // JogFeedRate is defined in controls.js
-  let feedrate = JogFeedrate(axisAndDistance);
-  if (modal.units === "G20") {
-    feedrate /= 25.4;
-    feedrate = feedrate.toFixed(2);
-  }
-
-  // tabletShowMessage("JogTo " + cmd);
-  sendCommand(`$J=G91F${feedrate}${axisAndDistance}\n`);
-}
-
 const goAxisByValue = (axis, coordinate) => {
-  tabletClick();
-  moveTo(axis + coordinate);
+  tabletClick()
+  moveTo(axis + coordinate)
 }
 
 const setAxisByValue = (axis, coordinate) => {
   tabletClick();
-  sendCommand(`G10 L20 P0 ${axis}${coordinate}`);
+  const cmd = `G10 L20 P0 ${axis}${coordinate}`;
+  sendCommand(cmd);
 }
 
+const setAxis = (axis, field) => {
+  tabletClick();
+  const cmd = `G10 L20 P1 ${axis}${getValue(field)}`;
+  sendCommand(cmd);
+}
+
+var timeout_id = 0,
+  hold_time = 1000
+
+/** Check the parameters used by jog and move commands,
+ * and return them as a composite string */
 const checkParams = (params = {}) => {
   if (!Object.keys(params).length) {
     addMessage("Could not perform Jog. No jog parameters supplied. Programmer error.");
@@ -213,25 +207,47 @@ const checkParams = (params = {}) => {
   return s.join();
 }
 
+/** Perform a jog command */
 const jog = (params = {}) => {
-  const cmd = checkParams(params);
-  if (!cmd) {
+  const axisAndDistance = checkParams(params);
+  if (!axisAndDistance) {
     return;
   }
 
-  addMessage(`Jog: ${cmd}`);
-  jogTo(cmd);
+  jogTo(axisAndDistance);
 }
 
+const jogTo = (axisAndDistance) => {
+  // Always force G90 mode because synchronization of modal reports is unreliable
+  // JogFeedRate is defined in controls.js
+  let feedrate = JogFeedrate(axisAndDistance);
+  if (modal.units === "G20") {
+    feedrate /= 25.4;
+    feedrate = feedrate.toFixed(2);
+  }
+
+  const cmd = `$J=G91F${feedrate}${axisAndDistance}\n`;
+  addMessage(`JogTo: '${cmd}'`);
+  sendCommand(cmd);
+}
+
+/** Peform a move command */
 const move = (params = {}) => {
-  const cmd = checkParams(params);
-  if (!cmd) {
+  const location = checkParams(params);
+  if (!location) {
     return;
   }
 
-  moveTo(cmd);
+  moveTo(location);
 }
 
+const moveTo = (location) => {
+  // Always force G90 mode because synchronization of modal reports is unreliable
+  const cmd = `G90 G0 ${location}`;
+  sendCommand(cmd);
+}
+
+/** Perform jog or move commands based on the supplied command */
 const sendMove = (cmd) => {
   tabletClick();
 
@@ -239,7 +255,7 @@ const sendMove = (cmd) => {
     ? Number(getText('disZ')) || 0
     : Number(getText('disM')) || 0;
 
-  const fn = {
+  const jogMoveFnList = {
     G28: () => sendCommand('G28'),
     G30: () => sendCommand('G30'),
     X0Y0Z0: () => move({ X: 0, Y: 0, Z: 0 }),
@@ -260,9 +276,13 @@ const sendMove = (cmd) => {
       // She's got legs ♫
       move({ Z: 70 });
     },
-  }[cmd];
+  };
 
-  fn && fn();
+  if (cmd in jogMoveFnList) {
+    jogMoveFnList[cmd]();
+  } else {
+    addMessage(`Invalid jog/move command: ${cmd}`);
+  }
 }
 
 const moveHome = () => {
@@ -841,7 +861,10 @@ function scrollToLine(lineNumber) {
 }
 
 function runGCode() {
-  gCodeFilename && sendCommand(`$sd/run=${gCodeFilename}`);
+  if (gCodeFilename) {
+    const cmd = `$sd/run=${gCodeFilename}`;
+    sendCommand(cmd);
+  }
   setTimeout(() => { SendRealtimeCmd(0x7e); }, 1500);
   // expandVisualizer()
 }
@@ -930,6 +953,8 @@ const cycleDistance = (up) => {
   //    sel.selectedIndex = newIndex;
   //}
 }
+
+/** "Click" on the named button/element */
 const clickon = (name) => {
   //    $('[data-route="workspace"] .btn').removeClass('active');
   const button = id(name);
@@ -974,18 +999,15 @@ function altDown() {
   newChild = addJogDistance(distance / 10);
 }
 
-function jogClick(name) {
-  clickon(name);
-}
-
 /** Reports whether a text input box has focus - see the next comment.
  * TODO: Currently this is always false. Maybe we should remove all usages of it
  */
-var isInputFocused = false;
+var isInputFocused = false
 function tabletIsActive() {
   const elem = id("tablettab");
   return !elem ? false : elem.style.display !== "none";
 }
+
 function handleKeyDown(event) {
   // When we are in a modal input field like the MDI text boxes
   // or the numeric entry boxes, disable keyboard jogging so those
@@ -996,57 +1018,51 @@ function handleKeyDown(event) {
   if (isInputFocused) {
     return;
   }
+
+  const dirKeyToBtnId = {
+    'ArrowRight': 'jog-x-plus',
+    'ArrowLeft': 'jog-x-minus',
+    'ArrowUp': 'jog-y-plus',
+    'ArrowDown': 'jog-y-minus',
+    'PageUp': 'jog-z-plus',
+    'PageDown': 'jog-z-minus',
+  }
+  if (event.key in dirKeyToBtnId) {
+    clickon(dirKeyToBtnId[event.key]);
+    event.preventDefault();
+    return;
+  }
+
+  const mathKeyToDir = {
+    '=': true,
+    '+': true,
+    '-': false,
+  }
+  if (event.key in mathKeyToDir) {
+    cycleDistance(mathKeyToDir[event.key]);
+    event.preventDefault();
+    return;
+  }
+
   switch (event.key) {
-    case "ArrowRight":
-      jogClick("jog-x-plus");
-      event.preventDefault();
-      break;
-    case "ArrowLeft":
-      jogClick("jog-x-minus");
-      event.preventDefault();
-      break;
-    case "ArrowUp":
-      jogClick("jog-y-plus");
-      event.preventDefault();
-      break;
-    case "ArrowDown":
-      jogClick("jog-y-minus");
-      event.preventDefault();
-      break;
-    case "PageUp":
-      jogClick("jog-z-plus");
-      event.preventDefault();
-      break;
-    case "PageDown":
-      jogClick("jog-z-minus");
-      event.preventDefault();
-      break;
-    case "Escape":
-    case "Pause":
-      // clickon("pauseBtn");
-      break;
-    case "Shift":
-      shiftDown();
-      break;
-    case "Control":
-      ctrlDown = true;
-      break;
-    case "Alt":
-      altDown();
-      break;
-    case "=": // = is unshifted + on US keyboards
-    case "+":
-      cycleDistance(true);
-      event.preventDefault();
-      break;
-    case "-":
-      cycleDistance(false);
-      event.preventDefault();
-      break;
+    case 'Escape':
+    case 'Pause':
+      //clickon('pauseBtn')
+      break
+    case 'Shift':
+      shiftDown()
+      break
+    case 'Control':
+      ctrlDown = true
+      break
+    case 'Alt':
+      altDown()
+      break
     default:
-      console.log(event);
+      console.warn(`Received an unmatched keydown event for ${event.key}`);
   }
 }
+
 function handleKeyUp(event) {
   if (!tabletIsActive()) {
     return;
@@ -1055,15 +1071,9 @@ function handleKeyUp(event) {
     return;
   }
   switch (event.key) {
-    case "Shift":
-      shiftUp();
-      break;
-    case "Control":
-      ctrlDown = false;
-      break;
-    case "Alt":
-      altUp();
-      break;
+    case 'Shift': shiftUp(); break;
+    case 'Control': ctrlDown = false; break;
+    case 'Alt': altUp(); break;
   }
 }
 
@@ -1131,29 +1141,6 @@ function setBottomHeight() {
   tPad += 20;
 }
 window.onresize = setBottomHeight
-
-// function homeZ() {
-//   console.log('Homing Z latest')
-
-//   const move = (params) => {
-//     params = params || {}
-//     let s = ''
-//     for (key in params) {
-//       s += key + params[key]
-//     }
-//     moveTo(s)
-//   }
-
-//   move({ Z: 85 })
-//   sendCommand('G91 G0 Z-28')
-//   //This is a total hack to make set the z to zero after the moves complete and should be done better
-//   setTimeout(() => {
-//     sendCommand('$HZ')
-//   }, 25000)
-//   setTimeout(() => {
-//     zeroAxis('Z')
-//   }, 26000)
-// }
 
 const tabletDocumentClick = (event) => {
   const elemIdsToTest = ["calibration-popup", "calibrationBTN", "numPad"];
