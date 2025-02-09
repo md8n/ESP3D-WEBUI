@@ -2,7 +2,7 @@
 const id = (name) => document.getElementById(name);
 
 /** Returns an array of elements with the supplied class name, which can be use with forEach() or for ... of */
-const classes = (name) => Array.from(document.getElementsByClassName(name));
+const elemsByClass = (name) => Array.from(document.getElementsByClassName(name));
 
 /** Set an element's `value` value (if the element exists) */
 const setValue = (name, val) => {
