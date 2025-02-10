@@ -108,7 +108,7 @@ function init_grbl_panel() {
   // Feed rate for X and Y Axes
   AxisFeedrate()[0] = floatOrZero(prefList.xy_feedrate);
   AxisFeedrate()[1] = floatOrZero(prefList.xy_feedrate);
-  
+
   AxisFeedrate()[2] = floatOrZero(prefList.z_feedrate);
   AxisFeedrate()[3] = floatOrZero(prefList.a_feedrate);
   AxisFeedrate()[4] = floatOrZero(prefList.b_feedrate);
@@ -225,7 +225,7 @@ function tryAutoReport() {
     disablePolling();
   }
   reportType = "auto";
-  const interval = id("grblpanel_autoreport_interval").value ?? 0;
+  const interval = getValue("grblpanel_autoreport_interval") ?? 0;
   if (interval === 0) {
     enablePolling();
     return;
@@ -395,35 +395,37 @@ function parseGrblStatus(response) {
   return grbl
 }
 
-function clickableFromStateName(state, hasSD) {
-  var clickable = {
+const clickableFromStateName = (state = "", hasSD = false) => {
+  const clickable = {
     resume: false,
     pause: false,
     reset: false,
+  };
+
+  if (!["Run", "Hold", "Alarm"].includes(state)) {
+    return clickable;
   }
+
   switch (state) {
-    case 'Run':
-      clickable.pause = true
-      clickable.reset = true
-      break
-    case 'Hold':
-      clickable.resume = true
-      clickable.reset = true
-      break
-    case 'Alarm':
+    case "Run":
+      clickable.pause = true;
+      clickable.reset = true;
+      break;
+    case "Hold":
+      clickable.resume = true;
+      clickable.reset = true;
+      break;
+    case "Alarm":
       if (hasSD) {
-        //guess print is stopped because of alarm so no need to pause
-        clickable.resume = true
+        //guess print is stopped because of alarm so no need to pause/hold
+        clickable.resume = true;
       }
-      break
-    case 'Idle':
-    case 'Jog':
-    case 'Home':
-    case 'Check':
-    case 'Sleep':
-      break
+      break;
+    default:
+      break;
   }
-  return clickable
+
+  return clickable;
 }
 
 function show_grbl_position(wpos, mpos) {
@@ -441,26 +443,31 @@ function show_grbl_position(wpos, mpos) {
   }
 }
 
-function show_grbl_status(stateName, message, hasSD) {
-  if (stateName) {
-    var clickable = clickableFromStateName(stateName, hasSD)
-    setHTML('grbl_status', stateName)
-    setHTML('systemStatus', stateName)
-    if (stateName === 'Alarm') {
-      id('systemStatus').classList.add('system-status-alarm')
-    } else {
-      id('systemStatus').classList.remove('system-status-alarm')
-    }
-    setClickability('sd_resume_btn', clickable.resume)
-    setClickability('sd_pause_btn', clickable.pause)
-    setClickability('sd_reset_btn', clickable.reset)
-    if (stateName == 'Hold' && probe_progress_status != 0) {
-      probe_failed_notification()
-    }
+const show_grbl_status = (stateName = "", message = "", hasSD = false) => {
+  setHTML("grbl_status_text", translate_text_item(message))
+  setClickability("clear_status_btn", stateName === "Alarm");
+
+  if (!stateName) {
+    return;
   }
 
-  setHTML('grbl_status_text', translate_text_item(message))
-  setClickability('clear_status_btn', stateName == 'Alarm')
+  setHTML("grbl_status", stateName);
+  setHTML("systemStatus", stateName);
+
+  if (stateName === "Alarm") {
+    id("systemStatus").classList.add("system-status-alarm");
+  } else {
+    id("systemStatus").classList.remove("system-status-alarm");
+  }
+
+  const clickable = clickableFromStateName(stateName, hasSD);
+  setClickability("sd_resume_btn", clickable.resume);
+  setClickability("sd_pause_btn", clickable.pause);
+  setClickability("sd_reset_btn", clickable.reset);
+
+  if (stateName == "Hold" && probe_progress_status != 0) {
+    probe_failed_notification();
+  }
 }
 
 function finalize_probing() {
@@ -506,32 +513,34 @@ function grblProcessStatus(response) {
   var grbl = parseGrblStatus(response)
   // Record persistent values of data
   if (grbl.wco) {
-    WCO = grbl.wco
+    WCO = grbl.wco;
   }
   if (grbl.ovr) {
-    OVR = grbl.ovr
+    OVR = grbl.ovr;
   }
   if (grbl.mpos) {
-    MPOS = grbl.mpos
+    MPOS = grbl.mpos;
     if (WCO) {
-      WPOS = grbl.mpos.map((v, index) => v - WCO[index])
+      WPOS = grbl.mpos.map((v, index) => v - WCO[index]);
     }
   } else if (grbl.wpos) {
-    WPOS = grbl.wpos
+    WPOS = grbl.wpos;
     if (WCO) {
-      MPOS = grbl.wpos.map((v, index) => v + WCO[index])
+      MPOS = grbl.wpos.map((v, index) => v + WCO[index]);
     }
   }
-  show_grbl_position(WPOS, MPOS)
-  show_grbl_status(grbl.stateName, grbl.message, grbl.sdName)
-  show_grbl_SD(grbl.sdName, grbl.sdPercent)
-  show_grbl_probe_status(grbl.pins && grbl.pins.indexOf('P') !== -1)
-  tabletGrblState(grbl, response)
+  show_grbl_position(WPOS, MPOS);
+  show_grbl_status(grbl.stateName, grbl.message, grbl.sdName);
+  show_grbl_SD(grbl.sdName, grbl.sdPercent);
+  show_grbl_probe_status(grbl.pins && grbl.pins.indexOf('P') !== -1);
+  tabletGrblState(grbl, response);
 }
 
 function grbl_reset() {
-  if (probe_progress_status !== 0) probe_failed_notification()
-  SendRealtimeCmd(0x18)
+  if (probe_progress_status !== 0) {
+    probe_failed_notification();
+  }
+  SendRealtimeCmd(0x18);
 }
 
 function grblGetProbeResult(response) {

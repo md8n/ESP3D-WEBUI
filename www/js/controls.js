@@ -94,7 +94,7 @@ function on_autocheck_position(use_value) {
 		id('autocheck_position').checked = use_value;
 	}
 	if (id('autocheck_position').checked) {
-		var interval = parseInt(id('controlpanel_interval_positions').value);
+		var interval = parseInt(getValue('controlpanel_interval_positions'));
 		if (!Number.isNaN(interval) && interval > 0 && interval < 100) {
 			if (interval_position != -1) {
 				clearInterval(interval_position);
@@ -117,7 +117,7 @@ function on_autocheck_position(use_value) {
 }
 
 function onPosIntervalChange() {
-	var interval = parseInt(id('controlpanel_interval_positions').value);
+	var interval = parseInt(getValue('controlpanel_interval_positions'));
 	if (!Number.isNaN(interval) && interval > 0 && interval < 100) {
 		on_autocheck_position();
 	} else {
@@ -297,9 +297,12 @@ function control_build_macro_ui() {
 		content += control_build_macro_button(i, entry);
 		actions.push({ id: `control_macro_${i}`, method: (event) => macro_command(entry.target, entry.filename) });
 	}
-	id("Macro_list").innerHTML = content;
+	setHTML("Macro_list", content);
 	actions.forEach((action) => {
-		id(action.id).addEventListener("click", action.method);
+		const elem = id(action.id);
+		if (elem) {
+			elem.addEventListener("click", action.method);
+		}
 	});
 }
 

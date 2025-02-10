@@ -10,7 +10,7 @@ var is_override_config = false;
 
 function refreshconfig(is_override) {
     if (http_communication_locked) {
-        id('config_status').innerHTML = translate_text_item("Communication locked by another process, retry later.");
+        setHTML('config_status', translate_text_item("Communication locked by another process, retry later."));
         return;
     }
     is_override_config = false;
@@ -120,7 +120,7 @@ function build_HTML_config_list() {
         content += "</tr>\n";
     }
     if (content.length > 0) {
-        id('config_list_data').innerHTML = content;
+        setHTML('config_list_data', content);
     }
     displayNone('config_loader');
     displayBlock('config_list_content');
@@ -141,13 +141,13 @@ function process_config_answer(response_text) {
     var result = true;
     var tlines = response_text.split("\n");
     //console.log(tlines.length);
-        //console.log("Config has " + tlines.length + " entries");
-        var vindex = 0;
-        for (var i = 0; i < tlines.length; i++) {
-            vindex = create_config_entry(tlines[i], vindex);
-        }
-        if (vindex > 0) build_HTML_config_list();
-        else result = false;
+    //console.log("Config has " + tlines.length + " entries");
+    var vindex = 0;
+    for (var i = 0; i < tlines.length; i++) {
+        vindex = create_config_entry(tlines[i], vindex);
+    }
+    if (vindex > 0) build_HTML_config_list();
+    else result = false;
 
     return result;
 }
@@ -237,6 +237,8 @@ function is_config_commented(sline) {
     return (is_override_config) ? line.startsWith(";") : false;
 }
 
+const buildIdConf = (prefix, index) => `config_${prefix}${index}`;
+
 function config_revert_to_default(index, is_override) {
     var prefix = "";
     var item = config_configList[index];
@@ -244,17 +246,19 @@ function config_revert_to_default(index, is_override) {
         prefix = "_override";
         item = config_override_List[index];
     }
-    console.log()
-    id('config_' + prefix + index).value = item.defaultvalue;
-    id('btn_config_' + prefix + index).className = "btn btn-default";
-    id('status_config_' + prefix + index).className = "form-group has-feedback";
-    id('icon_config_' + prefix + index).innerHTML = "";
+    const idConf = buildIdConf(prefix, index);
+    setValue(idConf, item.defaultvalue);
+    id(`btn_${idConf}`).className = "btn btn-default";
+    id(`status_${idConf}`).className = "form-group has-feedback";
+    setHTML(`icon_${idConf}`, "");
 }
 
 function is_config_override_file() {
     if (config_override_List.length > 5) {
         for (i = 0; i < 5; i++) {
-            if (config_override_List[i].comment.startsWith("; No config override")) return true;
+            if (config_override_List[i].comment.startsWith("; No config override")) {
+                return true;
+            }
         }
     }
     return false;
@@ -269,7 +273,7 @@ function configGetvalue(index, is_override) {
     const cnfId = `config_${prefix}${index}`;
 
     // remove possible spaces
-    const value = id(cnfId).value.trim();
+    const value = getValue(cnfId).trim();
     if (value === item.defaultvalue) {
         return;
     }
@@ -280,7 +284,7 @@ function configGetvalue(index, is_override) {
     //if not valid show error
     id(`btn_${cnfId}`).className = `btn ${!isvalid ? "btn-danger" : "btn-success"}`;
     id(`icon_${cnfId}`).className = `form-control-feedback ${!isvalid ? "has-error" : "has-success"} ico_feedback`;
-    id(`icon_${cnfId}`).innerHTML = isvalid ? get_icon_svg("remove") : get_icon_svg("ok");
+    setHTML(`icon_${cnfId}`, isvalid ? get_icon_svg("remove") : get_icon_svg("ok"));
     id(`status_${cnfId}`).className = `form-group has-feedback ${!isvalid ? "has-error" : "has-success"}`;
 
     if (!isvalid) {
@@ -304,25 +308,26 @@ function config_checkchange(index, is_override) {
         prefix = "_override";
         item = config_override_List[index];
     }
-    var val = id('config_' + prefix + index).value.trim();
+    const idConf = buildIdConf(prefix, index);
+    var val = (getValue(idConf) || "").trim();
     //console.log("value: " + val);
     if (item.defaultvalue == val) {
-        id('btn_config_' + prefix + index).className = "btn btn-default";
-        id('icon_config_' + prefix + index).className = "form-control-feedback";
-        id('icon_config_' + prefix + index).innerHTML = "";
-        id('status_config_' + prefix + index).className = "form-group has-feedback";
+        id(`btn_${idConf}`).className = "btn btn-default";
+        id(`icon_${idConf}`).className = "form-control-feedback";
+        setHTML(`icon_${idConf}`, "");
+        id(`status_${idConf}`).className = "form-group has-feedback";
     } else if (config_check_value(val, index, is_override)) {
-        id('status_config_' + prefix + index).className = "form-group has-feedback has-warning";
-        id('btn_config_' + prefix + index).className = "btn btn-warning";
-        id('icon_config_' + prefix + index).className = "form-control-feedback has-warning ico_feedback";
-        id('icon_config_' + prefix + index).innerHTML = get_icon_svg("warning-sign");
+        id(`btn_${idConf}`).className = "btn btn-warning";
+        id(`icon_${idConf}`).className = "form-control-feedback has-warning ico_feedback";
+        setHTML(`icon_${idConf}`, get_icon_svg("warning-sign"));
+        id(`status_${idConf}`).className = "form-group has-feedback has-warning";
         //console.log("change ok");
     } else {
         //console.log("change bad");
-        id('btn_config_' + prefix + index).className = "btn btn-danger";
-        id('icon_config_' + prefix + index).className = "form-control-feedback has-error ico_feedback";
-        id('icon_config_' + prefix + index).innerHTML = get_icon_svg("remove");
-        id('status_config_' + prefix + index).className = "form-group has-feedback has-error";
+        id(`btn_${idConf}`).className = "btn btn-danger";
+        id(`icon_${idConf}`).className = "form-control-feedback has-error ico_feedback";
+        setHTML(`icon_${idConf}`, get_icon_svg("remove"));
+        id(`status_${idConf}`).className = "form-group has-feedback has-error";
     }
 
 }
@@ -392,10 +397,12 @@ function setESPconfigfailed(error_code, response) {
     alertdlg(translate_text_item("Set failed"), errMsg);
     conErr(errMsg);
     const prefix = (config_lastindex_is_override) ? "_override" : "";
-    id('btn_config_' + prefix + config_lastindex).className = "btn btn-danger";
-    id('icon_config_' + prefix + config_lastindex).className = "form-control-feedback has-error ico_feedback";
-    id('icon_config_' + prefix + config_lastindex).innerHTML = get_icon_svg("remove");
-    id('status_config_' + prefix + config_lastindex).className = "form-group has-feedback has-error";
+    const idConf = buildIdConf(prefix, config_lastindex);
+
+    id(`btn_${idConf}`).className = "btn btn-danger";
+    id(`icon_${idConf}`).className = "form-control-feedback has-error ico_feedback";
+    setHTML(`icon_${idConf}`, get_icon_svg("remove"));
+    id(`status_${idConf}`).className = "form-group has-feedback has-error";
 }
 
 function getESPconfigSuccess(response) {
@@ -414,6 +421,6 @@ function getESPconfigfailed(error_code, response) {
     conErr(error_code, response);
     displayNone('config_loader');
     displayBlock('config_status');
-    id('config_status').innerHTML = stdErrMsg(error_code, response, translate_text_item("Failed"));
+    setHTML('config_status', stdErrMsg(error_code, response, translate_text_item("Failed")));
     displayBlock('config_refresh_btn');
 }

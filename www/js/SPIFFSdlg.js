@@ -95,6 +95,7 @@ function processSPIFFS_Createdir(answer) {
 }
 
 function SPIFFSDownload(url) {
+	console.info(`Preparing to download ${url}`);
 	const anchor = document.createElement("a");
 	anchor.href = url;
 	anchor.download = url;
@@ -169,7 +170,14 @@ function SPIFFSsuccess(response) {
 	id("SPIFFS_loader").style.visibility = "hidden";
 	displayBlock("refreshSPIFFSbtn");
 	displayBlock("SPIFFS_select_files");
-	SPIFFSdispatchfilestatus(jsonresponse);
+	if (response) {
+		try {
+			const jsonresponse = JSON.parse(response);
+			SPIFFSdispatchfilestatus(jsonresponse);
+		} catch (error) {
+			console.error(`Could not parse '${response}' as JSON. ${error}`);
+		}
+	}
 }
 
 function SPIFFSfailed(error_code, response) {
@@ -224,9 +232,9 @@ function SPIFFSdispatchfilestatus(jsonresponse) {
 		const filesize = jsonresponse.files[i].size;
 		const pathname = jsonresponse.path;
 		const filename = jsonresponse.files[i].name;
-		let filecontent = `<td  style='vertical-align:middle; color:#5BC0DE'>${get_icon_svg("file")}</td>`;
-		// filecontent += "<td  width='100%'  style='vertical-align:middle'><a href=\"" + pathname + filename + "\" target=_blank download><button  class=\"btn btn-link no_overflow\">" + filename + "</button></a></td>"
-		filecontent += `<td  width='100%'  style='vertical-align:middle'>${filename}</td>`;
+		let filecontent = `<td style='vertical-align:middle; color:#5BC0DE'>${get_icon_svg("file")}</td>`;
+		// filecontent += "<td width='100%' style='vertical-align:middle'><a href=\"" + pathname + filename + "\" target=_blank download><button  class=\"btn btn-link no_overflow\">" + filename + "</button></a></td>"
+		filecontent += `<td width='100%' style='vertical-align:middle'>${filename}</td>`;
 		filecontent += `<td nowrap  style='vertical-align:middle; text-align:right'>${filesize}</td>`;
 		filecontent += SPIFFSbutton(`${bIdF}download_${i}`, "btn-default", "download");
 		filecontent += SPIFFSbutton(`${bIdF}delete_${i}`, "btn-danger", "trash");
@@ -261,7 +269,10 @@ function SPIFFSdispatchfilestatus(jsonresponse) {
 
 	setHTML("SPIFFS_file_list", content);
 	actions.forEach((action) => {
-		id(action.id).addEventListener("click", (event) => action.method(action.filename));
+		const elem = id(action.id);
+		if (elem) {
+			elem.addEventListener("click", (event) => action.method(action.path));
+		}
 	});
 
 	SPIFFSnavbar();
@@ -310,27 +321,29 @@ function SPIFFSUploadProgressDisplay(oEvent) {
 }
 
 function SPIFFS_UploadFile() {
-	if (http_communication_locked) {
-		alertdlg(translate_text_item("Busy..."), translate_text_item("Communications are currently locked, please wait and retry."),);
+	if (CheckForHttpCommLock()) {
 		return;
 	}
+
+	const fileList = [];
 	const files = id("SPIFFS_select").files;
 	const formData = new FormData();
 	formData.append("path", SPIFFS_currentpath);
 	for (let i = 0; i < files.length; i++) {
 		const file = files[i];
-		const arg = `${SPIFFS_currentpath}${file.name}S`;
+		fileList.push(file.name);
+		const fullFilename = `${SPIFFS_currentpath}${file.name}`;
 		//append file size first to check upload is complete
-		formData.append(arg, file.size);
-		formData.append("myfile[]", file, `${SPIFFS_currentpath}${file.name}`);
+		formData.append(`${fullFilename}S`, file.size);
+		formData.append("myfile[]", file, fullFilename);
+		console.info(`Preparing ${fullFilename} for upload`);
 	}
 	displayNone("SPIFFS_select_form");
 	displayNone("SPIFFS_uploadbtn");
-	SPIFFS_upload_ongoing = true;
 	displayBlock("uploadSPIFFSmsg");
 	displayBlock("SPIFFS_prg");
-	SPIFFS_currentfile = (files.length === 1) ? files[0].name : "";
-	setHTML("uploadSPIFFSmsg", `${translate_text_item("Uploading")} ${SPIFFS_currentfile}`);
+	SPIFFS_upload_ongoing = true;
+	setHTML("uploadSPIFFSmsg", `${translate_text_item("Uploading")} ${fileList.join(" ")}`);
 	SendFileHttp(httpCmd.files, formData, SPIFFSUploadProgressDisplay, SPIFFSUploadsuccess, SPIFFSUploadfailed);
 }
 
@@ -343,8 +356,14 @@ function SPIFFSUploadsuccess(response) {
 	setHTML("uploadSPIFFSmsg", "");
 	displayBlock("refreshSPIFFSbtn");
 	SPIFFS_upload_ongoing = false;
-	const jsonresponse = JSON.parse(response.replace('"status":"Ok"', '"status":"Upload done"'));
-	SPIFFSdispatchfilestatus(jsonresponse);
+	if (response) {
+		try {
+			const jsonresponse = JSON.parse(response.replace('"status":"Ok"', '"status":"Upload done"'));
+			SPIFFSdispatchfilestatus(jsonresponse);
+		} catch (error) {
+			console.error(`Could not parse '${response}' as JSON. ${error}`);
+		}
+	}
 }
 
 function SPIFFSUploadfailed(error_code, response) {

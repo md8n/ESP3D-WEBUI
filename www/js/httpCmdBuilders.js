@@ -117,3 +117,9 @@ const buildHttpFileGetCmd = (filename) => `${httpCmd.fileGet}${filename}`;
  * * Note: this includes replacing '#', because '#' is not encoded by `encodeURIComponent`.
  */
 const buildHttpCommandCmd = (cmdType, cmd) => `${httpCmd.command}?${cmdType}=${encodeURIComponent(cmd).replace("#", "%23")}&PAGEID=${page_id}`;
+
+/** Build the supplied data into a blob, then a file, ready for inclusion as form data */
+const BuildFormDataFiles = (filename, filedata, options) => {
+	const blob = new Blob(filedata, options);
+	return new File([blob], filename);
+}
