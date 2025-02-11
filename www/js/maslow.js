@@ -72,7 +72,7 @@ const maslowMsgHandling = (msg) => {
     }
 
     const stdAction = (id, value) => {
-        document.getElementById(id).value = value;
+        setValue(id, value);
         loadedValues[id] = value;
     }
     const stdDimensionAction = (value) => parseFloat(value);
@@ -85,17 +85,17 @@ const maslowMsgHandling = (msg) => {
         "Retract_Current_Threshold": (value) => stdAction("retractionForce", value),
         "vertical": (value) => stdAction("machineOrientation", value === "false" ? "horizontal" : "vertical"),
         "Extend_Dist": (value) => stdAction("extendDist", value),
-        "trZ": (value) => {initialGuess.tr.z = stdDimensionAction(value)},
-        "tlX": (value) => {initialGuess.tl.x = stdDimensionAction(value)},
-        "tlY": (value) => {initialGuess.tl.y = stdDimensionAction(value)},
-        "tlZ": (value) => {initialGuess.tl.z = stdDimensionAction(value)},
-        "brX": (value) => {initialGuess.br.x = stdDimensionAction(value)},
+        "trZ": (value) => { initialGuess.tr.z = stdDimensionAction(value) },
+        "tlX": (value) => { initialGuess.tl.x = stdDimensionAction(value) },
+        "tlY": (value) => { initialGuess.tl.y = stdDimensionAction(value) },
+        "tlZ": (value) => { initialGuess.tl.z = stdDimensionAction(value) },
+        "brX": (value) => { initialGuess.br.x = stdDimensionAction(value) },
         "brY": (value) => nullAction(),
-        "brZ": (value) => {initialGuess.br.z = stdDimensionAction(value)},
+        "brZ": (value) => { initialGuess.br.z = stdDimensionAction(value) },
         "blX": (value) => nullAction(),
         "blY": (value) => nullAction(),
-        "blZ": (value) => {initialGuess.bl.z = stdDimensionAction(value)},
-        "Acceptable_Calibration_Threshold": (value) => {acceptableCalibrationThreshold = stdDimensionAction(value)},
+        "blZ": (value) => { initialGuess.bl.z = stdDimensionAction(value) },
+        "Acceptable_Calibration_Threshold": (value) => { acceptableCalibrationThreshold = stdDimensionAction(value) },
     }
     const action = msgExtra[key] || "";
     if (!action) {
@@ -113,9 +113,11 @@ const checkHomed = () => {
         alert(err_msg);
 
         // Write to the console too, in case the system alerts are not visible
-        const msgWindow = document.getElementById('messages')
-        msgWindow.textContent = `${msgWindow.textContent}\n${err_msg}`;
-        msgWindow.scrollTop = msgWindow.scrollHeight;
+        const msgWindow = id('messages');
+        if (msgWindow) {
+            msgWindow.textContent = `${msgWindow.textContent}\n${err_msg}`;
+            msgWindow.scrollTop = msgWindow.scrollHeight;
+        }
     }
 
     return maslowStatus.homed;
@@ -155,12 +157,12 @@ function loadCornerValues() {
 
 /** Save the Maslow configuration values */
 function saveConfigValues() {
-    let gridWidth = document.getElementById('gridWidth').value;
-    let gridHeight = document.getElementById('gridHeight').value;
-    let gridSize = document.getElementById('gridSize').value;
-    let retractionForce = document.getElementById('retractionForce').value;
-    let machineOrientation = document.getElementById('machineOrientation').value;
-    let extendDist = document.getElementById('extendDist').value;
+    let gridWidth = getValue('gridWidth');
+    let gridHeight = getValue('gridHeight');
+    let gridSize = getValue('gridSize');
+    let retractionForce = getValue('retractionForce');
+    let machineOrientation = getValue('machineOrientation');
+    let extendDist = getValue('extendDist');
 
     var gridSpacingWidth = gridWidth / (gridSize - 1);
     var gridSpacingHeight = gridHeight / (gridSize - 1);

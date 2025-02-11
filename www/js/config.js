@@ -27,11 +27,12 @@ function refreshconfig(is_override) {
 
 function config_display_override(display_it) {
     if (display_it) {
-        displayBlock('config_overrdisplayBlocke_list_content');
+        displayBlock('config_override_list_content');
         displayNone('config_main_content');
+        setChecked()
         id('config_override_file').checked = true;
     } else {
-        id('config_overrdisplayNonee_list_content');
+        id('config_override_list_content');
         displayBlock('config_main_content');
         id('config_main_file').checked = true;
     }
@@ -61,33 +62,40 @@ function getESPUpdateconfigSuccess(response) {
     refreshconfig(true);
 }
 
+/** Build a standard set of Ids */
+const buildIds = (index, is_override) => {
+    const prefix = (is_override) ? "_override" : "";
+    const idConf = `config_${prefix}${index}`;
+    const idBtn = `btn_${idConf}`;
+    const idIcon = `icon_${idConf}`;
+    const idStatus = `status_${idConf}`;
+
+    return {idConf, idBtn, idIcon, idStatus};
+}
+
+
 function build_HTML_config_list() {
     var content = "";
-    var array_len = config_configList.length;
-    if (is_override_config) array_len = config_override_List.length;
-    for (var i = 0; i < array_len; i++) {
-        var item;
-        var prefix = "";
-        if (is_override_config) {
-            item = config_override_List[i];
-            prefix = "_override"
-        } else item = config_configList[i];
+    const array_len = is_override_config ? config_override_List.length : config_configList.length;
+
+    for (let i = 0; i < array_len; i++) {
+        const item = is_override_config ? config_override_List[i] : config_configList[i];
+
         content += "<tr>";
         if (item.showcomment) {
             content += "<td colspan='3' class='info'>";
             content += item.comment;
         } else {
-            content += "<td style='vertical-align:middle'>";
-            content += item.label;
-            content += "</td>";
+            const {idConf, idBtn, idIcon, idStatus} = buildIds(i, is_override_config);
+            content += `<td style='vertical-align:middle'>${item.label}</td>`;
             content += "<td style='vertical-align:middle;'>";
             content += "<table><tr><td>"
-            content += "<div id='status_config_" + prefix + i + "' class='form-group has-feedback' style='margin: auto;'>";
+            content += `<div id='${idStatus}' class='form-group has-feedback' style='margin: auto;'>`;
             content += "<div class='item-flex-row'>";
             content += "<table><tr><td>";
             content += "<div class='input-group'>";
             content += "<span class='input-group-btn'>";
-            content += "<button class='btn btn-default btn-svg' onclick='config_revert_to_default(" + i + "," + is_override_config + ")' >";
+            content += `<button class='btn btn-default btn-svg' onclick='config_revert_to_default(${i}, ${is_override_config})'>`;
             content += get_icon_svg("repeat");
             content += "</button>";
             content += "</span>";
@@ -96,17 +104,15 @@ function build_HTML_config_list() {
             content += "</td><td>";
             content += "<div class='input-group'>";
             content += "<span class='input-group-addon hide_it' ></span>";
-            content += "<input id='config_" + prefix + i + "' type='text' class='form-control' style='width:";
-            content += "auto";
-            content += "' value='" + item.defaultvalue + "' onkeyup='config_checkchange(" + i + "," + is_override_config + ")' />";
-            content += "<span id='icon_config_" + prefix + i + "'class='form-control-feedback ico_feedback' ></span>";
+            content += `<input id='${idConf}' type='text' class='form-control' style='width: auto' value='${item.defaultvalue}' onkeyup='config_checkchange(${i}, ${is_override_config})'/>`;
+            content += `<span id='${idIcon}'class='form-control-feedback ico_feedback'></span>`;
             content += "<span class='input-group-addon hide_it' ></span>";
             content += "</div>";
             content += "</td></tr></table>";
             content += "<div class='input-group'>";
             content += "<input class='hide_it'></input>";
             content += "<span class='input-group-btn'>";
-            content += "<button  id='btn_config_" + prefix + i + "' class='btn btn-default' onclick='configGetvalue(" + i + "," + is_override_config + ")' translate english_content='Set' >" + translate_text_item("Set") + "</button>&nbsp;";
+            content += `<button id='${idBtn}' class='btn btn-default' onclick='configGetvalue(${i}, ${is_override_config})' translate english_content='Set'>${translate_text_item("Set")}</button>&nbsp;`;
             content += "</span>";
             content += "</div>";
             content += "</div>";
@@ -233,24 +239,40 @@ function get_config_command(sline) {
 
 function is_config_commented(sline) {
     var line = sline.trim();
-    if (!line.length) return false;
+    if (!line) {
+        return false;
+    }
     return (is_override_config) ? line.startsWith(";") : false;
 }
 
-const buildIdConf = (prefix, index) => `config_${prefix}${index}`;
+/** Set all the fields for a certain config item to show that item's current state.
+ * * @param {string} state - "default", "success", "warning" or "error"
+ */
+const setConfigItemState = (ids, itemValue, state = "default") => {
+    const btnState = `btn-${state === "error" ? "danger" : state}`;
+    const iconDefs = {
+        "default": "",
+        "success": get_icon_svg("ok"),
+        "warning": get_icon_svg("warning-sign"),
+        "error": get_icon_svg("remove"),
+    };
+    const icon = iconDefs[state] || "";
+    const hasState = state === "default" ? "" : `has-${state}`;
+
+    setValue(ids.idConf, itemValue);
+    id(ids.idBtn).className = `btn ${btnState}`;
+    id(ids.idIcon).className = `form-control-feedback ${hasState} ico_feedback`;
+    setHTML(ids.idIcon, icon);
+    id(ids.idStatus).className = `form-group has-feedback ${hasState}`;
+}
 
 function config_revert_to_default(index, is_override) {
-    var prefix = "";
-    var item = config_configList[index];
-    if (is_override) {
-        prefix = "_override";
-        item = config_override_List[index];
-    }
-    const idConf = buildIdConf(prefix, index);
-    setValue(idConf, item.defaultvalue);
-    id(`btn_${idConf}`).className = "btn btn-default";
-    id(`status_${idConf}`).className = "form-group has-feedback";
-    setHTML(`icon_${idConf}`, "");
+    const item = is_override
+        ? config_override_List[index]
+        : config_configList[index];
+
+    const ids = buildIds(index, is_override);
+    setConfigItemState(ids, item.defaultvalue, "default");
 }
 
 function is_config_override_file() {
@@ -265,15 +287,12 @@ function is_config_override_file() {
 }
 
 function configGetvalue(index, is_override) {
-    const prefix = is_override ? "_override" : "";
     const item = is_override
         ? config_override_List[index]
         : config_configList[index];
 
-    const cnfId = `config_${prefix}${index}`;
-
-    // remove possible spaces
-    const value = getValue(cnfId).trim();
+    const ids = buildIds(index, is_override);
+    const value = getValueTrimmed(ids.idConf);
     if (value === item.defaultvalue) {
         return;
     }
@@ -281,11 +300,7 @@ function configGetvalue(index, is_override) {
     // check validity of value
     const isvalid = config_check_value(value, index, is_override);
 
-    //if not valid show error
-    id(`btn_${cnfId}`).className = `btn ${!isvalid ? "btn-danger" : "btn-success"}`;
-    id(`icon_${cnfId}`).className = `form-control-feedback ${!isvalid ? "has-error" : "has-success"} ico_feedback`;
-    setHTML(`icon_${cnfId}`, isvalid ? get_icon_svg("remove") : get_icon_svg("ok"));
-    id(`status_${cnfId}`).className = `form-group has-feedback ${!isvalid ? "has-error" : "has-success"}`;
+    setConfigItemState(ids, value, !isvalid ? "error" : "success");
 
     if (!isvalid) {
         alertdlg(translate_text_item("Out of range"), `${translate_text_item("Value ")}${config_error_msg} !`);
@@ -301,35 +316,17 @@ function configGetvalue(index, is_override) {
 }
 
 function config_checkchange(index, is_override) {
-    //console.log("check " + "config_"+index);
-    var prefix = "";
-    var item = config_configList[index];
-    if (is_override) {
-        prefix = "_override";
-        item = config_override_List[index];
-    }
-    const idConf = buildIdConf(prefix, index);
-    var val = (getValue(idConf) || "").trim();
-    //console.log("value: " + val);
-    if (item.defaultvalue == val) {
-        id(`btn_${idConf}`).className = "btn btn-default";
-        id(`icon_${idConf}`).className = "form-control-feedback";
-        setHTML(`icon_${idConf}`, "");
-        id(`status_${idConf}`).className = "form-group has-feedback";
-    } else if (config_check_value(val, index, is_override)) {
-        id(`btn_${idConf}`).className = "btn btn-warning";
-        id(`icon_${idConf}`).className = "form-control-feedback has-warning ico_feedback";
-        setHTML(`icon_${idConf}`, get_icon_svg("warning-sign"));
-        id(`status_${idConf}`).className = "form-group has-feedback has-warning";
-        //console.log("change ok");
-    } else {
-        //console.log("change bad");
-        id(`btn_${idConf}`).className = "btn btn-danger";
-        id(`icon_${idConf}`).className = "form-control-feedback has-error ico_feedback";
-        setHTML(`icon_${idConf}`, get_icon_svg("remove"));
-        id(`status_${idConf}`).className = "form-group has-feedback has-error";
-    }
+    const item = is_override
+        ? config_override_List[index]
+        : config_configList[index];
 
+    const ids = buildIds(index, is_override);
+    const value = getValueTrimmed(ids.idConf);
+
+    const itemState = item.defaultvalue == value
+        ? "default"
+        : config_check_value(value, index, is_override) ? "warning" : "error";
+    setConfigItemState(ids, value, itemState);
 }
 
 function setESPconfigSuccess(response) {
@@ -396,25 +393,21 @@ function setESPconfigfailed(error_code, response) {
     const errMsg = stdErrMsg(error_code, response);
     alertdlg(translate_text_item("Set failed"), errMsg);
     conErr(errMsg);
-    const prefix = (config_lastindex_is_override) ? "_override" : "";
-    const idConf = buildIdConf(prefix, config_lastindex);
 
-    id(`btn_${idConf}`).className = "btn btn-danger";
-    id(`icon_${idConf}`).className = "form-control-feedback has-error ico_feedback";
-    setHTML(`icon_${idConf}`, get_icon_svg("remove"));
-    id(`status_${idConf}`).className = "form-group has-feedback has-error";
+    const ids = buildIds(config_lastindex, config_lastindex_is_override);
+    setConfigItemState(ids, value, "error");
 }
 
 function getESPconfigSuccess(response) {
     //console.log(response);
-    if (!process_config_answer(response)) {
-        getESPconfigfailed(406, translate_text_item("Wrong data"));
-        displayNone('config_loader');
-        displayBlock('config_list_content');
-        displayNone('config_status');
-        displayBlock('config_refresh_btn');
+    if (process_config_answer(response)) {
         return;
     }
+    getESPconfigfailed(406, translate_text_item("Wrong data"));
+    displayNone('config_loader');
+    displayBlock('config_list_content');
+    displayNone('config_status');
+    displayBlock('config_refresh_btn');
 }
 
 function getESPconfigfailed(error_code, response) {

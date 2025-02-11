@@ -68,7 +68,9 @@ function setupdlg() {
     setHTML("setup_langage_list", content);
 
     var modal = setactiveModal('setupdlg.html', setupdone);
-    if (modal == null) return;
+    if (modal == null) {
+        return;
+    }
     showModal();
     id("startsteplink", true).click();
 }

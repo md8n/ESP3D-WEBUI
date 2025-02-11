@@ -102,7 +102,7 @@ function on_autocheck_position(use_value) {
 			interval_position = setInterval(function () { get_Position() }, interval * 1000);
 		} else {
 			id('autocheck_position').checked = false;
-			id('controlpanel_interval_positions').value = 0;
+			setValue('controlpanel_interval_positions', 0);
 			if (interval_position != -1) {
 				clearInterval(interval_position);
 			}
@@ -122,7 +122,7 @@ function onPosIntervalChange() {
 		on_autocheck_position();
 	} else {
 		id('autocheck_position').checked = false;
-		id('controlpanel_interval_positions').value = 0;
+		setValue('controlpanel_interval_positions', 0);
 		if (interval != 0) {
 			alertdlg(translate_text_item("Out of range"), translate_text_item("Value of auto-check must be between 0s and 99s !!"));
 		}

@@ -1,6 +1,6 @@
 function opentab(evt, tabname, tabcontentid, tablinkid) {
     var i, tabcontent, tablinks;
-    tabcontent = classes("tabcontent");
+    tabcontent = elemsByClass("tabcontent");
     const activateEvent = new Event("activate");
     const deactivateEvent = new Event("deactivate");
 
@@ -10,7 +10,7 @@ function opentab(evt, tabname, tabcontentid, tablinkid) {
             tabcontent[i].style.display = "none";
         }
     }
-    tablinks = classes("tablinks");
+    tablinks = elemsByClass("tablinks");
     for (i = 0; i < tablinks.length; i++) {
         if (tablinks[i].parentNode.id == tablinkid) {
             tablinks[i].className = tablinks[i].className.replace("active", "");

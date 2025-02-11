@@ -956,4 +956,4 @@ var refreshGcode = function() {
     displayer.showToolpath(gcode, WPOS, MPOS, cameraAngle);
 }
 
-// id("small-toolpath").addEventListener("mouseup", updateGcodeViewerAngle); 
+// document.getElementById("small-toolpath").addEventListener("mouseup", updateGcodeViewerAngle); 

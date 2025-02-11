@@ -2,7 +2,7 @@
 const id = (name) => document.getElementById(name);
 
 /** Returns an array of elements with the supplied class name, which can be use with forEach() or for ... of */
-const classes = (name) => Array.from(document.getElementsByClassName(name));
+const elemsByClass = (name) => Array.from(document.getElementsByClassName(name));
 
 /** Set an element's `value` value (if the element exists) */
 const setValue = (name, val) => {
@@ -12,15 +12,24 @@ const setValue = (name, val) => {
   }
 }
 
-/** Set an element's `innerText` value (if the element exists) */
-const setText = (name, val) => {
-  const elem = id(name);
-  if (elem) {
-    elem.innerText = val;
-  }
-}
+/** Return an element's `value` value, or its `innerText` value.
+ * If the element does not exist or does not have a `value` or `innerText` value `undefined` is returned.
+ * This does the opposite of getText, which checks the innerText value first. */
+const getValue = (name) => id(name)?.value || id(name)?.innerText;
 
-/** Set an element's `textContent` value (if the element exists) */
+/** Gets an element's `value` value, or its `innerText` value.
+ * Ensures that it is a string, and trims it.
+ * If the element does not exist or does not have a `value` or `innerText` value an empty string is returned
+ */
+const getValueTrimmed = (name) => String(getValue(name) || "").trim();
+
+/** Return an element's `innerText` value, or its `value` value.
+ * If the element does not exist or does not have a `value` or `innerText` value `undefined` is returned.
+ * This does the opposite of getValue, which checks the `value` value first. */
+const getText = (name) => id(name)?.innerText || id(name)?.value;
+
+/** Set the textContent of the element with an id matching the supplied name.
+ * If the element cannot be found - nothing happens */
 const setTextContent = (name, val) => {
   const elem = id(name);
   if (elem) {
@@ -36,15 +45,14 @@ const setHTML = (name, val) => {
   }
 }
 
-/** Return an element's `value` value, or its `innerText` value.
- * If the element does not exist or does not have a `value` or `innerText` value `undefined` is returned.
- * Tries to get the `value` first then the `innerText`, this is the opposite of `getText` */
-const getValue = (name) => id(name)?.value || id(name)?.innerText;
-
-/** Return an element's `innerText` value, or its `value` value.
- * If the element does not exist or does not have an `innerText` or `value` value `undefined` is returned.
- * Tries to get the `innerText` first then the `value`, this is the opposite of `getValue` */
-const getText = (name) => id(name)?.innerText || id(name)?.value;
+/** Set the innerText of the element with an id matching the supplied name.
+ * If the element cannot be found - nothing happens */
+const setText = (name, val) => {
+  const elem = id(name);
+  if (elem) {
+    elem.innerText = val;
+  }
+}
 
 /** Set the display style of the element identified by name to the supplied value */
 const setDisplay = (name, val) => {
@@ -108,7 +116,6 @@ const getChecked = (name) => {
   const checkBox = id(name);
   return checkBox?.value || "false";
 }
-
 
 const sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay));
 

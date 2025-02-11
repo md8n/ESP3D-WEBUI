@@ -3,12 +3,13 @@ var listmodal = [];
 
 
 function setactiveModal(html_template, closefunc) {
-    if (typeof id(html_template) === 'undefined') {
+    const htmlTemplate = id(html_template);
+    if (!htmlTemplate) {
         console.error(`Error: no ${html_template}`);
         return null;
     }
-    var modal = new Object;
-    modal.element = id(html_template);
+    const modal = new Object;
+    modal.element = htmlTemplate;
     modal.id = listmodal.length;
     modal.name = html_template;
     modal.closefn = (typeof closefunc === "function") ? closefunc : myfnclose;

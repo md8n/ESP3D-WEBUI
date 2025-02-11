@@ -18,16 +18,12 @@ const inputdlg = (titledlg, textdlg, closefunc, preset = "") => {
 	const body = modal.element.getElementsByClassName("modal-text")[0];
 	title.innerHTML = titledlg;
 	body.innerHTML = textdlg;
-	id("inputldg_text").value = preset;
+	setValue("inputldg_text", preset);
 
 	showModal();
 };
 
 function closeInputModal(response) {
-	let answer = "";
-	if (response === "ok") {
-		const input = getValue("inputldg_text");
-		answer = input.trim();
-	}
+	const answer = response === "ok" ? getValueTrimmed("inputldg_text") : "";
 	closeModal(answer);
 }

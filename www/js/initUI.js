@@ -109,7 +109,7 @@ var current_boot_steps = 0;
 
 const display_boot_progress = () => {
 	current_boot_steps++;
-	id("load_prg").value = Math.round((current_boot_steps * 100) / total_boot_steps);
+	setValue("load_prg", Math.round((current_boot_steps * 100) / total_boot_steps));
 }
 
 /** InitUI step1 - try to connect to the ESP32 */
@@ -131,7 +131,7 @@ const initUI = () => {
 	// Get the element with id="defaultOpen" and click on it
 	id("tablettablink").click();
 
-	if (typeof id("grblcontroltablink") !== "undefined") {
+	if (id("grblcontroltablink")) {
 		id("grblcontroltablink").click();
 	}
 

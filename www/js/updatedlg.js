@@ -137,7 +137,7 @@ function updatefailed(error_code, response) {
 	setHTML("fw_file_name", translate_text_item("No file chosen"));
 	displayNone("uploadfw_button");
 	//setHTML('updatemsg', "");
-	id("fw_select").value = "";
+	setValue("fw_select", "");
 	if (esp_error_code !== 0) {
 		alertdlg(translate_text_item("Error"), stdErrMsg(`(${esp_error_code})`, esp_error_message));
 		setHTML("updatemsg", translate_text_item("Upload failed : ") + esp_error_message);

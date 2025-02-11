@@ -11,7 +11,7 @@ const cameratab = () => {
 };
 
 function cameraformataddress() {
-	let saddress = getValue("camera_webaddress").trim();
+	let saddress = getValueTrimmed("camera_webaddress");
 	const saddressl = saddress.toLowerCase();
 	if (saddress.length > 0) {
 		if (
@@ -26,11 +26,11 @@ function cameraformataddress() {
 			saddress = `http://${saddress}`;
 		}
 	}
-	id("camera_webaddress").value = saddress;
+	setValue("camera_webaddress", saddress);
 }
 
 function camera_loadframe() {
-	const saddress = getValue("camera_webaddress").trim();
+	const saddress = getValueTrimmed("camera_webaddress");
 	if (saddress.length === 0) {
 		id("camera_frame").src = "";
 		displayNone("camera_frame_display");
@@ -65,8 +65,8 @@ function camera_detachcam() {
 }
 
 function camera_GetAddress() {
-	id("camera_webaddress").value =
+	setValue("camera_webaddress",
 		typeof (preferenceslist[0].camera_address) !== "undefined"
 			? HTMLDecode(preferenceslist[0].camera_address)
-			: "";
+			: "");
 }
