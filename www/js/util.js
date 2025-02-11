@@ -37,8 +37,7 @@ const setTextContent = (name, val) => {
   }
 }
 
-/** Set the innerHTML of the element with an id matching the supplied name.
- * If the element cannot be found - nothing happens */
+/** Set an element's `innerHTML` value (if the element exists) */
 const setHTML = (name, val) => {
   const elem = id(name);
   if (elem) {
@@ -103,9 +102,6 @@ function setDisabled(selector, value) {
   }
 }
 
-function files(name) {
-  return id(name).files
-}
 /** Set a checkbox element's `value` (if the element exists) */
 const setChecked = (name, val) => {
   const checkBox = id(name);

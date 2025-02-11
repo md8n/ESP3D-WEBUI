@@ -196,6 +196,13 @@ function files_build_file_line(index, actions) {
 	return content;
 }
 
+function tabletSelectGCodeFile(filename) {
+	const selector = id("filelist");
+	const options = Array.from(selector.options);
+	const option = options.find((item) => item.text === filename);
+	option.selected = true;
+}
+
 function files_print(index) {
 	const file = files_file_list[index];
 	const path = `${files_currentPath()}${file.name}`;
@@ -262,8 +269,7 @@ function files_delete_file(index) {
 }
 
 const files_is_clickable = (index) => files_file_list[index].isdir ? true : direct_sd;
-
-const files_enter_dir = (name) => files_refreshFiles(`${files_currentPath()}${name}/`, true);
+const files_enter_dir = (name) => files_refreshFiles(`${files_currentPath()}${name}/`);
 
 let old_file_name;
 function files_rename(index) {
@@ -333,22 +339,20 @@ function files_showdeletebutton(index) {
 	return true;
 }
 
-function files_refreshFiles(path, usecache) {
+function files_refreshFiles(path) {
 	//console.log("refresh requested " + path);
 	const cmdpath = path;
 	files_currentPath(path);
 	if (current_source !== last_source) {
 		files_currentPath("/");
-		path = "/";
+		// path = "/";
 		last_source = current_source;
 	}
-	if (current_source === tft_sd || current_source === tft_usb) {
+
+	if ([tft_sd, tft_usb].includes(current_source)) {
 		displayNone("print_upload_btn");
 	} else {
 		displayBlock("print_upload_btn");
-	}
-	if (typeof usecache === "undefined") {
-		usecache = false;
 	}
 	setHTML("files_currentPath", files_currentPath());
 	files_file_list = [];
@@ -422,7 +426,11 @@ const files_list_success = (response_text) => {
 	let error = false;
 	let response;
 	try {
-		response = JSON.parse(response_text);
+		if (response_text.length) {
+			response = JSON.parse(response_text);
+		} else {
+			response = {files: []}
+		}
 	} catch (e) {
 		console.error(`Parsing error: ${e}\n${response_text}`);
 		error = true;
@@ -508,7 +516,7 @@ function files_go_levelup() {
 		path += `${tlist[nb]}/`;
 		nb++;
 	}
-	files_refreshFiles(path, true);
+	files_refreshFiles(path);
 }
 
 function files_build_display_filelist(displaylist = true) {
@@ -538,7 +546,7 @@ function files_build_display_filelist(displaylist = true) {
 			content += `<li id='${liId}' class='list-group-item list-group-hover' style='cursor:pointer'>`;
 			content += `<span>${get_icon_svg("level-up")}</span>&nbsp;&nbsp;<span translate>Up...</span>`;
 			content += "</li>";
-			actions.push({ id: liId, type: "click", method: files_go_levelup, index: undefined });
+			actions.push({ id: liId, method: files_go_levelup, index: undefined });
 		}
 		for (let index = 0; index < files_file_list.length; index++) {
 			if (!files_file_list[index].isdir)
@@ -551,7 +559,10 @@ function files_build_display_filelist(displaylist = true) {
 
 		fileListElem.innerHTML = content;
 		actions.forEach((action) => {
-			id(action.id).addEventListener("click", (event) => action.method(action.index));
+			const elem = id(action.id);
+			if (elem) {
+				elem.addEventListener("click", (event) => action.method(action.index));
+			}
 		});
 		displayBlock("files_fileList");
 	}
@@ -602,7 +613,7 @@ const files_select_upload = () => {
 
 function files_check_if_upload() {
 	if (direct_sd) {
-		SendPrinterCommand("[ESP200]", false, process_check_sd_presence);
+		SendPrinterCommand("[ESP200]", false, process_check_sd_presence, null);
 	} else {
 		//no reliable way to know SD is present or not so let's upload
 		files_start_upload();
@@ -619,7 +630,9 @@ function process_check_sd_presence(answer) {
 			files_build_display_filelist(false);
 			setHTML("files_sd_status_msg", translate_text_item(files_error_status, true));
 			displayTable("files_status_sd_status");
-		} else files_start_upload();
+		} else {
+			files_start_upload();
+		}
 	} else {
 		//for smoothiware ls say no directory
 		files_start_upload();
@@ -627,30 +640,28 @@ function process_check_sd_presence(answer) {
 }
 
 function files_start_upload() {
-	if (http_communication_locked) {
-		alertdlg(translate_text_item("Busy..."), translate_text_item("Communications are currently locked, please wait and retry."));
-		console.log("communication locked");
+	if (CheckForHttpCommLock()) {
 		return;
 	}
 
-	const path = files_currentPath();
-	//console.log("upload from " + path );
 	const files = id("files_input_file").files;
 
 	if (!files.length || typeof files[0].name === "undefined") {
 		console.log("nothing to upload");
 		return;
 	}
-	const formData = new FormData();
 
+	const formData = new FormData();
+	const path = files_currentPath();
+	//console.log("upload from " + path );
 	formData.append("path", path);
 	for (let i = 0; i < files.length; i++) {
 		const file = files[i];
-		const arg = `${path + file.name}S`;
+		const fullFilename = `${path}${file.name}`;
 		//append file size first to check updload is complete
-		formData.append(arg, file.size);
-		formData.append("myfile[]", file, path + file.name);
-		//console.log( path +file.name);
+		formData.append(`${fullFilename}S`, file.size);
+		formData.append("myfile[]", file, fullFilename);
+		console.info(`Preparing ${fullFilename} for upload`);
 
 		files_error_status = `Upload ${file.name}`;
 		setHTML("files_currentUpload_msg", file.name);

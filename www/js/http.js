@@ -264,7 +264,9 @@ function ProcessGetHttp(cmd) {
                 //console.log("*** " + url + " done");
                 http_resultfn(cmd, xmlhttp.responseText);
             } else {
-                if (xmlhttp.status == 401) GetIdentificationStatus();
+                if (xmlhttp.status == 401) {
+                    GetIdentificationStatus();
+                }
                 http_errorfn(cmd, xmlhttp.status, xmlhttp.responseText);
             }
         }

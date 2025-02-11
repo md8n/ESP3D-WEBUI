@@ -299,7 +299,10 @@ function control_build_macro_ui() {
 	}
 	setHTML("Macro_list", content);
 	actions.forEach((action) => {
-		id(action.id).addEventListener("click", action.method);
+		const elem = id(action.id);
+		if (elem) {
+			elem.addEventListener("click", action.method);
+		}
 	});
 }
 

@@ -36,12 +36,12 @@ const CONFIG_TOOLTIPS = {
   Maslow_calibration_extend_bottom_y: "starting Y for bottom belts on extend all (-1000 to 1000) default ",
 }
 
-const refreshSettings = (hide_setting_list) => {
+function refreshSettings(hide_setting_list) {
   if (http_communication_locked) {
     setHTML("config_status", translate_text_item("Communication locked by another process, retry later."));
     return;
   }
-  do_not_build_settings = typeof hide_setting_list === "undefined" ? false : !hide_setting_list;
+  do_not_build_settings = typeof hide_setting_list == 'undefined' ? false : !hide_setting_list
 
   displayBlock("settings_loader");
   displayNone("settings_list_content");
@@ -230,13 +230,13 @@ const saveMaslowYaml = () => {
 const saveConfigClearMessage = () => setTimeout(() => { setHTML(configSaveResultId, ""); }, 5000)
 
 const saveConfigSuccess = (response) => {
-	setHTML(configSaveResultId, `"Save" ${configFileName} succeeded`);
-	saveConfigClearMessage();
+  setHTML(configSaveResultId, `"Save" ${configFileName} succeeded`);
+  saveConfigClearMessage();
 }
 
 const saveConfigFail = (response) => {
-	setHTML(configSaveResultId, `"Save" ${configFileName} failed`);
-	saveConfigClearMessage();
+  setHTML(configSaveResultId, `"Save" ${configFileName} failed`);
+  saveConfigClearMessage();
 }
 
 /** Build the HTML for the list of settings */
@@ -537,7 +537,7 @@ function settingsetvalue(i, j = 0) {
   }
 
   //check validity of value
-  var isvalid = setting_check_value(value, i);
+  const isvalid = setting_check_value(value, i);
   //if not valid show error
   if (!isvalid) {
     setsettingerror(i);
