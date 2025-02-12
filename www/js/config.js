@@ -26,16 +26,15 @@ function refreshconfig(is_override) {
 }
 
 function config_display_override(display_it) {
-    if (display_it) {
-        displayBlock('config_override_list_content');
-        displayNone('config_main_content');
-        setChecked()
-        id('config_override_file').checked = true;
-    } else {
-        id('config_override_list_content');
-        displayBlock('config_main_content');
-        id('config_main_file').checked = true;
-    }
+	if (display_it) {
+		displayBlock("config_override_list_content");
+		displayNone("config_main_content");
+		setChecked("config_override_file", true);
+	} else {
+		displayNone("config_override_list_content");
+		displayBlock("config_main_content");
+		setChecked("config_main_file", true);
+	}
 }
 
 function getprinterconfig(is_override = false) {
