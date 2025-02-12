@@ -19,7 +19,7 @@ function SendPrinterCommand(prnCmd, echo_on, processfn, errorfn, cmd_code, max_c
         return;
     }
 
-    var push_cmd = typeof echo_on !== 'undefined' ? echo_on : true;
+    const push_cmd = typeof echo_on !== 'undefined' ? echo_on : true;
     if (push_cmd) {
         Monitor_output_Update(`[#]${pCmd}\n`);
     }

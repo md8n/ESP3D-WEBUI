@@ -459,7 +459,7 @@ const show_grbl_status = (stateName = "", message = "", hasSD = false) => {
   setClickability("sd_pause_btn", clickable.pause);
   setClickability("sd_reset_btn", clickable.reset);
 
-  if (stateName == "Hold" && probe_progress_status != 0) {
+  if (stateName === "Hold" && probe_progress_status !== 0) {
     probe_failed_notification();
   }
 }

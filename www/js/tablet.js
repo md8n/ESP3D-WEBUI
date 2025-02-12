@@ -3,7 +3,7 @@ import {
   getValue,
   id,
   setValue,
-  setTextContent,
+  getText, setText, setTextContent,
   numpad,
   SendPrinterCommand,
   files_currentPath,
@@ -201,8 +201,8 @@ const setAxis = (axis, field) => {
   sendCommand(cmd);
 }
 
-var timeout_id = 0,
-  hold_time = 1000
+const timeout_id = 0;
+const hold_time = 1000;
 
 /** Check the parameters used by jog and move commands,
  * and return them as a composite string */
@@ -269,7 +269,7 @@ const moveTo = (location) => {
 const sendMove = (cmd) => {
   tabletClick();
 
-  let distance = cmd.includes('Z')
+  const distance = cmd.includes('Z')
     ? Number(getText('disZ')) || 0
     : Number(getText('disM')) || 0;
 
@@ -503,11 +503,11 @@ let oldCannotClick = null;
 
 function scaleUnits(target) {
   //Scale the units to move when jogging down or up by 25.4 to keep them reasonable
-  let distanceElement = id(target);
-  let currentValue = Number(distanceElement.innerText);
+  const distanceElement = id(target);
+  const currentValue = Number(distanceElement.innerText);
 
   if (!Number.isNaN(currentValue)) {
-    distanceElement.innerText = modal.units == "G20" ? currentValue / 25.4 : currentValue * 25.4;
+    distanceElement.innerText = modal.units === "G20" ? currentValue / 25.4 : currentValue * 25.4;
   } else {
     console.error("Invalid number in disM element");
   }
@@ -519,9 +519,6 @@ const setDisabled = (selector, value) => {
     element.disabled = value;
   }
 }
-const setTextContent = (name, val) => { id(name).textContent = val; }
-const setText = (name, val) => { id(name).innerText = val; }
-const getText = (name) => { return id(name).innerText; }
 
 function tabletUpdateModal() {
   const common = new Common();
@@ -1053,7 +1050,8 @@ function altDown() {
 /** Reports whether a text input box has focus - see the next comment.
  * TODO: Currently this is always false. Maybe we should remove all usages of it
  */
-var isInputFocused = false
+const isInputFocused = false;
+
 function tabletIsActive() {
   const elem = id("tablettab");
   return !elem ? false : elem.style.display !== "none";

@@ -1,7 +1,5 @@
 // Various helper methods for building http commands
-import { files_currentPath } from "./common.js";
-
-var page_id = ""
+import { files_currentPath, pageID } from "./common.js";
 
 /** 'Commands' to be sent as the first part of the URL after the host name */
 const httpCmd = {
@@ -49,6 +47,7 @@ const buildHttpLoginCmd = (params = {}) => {
         prms.SUBMIT = "yes";
     }
 
+    // biome-ignore lint/complexity/noForEach: <explanation>
     Object.keys(prms).forEach((key) => {
         let pVal = getParam(prms, key);
         if (pVal) {
@@ -70,6 +69,7 @@ const buildHttpLoginCmd = (params = {}) => {
 const buildHttpFilesCmd = (params = {}) => {
     const cmd = [];
 
+    // biome-ignore lint/complexity/noForEach: <explanation>
     Object.keys(params).forEach((key) => {
         let pVal = getParam(params, key);
         if (pVal) {
@@ -94,6 +94,7 @@ const buildHttpFileCmd = (params = { action: "", path: "", filename: "" }) => {
     const cmdInfo = [`Performing http '${httpCmd.fileUpload}' GET command for path:'${path}'`];
     const cmd = [`${httpCmd.fileUpload}?path=${encodeURIComponent(path)}`];
 
+    // biome-ignore lint/complexity/noForEach: <explanation>
     Object.keys(params).forEach((key) => {
         if (key !== "path") {
             let pVal = getParam(params, key);
@@ -117,7 +118,7 @@ const buildHttpFileGetCmd = (filename) => `${httpCmd.fileGet}${filename}`;
 /** Build either form of the `command` GET command, fully encoding the supplied `cmd` value.
  * * Note: this includes replacing '#', because '#' is not encoded by `encodeURIComponent`.
  */
-const buildHttpCommandCmd = (cmdType, cmd) => `${httpCmd.command}?${cmdType}=${encodeURIComponent(cmd).replace("#", "%23")}&PAGEID=${page_id}`;
+const buildHttpCommandCmd = (cmdType, cmd) => `${httpCmd.command}?${cmdType}=${encodeURIComponent(cmd).replace("#", "%23")}&PAGEID=${pageID()}`;
 
 /** Build the supplied data into a blob, then a file, ready for inclusion as form data */
 const BuildFormDataFiles = (filename, filedata, options) => {

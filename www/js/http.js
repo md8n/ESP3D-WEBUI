@@ -5,7 +5,7 @@ const cmd_list = [];
 let processing_cmd = false;
 const max_cmd = 100;
 
-var cmdInterval = 0;
+let cmdInterval = 0;
 
 const processNextCmd = () => {
     if (!cmd_list.length) {
@@ -97,7 +97,7 @@ const validateCommand = (cmd, step = "") => {
 }
 
 /** A semaphore (sorta mutex) for working with the cmd_list */
-var cmd_lock = false;
+let cmd_lock = false;
 
 /** Process the supplied cmd through the various stages in its life cycle */
 const process_cmd_list = (cmd, step = "") => {
@@ -270,19 +270,16 @@ const buildBasicCmd = (cmd, cmd_type, result_fn, error_fn, isupload = false) => 
         type: cmd_type,
         isupload: isupload,
         resultfn: setCmdFn(http_resultfn, result_fn),
-        errorfn: setCmdFn(http_errorfn, error_fn);
+        errorfn: setCmdFn(http_errorfn, error_fn),
     };
 }
 
 const buildGetCmd = (cmd, cmd_code, result_fn, error_fn) => {
-    const cmd = buildBasicCmd(cmd, "GET", result_fn, error_fn, false);
+    const fullCmd = buildBasicCmd(cmd, "GET", result_fn, error_fn, false);
 
-    if (cmd.startsWith(httpCmd.command)) {
-        cmd.url.searchParams.append("PAGEID", pageID());
-    }
-    cmd.cmd_code = typeof cmd_code !== "undefined" ? cmd_code : 0;
+    fullCmd.cmd_code = typeof cmd_code !== "undefined" ? cmd_code : 0;
 
-    return cmd;
+    return fullCmd;
 }
 
 const SendGetHttp = (cmd, result_fn, error_fn, cmd_code, max_cmd_code) => {
@@ -307,11 +304,11 @@ const SendGetHttp = (cmd, result_fn, error_fn, cmd_code, max_cmd_code) => {
 };
 
 const buildPostFileCmd = (cmd, postdata, result_fn, error_fn) => {
-    const cmd = buildBasicCmd(cmd, "POST", result_fn, error_fn, true);
+    const fullCmd = buildBasicCmd(cmd, "POST", result_fn, error_fn, true);
 
-    cmd.data = postdata;
+    fullCmd.data = postdata;
 
-    return cmd;
+    return fullCmd;
 }
 
 /** POST the file FormData */

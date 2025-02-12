@@ -111,7 +111,7 @@ const update_UI_firmware_target = () => {
 }
 
 const total_boot_steps = 5;
-var current_boot_steps = 0;
+let current_boot_steps = 0;
 
 const display_boot_progress = () => {
 	current_boot_steps++;

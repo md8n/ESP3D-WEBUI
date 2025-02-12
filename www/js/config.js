@@ -322,7 +322,7 @@ function configGetvalue(index, is_override) {
 
 		setInput(id_suffix, "success");
 
-        var cmd = buildHttpCommandCmd(httpCmdType.plain, `${item.cmd}${value}`);
+        const cmd = buildHttpCommandCmd(httpCmdType.plain, `${item.cmd}${value}`);
         SendGetHttp(cmd, setESPconfigSuccess, setESPconfigfailed);
 	}
 }
