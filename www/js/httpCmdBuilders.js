@@ -1,7 +1,5 @@
 // Various helper methods for building http commands
 
-var page_id = ""
-
 /** 'Commands' to be sent as the first part of the URL after the host name */
 const httpCmd = {
     command: "/command",
@@ -116,7 +114,7 @@ const buildHttpFileGetCmd = (filename) => `${httpCmd.fileGet}${filename}`;
 /** Build either form of the `command` GET command, fully encoding the supplied `cmd` value.
  * * Note: this includes replacing '#', because '#' is not encoded by `encodeURIComponent`.
  */
-const buildHttpCommandCmd = (cmdType, cmd) => `${httpCmd.command}?${cmdType}=${encodeURIComponent(cmd).replace("#", "%23")}&PAGEID=${page_id}`;
+const buildHttpCommandCmd = (cmdType, cmd) => `${httpCmd.command}?${cmdType}=${encodeURIComponent(cmd).replace("#", "%23")}&PAGEID=${pageID()}`;
 
 /** Build the supplied data into a blob, then a file, ready for inclusion as form data */
 const BuildFormDataFiles = (filename, filedata, options) => {
