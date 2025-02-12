@@ -317,3 +317,11 @@ function ProcessFileHttp(cmd) {
     }
     xmlhttpupload.send(cmd.data);
 }
+
+const CheckForHttpCommLock = () => {
+    if (http_communication_locked) {
+        alertdlg(translate_text_item("Busy..."), translate_text_item("Communications are currently locked, please wait and retry."));
+        console.warn("communication locked");
+    }
+    return http_communication_locked;
+}

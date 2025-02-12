@@ -37,10 +37,9 @@ const CONFIG_TOOLTIPS = {
 }
 
 function refreshSettings(hide_setting_list) {
-  if (http_communication_locked) {
-    setHTML("config_status", translate_text_item("Communication locked by another process, retry later."));
+  if (CheckForHttpCommLock()) {
     return;
-  }
+}
   do_not_build_settings = typeof hide_setting_list == 'undefined' ? false : !hide_setting_list
 
   displayBlock("settings_loader");
