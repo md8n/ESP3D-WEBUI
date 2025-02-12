@@ -8,6 +8,7 @@ import {
 	SavePreferences,
 	setHTML,
 	get_icon_svg,
+	valueStartsWith,
 } from "./common.js";
 
 /** Set up the event handlers for the camera tab */
@@ -27,26 +28,19 @@ const cameratab = () => {
 };
 
 function cameraformataddress() {
-	let saddress = getValue("camera_webaddress").trim();
+	let saddress = getValueTrimmed("camera_webaddress");
 	const saddressl = saddress.toLowerCase();
-	if (saddress.length > 0) {
-		if (
-			!(
-				saddressl.indexOf("https://") !== -1 ||
-				saddressl.indexOf("http://") !== -1 ||
-				saddressl.indexOf("rtp://") !== -1 ||
-				saddressl.indexOf("rtps://") !== -1 ||
-				saddressl.indexOf("rtp://") !== -1
-			)
-		) {
+	if (saddress) {
+		const matchAddr = valueStartsWith(saddressl, ["https://", "http://", "rtp://", "rtps://", "rtp://"]);
+		if (!matchAddr) {
 			saddress = `http://${saddress}`;
 		}
 	}
-	id("camera_webaddress").value = saddress;
+	setValue("camera_webaddress", saddress);
 }
 
 function camera_loadframe() {
-	const saddress = getValue("camera_webaddress").trim();
+	const saddress = getValueTrimmed("camera_webaddress");
 	if (saddress.length === 0) {
 		id("camera_frame").src = "";
 		displayNone(["camera_frame_display", "camera_detach_button"]);
@@ -79,10 +73,7 @@ function camera_detachcam() {
 }
 
 function camera_GetAddress() {
-	id("camera_webaddress").value =
-		typeof getPrefValue("camera_address") !== "undefined"
-			? getPrefValue("camera_address")
-			: "";
+	setValue("camera_webaddress", getPrefValue("camera_address") || "");
 }
 
 export { cameratab, camera_GetAddress };

@@ -1,10 +1,10 @@
-import { classes } from "./common.js";
+import { elemsByClass } from "./common.js";
 
 const clear_drop_menu = (event) => {
 	const item = get_parent_by_class(event.target, "dropdownselect");
 	const ignore_id = item?.id || "-1";
 	// biome-ignore lint/complexity/noForEach: <explanation>
-	classes("dropmenu-content").forEach((item) => {
+	elemsByClass("dropmenu-content").forEach((item) => {
 		const item2 = get_parent_by_class(item, "dropdownselect");
 		if (item2?.id !== ignore_id) {
 			item.classList.remove("show");

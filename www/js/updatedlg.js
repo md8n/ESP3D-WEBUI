@@ -137,7 +137,8 @@ function updatefailed(error_code, response) {
 	displayNone(["prgfw", "uploadfw_button"]);
 	setHTML("fw_file_name", trans_text_item("No file chosen"));
 	displayNone("uploadfw_button");
-	id("fw_select").value = "";
+	setValue("fw_select", "");
+
 	const common = new Common();
 	if (common.esp_error_code !== 0) {
 		alertdlg(trans_text_item("Error"), stdErrMsg(`(${common.esp_error_code})`, common.esp_error_message));
@@ -147,6 +148,7 @@ function updatefailed(error_code, response) {
 		alertdlg(trans_text_item("Error"), stdErrMsg(error_code, response));
 		setHTML("updatemsg", stdErrMsg(error_code, response, trans_text_item("Upload failed")));
 	}
+
 	conErr(error_code, response);
 	update_ongoing = false;
 	SendGetHttp(httpCmd.fwUpdate);

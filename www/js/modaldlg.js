@@ -12,10 +12,10 @@ const setactiveModal = (html_template_name, closefunc) => {
 
     const clFn = (closefunc instanceof Function) ? closefunc : (response) => {/* Do Nothing*/};
     const modal = {
-        "element": mdlTemplate,
-        "id": listmodal.length,
-        "name": html_template_name,
-        "closefn": clFn
+        element: mdlTemplate,
+        id: listmodal.length,
+        name: html_template_name,
+        closefn: clFn
     }
     listmodal.push(modal);
 

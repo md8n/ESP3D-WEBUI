@@ -624,7 +624,7 @@ function files_build_display_filelist(displaylist = true) {
 		if (fStatus.total !== "-1") {
 			setHTML("files_sd_status_total", fStatus.total);
 			setHTML("files_sd_status_used", fStatus.used);
-			id("files_sd_status_occupation").value = fStatus.occupation;
+			setValue("files_sd_status_occupation", fStatus.occupation);
 			setHTML("files_sd_status_percent", fStatus.occupation);
 			displayTable("files_space_sd_status");
 		} else {

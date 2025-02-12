@@ -165,10 +165,9 @@ function build_dlg_macrolist_line(index) {
 }
 
 function macro_filename_OnKeyUp(index) {
-	const item = id(`macro_filename_line_${index}`);
 	const group = id(`macro_filename_input_line_${index}`);
-	const value = item.value.trim();
-	if (value.length > 0) {
+	const value = getValueTrimmed(`macro_filename_line_${index}`);
+	if (value) {
 		group.classList.remove("has-feedback");
 		group.classList.remove("has-error");
 		displayNone(`icon_macro_status_line_${index}`);

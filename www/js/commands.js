@@ -143,8 +143,7 @@ function CustomCommand_OnKeyUp(event) {
 			CustomCommand_history_index >= 0 &&
 			CustomCommand_history_index < CustomCommand_history.length
 		) {
-			id("custom_cmd_txt").value =
-				CustomCommand_history[CustomCommand_history_index];
+			setValue("custom_cmd_txt", CustomCommand_history[CustomCommand_history_index]);
 		}
 		return false;
 	}

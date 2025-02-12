@@ -7,6 +7,7 @@ import {
 	saveMaslowYaml,
 	hideModal,
 	loadedValues,
+	setValue,
 } from "./common.js";
 
 /** Maslow Status */
@@ -62,6 +63,28 @@ const maslowErrorMsgHandling = (msg) => {
 	return `${msg}${msgExtra[msg.split(":")[1]] || ""}`;
 };
 
+const cfgDef = {
+	calibration_grid_width_mm_X: { name: "gridWidth", type: "A" },
+	calibration_grid_height_mm_Y: { name: "gridHeight", type: "A" },
+	calibration_grid_size: { name: "gridSize", type: "A" },
+	Retract_Current_Threshold: { name: "retractionForce", type: "A" },
+	vertical: { name: "machineOrientation", type: "A", fnVal: (value) => value === "horizontal" ? "false" : "true" },
+	Extend_Dist: { name: "extendDist", type: "A" },
+	trX: { name: "initialGuess.tr.x", type: "D" },
+	trY: { name: "initialGuess.tr.y", type: "D" },
+	trZ: { name: "initialGuess.tr.z", type: "D" },
+	tlX: { name: "initialGuess.tl.x", type: "D" },
+	tlY: { name: "initialGuess.tl.y", type: "D" },
+	tlZ: { name: "initialGuess.tl.z", type: "D" },
+	brX: { name: "initialGuess.br.x", type: "D" },
+	brY: { name: "initialGuess.br.y", type: "Null" },
+	brZ: { name: "initialGuess.br.z", type: "D" },
+	blX: { name: "initialGuess.bl.x", type: "Null" },
+	blY: { name: "initialGuess.bl.y", type: "Null" },
+	blZ: { name: "initialGuess.bl.z", type: "D" },
+	Acceptable_Calibration_Threshold: { name: "acceptableCalibrationThreshold", type: "D" },
+};
+
 /** Handle Maslow specific configuration messages
  * These would have all started with `$/Maslow_` which is expected to have been stripped away before calling this function
  */
@@ -82,37 +105,39 @@ const maslowMsgHandling = (msg) => {
 	}
 
 	const stdAction = (id, value) => {
-		document.getElementById(id).value = value;
+		setValue(id, value);
 		loadedValues(id, value);
 	};
-	const stdDimensionAction = (value) => Number.parseFloat(value);
-	const nullAction = () => { };
 
-	const msgExtra = {
-		calibration_grid_size: (value) => stdAction("gridSize", value),
-		calibration_grid_width_mm_X: (value) => stdAction("gridWidth", value),
-		calibration_grid_height_mm_Y: (value) => stdAction("gridHeight", value),
-		Retract_Current_Threshold: (value) => stdAction("retractionForce", value),
-		vertical: (value) => stdAction("machineOrientation", value === "false" ? "horizontal" : "vertical"),
-		trX: (value) => { common.initialGuess.tr.x = stdDimensionAction(value); },
-		trY: (value) => { common.initialGuess.tr.y = stdDimensionAction(value); },
-		trZ: (value) => { common.initialGuess.tr.z = stdDimensionAction(value); },
-		tlX: (value) => { common.initialGuess.tl.x = stdDimensionAction(value); },
-		tlY: (value) => { common.initialGuess.tl.y = stdDimensionAction(value); },
-		tlZ: (value) => { common.initialGuess.tl.z = stdDimensionAction(value); },
-		brX: (value) => { common.initialGuess.br.x = stdDimensionAction(value); },
-		brY: (value) => nullAction(),
-		brZ: (value) => { common.initialGuess.br.z = stdDimensionAction(value); },
-		blX: (value) => nullAction(),
-		blY: (value) => nullAction(),
-		blZ: (value) => { common.initialGuess.bl.z = stdDimensionAction(value); },
-		Acceptable_Calibration_Threshold: (value) => { common.acceptableCalibrationThreshold = stdDimensionAction(value); },
-	};
-	const action = msgExtra[key] || "";
-	if (!action) {
-		return maslowErrorMsgHandling(`error: Could not find key for value in reference table. ${errMsgSuffix}`);
+	const stdDimensionAction = (value) => Number.parseFloat(value);
+
+	const cfgVal = cfgDef[key];
+	if (typeof cfgVal !== "object") {
+		return maslowErrorMsgHandling(`error: Could not find key '${key}' in the reference table. ${errMsgSuffix}`);
 	}
-	action(value);
+	switch (cfgVal.type) {
+		case "A":
+			stdAction(cfgVal.name, value);
+			break;
+		case "D":
+			let dimEnt = common;
+			if (!cfgVal.name) {
+				// Well this is dangerous - so let's not do anything we'll regret very quickly
+				return maslowErrorMsgHandling(`error: No 'name' value specified for '${key}' in the reference table. ${errMsgSuffix}`);;
+			}
+			// Traverse through to the required entity
+			cfgVal.name.split(".").forEach((namePart) => {
+				if (!(namePart in dimEnt)) {
+					dimEnt[namePart] = null;
+				}
+				dimEnt = dimEnt[namePart];
+			});
+			dimEnt = stdDimensionAction(value);
+			break;
+		default:
+			// do nothing - a 'null' action
+			break;
+	}
 
 	// Success - return an empty string
 	return "";
@@ -124,9 +149,11 @@ const checkHomed = () => {
 		alert(err_msg);
 
 		// Write to the console too, in case the system alerts are not visible
-		const msgWindow = document.getElementById("messages");
-		msgWindow.textContent = `${msgWindow.textContent}\n${err_msg}`;
-		msgWindow.scrollTop = msgWindow.scrollHeight;
+		const msgWindow = id('messages');
+		if (msgWindow) {
+			msgWindow.textContent = `${msgWindow.textContent}\n${err_msg}`;
+			msgWindow.scrollTop = msgWindow.scrollHeight;
+		}
 	}
 
 	return maslowStatus.homed;
@@ -139,25 +166,23 @@ const sendCommand = (cmd) => {
 	SendPrinterCommand(cmd, true, get_Position);
 };
 
+/** Get all of the config (not corner) keys in the confiiguration definition */
+const allConfigKeys = () => Object.keys(cfgDef).filter((key) => !cfgDef[key].name.startsWith("initial"));
+
 /** Used to populate the config popup when it loads */
 const loadConfigValues = () => {
-	SendPrinterCommand(`$/${M}_vertical`);
-	SendPrinterCommand(`$/${M}_calibration_grid_width_mm_X`);
-	SendPrinterCommand(`$/${M}_calibration_grid_height_mm_Y`);
-	SendPrinterCommand(`$/${M}_calibration_grid_size`);
-	SendPrinterCommand(`$/${M}_Retract_Current_Threshold`);
-	SendPrinterCommand(`$/${M}_trX`);
-	SendPrinterCommand(`$/${M}_trY`);
-	SendPrinterCommand(`$/${M}_Acceptable_Calibration_Threshold`);
+	allConfigKeys().forEach((key) => {
+		const cmd = `$/${M}_${key}`;
+		SendPrinterCommand(cmd);
+	});
 };
 
 /** Load all of the corner values */
 const loadCornerValues = () => {
-	SendPrinterCommand(`$/${M}_tlX`);
-	SendPrinterCommand(`$/${M}_tlY`);
-	SendPrinterCommand(`$/${M}_trX`);
-	SendPrinterCommand(`$/${M}_trY`);
-	SendPrinterCommand(`$/${M}_brX`);
+	Object.keys(cfgDef).filter((key) => cfg[key].name.startsWith("initial")).forEach((key) => {
+		const cmd = `$/${M}_${key}`;
+		SendPrinterCommand(cmd);
+	});
 };
 
 // The following functions are all defined as global functions, and are used by tablettab.html and other places
@@ -165,14 +190,15 @@ const loadCornerValues = () => {
 
 /** Save the Maslow configuration values */
 const saveConfigValues = () => {
-	const gridWidth = document.getElementById("gridWidth").value;
-	const gridHeight = document.getElementById("gridHeight").value;
-	const gridSize = document.getElementById("gridSize").value;
-	const retractionForce = document.getElementById("retractionForce").value;
-	const machineOrientation = document.getElementById("machineOrientation").value;
+	// Get all of the config data as entered, and as already loaded
+	allConfigKeys().forEach((key) => {
+		const cfgVal = cfgDef[key];
+		cfgVal.val = getValue(cfgVal.name);
+		cfgVal.loadedVal = loadedValues(cfgVal.name);
+	});
 
-	const gridSpacingWidth = gridWidth / (gridSize - 1);
-	const gridSpacingHeight = gridHeight / (gridSize - 1);
+	const gridSpacingWidth = cfgDef.calibration_grid_width_mm_X.val / (cfgDef.calibration_grid_size.val - 1);
+	const gridSpacingHeight = cfgDef.calibration_grid_height_mm_Y.val / (cfgDef.calibration_grid_size.val - 1);
 
 	//If the grid spacing is going to be more than 200 don't save the values
 	if (gridSpacingWidth > 260 || gridSpacingHeight > 260) {
@@ -180,21 +206,16 @@ const saveConfigValues = () => {
 		return;
 	}
 
-	if (gridWidth !== loadedValues("gridWidth")) {
-		sendCommand(`$/${M}_calibration_grid_width_mm_X=${gridWidth}`);
-	}
-	if (gridHeight !== loadedValues("gridHeight")) {
-		sendCommand(`$/${M}_calibration_grid_height_mm_Y=${gridHeight}`);
-	}
-	if (gridSize !== loadedValues("gridSize")) {
-		sendCommand(`$/${M}_calibration_grid_size=${gridSize}`);
-	}
-	if (retractionForce !== loadedValues("retractionForce")) {
-		sendCommand(`$/${M}_Retract_Current_Threshold=${retractionForce}`);
-	}
-	if (machineOrientation !== loadedValues("machineOrientation")) {
-		sendCommand(`$/${M}_vertical=${machineOrientation === "horizontal" ? "false" : "true"}`);
-	}
+	// Save the individual values
+	allConfigKeys().forEach((key) => {
+		const cfgVal = cfgDef[key];
+		const value = cfgVal.val;
+		if (value !== cfgVal.loadedVal) {
+			const val = ("fnVal" in cfgVal && typeof cfgVal.fnVal === "function") ? cfgVal.fnVal(value) : value;
+			const cmd = `$/${M}_${key}=${val}`;
+			sendCommand(cmd);
+		}
+	});
 
 	const common = new Common();
 	refreshSettings(common.current_setting_filter);

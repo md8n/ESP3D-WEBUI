@@ -29,8 +29,8 @@ let SPIFFS_currentfile = "";
 let SPIFFS_upload_ongoing = false;
 
 const SPIFSSDialogClose = () => closeSPIFFSDialog("cancel");
-const SPIFFSSelectClick = () => document.getElementById("SPIFFS_select").click();
-const SPIFFSSelectFilesClick = () => document.getElementById("SPIFFS_select_files").click();
+const SPIFFSSelectClick = () => id("SPIFFS_select").click();
+const SPIFFSSelectFilesClick = () => id("SPIFFS_select_files").click();
 
 /** SPIFFS dialog */
 const SPIFFSdlg = (root) => {

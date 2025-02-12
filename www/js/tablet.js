@@ -36,7 +36,7 @@ let snd = null;
 let sndok = true;
 
 const addMessage = (msg, scroll = true, clear = false) => {
-  const msgWindow = document.getElementById("messages");
+  const msgWindow = id("messages");
   if (msgWindow) {
     msgWindow.textContent = clear ? msg : `${msgWindow.textContent}\n${msg}`;
     if (scroll) {
@@ -120,8 +120,8 @@ const xyHomeLabelDefault = "Define XY Home";
 const xyHomeLabelInstr = "Press+Hold Tap_x2";
 const xyHomeLabelRedefined = "XY Home Redefined";
 
-const getXYHomeBtnText = () => document.getElementById(xyHomeBtnId).textContent || "";
-const setXYHomeBtnText = (xyText = xyHomeLabelDefault) => { document.getElementById(xyHomeBtnId).textContent = xyText; };
+const getXYHomeBtnText = () => getText(xyHomeBtnId) || "";
+const setXYHomeBtnText = (xyText = xyHomeLabelDefault) => { setText(xyHomeBtnId, xyText); };
 
 const clearXYHomeTimer = () => {
   if (xyHomeTimerId) {
@@ -309,15 +309,15 @@ const moveHome = () => {
   }
 
   //We want to move to the opposite of the machine's current X,Y cordinates
-  const x = Number.parseFloat(id("mpos-x").innerText);
-  const y = Number.parseFloat(id("mpos-y").innerText);
+  const x = Number.parseFloat(getText("mpos-x"));
+  const y = Number.parseFloat(getText("mpos-y"));
 
   jog({ X: -1 * x, Y: -1 * y });
 };
 
 /** save off the serial messages */
 const saveSerialMessages = () => {
-  const msgs = getValue("messages");
+  const msgs = getValue("messages") || "";
   const link = document.createElement("a");
   link.setAttribute("href", `data:text/plain;charset=utf-8,${encodeURI(msgs)}`);
   link.setAttribute("download", "Maslow-serial.log");
@@ -329,9 +329,9 @@ const saveSerialMessages = () => {
 /** Loaded Values of the maslow config, this can be a const because we only change the fields within it */
 const loaded_values = {};
 /** Work with the maslow config loaded values.
- * If `fieldName` is undefined, or `value` is undefined and `fieldname` is not in the values, then return the values we have.
- * If `value` is undefined, but `fieldname` exists, just return the value for `fieldname`
- * Otherwise set `fieldname` to the `value` and return it
+ * * If `fieldName` is undefined, or `value` is undefined and `fieldname` is not in the values, then return the values we have.
+ * * If `value` is undefined, but `fieldname` exists, just return the value for `fieldname`
+ * * Otherwise set `fieldname` to the `value` and return it
  */
 const loadedValues = (fieldName, value) => {
   if (typeof fieldName === "undefined") {
@@ -374,10 +374,9 @@ const tabletShowMessage = (msg = "", collecting = false) => {
 function tabletShowResponse(response) { }
 
 const clearAlarm = () => {
-  const sysStatus = id("systemStatus");
-  if (sysStatus.innerText === "Alarm") {
-    sysStatus.classList.remove("system-status-alarm");
-    SendPrinterCommand("$X", true, null, null, 114, 1);
+  if (getText("systemStatus") === "Alarm") {
+    id("systemStatus").classList.remove("system-status-alarm");
+    SendPrinterCommand("$X", true, null, null, 114, 1)
   }
 };
 
@@ -455,7 +454,7 @@ function doPlayButton() {
     playButtonHandler();
   }
 
-  addMessage(`Starting File: ${document.getElementById('filelist').options[selectElement.selectedIndex].text}`);
+  addMessage(`Starting File: ${id('filelist').options[selectElement.selectedIndex].text}`);
 }
 
 // var pauseButtonHandler

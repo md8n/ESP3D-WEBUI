@@ -4,7 +4,7 @@
 // The following must be imported first, and in this order
 import { M } from "./constants.js";
 import {
-	classes,
+	elemsByClass,
 	conErr,
 	stdErrMsg,
 	getChecked,
@@ -246,7 +246,6 @@ class Common {
 
 		/** See http.js */
 		this.http_communication_locked = false;
-		this.page_id = "";
 		this.xmlhttpupload;
 
 		/** See loadHTML.js - coming soon */
@@ -514,7 +513,7 @@ export {
 	// from updatedlg.js
 	updatedlg,
 	// from util.js
-	classes,
+	elemsByClass,
 	conErr,
 	stdErrMsg,
 	getChecked,

@@ -113,25 +113,21 @@ const on_autocheck_position = (use_value) => {
 	if (typeof use_value !== "undefined") {
 		setChecked("autocheck_position", !!use_value);
 	}
+
+	clearInterval(interval_position);
+	interval_position = -1;
+
 	if (getChecked("autocheck_position") !== "false") {
 		const intPosElem = id("controlpanel_interval_positions");
 		const interval = Number.parseInt(intPosElem?.value || undefined);
 		if (!Number.isNaN(interval) && interval > 0 && interval < 100) {
-			if (interval_position !== -1) clearInterval(interval_position);
-			interval_position = setInterval(() => {
-				get_Position();
-			}, interval * 1000);
+			interval_position = setInterval(() => { get_Position(); }, interval * 1000);
 		} else {
 			setChecked("autocheck_position", false);
 			if (intPosElem) {
 				intPosElem.value = 0;
 			}
-			if (interval_position !== -1) clearInterval(interval_position);
-			interval_position = -1;
 		}
-	} else {
-		if (interval_position !== -1) clearInterval(interval_position);
-		interval_position = -1;
 	}
 };
 
@@ -141,27 +137,28 @@ function onPosIntervalChange() {
 		on_autocheck_position();
 	} else {
 		setChecked("autocheck_position", false);
-		id("controlpanel_interval_positions").value = 0;
-		if (interval !== 0)
+		setValue("controlpanel_interval_positions", 0);
+		if (interval !== 0) {
 			alertdlg(trans_text_item("Out of range"), trans_text_item("Value of auto-check must be between 0s and 99s !!"));
+		}
 		on_autocheck_position();
 	}
 }
 
 const get_Position = () => SendPrinterCommand("?", false, null, null, 114, 1);
 
-function Control_get_position_value(label, result_data) {
-	let result = "";
-	let pos1 = result_data.indexOf(label, 0);
-	if (pos1 > -1) {
-		pos1 += label.length;
-		const pos2 = result_data.indexOf(" ", pos1);
-		if (pos2 > -1) {
-			result = result_data.substring(pos1, pos2);
-		} else result = result_data.substring(pos1);
-	}
-	return result.trim();
-}
+// function Control_get_position_value(label, result_data) {
+// 	let result = "";
+// 	let pos1 = result_data.indexOf(label, 0);
+// 	if (pos1 > -1) {
+// 		pos1 += label.length;
+// 		const pos2 = result_data.indexOf(" ", pos1);
+// 		if (pos2 > -1) {
+// 			result = result_data.substring(pos1, pos2);
+// 		} else result = result_data.substring(pos1);
+// 	}
+// 	return result.trim();
+// }
 
 // function process_Position(response) {
 // 	grblProcessStatus(response);
@@ -269,12 +266,12 @@ function control_build_macro_ui() {
 	const common = new Common();
 	const actions = [];
 
-	const iconOptions = {t: "translate(50,1200) scale(1,-1)"};
+	const iconOptions = { t: "translate(50,1200) scale(1,-1)" };
 
 	let content = "<div class='tooltip'>";
 	content += "<span class='tooltip-text'>Manage macros</span>"
 	content += "<button id='control_btn_show_macro_dlg' class='btn btn-primary'>";
-	actions.push({ id: "control_btn_show_macro_dlg", method: initMacroDlg});
+	actions.push({ id: "control_btn_show_macro_dlg", method: initMacroDlg });
 	content += "<span class='badge'>";
 	content += get_icon_svg("star", iconOptions);
 	content += get_icon_svg("pencil", iconOptions);;

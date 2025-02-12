@@ -1,9 +1,9 @@
-import { classes, displayBlock, id } from "./common.js";
+import { elemsByClass, displayBlock, id } from "./common.js";
 
 const opentab = (evt, tabname, tabcontentid, tablinkid) => {
 	let i;
 	let tablinks;
-	const tabcontent = classes("tabcontent");
+	const tabcontent = elemsByClass("tabcontent");
 	const activateEvent = new Event("activate");
 	const deactivateEvent = new Event("deactivate");
 
@@ -13,7 +13,7 @@ const opentab = (evt, tabname, tabcontentid, tablinkid) => {
 			tabcontent[i].style.display = "none";
 		}
 	}
-	tablinks = classes("tablinks");
+	tablinks = elemsByClass("tablinks");
 	for (i = 0; i < tablinks.length; i++) {
 		if (tablinks[i].parentNode.id === tablinkid) {
 			tablinks[i].classList.remove("active");
