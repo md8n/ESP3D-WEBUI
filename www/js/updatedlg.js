@@ -20,7 +20,6 @@ import {
 } from "./common.js";
 
 let update_ongoing = false;
-let current_update_filename = "";
 
 const updateDlgCancel = () => closeUpdateDialog("cancel");
 const updateDlgSelect = () => document.getElementById("fw_select").click();
@@ -87,20 +86,23 @@ function StartUploadUpdatefile(response) {
 	if (CheckForHttpCommLock()) {
 		return;
 	}
+
+	const fileList = [];
 	const files = id("fw_select").files;
 	const formData = new FormData();
 	for (let i = 0; i < files.length; i++) {
 		const file = files[i];
 		const arg = `/${file.name}S`;
+		fileList.push(file.name);
 		//append file size first to check updload is complete
 		formData.append(arg, file.size);
 		formData.append("myfile[]", file, `/${file.name}`);
+		console.info(`Preparing ${fullFilename} for upload`);
 	}
 	displayNone(["fw-select_form", "uploadfw-button"]);
 	update_ongoing = true;
 	displayBlock(["updatemsg", "prgfw"]);
-	current_update_filename = files.length === 1 ? files[0].name : "";
-	setHTML("updatemsg", `${trans_text_item("Uploading")} ${current_update_filename}`);
+	setHTML("updatemsg", `${trans_text_item("Uploading")} ${fileList.join(" ")}`);
 
 	SendFileHttp(httpCmd.fwUpdate, formData, UpdateProgressDisplay, updatesuccess, updatefailed);
 }

@@ -242,12 +242,12 @@ function tryAutoReport() {
   if (reportType === "polled") {
     disablePolling();
   }
-  reportType === "auto";
-  const interval = getValue("grblpanel_autoreport_interval");
+  const interval = getValue("grblpanel_autoreport_interval") ?? 0;
   if (interval === 0) {
     enablePolling();
     return;
   }
+
   setChecked("report_auto", true);
   reportType = "auto";
   const cmd = `$Report/Interval=${interval}`;
@@ -363,18 +363,10 @@ function parseGrblStatus(response) {
         grbl.spindleDirection = "M5";
         for (const v in value) {
           switch (v) {
-            case "S":
-              grbl.spindleDirection = "M3";
-              break;
-            case "C":
-              grbl.spindleDirection = "M4";
-              break;
-            case "F":
-              grbl.flood = true;
-              break;
-            case "M":
-              grbl.mist = true;
-              break;
+            case "S": grbl.spindleDirection = "M3"; break;
+            case "C": grbl.spindleDirection = "M4"; break;
+            case "F": grbl.flood = true; break;
+            case "M": grbl.mist = true; break;
           }
         };
         break;
@@ -396,12 +388,17 @@ function parseGrblStatus(response) {
   return grbl;
 }
 
-function clickableFromStateName(state, hasSD) {
+const clickableFromStateName = (state = "", hasSD = false) => {
   const clickable = {
     resume: false,
     pause: false,
     reset: false,
   };
+
+  if (!["Run", "Hold", "Alarm"].includes(state)) {
+    return clickable;
+  }
+
   switch (state) {
     case "Run":
       clickable.pause = true;
@@ -413,17 +410,14 @@ function clickableFromStateName(state, hasSD) {
       break;
     case "Alarm":
       if (hasSD) {
-        //guess print is stopped because of alarm so no need to pause
+        //guess print is stopped because of alarm so no need to pause/hold
         clickable.resume = true;
       }
       break;
-    case "Idle":
-    case "Jog":
-    case "Home":
-    case "Check":
-    case "Sleep":
+    default:
       break;
   }
+
   return clickable;
 }
 
@@ -443,26 +437,31 @@ function show_grbl_position(wpos, mpos) {
   }
 }
 
-function show_grbl_status(stateName, message, hasSD) {
-  if (stateName) {
-    const clickable = clickableFromStateName(stateName, hasSD);
-    setHTML("grbl_status", stateName);
-    setHTML("systemStatus", stateName);
-    if (stateName === "Alarm") {
-      id("systemStatus").classList.add("system-status-alarm");
-    } else {
-      id("systemStatus").classList.remove("system-status-alarm");
-    }
-    setClickability("sd_resume_btn", clickable.resume);
-    setClickability("sd_pause_btn", clickable.pause);
-    setClickability("sd_reset_btn", clickable.reset);
-    if (stateName === "Hold" && probe_progress_status !== 0) {
-      probe_failed_notification();
-    }
+const show_grbl_status = (stateName = "", message = "", hasSD = false) => {
+  setHTML("grbl_status_text", translate_text_item(message))
+  setClickability("clear_status_btn", stateName === "Alarm");
+
+  if (!stateName) {
+    return;
   }
 
-  setHTML("grbl_status_text", trans_text_item(message));
-  setClickability("clear_status_btn", stateName === "Alarm");
+  setHTML("grbl_status", stateName);
+  setHTML("systemStatus", stateName);
+
+  if (stateName === "Alarm") {
+    id("systemStatus").classList.add("system-status-alarm");
+  } else {
+    id("systemStatus").classList.remove("system-status-alarm");
+  }
+
+  const clickable = clickableFromStateName(stateName, hasSD);
+  setClickability("sd_resume_btn", clickable.resume);
+  setClickability("sd_pause_btn", clickable.pause);
+  setClickability("sd_reset_btn", clickable.reset);
+
+  if (stateName == "Hold" && probe_progress_status != 0) {
+    probe_failed_notification();
+  }
 }
 
 function finalize_probing() {

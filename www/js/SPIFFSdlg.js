@@ -48,7 +48,7 @@ const SPIFFSdlg = (root) => {
 	id("SPIFFS_btn_close").addEventListener("click", SPIFSSDialogClose);
 	id("refreshSPIFFSbtn").addEventListener("click", refreshSPIFFS);
 
-	const iconOptions = {t: "translate(50,1200) scale(1,-1)"};
+	const iconOptions = { t: "translate(50,1200) scale(1,-1)" };
 	setHTML("SPIFFS_uploadbtn", get_icon_svg("upload", iconOptions));
 	setHTML("refreshSPIFFSbtn", get_icon_svg("refresh", iconOptions));
 
@@ -122,6 +122,7 @@ function processSPIFFS_Createdir(answer) {
 }
 
 function SPIFFSDownload(url) {
+	console.info(`Preparing to download ${url}`);
 	const anchor = document.createElement("a");
 	anchor.href = url;
 	anchor.download = url;
@@ -246,9 +247,9 @@ function SPIFFSdispatchfilestatus(jsonresponse) {
 		const filesize = jsonresponse.files[i].size;
 		const pathname = jsonresponse.path;
 		const filename = jsonresponse.files[i].name;
-		let filecontent = `<td  style='vertical-align:middle; color:#5BC0DE'>${get_icon_svg("file")}</td>`;
-		// filecontent += "<td  width='100%'  style='vertical-align:middle'><a href=\"" + pathname + filename + "\" target=_blank download><button  class=\"btn btn-link no_overflow\">" + filename + "</button></a></td>"
-		filecontent += `<td  width='100%'  style='vertical-align:middle'>${filename}</td>`;
+		let filecontent = `<td style='vertical-align:middle; color:#5BC0DE'>${get_icon_svg("file")}</td>`;
+		// filecontent += "<td width='100%' style='vertical-align:middle'><a href=\"" + pathname + filename + "\" target=_blank download><button  class=\"btn btn-link no_overflow\">" + filename + "</button></a></td>"
+		filecontent += `<td width='100%' style='vertical-align:middle'>${filename}</td>`;
 		filecontent += `<td nowrap  style='vertical-align:middle; text-align:right'>${filesize}</td>`;
 		filecontent += SPIFFSbutton(`${bIdF}download_${i}`, "btn-default", "download");
 		filecontent += SPIFFSbutton(`${bIdF}delete_${i}`, "btn-danger", "trash");
@@ -324,21 +325,24 @@ function SPIFFS_UploadFile() {
 	if (CheckForHttpCommLock()) {
 		return;
 	}
+
+	const fileList = [];
 	const files = id("SPIFFS_select").files;
 	const formData = new FormData();
 	formData.append("path", common.SPIFFS_currentpath);
 	for (let i = 0; i < files.length; i++) {
 		const file = files[i];
-		const arg = `${common.SPIFFS_currentpath}${file.name}S`;
+		fileList.push(file.name);
+		const fullFilename = `${SPIFFS_currentpath}${file.name}`;
 		//append file size first to check upload is complete
-		formData.append(arg, file.size);
-		formData.append("myfile[]", file, `${common.SPIFFS_currentpath}${file.name}`);
+		formData.append(`${fullFilename}S`, file.size);
+		formData.append("myfile[]", file, fullFilename);
+		console.info(`Preparing ${fullFilename} for upload`);
 	}
 	displayNone(["SPIFFS-select_form", "SPIFFS_uploadbtn"]);
 	SPIFFS_upload_ongoing = true;
 	displayBlock(["uploadSPIFFSmsg", "SPIFFS_prg"]);
-	SPIFFS_currentfile = (files.length === 1) ? files[0].name : "";
-	setHTML("uploadSPIFFSmsg", `${trans_text_item("Uploading")} ${common.SPIFFS_currentfile}`);
+	setHTML("uploadSPIFFSmsg", `${translate_text_item("Uploading")} ${fileList.join(" ")}`);
 	SendFileHttp(httpCmd.files, formData, SPIFFSUploadsuccess, SPIFFSUploadfailed);
 }
 
@@ -361,7 +365,7 @@ function SPIFFSUploadsuccess(response) {
 
 function SPIFFSUploadfailed(error_code, response) {
 	displayBlock(["SPIFFS-select_form", "SPIFFS_uploadbtn", "refreshSPIFFSbtn"]);
-	displayNone(["SPIFFS_prg","uploadSPIFFSmsg"]);
+	displayNone(["SPIFFS_prg", "uploadSPIFFSmsg"]);
 	setHTML("uploadSPIFFSmsg", "");
 	conErr(stdErrMsg(error_code, response));
 	const common = new Common();

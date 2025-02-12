@@ -42,11 +42,7 @@ const setupdlg = () => {
     common.setup_is_done = false;
 
     displayNone("main_ui");
-    // From settingstab
-    const settingstab_list_elem = id("settings_list_data");
-    if (settingstab_list_elem) {
-        settingstab_list_elem.innerHTML = "";
-    }
+    setHTML("settings_list_data", "");
 
     const modal = setactiveModal("setupdlg.html", setupdone);
     if (modal == null) {

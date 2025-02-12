@@ -286,11 +286,13 @@ const setInput = (id_suffix, btnType) => {
 	setHTML(`icon_config_${id_suffix}`, iconSVG);
 }
 
+const buildIdConf = (prefix, index) => `config_${prefix}${index}`;
+
 function config_revert_to_default(index, is_override) {
 	const id_suffix = suffix(index, is_override);
 	const item = is_override ? config_override_List[index] : config_configList[index];
 
-	id(`config_${id_suffix}`).value = item.defaultvalue;
+	setValue(`config_${id_suffix}`, item.defaultvalue);
 	setInput(id_suffix, "default");
 }
 
@@ -300,7 +302,7 @@ function configGetvalue(index, is_override) {
     const cnfId = `config_${prefix}${index}`;
 
     // remove possible spaces
-    const value = id(cnfId).value.trim();
+    const value = getValue(cnfId).trim();
     if (value === item.defaultvalue) {
         return;
     }

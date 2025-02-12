@@ -10,10 +10,10 @@ import {
     Common,
 } from "./common.js";
 
-function noop() { }
 const cleanFunc = (fn, cleanFn) => fn instanceof Function ? fn : cleanFn;
 
-const SendPrinterCommand = (prnCmd, echo_on, processfn, errorfn, id, max_id, extra_arg) => {
+function noop() {}
+function SendPrinterCommand(prnCmd, echo_on, processfn, errorfn, cmd_code, max_cmd_code, extra_arg) {
     const pCmd = (prnCmd || "").trim();
     if (!pCmd) {
         return;
@@ -40,7 +40,7 @@ const SendPrinterCommand = (prnCmd, echo_on, processfn, errorfn, id, max_id, ext
         cmd += `&${extra_arg}`;
     }
 
-    SendGetHttp(cmd, procFn, errFn, id, max_id);
+    SendGetHttp(cmd, procFn, errFn, cmd_code, max_cmd_code);
     //console.log(cmd);
 }
 

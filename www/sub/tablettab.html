@@ -71,23 +71,20 @@
             <canvas id="dnBtn" style="width: 100%; height: 100%">
           </div>
           <div id="tablettab_bottomRight" class="maslow-grid-item maslow-grid-item-btn"
-            style="background-color: #b69fcb;">
-            <canvas id="brBtn" style="width: 100%; height: 100%"></canvas>
-          </div>
+            style="background-color: #b69fcb;"><canvas id="brBtn" style="width: 100%; height: 100%"></canvas> </div>
           <div class="maslow-grid-item maslow-grid-item-btn"></div>
           <!-- Buttons row 4 -->
           <div id="tablettab_set_z_home" class="maslow-grid-item maslow-grid-item-btn"
             style="background-color: #f2f0e4; border-right: 2px solid grey;">Define Z Home</div>
           <div id="tablettab_move_to_xy_home" class="maslow-grid-item maslow-grid-item-btn"
-            style="background-color: #f2f0e4;">
-            <canvas id="hBtn" style="width: 100%; height: 100%">
-          </div>
+            style="background-color: #f2f0e4;"><canvas id="hBtn" style="width: 100%; height: 100%"></div>
           <div id="tablettab_toggle_units" class="maslow-grid-item maslow-grid-item-btn"
             style="background-color: #f2f0e4;" title="Toggle Units">mm</div>
           <div id="tablettab_set_xy_home" class="maslow-grid-item maslow-grid-item-btn"
             style="background-color: #f2f0e4;" title="Press and hold, or tap twice">Define XY Home</div>
           <div class="maslow-grid-item maslow-grid-item-btn"></div>
         </div>
+        <!-- Controls row 5 -->
         <div style="grid-template-columns: 80% 20%;" class="maslow-grid-container tablettab-controls-item"
           style="height: 60px;">
           <select id="filelist" class="form-control">
@@ -104,13 +101,12 @@
             <span>Upload GCode</span>
           </div>
         </div>
+        <!-- Buttons row 6 -->
         <div class="maslow-grid-container tablettab-controls-item" style="grid-template-columns: 33% 33% 33%;">
-          <div id="tablettab_gcode_play" class="maslow-grid-item maslow-grid-item-btn" style="background-color: #4aa85c;">
-            <canvas id="playBtn" style="width: 100%; height: 100%"></canvas>
-          </div>
-          <div id="tablettab_gcode_stop" class="maslow-grid-item maslow-grid-item-btn" style="background-color: #ce654c;">
-            <canvas id="stopBtn" style="width: 100%; height: 100%"></canvas>
-          </div>
+          <div id="tablettab_gcode_play" class="maslow-grid-item maslow-grid-item-btn"
+            style="background-color: #4aa85c;"><canvas id="playBtn" style="width: 100%; height: 100%"></canvas></div>
+          <div id="tablettab_gcode_stop" class="maslow-grid-item maslow-grid-item-btn"
+            style="background-color: #ce654c;"><canvas id="stopBtn" style="width: 100%; height: 100%"></canvas></div>
           <div id="systemStatus" class="maslow-grid-item system-status">Idle</div>
         </div>
         <div class="maslow-grid-container tablettab-controls-item" style="grid-template-columns: auto;">
@@ -118,21 +114,15 @@
             <table style="width:100%">
               <tr>
                 <td>X:</td>
-                <td id="mpos-x">
-                  0.000
-                </td>
+                <td id="mpos-x">0.000</td>
               </tr>
               <tr>
                 <td>Y:</td>
-                <td id="mpos-y">
-                  0.000
-                </td>
+                <td id="mpos-y">0.000</td>
               </tr>
               <tr>
                 <td>Z:</td>
-                <td id="mpos-z">
-                  0.000
-                </td>
+                <td id="mpos-z">0.000</td>
               </tr>
               <tr>
                 <td id="active-state"></td>
@@ -140,7 +130,7 @@
             </table>
           </div>
         </div>
-        <textarea style="border:  none" class="messages tablettab-controls-item" id="messages" rows="14"
+        <textarea id="messages" style="border: none" class="messages tablettab-controls-item" rows="14"
           spellcheck="false" readonly>Serial Messages</textarea>
         <button id="tablettab_save_serial_msg" class="btn btn-primary">Save Serial</button>
       </div>

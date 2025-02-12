@@ -79,7 +79,7 @@ const buildHttpFilesCmd = (params = {}) => {
             if (cmd.length) {
                 cmd.push(`${key}=${pVal}`);
             } else {
-                cmd.push(`${httpCmd.login}?${key}=${pVal}`);
+                cmd.push(`${httpCmd.files}?${key}=${pVal}`);
             }
         }
     });
@@ -119,4 +119,10 @@ const buildHttpFileGetCmd = (filename) => `${httpCmd.fileGet}${filename}`;
  */
 const buildHttpCommandCmd = (cmdType, cmd) => `${httpCmd.command}?${cmdType}=${encodeURIComponent(cmd).replace("#", "%23")}&PAGEID=${page_id}`;
 
-export { httpCmd, httpCmdType, buildHttpLoginCmd, buildHttpFilesCmd, buildHttpFileCmd, buildHttpFileGetCmd, buildHttpCommandCmd };
+/** Build the supplied data into a blob, then a file, ready for inclusion as form data */
+const BuildFormDataFiles = (filename, filedata, options) => {
+	const blob = new Blob(filedata, options);
+	return new File([blob], filename);
+}
+
+export { httpCmd, httpCmdType, BuildFormDataFiles, buildHttpLoginCmd, buildHttpFilesCmd, buildHttpFileCmd, buildHttpFileGetCmd, buildHttpCommandCmd };

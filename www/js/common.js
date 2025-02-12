@@ -11,6 +11,9 @@ import {
 	setChecked,
 	getValue,
 	setValue,
+	getText,
+	setText,
+	setTextContent,
 	setClassName,
 	setHTML,
 	HTMLEncode,
@@ -21,7 +24,7 @@ import {
 import { displayBlock, displayFlex, displayTable, displayInitial, displayInline, displayNone, displayUndoNone } from "./utilDisplay.js";
 import { numpad } from "./numpad.js";
 import { checkValue, valueIsFloat, valueStartsWith } from "./utilValidation.js";
-import { httpCmd, httpCmdType, buildHttpLoginCmd, buildHttpFilesCmd, buildHttpFileCmd, buildHttpFileGetCmd, buildHttpCommandCmd } from "./httpCmdBuilders.js";
+import { httpCmd, httpCmdType, BuildFormDataFiles, buildHttpLoginCmd, buildHttpFilesCmd, buildHttpFileCmd, buildHttpFileGetCmd, buildHttpCommandCmd } from "./httpCmdBuilders.js";
 
 import { alertdlg } from "./alertdlg.js";
 import {
@@ -83,7 +86,7 @@ import {
 	setSpindleSpeed,
 } from "./grbl.js";
 import { grblpanel } from "./grblpanel.js";
-import { AddCmd, clear_cmd_list, SendFileHttp, SendGetHttp, CheckForHttpCommLock } from "./http.js";
+import { clear_cmd_list, SendFileHttp, SendGetHttp, CheckForHttpCommLock } from "./http.js";
 import { get_icon_svg, list_icon } from "./icons.js";
 import { Set_page_title, update_UI_firmware_target, initUI } from "./initUI.js";
 import { inputdlg } from "./inputdlg.js";
@@ -383,9 +386,8 @@ export {
 	// from grblpanel.js
 	grblpanel,
 	// from httpCmdBuilders.js
-	httpCmd, httpCmdType, buildHttpLoginCmd, buildHttpFilesCmd, buildHttpFileCmd, buildHttpFileGetCmd, buildHttpCommandCmd,
+	httpCmd, httpCmdType, BuildFormDataFiles, buildHttpLoginCmd, buildHttpFilesCmd, buildHttpFileCmd, buildHttpFileGetCmd, buildHttpCommandCmd,
 	// from http.js
-	AddCmd,
 	clear_cmd_list,
 	SendFileHttp,
 	SendGetHttp,
@@ -519,6 +521,9 @@ export {
 	setChecked,
 	getValue,
 	setValue,
+	getText,
+	setText,
+	setTextContent,
 	setClassName,
 	setHTML,
 	HTMLEncode,

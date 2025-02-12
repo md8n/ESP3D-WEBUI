@@ -136,7 +136,7 @@ const on_autocheck_position = (use_value) => {
 };
 
 function onPosIntervalChange() {
-	const interval = Number.parseInt(id("controlpanel_interval_positions").value);
+	const interval = Number.parseInt(getValue("controlpanel_interval_positions"));
 	if (!Number.isNaN(interval) && interval > 0 && interval < 100) {
 		on_autocheck_position();
 	} else {

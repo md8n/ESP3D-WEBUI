@@ -105,7 +105,7 @@ const Monitor_output_Update = (message) => {
 };
 
 function SendCustomCommand() {
-		const custCmd = (getValue("custom_cmd_txt") || "").trim();
+	const custCmd = getValueTrimmed("custom_cmd_txt") || "";
 	if (!custCmd) {
 		return;
 	}

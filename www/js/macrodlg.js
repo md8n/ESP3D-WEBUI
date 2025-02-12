@@ -5,7 +5,7 @@ import {
 	displayBlock,
 	displayNone,
 	id,
-	browser_is,
+	BuildFormDataFiles,
 	setHTML,
 	clear_drop_menu,
 	hide_drop_menu,
@@ -288,26 +288,17 @@ function SaveNewMacroList() {
 	if (CheckForHttpCommLock()) {
 		return;
 	}
+
 	for (let i = 0; i < 9; i++) {
-		if (
-			macrodlg_macrolist[i].filename.length === 0 &&
-			macrodlg_macrolist[i].class !== ""
-		) {
-			alertdlg(trans_text_item("Out of range"), trans_text_item("File name cannot be empty!"));
+		const mItem = macrodlg_macrolist[i];
+		if (mItem.filename.length === 0 && mItem.class !== "") {
+			alertdlg(translate_text_item("Out of range"), translate_text_item("File name cannot be empty!"));
 			return;
 		}
 	}
 
-	const blob = new Blob([JSON.stringify(macrodlg_macrolist, null, " ")], { type: "application/json" });
-	let file;
 	const macroFilename = "/macrocfg.json";
-	if (browser_is("IE") || browser_is("Edge")) {
-		file = blob;
-		file.name = macroFilename;
-		file.lastModifiedDate = new Date();
-	} else {
-		file = new File([blob], macroFilename);
-	}
+	const file = BuildFormDataFiles(macroFilename, [JSON.stringify(macrodlg_macrolist, null, " ")], { type: "application/json" });
 
 	const formData = new FormData();
 	formData.append("path", "/");

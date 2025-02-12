@@ -85,8 +85,8 @@ function loginsuccess(response_text) {
 }
 
 function SubmitLogin() {
-	const user = id("login_user_text").value.trim();
-	const password = id("login_password_text").value.trim();
+	const user = getValue("login_user_text").trim();
+	const password = getValue("login_password_text").trim();
 	setHTML("current_ID", user);
 	setHTML("current_auth_level", "");
 	displayNone("login_content");

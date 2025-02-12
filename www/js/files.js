@@ -310,7 +310,7 @@ const files_is_clickable = (index) => {
 	files_file_list[index].isdir ? true : common.fwData.direct_sd;
 }
 
-const files_enter_dir = (name) => files_refreshFiles(`${files_currentPath()}${name}/`, true);
+const files_enter_dir = (name) => files_refreshFiles(`${files_currentPath()}${name}/`);
 
 let old_file_name;
 function files_rename(index) {
@@ -382,8 +382,7 @@ function files_showdeletebutton(index) {
 	return true;
 }
 
-function files_refreshFiles(path, usecache = false) {
-	const common = new Common();
+function files_refreshFiles(path) {
 	//console.log("refresh requested " + path);
 	const cmdpath = path;
 	files_currentPath(path);
@@ -392,7 +391,8 @@ function files_refreshFiles(path, usecache = false) {
 		// path = "/";
 		last_source = current_source;
 	}
-	if (current_source === tft_sd || current_source === tft_usb) {
+
+	if ([tft_sd, tft_usb].includes(current_source)) {
 		displayNone("print_upload_btn");
 	} else {
 		displayBlock("print_upload_btn");
@@ -561,7 +561,7 @@ function files_go_levelup() {
 		path += `${tlist[nb]}/`;
 		nb++;
 	}
-	files_refreshFiles(path, true);
+	files_refreshFiles(path);
 }
 
 function files_build_display_filelist(displaylist = true) {
@@ -588,7 +588,7 @@ function files_build_display_filelist(displaylist = true) {
 			content += `<li id='${liId}' class='list-group-item list-group-hover' style='cursor:pointer'>`;
 			content += `<span>${get_icon_svg("level-up")}</span>&nbsp;&nbsp;<span translate>Up...</span>`;
 			content += "</li>";
-			actions.push({ id: liId, type: "click", method: files_go_levelup, index: undefined });
+			actions.push({ id: liId, method: files_go_levelup, index: undefined });
 		}
 		for (let index = 0; index < files_file_list.length; index++) {
 			if (!files_file_list[index].isdir)
@@ -674,7 +674,9 @@ function process_check_sd_presence(answer) {
 			files_build_display_filelist(false);
 			setHTML("files_sd_status_msg", trans_text_item(files_error_status, true));
 			displayTable("files_status_sd_status");
-		} else files_start_upload();
+		} else {
+			files_start_upload();
+		}
 	} else {
 		//for smoothiware ls say no directory
 		files_start_upload();
@@ -705,11 +707,11 @@ function files_start_upload() {
 	formData.append("path", path);
 	for (let i = 0; i < fileList.length; i++) {
 		const file = fileList[i];
-		const arg = `${path + file.name}S`;
+		const fullFilename = `${path}${file.name}`;
 		//append file size first to check updload is complete
-		formData.append(arg, file.size);
-		formData.append("myfile[]", file, path + file.name);
-		//console.log( path +file.name);
+		formData.append(`${fullFilename}S`, file.size);
+		formData.append("myfile[]", file, fullFilename);
+		console.info(`Preparing ${fullFilename} for upload`);
 
 		files_error_status = `Upload ${file.name}`;
 		setHTML("files_currentUpload_msg", file.name);

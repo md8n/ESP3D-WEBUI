@@ -36,6 +36,7 @@ import {
     trans_text_item,
     handlePing,
     PreferencesModified,
+    BuildFormDataFiles,
     BuildPreferencesJson,
     LoadPreferencesJson,
     translate_text,

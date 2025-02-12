@@ -26,7 +26,7 @@ const inputdlg = (titledlg, textdlg, closefunc, preset = "") => {
 function closeInputModal(response) {
 	let answer = "";
 	if (response === "ok") {
-		const input = id("inputldg_text").value;
+		const input = getValue("inputldg_text");
 		answer = input.trim();
 	}
 	closeModal(answer);

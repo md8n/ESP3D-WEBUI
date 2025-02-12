@@ -1,271 +1,383 @@
-import { Common, alertdlg, setHTML, trans_text_item, logindlg, pageID } from "./common.js";
+import { Common, alertdlg, httpCmd, setHTML, trans_text_item, logindlg, pageID } from "./common.js";
 
+/** A list of various command objects that can be used as a queue */
 const cmd_list = [];
 let processing_cmd = false;
 const max_cmd = 100;
 
+var cmdInterval = 0;
+
+const processNextCmd = () => {
+    if (!cmd_list.length) {
+        console.warn("Command list empty, no messages to process at this time");
+        clearInterval(cmdInterval);
+        cmdInterval = 0;
+    }
+
+    switch (process_cmd_list(cmd_list[0], "process")) {
+        case 1:
+            // Success, job done, move on ...
+            break;
+        case -3:
+            // Malformed command, remove from the list without changing anything else
+            cmd_list.splice(0, 1);
+            break;
+        case -2:
+            // TODO: Too many commands in the cmd_list, this should be reprocessed later
+            break;
+        case -1:
+            // TODO: Currently processing a command, this should be retried
+            break;
+        default:
+            break;
+    }
+}
+
+/** This comes straight out of the Mozilla website for Math.random */
+const getRandomIntExclusive = (min = 0, max = 10000) => {
+    const minCeiled = Math.ceil(min);
+    const maxFloored = Math.floor(max);
+    return Math.floor(Math.random() * (maxFloored - minCeiled) + minCeiled);
+}
+
+const zeroPrefixedString = (value, prefix = "00000") => `${prefix}${value}`.slice(-prefix.length);
+
+/** Remove the command with the specified Id */
+const removeCmd = (cmdId) => {
+    const ix = cmd_list.findIndex((c) => c.id === cmdId);
+    if (ix !== -1) {
+        cmd_list.splice(ix, 1);
+    } else {
+        console.warn(`Wanted to remove the command with id:'${cmdId}', but no matching command found in the list. The command list has probably been purged.`);
+    }
+}
+
+/** Validate that the processing 'state' is OK */
+const validateProcessing = (cmd, step = "") => {
+    if (cmd_lock) {
+        // Currently doing a cmd_list process, so this should probably be retried
+        return -1;
+    }
+
+    if (!["add", "process", "remove", "purge"].includes(step)) {
+        // The step is invalid, so the associated command should be discarded
+        return -3;
+    }
+
+    if (cmd_list.length > max_cmd) {
+        http_errorfn(cmd, 503, trans_text_item("Server not responding"));
+        // Exceeded the cmd_list maximum size, this should probably be retried once other commands have been processed and removed
+        return -2;
+    }
+
+    return 0;
+}
+
+/** Validate that the cmd object meets basic requirements */
+const validateCommand = (cmd, step = "") => {
+    const isCmdObject = typeof cmd === "object";
+    if (!isCmdObject) {
+        // The cmd is invalid, so this should be discarded
+        return -3;
+    }
+
+    const cmdType = cmd?.type || "";
+    if (!["GET", "POST"].includes(cmdType)) {
+        // The cmd is invalid, so this should be discarded
+        return -3;
+    }
+
+    // Make sure that any step (except for "add" and "purge") already has an id in the cmd
+    if (!("id" in cmd) && ["process", "remove"].includes(step)) {
+        // The cmd is invalid, so this should be discarded, although this does imply a programmer error
+        return -3;
+    }
+
+    return 0;
+}
+
+/** A semaphore (sorta mutex) for working with the cmd_list */
+var cmd_lock = false;
+
+/** Process the supplied cmd through the various stages in its life cycle */
+const process_cmd_list = (cmd, step = "") => {
+    let validationState = validateProcessing(cmd, step);
+    if (validationState < 0) {
+        return validationState;
+    }
+
+    validationState = validateCommand(cmd, step);
+    if (validationState < 0) {
+        return validationState;
+    }
+
+    cmd_lock = true;
+
+    if (!("id" in cmd) && step === "add") {
+        // Ensure there's always an id when adding a command. Hopefully unique
+        cmd.id = `T${Date.now()}R${zeroPrefixedString(getRandomIntExclusive())}`;
+    }
+
+    let doNext = false;
+
+    switch (step) {
+        case "add":
+            // Add a new cmd to the list
+            cmd_list.push(cmd);
+            doNext = true;
+            break;
+        case "process":
+            // Pass the supplied cmd from the list off for processing
+            process_cmd(cmd);
+            // Nothing more to do because the XHR callbacks take over from here
+            doNext = false;
+            break;
+        case "remove":
+            // Clean up after processing the cmd
+            removeCmd(cmd.id);
+
+            if (cmd_list.length) {
+                doNext = true;
+            } else {
+                clearInterval(cmdInterval);
+                cmdInterval = 0;
+            }
+
+            processing_cmd = false;
+            break;
+        case "purge":
+            // Wipe the command list 
+            cmd_list.length = 0;
+            clearInterval(cmdInterval);
+            cmdInterval = 0;
+            doNext = false;
+            processing_cmd = false;
+            break;
+    }
+    cmd_lock = false;
+
+    if (doNext) {
+        // setInterval is used here to ensure that this call goes onto the event loop
+        // i.e. so that it is effectively treated asynchronously
+        const throttleInterval = 10;
+        if (!cmdInterval) {
+            cmdInterval = setInterval(() => processNextCmd(), throttleInterval);
+        }
+    }
+
+    // Success
+    return 1;
+}
+
+/** Wipe the command list - Nuclear option */
 const clear_cmd_list = () => {
-    // Wipe the command list
-    cmd_list.length = 0;
-    processing_cmd = false;
+    process_cmd_list({ "id": "0" }, "purge");
 }
 
-const cleanFunc = (command, funcName, defFn) => {
-	return typeof command !== "undefined" && typeof command[funcName] === "function"
-	? command[funcName]
-	: cmd_list.length > 0 && typeof cmd_list[0][funcName] === "function"
-		? cmd_list[0][funcName]
-		: defFn;
-}
+const cleanFunc = (cmd, funcName, defFn) => {
+    const hasCmd = typeof cmd === "object";
+    const hasFuncName = typeof funcName === "string" && funcName;
+    const hasCmdFunc = hasCmd && hasFuncName && funcName in cmd && typeof cmd[funcName] === "function";
 
-/** Standard actions to take after completing processing a command's reply */
-const postProcessCmd = () => {
-    cmd_list.shift();
-    processing_cmd = false;
-    process_cmd();
+    if (hasCmdFunc) {
+        return cmd[funcName];
+    }
+
+    // Safety checks for stuff that should never happen - tell the programmer how they messed up
+    if (!hasCmd) {
+        console.warn("cleanFunc was called without being supplied a cmd object. This is a programmer error");
+    }
+    if (!hasCmdFunc) {
+        console.warn(`cleanFunc was called with a cmd object that did not have a function called '${funcName}'. This is a programmer error`);
+    }
+
+    const hasDefFn = typeof defFn === "function";
+    if (!hasDefFn) {
+        const errMsg = `cleanFunc was called without being supplied a cmd.${funcName} function or a default function. This is a programmer error`;
+        console.error(errMsg);
+        throw new Error(errMsg);
+    }
+
+    return defFn;
 }
 
 /** A default function for a successful result */
 function http_resultfn(response_text) {
-	console.info(`Success: ${response_text}`);;
+    console.info(`Success: ${response_text}`);
 }
 
-function http_handleSuccess(command, response_text) {
-	const resultfn = cleanFunc(command, "resultfn", http_resultfn);
-	resultfn(response_text);
-    postProcessCmd();
+const http_handleSuccess = (cmd, response_text) => {
+    const resultfn = cleanFunc(cmd, "resultfn", http_resultfn);
+    resultfn(response_text);
+    process_cmd_list(cmd, "remove");
 }
 
 const authErrorFound = (error_code, response_text) => {
-	if (error_code === 401) {
-		logindlg();
-		console.warn(`Authentication issue, please login. ${response_text}`);
-		return true;
-	}
-	return false;
+    if (error_code === 401) {
+        logindlg();
+        console.warn(`Authentication issue, please login. ${response_text}`);
+        return true;
+    }
+    return false;
 }
 
-/** A default function for aa  error result */
+/** A default function for an error result */
 function http_errorfn(error_code, response_text) {
-	console.error(`${error_code}:${response_text}`);
+    console.error(`${error_code}:${response_text}`);
 }
 
-function http_handleError(command, error_code, response_text) {
-	if (authErrorFound(error_code, response_text)) {
-		// For now with an auth_error, we continue with regular error handling
-	} else {
-		const errorfn = cleanFunc(command, "errorfn", http_errorfn);
-		errorfn(error_code, response_text);
-	}
-
-    postProcessCmd();
-}
-
-function process_cmd() {
-    if (!cmd_list.length) {
-        // No commands to process
-        return;
-    }
-
-    if (processing_cmd) {
-        // if (processing_cmd) { 
-        //     console.log("Currently processing a command");
-        // }
-        return;
-    }
-
-    const command = cmd_list[0];
-    const cmdType = command.type;
-    if (!["GET", "POST", "CMD"].includes(cmdType)) {
-        // This should never be true, but just in case we will handle it
-        console.error(`Unknown command type ${cmdType} for command ${command.cmd}`);
-        postProcessCmd();
-        return;
-    }
-
-    processing_cmd = true;
-    if (cmdType === "CMD") {
-        // Note: NOT an actual http command, just something else to be done
-        const fn = command.fn;
-        fn();
-        postProcessCmd();
-        return;
+const http_handleError = (cmd, error_code, response_text) => {
+    if (authErrorFound(error_code, response_text)) {
+        // For now with an auth_error, we continue with regular error handling
     } else {
-		ProcessHttpCommand(command);
-	}
+        const errorfn = cleanFunc(cmd, "errorfn", http_errorfn);
+        errorfn(error_code, response_text);
+    }
+    process_cmd_list(cmd, "remove");
 }
 
-const buildBasicCmd = (cmd, cmd_type, id) => {
-	const cmd_id = typeof id !== "undefined" ? id : 0;
+const process_cmd = (cmd) => {
+    if (processing_cmd) {
+        return;
+    }
 
-	return {
-		cmd: cmd,
-		url: new URL(`${document.location.origin}${cmd}`),
-		type: cmd_type,
-		id: cmd_id,
-	};
+    const cmdType = cmd.type;
+    processing_cmd = true;
+
+    switch (cmdType) {
+        case "GET":
+            ProcessHttpCommand(cmd);
+            break;
+        case "POST":
+            // POST is only ever used for file uploading
+            //console.log("Uploading");
+            ProcessHttpCommand(cmd);
+            break;
+        default:
+            // Unknown command type
+            // This should never be true, but just in case we will handle it
+            http_handleError(cmd, 400, trans_text_item(`Unknown command type '${cmdType}'`));
+            break;
+    }
 }
 
-/** NOT an http command, but rather just some other function to be performed.
- * Note: command.cmd and command.url will be meaningless
- */
-const buildCmdCmd = (fn, id) => {
-	const command = buildBasicCmd("", "CMD", id);
-	command.fn = fn;
-	return command;
+const setCmdFn = (defFn, fn) => (typeof fn === "function") ? fn : defFn;
+
+const buildBasicCmd = (cmd, cmd_type, result_fn, error_fn, isupload = false) => {
+    return {
+        cmd: cmd,
+        url: new URL(`${document.location.origin}${cmd}`),
+        type: cmd_type,
+        isupload: isupload,
+        resultfn: setCmdFn(http_resultfn, result_fn),
+        errorfn: setCmdFn(http_errorfn, error_fn);
+    };
 }
 
-const setCmdFn = (command, funcName, defFn, fn) => {
-	command[funcName] = (typeof fn === "function") ? fn : defFn;
+const buildGetCmd = (cmd, cmd_code, result_fn, error_fn) => {
+    const cmd = buildBasicCmd(cmd, "GET", result_fn, error_fn, false);
+
+    if (cmd.startsWith(httpCmd.command)) {
+        cmd.url.searchParams.append("PAGEID", pageID());
+    }
+    cmd.cmd_code = typeof cmd_code !== "undefined" ? cmd_code : 0;
+
+    return cmd;
 }
 
-const buildGetCmd = (cmd, id, result_fn, error_fn) => {
-	const command = buildBasicCmd(cmd, "GET", id);
-	if (cmd.startsWith("/command")) {
-		command.url.searchParams.append("PAGEID", pageID());
-	}
-	command.isupload = false;
-	setCmdFn(command, "resultfn", http_resultfn, result_fn);
-	setCmdFn(command, "errorfn", http_errorfn, error_fn);
+const SendGetHttp = (cmd, result_fn, error_fn, cmd_code, max_cmd_code) => {
+    const fullCmd = buildGetCmd(cmd, cmd_code, result_fn, error_fn)
 
-	return command;
-}
+    if (typeof cmd_code === "undefined") {
+        process_cmd_list(fullCmd, "add");
+        return;
+    }
+
+    /** The maximum number of times that this cmd_code can be added to the list */
+    const max_of_cmd_code = (typeof max_cmd_code !== "number") ? max_cmd_code : 1;
+    const count_cmd_code = cmd_list.filter((c) => c.cmd_code === cmd_code).length;
+
+    // Some commands have a limit to how many times they are allowed in the queue
+    if (count_cmd_code > max_of_cmd_code) {
+        console.warn(`Limit reached for command with code:${cmd_code}`);
+        return;
+    }
+
+    process_cmd_list(fullCmd, "add");
+};
 
 const buildPostFileCmd = (cmd, postdata, result_fn, error_fn) => {
-	const command = buildBasicCmd(cmd, "POST");
-	command.isupload = true;
-	command.data = postdata;
-	setCmdFn(command, "resultfn", http_resultfn, result_fn);
-	setCmdFn(command, "errorfn", http_errorfn, error_fn);
+    const cmd = buildBasicCmd(cmd, "POST", result_fn, error_fn, true);
 
-	return command;
+    cmd.data = postdata;
+
+    return cmd;
 }
 
-const checkForMaxListSize = (desc) => {
-	if (cmd_list.length <= max_cmd) {
-		return true;
-	}
-
-	http_errorfn(999, trans_text_item("Server not responding"));
-	console.error(`${desc} could not be added to the cmd_list. Maximum pending commands length has been exceeded.`);
-
-	console.info("Will attempt to continue processes commands");
-	process_cmd();
-
-	return false;
-}
-
-/** Add some arbitrary command to the cmd_list.
- * Note: This is assumed to NOT be an actual HTTP command
- */
-const AddCmd = (fn, id) => {
-	if (!checkForMaxListSize("An arbitrary function")) {
-		return;
-	}
-
-	cmd_list.push(buildCmdCmd(fn, id));
-	process_cmd();
-}
-
-function GetIdentificationStatus() {
-	const cmd = "/login";
-	SendGetHttp(cmd, GetIdentificationStatusSuccess);
+/** POST the file FormData */
+const SendFileHttp = (cmd, postdata, result_fn, error_fn) => {
+    process_cmd_list(buildPostFileCmd(cmd, postdata, result_fn, error_fn), "add");
 }
 
 /** This expects the logindlg to be visible */
-function GetIdentificationStatusSuccess(response_text) {
-	if (!response_text) {
-		// treat as guest
-		setHTML("current_ID", trans_text_item("guest"));
-		setHTML("current_auth_level", "");
-		return;
-	}
-	const response = JSON.parse(response_text);
-	if (typeof response.authentication_lvl !== "undefined") {
-		if (response.authentication_lvl === "guest") {
-			setHTML("current_ID", trans_text_item("guest"));
-			setHTML("current_auth_level", "");
-		}
-	}
+const GetIdentificationStatusSuccess = (response_text) => {
+    if (!response_text) {
+        // treat as guest
+        setHTML("current_ID", trans_text_item("guest"));
+        setHTML("current_auth_level", "");
+        return;
+    }
+    const response = JSON.parse(response_text);
+    if (typeof response.authentication_lvl !== "undefined") {
+        if (response.authentication_lvl === "guest") {
+            setHTML("current_ID", trans_text_item("guest"));
+            setHTML("current_auth_level", "");
+        }
+    }
+}
+
+const GetIdentificationStatus = () => {
+    const cmd = httpCmd.login;
+    SendGetHttp(cmd, GetIdentificationStatusSuccess);
+}
+
+const ProcessHttpCommand = (cmd) => {
+    const common = new Common();
+    if (common.http_communication_locked) {
+        http_errorfn(503, trans_text_item("Communication locked!"));
+        console.warn("locked");
+        return;
+    }
+
+    const req = { method: cmd.type };
+    if (req.method === "POST") {
+        // Note: Only used for uploading files
+        req.body = cmd.postdata;
+    }
+
+    common.http_communication_locked = true;
+    fetch(cmd.url, req)
+        .then(response => {
+            common.http_communication_locked = false;
+            if (response.status === 200) {
+                return response.text();
+            }
+            if (response.status === 401) {
+                GetIdentificationStatus();
+            }
+            throw new Error(response.status);
+        })
+        .then(responseText => http_handleSuccess(cmd, responseText))
+        .catch(error => http_handleError(cmd, error.message, error.responseText));
 }
 
 const CheckForHttpCommLock = () => {
-	const common = new Common();
-	if (common.http_communication_locked) {
-		alertdlg(trans_text_item("Busy..."), trans_text_item("Communications are currently locked, please wait and retry."));
-		console.warn("communication locked");
-	}
-	return common.http_communication_locked;
+    const common = new Common();
+    if (common.http_communication_locked) {
+        alertdlg(trans_text_item("Busy..."), trans_text_item("Communications are currently locked, please wait and retry."));
+        console.warn("communication locked");
+    }
+    return common.http_communication_locked;
 }
 
-const SendGetHttp = (cmd, result_fn, error_fn, id, max_id) => {
-	const cmd_id = (typeof id !== "undefined") ? id : 0;
-	if (!checkForMaxListSize(`The command '${cmd}' with id:${cmd_id}`)) {
-		return;
-	}
-
-	// Some commands have a limit to how many times they are allowed in the queue
-	if (typeof id !== "undefined") {
-		let cmd_max_id = (typeof max_id !== "undefined") ? max_id : 1;
-		for (let p = 0; p < cmd_list.length; p++) {
-			if (cmd_list[p].id === cmd_id) {
-				cmd_max_id--;
-			}
-			if (cmd_max_id <= 0) {
-				console.log(`Limit reached for command with id:${id}`);
-				processing_cmd = false;
-				process_cmd();
-				return;
-			}
-		}
-	}
-
-	cmd_list.push(buildGetCmd(cmd, cmd_id, result_fn, error_fn));
-	process_cmd();
-};
-
-function SendFileHttp(cmd, postdata, result_fn, error_fn) {
-	if (!checkForMaxListSize(`The command '${cmd}'`)) {
-		return;
-	}
-
-	if (cmd_list.length !== 0) {
-		// TODO: figure out what, if anything this did
-		// biome-ignore lint/suspicious/noGlobalAssign: <explanation>
-		process = false;
-	}
-	cmd_list.push(buildPostFileCmd(cmd, postdata, result_fn, error_fn));
-	process_cmd();
-}
-
-const ProcessHttpCommand = (command) => {
-	const common = new Common();
-	if (common.http_communication_locked) {
-		http_errorfn(503, trans_text_item("Communication locked!"));
-		console.warn("locked");
-		return;
-	}
-
-	const req = { method: command.type };
-	if (req.method === "POST") {
-		// Note: Only used for uploading files
-		req.body = command.postdata;
-	}
-
-	common.http_communication_locked = true;
-	fetch(command.url, req)
-		.then(response => {
-			common.http_communication_locked = false;
-			if (response.status === 200) {
-				return response.text();
-			}
-			if (response.status === 401) {
-				GetIdentificationStatus();
-			}
-			throw new Error(response.status);
-		})
-		.then(responseText => http_handleSuccess(command, responseText))
-		.catch(error => http_handleError(command, error.message, error.responseText));
-}
-
-export { AddCmd, clear_cmd_list, SendFileHttp, SendGetHttp, CheckForHttpCommLock };
+export { clear_cmd_list, SendFileHttp, SendGetHttp, CheckForHttpCommLock };

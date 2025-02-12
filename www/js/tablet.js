@@ -3,6 +3,7 @@ import {
   getValue,
   id,
   setValue,
+  setTextContent,
   numpad,
   SendPrinterCommand,
   files_currentPath,
@@ -75,18 +76,13 @@ function tabletClick() {
   // beep(3, 400, 10)
 }
 
-const moveTo = (location) => {
-  // Always force G90 mode because synchronization of modal reports is unreliable
-  sendCommand(`G90 G0 ${location}`);
-};
-
 const MDIcmd = (value) => {
   tabletClick();
   sendCommand(value);
 };
 
 // const MDI = (field) => {
-//   MDIcmd(id(field).value)
+//   MDIcmd(getValue(field))
 // }
 
 // const enterFullscreen = () => {
@@ -188,30 +184,28 @@ const toggleUnits = () => {
   sendCommand("$G");
 };
 
-const jogTo = (axisAndDistance) => {
-  const axis = getAxisFromValue(axisAndDistance);
-  // Always force G90 mode because synchronization of modal reports is unreliable
-  let feedrate = AxisFeedRate(axis);
-  const common = new Common();
-  if (common.modal.units === "G20") {
-    feedrate /= 25.4;
-    feedrate = feedrate.toFixed(2);
-  }
-
-  // tabletShowMessage("JogTo " + cmd);
-  sendCommand(`$J=G91F${feedrate}${axisAndDistance}\n`);
-};
-
 const goAxisByValue = (axis, coordinate) => {
-  tabletClick();
-  moveTo(axis + coordinate);
-};
+  tabletClick()
+  moveTo(axis + coordinate)
+}
 
 const setAxisByValue = (axis, coordinate) => {
   tabletClick();
-  sendCommand(`G10 L20 P0 ${axis}${coordinate}`);
-};
+  const cmd = `G10 L20 P0 ${axis}${coordinate}`;
+  sendCommand(cmd);
+}
 
+const setAxis = (axis, field) => {
+  tabletClick();
+  const cmd = `G10 L20 P1 ${axis}${getValue(field)}`;
+  sendCommand(cmd);
+}
+
+var timeout_id = 0,
+  hold_time = 1000
+
+/** Check the parameters used by jog and move commands,
+ * and return them as a composite string */
 const checkParams = (params = {}) => {
   if (!Object.keys(params).length) {
     addMessage("Could not perform Jog. No jog parameters supplied. Programmer error.");
@@ -224,37 +218,62 @@ const checkParams = (params = {}) => {
   }
 
   const s = [];
-  for (const key in params) {
+  for (key in params) {
     s.push(`${key}${params[key]}`);
   }
   return s.join();
 }
 
+/** Perform a jog command */
 const jog = (params = {}) => {
-  const cmd = checkParams(params);
-  if (!cmd) {
+  const axisAndDistance = checkParams(params);
+  if (!axisAndDistance) {
     return;
   }
 
-  addMessage(`Jog: ${cmd}`);
-  jogTo(cmd);
+  jogTo(axisAndDistance);
 }
 
+const jogTo = (axisAndDistance) => {
+  const axis = getAxisFromValue(axisAndDistance);
+  // Always force G90 mode because synchronization of modal reports is unreliable
+  let feedrate = AxisFeedRate(axis);
+  const common = new Common();
+  if (common.modal.units === "G20") {
+    feedrate /= 25.4;
+    feedrate = feedrate.toFixed(2);
+  }
+
+  const cmd = `$J=G91F${feedrate}${axisAndDistance}\n`;
+  addMessage(`JogTo: '${cmd}'`);
+  sendCommand(cmd);
+}
+
+/** Peform a move command */
 const move = (params = {}) => {
-  const cmd = checkParams(params);
-  if (!cmd) {
+  const location = checkParams(params);
+  if (!location) {
     return;
   }
 
-  moveTo(cmd);
+  moveTo(location);
 }
 
+const moveTo = (location) => {
+  // Always force G90 mode because synchronization of modal reports is unreliable
+  const cmd = `G90 G0 ${location}`;
+  sendCommand(cmd);
+}
+
+/** Perform jog or move commands based on the supplied command */
 const sendMove = (cmd) => {
   tabletClick();
 
-  const distance = cmd.includes('Z') ? Number(id('disZ').innerText) || 0 : Number(id('disM').innerText) || 0
+  let distance = cmd.includes('Z')
+    ? Number(getText('disZ')) || 0
+    : Number(getText('disM')) || 0;
 
-  const fn = {
+  const jogMoveFnList = {
     G28: () => sendCommand('G28'),
     G30: () => sendCommand('G30'),
     X0Y0Z0: () => move({ X: 0, Y: 0, Z: 0 }),
@@ -275,11 +294,14 @@ const sendMove = (cmd) => {
       // She's got legs ♫
       move({ Z: 70 });
     },
-  }[cmd];
+  };
 
-  // biome-ignore lint/complexity/useOptionalChain: <explanation>
-  fn && fn();
-};
+  if (cmd in jogMoveFnList) {
+    jogMoveFnList[cmd]();
+  } else {
+    addMessage(`Invalid jog/move command: ${cmd}`);
+  }
+}
 
 const moveHome = () => {
   if (!checkHomed()) {
@@ -338,7 +360,7 @@ const tabletShowMessage = (msg = "", collecting = false) => {
     return;
   }
 
-  let errMsg = "";
+  // let errMsg = "";
 
   //These are used for populating the configuration popup
   if (valueStartsWith(msg, ["$/Maslow_", "$/maslow_"])) {
@@ -415,6 +437,9 @@ function addJogDistance(distance) {
 
 function setButton(name, isEnabled, color, text) {
   const button = id(name);
+  if (!button) {
+    return;
+  }
   button.disabled = !isEnabled;
   button.style.backgroundColor = color;
   button.innerText = text;
@@ -477,15 +502,12 @@ function stopAndRecover() {
 let oldCannotClick = null;
 
 function scaleUnits(target) {
-  //Scale the units to move when jogging down or up by 25 to keep them reasonable
-  const disMElement = id(target);
-  const currentValue = Number(disMElement.innerText);
-
-  const common = new Common();
+  //Scale the units to move when jogging down or up by 25.4 to keep them reasonable
+  let distanceElement = id(target);
+  let currentValue = Number(distanceElement.innerText);
 
   if (!Number.isNaN(currentValue)) {
-    disMElement.innerText =
-      common.modal.units === "G20" ? currentValue / 25.4 : currentValue * 25.4;
+    distanceElement.innerText = modal.units == "G20" ? currentValue / 25.4 : currentValue * 25.4;
   } else {
     console.error("Invalid number in disM element");
   }
@@ -510,6 +532,11 @@ function tabletUpdateModal() {
     scaleUnits("disM");
     scaleUnits("disZ");
   }
+
+  setText("tablettab_toggle_units", newUnits);
+  setJogSelector(modal.units);
+  scaleUnits("disM");
+  scaleUnits("disZ");
 }
 
 let runTime = 0;
@@ -582,18 +609,10 @@ const tabletGrblState = (grbl, response) => {
 
   if (grbl.spindleDirection) {
     switch (grbl.spindleDirection) {
-      case "M3":
-        spindleDirection = "CW";
-        break;
-      case "M4":
-        spindleDirection = "CCW";
-        break;
-      case "M5":
-        spindleDirection = "Off";
-        break;
-      default:
-        spindleDirection = "";
-        break;
+      case "M3": spindleDirection = "CW"; break;
+      case "M4": spindleDirection = "CCW"; break;
+      case "M5": spindleDirection = "Off"; break;
+      default: spindleDirection = ""; break;
     }
   }
 
@@ -694,58 +713,56 @@ function tabletGetFileList(path) {
 const tabletTabActivate = () => {
   fullscreenIfMobile();
   setBottomHeight();
-};
+}
 
-const stopProp = (event) => event.stopPropagation();
-
-const tabletTabzUp = () => sendMove("Z+");
-const tabletTabtopLeft = () => sendMove("X-Y+");
-const tabletTabtop = () => sendMove("Y+");
-const tabletTabtopRight = () => sendMove("X+Y+");
-
-const tabletTabCalibration = () => {
+// Button event handlers - First Row
+const tabletMoveZUp = () => sendMove("Z+");
+const tabletMoveTopLeft = () => sendMove("X-Y+");
+const tabletMoveTop = () => sendMove("Y+");
+const tabletMoveTopRight = () => sendMove("X+Y+");
+const tabletCalibrationOpen = () => {
   loadCornerValues();
   openModal("calibration-popup");
+}
+// Button event handlers - Second Row
+const tabletMoveLeft = () => sendMove("X-");
+const tabletMoveRight = () => sendMove("X+");
+// Button event handlers - Third Row
+const tabletMoveZDown = () => sendMove("Z-");
+const tabletMoveBottomLeft = () => sendMove("X-Y-");
+const tabletMoveBottom = () => sendMove("Y-");
+const tabletMoveBottomRight = () => sendMove("X+Y-");
+// Button event handlers - Fourth Row
+const tabletSetZHomeMDown = () => zeroAxis("Z");
+const tabletSetZHomeMUp = () => refreshGcode();
+// Button event handlers - Fifth Row - nothing special here, move on
+// Button event handlers - Sixth Row
+const tabletGCodeStop = () => onCalibrationButtonsClick("$STOP", "Stop Maslow and Gcode");
+// Control event handlers - Calibration Popup
+const tabletCalPopupHide = () => hideModal("calibration-popup");
+const tabletCalRetract = () => onCalibrationButtonsClick("$ALL", "Retract All");
+const tabletCalExtend = () => onCalibrationButtonsClick("$EXT", "Extend All");
+const tabletCalCalibrate = () => {
+  onCalibrationButtonsClick("$CAL", "Calibrate");
+  setTimeout(() => { hideModal("calibration-popup"); }, 1000);
 };
-
-const tabletTableft = () => sendMove("X-");
-const tabletTabright = () => sendMove("X+");
-
-const tabletTabzDown = () => sendMove("Z-");
-const tabletTabbottomLeft = () => sendMove("X-Y-");
-const tabletTabbottom = () => sendMove("Y-");
-const tabletTabbottomRight = () => sendMove("X+Y-");
-
-const tabletTabset_z_home = () => zeroAxis("Z");
-
-const tabletTabCalgcode_stop = () => onCalibrationButtonsClick("$STOP", "Stop Maslow and Gcode");
-const tabletTabCalretract = () => onCalibrationButtonsClick("$ALL", "Retract All");
-const tabletTabCalextend = () => onCalibrationButtonsClick("$EXT", "Extend All");
-
-// const tabletTabCalcalibrate = () => {
-//   onCalibrationButtonsClick("$CAL", "Calibrate");
-//   setTimeout(() => {
-//     hideModal("calibration-popup");
-//   }, 1000);
-// };
-// const tabletTabCaltense = () => {
-//   onCalibrationButtonsClick("$TKSLK", "Apply Tension");
-//   setTimeout(() => {
-//     hideModal("calibration-popup");
-//   }, 1000);
-// };
-// const tabletTabCalhomez = () => onCalibrationButtonsClick('$TKSLK','Home Z');
-const tabletTabCalconfig = () => {
+const tabletCalTense = () => {
+  onCalibrationButtonsClick("$TKSLK", "Apply Tension");
+  setTimeout(() => { hideModal("calibration-popup"); }, 1000);
+};
+// const tabletCalZHome = () => onCalibrationButtonsClick("$TKSLK", "Home Z");
+const tabletCalOpenConfig = () => {
   loadConfigValues();
   openModal("configuration-popup");
 };
-const tabletTabCalstop = () => onCalibrationButtonsClick("$STOP", "Stop");
-const tabletTabCalzstop = () => onCalibrationButtonsClick("$SETZSTOP", "Set Z-Stop");
-const tabletTabCaltest = () => onCalibrationButtonsClick("$TEST", "Test");
-const tabletTabCalrelax = () => onCalibrationButtonsClick("$CMP", "Release Tension");
-
-const tabletTabCalpopup = () => hideModal("calibration-popup");
-const tabletTabConfpopup = () =>  hideModal("configuration-popup");
+const tabletCalStop = () => onCalibrationButtonsClick("$STOP", "Stop");
+const tabletCalSetZStop = () => onCalibrationButtonsClick("$SETZSTOP", "Set Z-Stop");
+const tabletCalTest = () => onCalibrationButtonsClick("$TEST", "Test");
+const tabletCalRelax = () => onCalibrationButtonsClick("$CMP", "Release Tension");
+// Control event handlers - Configuration Popup
+const tabletConfigPopupHide = () => hideModal("configuration-popup");
+// Control event handlers - Common
+const tabletPopupStopProp = (event) => event.stopPropagation();
 
 const tabletInit = () => {
   tpInit();
@@ -775,56 +792,63 @@ const tabletInit = () => {
 
     id("tablettablink").addEventListener("DOMActivate", tabletTabActivate, false);
 
-    id("filelist").addEventListener("change", selectFile);
-    id("tabelttab_config_popup_content").addEventListener("click", stopProp);
+    // Buttons - First Row
+    id("tablettab_zUp").addEventListener("click", tabletMoveZUp);
+    id("tablettab_topLeft").addEventListener("click", tabletMoveTopLeft);
+    id("tablettab_top").addEventListener("click", tabletMoveTop);
+    id("tablettab_topRight").addEventListener("click", tabletMoveTopRight);
+    id("calibrationBTN").addEventListener("click", tabletCalibrationOpen);
 
-    id("tablettab_zUp").addEventListener("click", tabletTabzUp);
-    id("tablettab_topLeft").addEventListener("click", tabletTabtopLeft);
-    id("tablettab_top").addEventListener("click", tabletTabtop);
-    id("tablettab_topRight").addEventListener("click", tabletTabtopRight);
+    // Buttons - Second Row
+    id("tablettab_left").addEventListener("click", tabletMoveLeft);
+    id("tablettab_right").addEventListener("click", tabletMoveRight);
 
-    id("calibrationBTN").addEventListener("click", tabletTabCalibration);
+    // Buttons - Third Row
+    id("tablettab_zDown").addEventListener("click", tabletMoveZDown);
+    id("tablettab_bottomLeft").addEventListener("click", tabletMoveBottomLeft);
+    id("tablettab_bottom").addEventListener("click", tabletMoveBottom);
+    id("tablettab_bottomRight").addEventListener("click", tabletMoveBottomRight);
 
-    id("tablettab_left").addEventListener("click", tabletTableft);
-    id("tablettab_right").addEventListener("click", tabletTabright);
+    // Buttons - Fourth Row
+    id("tablettab_set_z_home").addEventListener("mousedown", tabletSetZHomeMDown);
+    id("tablettab_set_z_home").addEventListener("mouseup", tabletSetZHomeMUp);
 
-    id("tablettab_zDown").addEventListener("click", tabletTabzDown);
-    id("tablettab_bottomLeft").addEventListener("click", tabletTabbottomLeft);
-    id("tablettab_bottom").addEventListener("click", tabletTabbottom);
-    id("tablettab_bottomRight").addEventListener("click", tabletTabbottomRight);
-
-    id("tablettab_set_z_home").addEventListener("mousedown", tabletTabset_z_home);
-    id("tablettab_set_z_home").addEventListener("mouseup", refreshGcode);
     id("tablettab_move_to_xy_home").addEventListener("click", moveHome);
     id("tablettab_toggle_units").addEventListener("click", toggleUnits);
     id("tablettab_set_xy_home").addEventListener("mousedown", setHomeClickDown);
     id("tablettab_set_xy_home").addEventListener("mouseup", setHomeClickUp);
     id("tablettab_set_xy_home").addEventListener("dblclick", setXYHome);
 
+    // Controls - Fifth Row
+    id("filelist").addEventListener("change", selectFile);
     id("tablettab_gcode_upload").addEventListener("click", files_select_upload);
+
+    // Buttons - Sixth Row
     id("tablettab_gcode_play").addEventListener("click", doPlayButton);
     // id("tablettab_gcode_pause").addEventListener("click", doPauseButton);
-    id("tablettab_gcode_stop").addEventListener("click", tabletTabCalgcode_stop);
-
-    id("tablettab_cal_retract").addEventListener("click", tabletTabCalretract);
-    id("tablettab_cal_extend").addEventListener("click", tabletTabCalextend);
-    // id("tablettab_cal_calibrate").addEventListener("click", tabletTabCalcalibrate);
-    // id("tablettab_cal_tense").addEventListener("click", tabletTabCaltense);
-    // id('tablettab_cal_homez').addEventListener('click', tabletTabCalhomez);
-    id("tablettab_cal_config").addEventListener("click", tabletTabCalconfig);
-    id("tablettab_cal_stop").addEventListener("click", tabletTabCalstop);
-    id("tablettab_cal_zstop").addEventListener("click", tabletTabCalzstop);
-    id("tablettab_cal_test").addEventListener("click", tabletTabCaltest);
-    id("tablettab_cal_relax").addEventListener("click", tabletTabCalrelax,);
-    id("tablettab_config_save").addEventListener("click", saveConfigValues);
+    id("tablettab_gcode_stop").addEventListener("click", tabletGCodeStop);
+    id("systemStatus").addEventListener("click", clearAlarm);
 
     id("tablettab_save_serial_msg").addEventListener("click", saveSerialMessages);
 
-    id("calibration-popup").addEventListener("click", tabletTabCalpopup);
-    id("calibration_popup_content").addEventListener("click", stopProp);
-    id("configuration-popup").addEventListener("click", tabletTabConfpopup);
+    // Buttons - Calibration Pop-up
+    id("calibration-popup").addEventListener("click", tabletCalPopupHide);
+    id("calibration_popup_content").addEventListener("click", tabletPopupStopProp);
+    id("tablettab_cal_retract").addEventListener("click", tabletCalRetract);
+    id("tablettab_cal_extend").addEventListener("click", tabletCalExtend);
+    id("tablettab_cal_calibrate").addEventListener("click", tabletCalCalibrate);
+    id("tablettab_cal_tense").addEventListener("click", tabletCalTense);
+    // id("tablettab_cal_homez").addEventListener("click", tabletCalZHome);
+    id("tablettab_cal_config").addEventListener("click", tabletCalOpenConfig);
+    id("tablettab_cal_stop").addEventListener("click", tabletCalStop);
+    id("tablettab_cal_zstop").addEventListener("click", tabletCalSetZStop);
+    id("tablettab_cal_test").addEventListener("click", tabletCalTest);
+    id("tablettab_cal_relax").addEventListener("click", tabletCalRelax);
 
-    id("systemStatus").addEventListener("click", clearAlarm);
+    // Buttons - Configuration Pop-up
+    id("configuration-popup").addEventListener("click", tabletConfigPopupHide);
+    id("tabelttab_config_popup_content").addEventListener("click", tabletPopupStopProp);
+    id("tablettab_config_save").addEventListener("click", saveConfigValues);
 
     drawTPBtns();
 
@@ -887,10 +911,11 @@ function scrollToLine(lineNumber) {
 
 function runGCode() {
   const common = new Common();
-  common.gCodeFilename && sendCommand(`$sd/run=${common.gCodeFilename}`);
-  setTimeout(() => {
-    SendRealtimeCmd(0x7e);
-  }, 1500);
+  if (common.gCodeFilename) {
+    const cmd = `$sd/run=${gCodeFilename}`;
+    sendCommand(cmd);
+  }
+  setTimeout(() => { SendRealtimeCmd(0x7e); }, 1500);
   // expandVisualizer()
 }
 
@@ -1025,15 +1050,10 @@ function altDown() {
   newChild = addJogDistance(distance / 10);
 }
 
-function jogClick(name) {
-  clickon(name);
-}
-
 /** Reports whether a text input box has focus - see the next comment.
  * TODO: Currently this is always false. Maybe we should remove all usages of it
  */
-// biome-ignore lint/style/useConst: <explanation>
-let isInputFocused = false;
+var isInputFocused = false
 function tabletIsActive() {
   const elem = id("tablettab");
   return !elem ? false : elem.style.display !== "none";
@@ -1049,57 +1069,51 @@ function handleKeyDown(event) {
   if (isInputFocused) {
     return;
   }
+
+  const dirKeyToBtnId = {
+    'ArrowRight': 'jog-x-plus',
+    'ArrowLeft': 'jog-x-minus',
+    'ArrowUp': 'jog-y-plus',
+    'ArrowDown': 'jog-y-minus',
+    'PageUp': 'jog-z-plus',
+    'PageDown': 'jog-z-minus',
+  }
+  if (event.key in dirKeyToBtnId) {
+    clickon(dirKeyToBtnId[event.key]);
+    event.preventDefault();
+    return;
+  }
+
+  const mathKeyToDir = {
+    '=': true,
+    '+': true,
+    '-': false,
+  }
+  if (event.key in mathKeyToDir) {
+    cycleDistance(mathKeyToDir[event.key]);
+    event.preventDefault();
+    return;
+  }
+
   switch (event.key) {
-    case "ArrowRight":
-      jogClick("jog-x-plus");
-      event.preventDefault();
-      break;
-    case "ArrowLeft":
-      jogClick("jog-x-minus");
-      event.preventDefault();
-      break;
-    case "ArrowUp":
-      jogClick("jog-y-plus");
-      event.preventDefault();
-      break;
-    case "ArrowDown":
-      jogClick("jog-y-minus");
-      event.preventDefault();
-      break;
-    case "PageUp":
-      jogClick("jog-z-plus");
-      event.preventDefault();
-      break;
-    case "PageDown":
-      jogClick("jog-z-minus");
-      event.preventDefault();
-      break;
-    case "Escape":
-    case "Pause":
-      // clickon("pauseBtn");
-      break;
-    case "Shift":
-      shiftDown();
-      break;
-    case "Control":
-      ctrlDown = true;
-      break;
-    case "Alt":
-      altDown();
-      break;
-    case "=": // = is unshifted + on US keyboards
-    case "+":
-      cycleDistance(true);
-      event.preventDefault();
-      break;
-    case "-":
-      cycleDistance(false);
-      event.preventDefault();
-      break;
+    case 'Escape':
+    case 'Pause':
+      //clickon('pauseBtn')
+      break
+    case 'Shift':
+      shiftDown()
+      break
+    case 'Control':
+      ctrlDown = true
+      break
+    case 'Alt':
+      altDown()
+      break
     default:
-      console.log(event);
+      console.warn(`Received an unmatched keydown event for ${event.key}`);
   }
 }
+
 function handleKeyUp(event) {
   if (!tabletIsActive()) {
     return;
@@ -1108,15 +1122,9 @@ function handleKeyUp(event) {
     return;
   }
   switch (event.key) {
-    case "Shift":
-      shiftUp();
-      break;
-    case "Control":
-      ctrlDown = false;
-      break;
-    case "Alt":
-      altUp();
-      break;
+    case "Shift": shiftUp(); break;
+    case "Control": ctrlDown = false; break;
+    case "Alt": altUp(); break;
   }
 }
 
@@ -1136,18 +1144,18 @@ window.addEventListener("keydown", handleKeyDown);
 window.addEventListener("keyup", handleKeyUp);
 
 function saveJogDists() {
-  localStorage.setItem("disM", id("disM").innerText);
-  localStorage.setItem("disZ", id("disZ").innerText);
+  localStorage.setItem("disM", getText("disM"));
+  localStorage.setItem("disZ", getText("disZ"));
 }
 
 function loadJogDists() {
   const disM = localStorage.getItem("disM");
   if (disM != null) {
-    id("disM").innerText = disM;
+    setText("disM", disM);
   }
   const disZ = localStorage.getItem("disZ");
   if (disZ != null) {
-    id("disZ").innerText = disZ;
+    setText("disZ", disZ);
   }
 }
 
@@ -1160,7 +1168,6 @@ function setBottomHeight() {
   if (!tabletIsActive()) {
     return;
   }
-  // const residue = bodyHeight() - heightId("navbar") - controlHeight();
   const tStyle = getComputedStyle(id("tablettab"));
   let tPad =
     Number.parseFloat(tStyle.paddingTop) +
@@ -1176,42 +1183,8 @@ function setBottomHeight() {
 function height(element) {
   return element?.getBoundingClientRect()?.height;
 }
-function heightId(eid) {
-  return height(id(eid));
-}
-function bodyHeight() {
-  return height(document.body);
-}
-function controlHeight() {
-  return (
-    heightId("nav-panel") + heightId("axis-position") + heightId("setAxis")
-  );
-}
 
-window.onresize = setBottomHeight;
-
-// function showCalibrationPopup() {
-//   document.getElementById("calibration-popup").style.display = "block";
-// }
-
-// function homeZ() {
-//   console.log("Homing Z latest");
-
-//   const move = (params) => {
-//     params = params || {};
-//     let s = "";
-//     for (key in params) {
-//       s += key + params[key];
-//     }
-//     moveTo(s);
-//   };
-
-//   move({ Z: 85 });
-//   sendCommand("G91 G0 Z-28");
-//   //This is a total hack to make set the z to zero after the moves complete and should be done better
-//   setTimeout(() => { sendCommand("$HZ"); }, 25000);
-//   setTimeout(() => { zeroAxis("Z"); }, 26000);
-// }
+window.onresize = setBottomHeight
 
 const tabletDocumentClick = (event) => {
   const elemIdsToTest = ["calibration-popup", "calibrationBTN", "numPad"];

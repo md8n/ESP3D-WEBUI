@@ -1,6 +1,5 @@
 import {
 	Common,
-	AddCmd,
 	connectdlg,
 	id,
 	displayBlock,
@@ -63,7 +62,7 @@ const update_UI_firmware_target = () => {
 	// setHTML("tab_printer_configuration", "<span translate>GRBL</span>");
 	const fif = id("files_input_file");
 	if (fif) {
-		fif.accept = ".g,.gco,.gcode,.txt,.nc,.G,.GCO,.GCODE,.TXT,.NC";
+		fif.accept = ".g,.gc,.gco,.gcode,.nc,.txt,.G,.GC,.GCO,.GCODE,.NC,.TXT";
 	}
 	displayInitial("zero_xyz_btn");
 	displayInitial("zero_x_btn");
@@ -112,7 +111,7 @@ const update_UI_firmware_target = () => {
 }
 
 const total_boot_steps = 5;
-let current_boot_steps = 0;
+var current_boot_steps = 0;
 
 const display_boot_progress = () => {
 	current_boot_steps++;
@@ -127,7 +126,7 @@ const initUI = () => {
 	// Start up connect dialog, don't try and get the FW data
 	connectdlg(false);
 
-	AddCmd(display_boot_progress);
+	display_boot_progress();
 	//check FW
 	update_UI_firmware_target();
 	//set title using hostname
@@ -151,7 +150,7 @@ const initUI = () => {
 /** InitUI step2 - get settings from ESP3D and start processing them */
 function initUI_2() {
 	console.log("Init UI - Step 2 - Get Settings");
-	AddCmd(display_boot_progress);
+	display_boot_progress();
 	//query settings but do not update list in case wizard is showed
 	refreshSettings(true);
 	initUI_3();
@@ -160,7 +159,7 @@ function initUI_2() {
 /** InitUI step3 - Initialise the control and GRBL panels, get the preferences */
 function initUI_3() {
 	console.log("Init UI - Step 3 - Initialise the control and GRBL panels, get the preferences");
-	AddCmd(display_boot_progress);
+	display_boot_progress();
 	//init panels
 	init_controls_panel();
 	init_grbl_panel();
@@ -172,23 +171,23 @@ function initUI_3() {
 function initUI_4() {
 	const common = new Common();
 	console.log("Init UI - Step 4 - Initialise the command and files panels, determine if the setup wizard needs to be run");
-	AddCmd(display_boot_progress);
+	display_boot_progress();
 	init_command_panel();
 	init_files_panel(false);
 	//check if we need setup
 	if (common.fwData.target_firmware === "???") {
 		console.log("Launch Setup");
-		AddCmd(display_boot_progress);
+		display_boot_progress();
 		closeModal("Connection successful");
 		setupdlg();
 	} else {
 		//wizard is done UI can be updated
 		common.setup_is_done = true;
 		common.do_not_build_settings = false;
-		AddCmd(display_boot_progress);
+		display_boot_progress();
 		build_HTML_setting_list(common.current_setting_filter);
-		AddCmd(closeModal);
-		AddCmd(show_main_UI);
+		closeModal();
+		show_main_UI();
 	}
 }
 

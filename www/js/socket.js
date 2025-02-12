@@ -101,7 +101,7 @@ const pageID = (value) => {
 	return page_id;
 }
 
-/** Initialiase the page_id from the event data */
+/** Initialise the page_id from the event data */
 const Init_events = (e) => console.log(`connection id = ${pageID(e.data)}`);
 
 const ActiveID_events = (e) => {
@@ -183,7 +183,8 @@ const startSocket = () => {
 			const tval = msg.split(":");
 			if (tval.length >= 2) {
 				if (tval[0] === "CURRENT_ID") {
-					console.log(`connection id = ${pageID(tval[1])}`);
+					pageID(tval[1]);
+					console.log(`connection id = ${pageID()}`);
 				}
 				if (enable_ping()) {
 					if (tval[0] === "PING") {
