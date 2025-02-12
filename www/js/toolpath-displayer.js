@@ -327,12 +327,7 @@ var topView = function() {
     yy = 1.0;
     yz = 0.0;
 }
-var projection = function(wpos) {
-    outpoint = {}
-    outpoint.x = wpos.x * xx + wpos.y * xy + wpos.z * xz;
-    outpoint.y = wpos.x * yx + wpos.y * yy + wpos.z * yz;
-    return outpoint;
-}
+const projection = (wpos) => ({ x: wpos.x * xx + wpos.y * xy + wpos.z * xz, y: wpos.x * yx + wpos.y * yy + wpos.z * yz });
 
 var formatLimit = function(mm) {
     return (tpUnits == 'G20') ? (mm/25.4).toFixed(3)+'"' : mm.toFixed(2)+'mm';
@@ -929,15 +924,22 @@ ToolpathDisplayer.prototype.reDrawTool = function(modal, dpos) {
     }
 }
 
-displayer = new ToolpathDisplayer();
-
 ToolpathDisplayer.prototype.cycleCameraAngle = function(gcode, modal, position) {
     cameraAngle = cameraAngle + 1;
     if(cameraAngle > 4){
         cameraAngle = 0;
     }
 
-    displayer.showToolpath(gcode, modal, position);
+    tpDisplayer().showToolpath(gcode, modal, position);
+}
+
+let displayer = new ToolpathDisplayer();
+
+const tpDisplayer = () => {
+	if (!displayer) {
+		displayer = new ToolpathDisplayer();
+	}
+	return displayer;
 }
 
 /** Expects a simple array with 3 elements, and converts it to an xyz object */
@@ -947,13 +949,13 @@ const arrayToXYZ = (arr) => {
 
 const updateGcodeViewerAngle = () => {
 	const gcode = getValue("tablettab_gcode");
-	tpDisplayer().cycleCameraAngle(gcode, arrayToXYZ(WPOS()));
+	tpDisplayer().cycleCameraAngle(gcode, gCodeModal, arrayToXYZ(WPOS));
 };
 
 canvas.addEventListener("mouseup", updateGcodeViewerAngle); 
 var refreshGcode = function() {
     const gcode = getValue("tablettab_gcode");
-    displayer.showToolpath(gcode, WPOS, MPOS, cameraAngle);
+    tpDisplayer().showToolpath(gcode, WPOS, MPOS, cameraAngle);
 }
 
 // document.getElementById("small-toolpath").addEventListener("mouseup", updateGcodeViewerAngle); 

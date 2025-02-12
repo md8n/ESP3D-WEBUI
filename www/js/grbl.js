@@ -26,7 +26,7 @@ var last_axis_letter = 'Z';
 
 var axisNames = ['x', 'y', 'z', 'a', 'b', 'c']
 
-var modal = { modes: '', plane: 'G17', units: 'G21', wcs: 'G54', distance: 'G90' }
+var gCodeModal = { modes: '', plane: 'G17', units: 'G21', wcs: 'G54', distance: 'G90' }
 
 let calibrationResults = {}
 
@@ -581,26 +581,26 @@ const modalModes = [
 ]
 
 function grblGetModal(msg) {
-  modal.modes = msg.replace('[GC:', '').replace(']', '')
-  var modes = modal.modes.split(' ')
-  modal.parking = undefined // Otherwise there is no way to turn it off
-  modal.program = '' // Otherwise there is no way to turn it off
+  gCodeModal.modes = msg.replace('[GC:', '').replace(']', '')
+  var modes = gCodeModal.modes.split(' ')
+  gCodeModal.parking = undefined // Otherwise there is no way to turn it off
+  gCodeModal.program = '' // Otherwise there is no way to turn it off
   modes.forEach(function (mode) {
     if (mode == 'M9') {
-      modal.flood = mode
-      modal.mist = mode
+      gCodeModal.flood = mode
+      gCodeModal.mist = mode
     } else {
       if (mode.charAt(0) === 'T') {
-        modal.tool = mode.substring(1)
+        gCodeModal.tool = mode.substring(1)
       } else if (mode.charAt(0) === 'F') {
-        modal.feedrate = mode.substring(1)
+        gCodeModal.feedrate = mode.substring(1)
       } else if (mode.charAt(0) === 'S') {
-        modal.spindle = mode.substring(1)
+        gCodeModal.spindle = mode.substring(1)
       } else {
         modalModes.forEach(function (modeType) {
           modeType.values.forEach(function (s) {
             if (mode == s) {
-              modal[modeType.name] = mode
+              gCodeModal[modeType.name] = mode
             }
           })
         })
