@@ -119,13 +119,14 @@ const maslowMsgHandling = (msg) => {
 		case "A":
 			stdAction(cfgVal.name, value);
 			break;
-		case "D":
+		case "D": {
 			let dimEnt = common;
 			if (!cfgVal.name) {
 				// Well this is dangerous - so let's not do anything we'll regret very quickly
-				return maslowErrorMsgHandling(`error: No 'name' value specified for '${key}' in the reference table. ${errMsgSuffix}`);;
+				return maslowErrorMsgHandling(`error: No 'name' value specified for '${key}' in the reference table. ${errMsgSuffix}`);
 			}
 			// Traverse through to the required entity
+			// biome-ignore lint/complexity/noForEach: <explanation>
 			cfgVal.name.split(".").forEach((namePart) => {
 				if (!(namePart in dimEnt)) {
 					dimEnt[namePart] = null;
@@ -133,6 +134,7 @@ const maslowMsgHandling = (msg) => {
 				dimEnt = dimEnt[namePart];
 			});
 			dimEnt = stdDimensionAction(value);
+		}
 			break;
 		default:
 			// do nothing - a 'null' action
@@ -171,6 +173,7 @@ const allConfigKeys = () => Object.keys(cfgDef).filter((key) => !cfgDef[key].nam
 
 /** Used to populate the config popup when it loads */
 const loadConfigValues = () => {
+	// biome-ignore lint/complexity/noForEach: <explanation>
 	allConfigKeys().forEach((key) => {
 		const cmd = `$/${M}_${key}`;
 		SendPrinterCommand(cmd);
@@ -179,6 +182,7 @@ const loadConfigValues = () => {
 
 /** Load all of the corner values */
 const loadCornerValues = () => {
+	// biome-ignore lint/complexity/noForEach: <explanation>
 	Object.keys(cfgDef).filter((key) => cfg[key].name.startsWith("initial")).forEach((key) => {
 		const cmd = `$/${M}_${key}`;
 		SendPrinterCommand(cmd);
@@ -191,6 +195,7 @@ const loadCornerValues = () => {
 /** Save the Maslow configuration values */
 const saveConfigValues = () => {
 	// Get all of the config data as entered, and as already loaded
+	// biome-ignore lint/complexity/noForEach: <explanation>
 	allConfigKeys().forEach((key) => {
 		const cfgVal = cfgDef[key];
 		cfgVal.val = getValue(cfgVal.name);
@@ -207,6 +212,7 @@ const saveConfigValues = () => {
 	}
 
 	// Save the individual values
+	// biome-ignore lint/complexity/noForEach: <explanation>
 	allConfigKeys().forEach((key) => {
 		const cfgVal = cfgDef[key];
 		const value = cfgVal.val;

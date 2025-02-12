@@ -266,7 +266,7 @@ const get_config_help = (sline) => (is_override_config) ? "" : inline_help(get_c
 const get_config_command = (sline) => `${get_config_label(sline)}=`;
 
 function is_config_commented(sline) {
-	var line = sline.trim();
+	const line = sline.trim();
 	if (!line) {
 		return false;
 	}
@@ -344,7 +344,7 @@ function config_checkchange(index, is_override) {
 	const ids = buildIds(index, is_override);
 	const value = getValueTrimmed(ids.idConf);
 
-	const itemState = item.defaultvalue == value
+	const itemState = item.defaultvalue === value
 		? "default"
 		: config_check_value(value, index, is_override) ? "warning" : "error";
 	setConfigItemState(ids, value, itemState);
