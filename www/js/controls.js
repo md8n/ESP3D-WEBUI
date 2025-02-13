@@ -5,6 +5,7 @@ import {
 	getChecked,
 	id,
 	setChecked,
+	setValue,
 	setHTML,
 	alertdlg,
 	getAxisFromValue,

@@ -1,4 +1,4 @@
-import { closeModal, setactiveModal, showModal, id } from "./common.js";
+import { closeModal, setactiveModal, showModal, id, setValue } from "./common.js";
 
 const inputDlgCancel = () => closeModal("cancel");
 const inputDlgClose = () => closeModal("Ok");

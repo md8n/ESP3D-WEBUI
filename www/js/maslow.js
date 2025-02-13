@@ -183,7 +183,7 @@ const loadConfigValues = () => {
 /** Load all of the corner values */
 const loadCornerValues = () => {
 	// biome-ignore lint/complexity/noForEach: <explanation>
-	Object.keys(cfgDef).filter((key) => cfg[key].name.startsWith("initial")).forEach((key) => {
+	Object.keys(cfgDef).filter((key) => cfgDef[key].name.startsWith("initial")).forEach((key) => {
 		const cmd = `$/${M}_${key}`;
 		SendPrinterCommand(cmd);
 	});

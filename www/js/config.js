@@ -6,7 +6,7 @@ import {
 	displayNone,
 	id,
 	setChecked,
-	setClassName,
+	setValue,
 	setHTML,
 	alertdlg,
 	httpCmdType,

@@ -10,6 +10,7 @@ import {
 	displayTable,
 	displayUndoNone,
 	setHTML,
+	setValue,
 	closeModal,
 	init_command_panel,
 	init_controls_panel,

@@ -8,6 +8,7 @@ import {
 	SavePreferences,
 	setHTML,
 	get_icon_svg,
+	setValue,
 	valueStartsWith,
 } from "./common.js";
 
