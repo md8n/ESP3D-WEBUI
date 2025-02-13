@@ -1,6 +1,6 @@
 import {
     Common,
-    classes,
+    elemsByClass,
     get_icon_svg,
     displayBlock,
     displayNone,
@@ -123,7 +123,7 @@ const startStep = (evt, stepName) => {
     // }
 
     // biome-ignore lint/complexity/noForEach: <explanation>
-    classes("stepcontent").forEach((stepcont) => {
+    elemsByClass("stepcontent").forEach((stepcont) => {
         const stepId = stepcont.id;
         if (stepId !== stepName) {
             displayNone(stepId);
