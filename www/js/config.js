@@ -28,10 +28,12 @@ const refreshconfig = (is_override) => {
 	if (CheckForHttpCommLock()) {
 		return;
 	}
+
 	is_override_config = false;
 	if (typeof is_override !== "undefined" && is_override) {
 		is_override_config = is_override;
 	}
+
 	config_display_override(is_override_config);
 	displayBlock("config_loader");
 	displayNone(["config_list_content", "config_status", "config_refresh_btn"]);
