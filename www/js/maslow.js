@@ -203,6 +203,7 @@ const loadCornerValues = () => {
 
 const saveConfigValues = () => {
 	// Get all of the config data as entered, and as already loaded
+	// biome-ignore lint/complexity/noForEach: <explanation>
 	allConfigKeys().forEach((key) => {
 		const cfgVal = cfgDef[key];
 		cfgVal.val = getValue(cfgVal.name);
@@ -219,6 +220,7 @@ const saveConfigValues = () => {
 	}
 
 	// Save the individual values
+	// biome-ignore lint/complexity/noForEach: <explanation>
 	allConfigKeys().forEach((key) => {
 		const cfgVal = cfgDef[key];
 		const value = typeof cfgVal.val === "undefined"
