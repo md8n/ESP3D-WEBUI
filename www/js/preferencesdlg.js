@@ -552,6 +552,7 @@ function SavePreferences(current_preferences) {
     if (CheckForHttpCommLock()) {
         return;
     }
+
     console.log("save prefs");
     if (((typeof (current_preferences) !== 'undefined') && !current_preferences) || (typeof (current_preferences) == 'undefined')) {
         if (!Checkvalues("preferences_autoReport_Interval") ||
@@ -578,7 +579,7 @@ function SavePreferences(current_preferences) {
         saveprefs.push(`"enable_DHT":"${id('enable_DHT').checked}"`);
 
         saveprefs.push(`"enable_camera":"${id('show_camera_panel').checked}"`);
-        saveprefs.push(`"auto_load_camera":"${id('autoload_camera_panel').checked}`);
+        saveprefs.push(`"auto_load_camera":"${id('autoload_camera_panel').checked}"`);
         saveprefs.push(`"camera_address":"${HTMLEncode(getValue('preferences_camera_webaddress') || "")}"`);
 
         saveprefs.push(`"enable_control_panel":"${id('show_control_panel').checked}"`);
@@ -614,8 +615,15 @@ function SavePreferences(current_preferences) {
         saveprefs.push(`"enable_commands_panel":"${id('show_commands_panel').checked}"`);
         saveprefs.push(`"enable_autoscroll":"${id('preferences_autoscroll').checked}"`);
         saveprefs.push(`"enable_verbose_mode":"${id('preferences_verbose_mode').checked}"}]`);
-        preferenceslist = JSON.parse(saveprefs.join(","));
+        try {
+            preferenceslist = JSON.parse(saveprefs.join(","));
+        } catch (error) {
+            console.error("There was an error preparing the preferences before saving them. The preferences have not been saved. This is probably a programmer error.");
+            console.error(error);
+            return;
+        }
     }
+
     const file = BuildFormDataFiles(preferences_file_name, [JSON.stringify(preferenceslist, null, " ")], { type: 'application/json' });
     var formData = new FormData();
     formData.append('path', '/');

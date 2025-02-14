@@ -644,9 +644,13 @@ function grblHandleMessage(msg) {
     const validJsonMSG = msg
       .replace(/(\b(?:bl|br|tr|tl)\b):/g, '"$1":')
       .replace('CLBM:', '')
-      .replace(/,]$/, ']')
-    const measurements = JSON.parse(validJsonMSG)
-    handleCalibrationData(measurements)
+      .replace(/,]$/, ']');
+    try {
+      const measurements = JSON.parse(validJsonMSG);
+      handleCalibrationData(measurements);
+    } catch (error) {
+      console.error("Parsing the GRBL `CLBM` message failed, the calibration data has not been 'handled'. This is probably a programmer error.");
+    }
   }
   if (msg.startsWith('<')) {
     grblProcessStatus(msg)
