@@ -720,7 +720,7 @@ class ToolpathDisplayer {
 		initialMoves = true;
 		displayHandlers.position = initialPosition;
 		const common = new Common();
-		displayHandlers.modal = common.modal;
+		displayHandlers.modal = common.GCodeModal;
 		new Toolpath(displayHandlers).loadFromLinesSync(gcodeLines);
 
 		drawTool(initialPosition);
@@ -745,7 +745,7 @@ class ToolpathDisplayer {
 		}
 
 		const common = new Common();
-		tpDisplayer().showToolpath(gcode, common.modal, position);
+		tpDisplayer().showToolpath(gcode, common.GCodeModal, position);
 	}
 }
 
@@ -765,7 +765,7 @@ const arrayToXYZ = (arr) => {
 
 const updateGcodeViewerAngle = () => {
 	const gcode = getValue("tablettab_gcode");
-	tpDisplayer().cycleCameraAngle(gcode, arrayToXYZ(WPOS()));
+	tpDisplayer().cycleCameraAngle(gcode, gCodeModal, arrayToXYZ(WPOS));
 };
 
 const refreshGcode = () => {

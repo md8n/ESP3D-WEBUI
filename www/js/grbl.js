@@ -578,27 +578,27 @@ const modalModes = [
 
 const grblGetModal = (msg) => {
   const common = new Common();
-  common.modal.modes = msg.replace("[GC:", "").replace("]", "");
-  const modes = common.modal.modes.split(" ");
-  common.modal.parking = undefined; // Otherwise there is no way to turn it off
-  common.modal.program = ""; // Otherwise there is no way to turn it off
+  common.GCodeModal.modes = msg.replace("[GC:", "").replace("]", "");
+  const modes = common.GCodeModal.modes.split(" ");
+  common.GCodeModal.parking = undefined; // Otherwise there is no way to turn it off
+  common.GCodeModal.program = ""; // Otherwise there is no way to turn it off
   // biome-ignore lint/complexity/noForEach: <explanation>
   modes.forEach((mode) => {
     if (mode === "M9") {
-      common.modal.flood = mode;
-      common.modal.mist = mode;
+      common.GCodeModal.flood = mode;
+      common.GCodeModal.mist = mode;
     } else {
       switch (mode.charAt(0)) {
-        case "T": common.modal.tool = mode.substring(1); break;
-        case "F": common.modal.feedrate = mode.substring(1); break;
-        case "S": common.modal.spindle = mode.substring(1); break;
+        case "T": common.GCodeModal.tool = mode.substring(1); break;
+        case "F": common.GCodeModal.feedrate = mode.substring(1); break;
+        case "S": common.GCodeModal.spindle = mode.substring(1); break;
         default:
           // biome-ignore lint/complexity/noForEach: <explanation>
           modalModes.forEach((modeType) => {
             // biome-ignore lint/complexity/noForEach: <explanation>
             modeType.values.forEach((s) => {
               if (mode === s) {
-                common.modal[modeType.name] = mode;
+                common.GCodeModal[modeType.name] = mode;
               }
             });
           });

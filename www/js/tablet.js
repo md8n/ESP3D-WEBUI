@@ -179,7 +179,7 @@ const zeroAxis = (axis) => {
 const toggleUnits = () => {
   tabletClick();
   const common = new Common();
-  sendCommand(common.modal.units === "G21" ? "G20" : "G21");
+  sendCommand(common.GCodeModal.units === "G21" ? "G20" : "G21");
   // The button label will be fixed by the response to $G
   sendCommand("$G");
 };
@@ -239,7 +239,7 @@ const jogTo = (axisAndDistance) => {
   // Always force G90 mode because synchronization of modal reports is unreliable
   let feedrate = AxisFeedRate(axis);
   const common = new Common();
-  if (common.modal.units === "G20") {
+  if (common.GCodeModal.units === "G20") {
     feedrate /= 25.4;
     feedrate = feedrate.toFixed(2);
   }
@@ -260,7 +260,7 @@ const move = (params = {}) => {
 }
 
 const moveTo = (location) => {
-  // Always force G90 mode because synchronization of modal reports is unreliable
+  // Always force G90 mode because synchronization of gCodeModal reports is unreliable
   const cmd = `G90 G0 ${location}`;
   sendCommand(cmd);
 }
@@ -506,7 +506,8 @@ function scaleUnits(target) {
   const currentValue = Number(distanceElement.innerText);
 
   if (!Number.isNaN(currentValue)) {
-    distanceElement.innerText = modal.units === "G20" ? currentValue / 25.4 : currentValue * 25.4;
+    const common = new Common();
+    distanceElement.innerText = common.GCodeModal.units === "G20" ? currentValue / 25.4 : currentValue * 25.4;
   } else {
     console.error("Invalid number in disM element");
   }
@@ -521,16 +522,13 @@ const setDisabled = (selector, value) => {
 
 function tabletUpdateModal() {
   const common = new Common();
-  const newUnits = common.modal.units === "G21" ? "mm" : "Inch";
-  if (getText("tablettab_toggle_units") !== newUnits) {
-    setText("tablettab_toggle_units", newUnits);
-    setJogSelector(common.modal.units);
-    scaleUnits("disM");
-    scaleUnits("disZ");
+  const newUnits = common.GCodeModal.units === "G21" ? "mm" : "Inch";
+  if (getValue("tablettab_toggle_units") === newUnits) {
+    return;
   }
 
   setText("tablettab_toggle_units", newUnits);
-  setJogSelector(modal.units);
+  setJogSelector(common.GCodeModal.units);
   scaleUnits("disM");
   scaleUnits("disZ");
 }
@@ -553,7 +551,7 @@ const tabletGrblState = (grbl, response) => {
   //  spindleOverride = OVR.spindle/100.0;
 
   const mmPerInch = 25.4;
-  switch (common.modal.units) {
+  switch (common.GCodeModal.units) {
     case "G20":
       factor = grblReportingUnits === 0 ? 1 / mmPerInch : 1.0;
       break;
@@ -637,22 +635,21 @@ const tabletGrblState = (grbl, response) => {
 
   //setText('runtime', runTime);
 
-  //setText('wpos-label', common.modal.wcs);
+  //setText('wpos-label', common.GCodeModal.wcs);
   const distanceText =
-    common.modal.distance === "G90"
-      ? common.modal.distance
-      : `<div style='color:red'>${common.modal.distance}</div>`;
+    common.GCodeModal.distance === "G90"
+      ? common.GCodeModal.distance
+      : `<div style='color:red'>${common.GCodeModal.distance}</div>`;
   //setHTML('distance', distanceText);
 
   let stateText = "";
   if (stateName === "Run") {
     const rateNumber =
-      common.modal.units === "G21"
+      common.GCodeModal.units === "G21"
         ? Number(grbl.feedrate).toFixed(0)
         : Number(grbl.feedrate / 25.4).toFixed(2);
 
-    const rateText =
-      rateNumber + (common.modal.units === "G21" ? " mm/min" : " in/min");
+    const rateText = `${rateNumber}${(common.GCodeModal.units === "G21" ? " mm/min" : " in/min")}`;
 
     stateText = `${rateText} ${spindleSpeed} ${spindleDirection}`;
   } else {
@@ -661,7 +658,7 @@ const tabletGrblState = (grbl, response) => {
   }
   //setText('active-state', stateText);
 
-  const modeText = `${common.modal.distance} ${common.modal.wcs} ${common.modal.units} T${common.modal.tool} F${common.modal.feedrate} S${common.modal.spindle}`;
+  // const modeText = `${common.GCodeModal.distance} ${common.GCodeModal.wcs} ${common.GCodeModal.units} T${common.GCodeModal.tool} F${common.GCodeModal.feedrate} S${common.GCodeModal.spindle}`;
 
   if (grbl.lineNumber && ["Run", "Hold", "Stop"].includes(stateName)) {
     //setText('line', grbl.lineNumber);
@@ -670,10 +667,10 @@ const tabletGrblState = (grbl, response) => {
     }
   }
   if (common.gCodeDisplayable) {
-    tpDisplayer().reDrawTool(common.modal, arrayToXYZ(WPOS()));
+    tpDisplayer().reDrawTool(common.GCodeModal, arrayToXYZ(WPOS()));
   }
 
-  const digits = common.modal.units === "G20" ? 4 : 2;
+  const digits = common.GCodeModal.units === "G20" ? 4 : 2;
 
   if (WPOS()) {
     WPOS().forEach((pos, index) => {
@@ -860,7 +857,7 @@ const showGCode = (gcode) => {
     setValue("tablettab_gcode", gcode);
     const common = new Common();
     if (common.gCodeDisplayable) {
-      tpDisplayer().showToolpath(gcode, common.modal, arrayToXYZ(WPOS()));
+      tpDisplayer().showToolpath(gcode, common.GCodeModal, arrayToXYZ(WPOS()));
     }
   }
 
@@ -1057,7 +1054,7 @@ function tabletIsActive() {
 }
 
 function handleKeyDown(event) {
-  // When we are in a modal input field like the MDI text boxes
+  // When we are in a gCodeModal input field like the MDI text boxes
   // or the numeric entry boxes, disable keyboard jogging so those
   // keys can be used for text editing.
   if (!tabletIsActive()) {

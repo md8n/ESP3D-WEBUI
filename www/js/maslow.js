@@ -63,13 +63,22 @@ const maslowErrorMsgHandling = (msg) => {
 	return `${msg}${msgExtra[msg.split(":")[1]] || ""}`;
 };
 
+/** Is the machine orientation 'vertical' (the default) */
+const isVert = (value) => value === "horizontal" ? "false" : "true";
+/** What orientation is the machine? */
+const vertIs = (value) => value === "false" ? "horizontal" : "vertical";
+
 const cfgDef = {
+	vertical: { name: "machineOrientation", type: "A", fnVal: isVert, fnDisp: vertIs },
+	calibration_grid_size: { name: "gridSize", type: "A" },
 	calibration_grid_width_mm_X: { name: "gridWidth", type: "A" },
 	calibration_grid_height_mm_Y: { name: "gridHeight", type: "A" },
-	calibration_grid_size: { name: "gridSize", type: "A" },
 	Retract_Current_Threshold: { name: "retractionForce", type: "A" },
-	vertical: { name: "machineOrientation", type: "A", fnVal: (value) => value === "horizontal" ? "false" : "true" },
+	Calibration_Current_Threshold: { name: "calibrationForce", type: "A" },
+	Acceptable_Calibration_Threshold: { name: "acceptableCalibrationThreshold", type: "A" },
 	Extend_Dist: { name: "extendDist", type: "A" },
+	beltEndExtension: { name: "beltEndExtension", type: "A" },
+	armLength: { name: "armLength", type: "A" },
 	trX: { name: "initialGuess.tr.x", type: "D" },
 	trY: { name: "initialGuess.tr.y", type: "D" },
 	trZ: { name: "initialGuess.tr.z", type: "D" },
@@ -82,7 +91,6 @@ const cfgDef = {
 	blX: { name: "initialGuess.bl.x", type: "Null" },
 	blY: { name: "initialGuess.bl.y", type: "Null" },
 	blZ: { name: "initialGuess.bl.z", type: "D" },
-	Acceptable_Calibration_Threshold: { name: "acceptableCalibrationThreshold", type: "D" },
 };
 
 /** Handle Maslow specific configuration messages
@@ -105,7 +113,8 @@ const maslowMsgHandling = (msg) => {
 	}
 
 	const stdAction = (id, value) => {
-		setValue(id, value);
+		const val = ("fnDisp" in cfgVal && typeof cfgVal.fnDisp === "function") ? cfgVal.fnDisp(value) : value;
+		setValue(id, val);
 		loadedValues(id, value);
 	};
 
@@ -168,8 +177,11 @@ const sendCommand = (cmd) => {
 	SendPrinterCommand(cmd, true, get_Position);
 };
 
+// The following functions are all defined as global functions, and are used by tablettab.html and other places
+// They rely on the global function SendPrinterCommand defined in printercmd.js
+
 /** Get all of the config (not corner) keys in the confiiguration definition */
-const allConfigKeys = () => Object.keys(cfgDef).filter((key) => !cfgDef[key].name.startsWith("initial"));
+const allConfigKeys = () => Object.keys(cfgDef).filter((key) => cfgDef[key].type === "A");
 
 /** Used to populate the config popup when it loads */
 const loadConfigValues = () => {
@@ -183,19 +195,14 @@ const loadConfigValues = () => {
 /** Load all of the corner values */
 const loadCornerValues = () => {
 	// biome-ignore lint/complexity/noForEach: <explanation>
-	Object.keys(cfgDef).filter((key) => cfgDef[key].name.startsWith("initial")).forEach((key) => {
+	Object.keys(cfgDef).filter((key) => cfgDef[key].type === "D").forEach((key) => {
 		const cmd = `$/${M}_${key}`;
 		SendPrinterCommand(cmd);
 	});
 };
 
-// The following functions are all defined as global functions, and are used by tablettab.html and other places
-// They rely on the global function SendPrinterCommand defined in printercmd.js
-
-/** Save the Maslow configuration values */
 const saveConfigValues = () => {
 	// Get all of the config data as entered, and as already loaded
-	// biome-ignore lint/complexity/noForEach: <explanation>
 	allConfigKeys().forEach((key) => {
 		const cfgVal = cfgDef[key];
 		cfgVal.val = getValue(cfgVal.name);
@@ -212,13 +219,13 @@ const saveConfigValues = () => {
 	}
 
 	// Save the individual values
-	// biome-ignore lint/complexity/noForEach: <explanation>
 	allConfigKeys().forEach((key) => {
 		const cfgVal = cfgDef[key];
-		const value = cfgVal.val;
+		const value = typeof cfgVal.val === "undefined"
+			? cfgVal.loadedVal
+			: ("fnVal" in cfgVal && typeof cfgVal.fnVal === "function") ? cfgVal.fnVal(cfgVal.val) : cfgVal.val;
 		if (value !== cfgVal.loadedVal) {
-			const val = ("fnVal" in cfgVal && typeof cfgVal.fnVal === "function") ? cfgVal.fnVal(value) : value;
-			const cmd = `$/${M}_${key}=${val}`;
+			const cmd = `$/${M}_${key}=${value}`;
 			sendCommand(cmd);
 		}
 	});
